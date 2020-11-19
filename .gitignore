@@ -1,0 +1,14 @@
+bin/
+log/
+
+testing/
+venv/
+
+__pycache__/
+
+.idea
+.settings/
+.cache*
+.project
+
+*.pyc
