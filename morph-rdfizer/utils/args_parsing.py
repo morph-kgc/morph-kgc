@@ -1,4 +1,5 @@
 import argparse, os, re, logging, sys
+import multiprocessing as mp
 from configparser import ConfigParser, ExtendedInterpolation
 
 
@@ -71,10 +72,10 @@ def existing_file_path(file_path):
     return file_path
 
 
-def natural_number(number):
+def process_number(number):
     """
-    Generates a natural number from a given number. Number is converted to int. In the case of been lower than 1,
-    1 is generated.
+    Generates a natural number from a given number. Number is converted to int.
+    In case of been 0, the number of cores in the system is generated.
 
     :param number: number
     :type number: str
@@ -83,16 +84,17 @@ def natural_number(number):
     """
 
     whole_number = int(number)
-    if whole_number < 1:
-        whole_number = 1
+    if whole_number < 0:
+        raise ValueError
+    elif whole_number == 0:
+        whole_number = mp.cpu_count()
 
     return whole_number
 
 
 def natural_number_including_zero(number):
     """
-    Generates a natural number (including zero) from a given number. Number is converted to int. In case of been lower
-    than 0, 0 is generated.
+    Generates a natural number (including zero) from a given number.
 
     :param number: number
     :type number: str
@@ -102,7 +104,7 @@ def natural_number_including_zero(number):
 
     whole_number = int(number)
     if whole_number < 0:
-        whole_number = 0
+        raise ValueError
 
     return whole_number
 
@@ -129,8 +131,8 @@ def parse_arguments():
                         choices=['s', 'p', 'g', 'sp', 'sg', 'pg', 'spg'],
                         help='grouping criteria for mappings. The following criteria and its combinations are '
                              'possible: s: subject, p: predicate, g: named graph')
-    parser.add_argument('-n', '--number_of_cores', default=1, type=natural_number,
-                        help='number of parallel processes')
+    parser.add_argument('-n', '--number_of_processes', default=1, type=process_number,
+                        help='number of parallel processes. 0 to set it to the number of CPUs in the system.')
     parser.add_argument('-s', '--chunksize', default=0, type=natural_number_including_zero,
                         help='maximum number of rows of data processed at once by a process')
     parser.add_argument('-l', '--logs', nargs='?', const='', type=str,
@@ -169,9 +171,9 @@ def validate_config(config):
                         'must be in: ' + str(valid_options)
             raise ValueError(error_msg)
 
-    if config.has_option('CONFIGURATION', 'number_of_cores'):
-        config.set('CONFIGURATION', 'number_of_cores',
-                   str(natural_number(config.get('CONFIGURATION', 'number_of_cores'))))
+    if config.has_option('CONFIGURATION', 'number_of_processes'):
+        config.set('CONFIGURATION', 'number_of_processes',
+                   str(process_number(config.get('CONFIGURATION', 'number_of_processes'))))
 
     if config.has_option('CONFIGURATION', 'chunksize'):
         config.set('CONFIGURATION', 'chunksize',
@@ -220,8 +222,8 @@ def complete_config_file_with_args(config, args):
         config.set('CONFIGURATION', 'remove_duplicates', str(args.remove_duplicates))
     if not config.has_option('CONFIGURATION', 'group_mappings'):
         config.set('CONFIGURATION', 'group_mappings', args.group_mappings)
-    if not config.has_option('CONFIGURATION', 'number_of_cores'):
-        config.set('CONFIGURATION', 'number_of_cores', str(args.number_of_cores))
+    if not config.has_option('CONFIGURATION', 'number_of_processes'):
+        config.set('CONFIGURATION', 'number_of_processes', str(args.number_of_processes))
     if not config.has_option('CONFIGURATION', 'chunksize'):
         config.set('CONFIGURATION', 'chunksize', str(args.chunksize))
     if not config.has_option('CONFIGURATION', 'logs') and 'logs' in args:
