@@ -128,7 +128,7 @@ def parse_arguments():
                         choices=['yes', 'no', 'on', 'off', 'true', 'false', '0', '1'],
                         help='whether to remove duplicate triples in the results')
     parser.add_argument('-g', '--group_mappings', nargs='?', default='', const='sp',
-                        choices=['s', 'p', 'g', 'sp', 'sg', 'pg', 'spg'],
+                        choices=['s', 'p', 'sp'],
                         help='grouping criteria for mappings. The following criteria and its combinations are '
                              'possible: s: subject, p: predicate, g: named graph')
     parser.add_argument('-n', '--number_of_processes', default=1, type=process_number,
@@ -165,7 +165,7 @@ def validate_config(config):
     if config.has_option('CONFIGURATION', 'group_mappings'):
         group_mappings = config.get('CONFIGURATION', 'group_mappings')
         group_mappings = str(group_mappings).lower().strip()
-        valid_options = ['', 's', 'p', 'g', 'sp', 'sg', 'pg', 'spg']
+        valid_options = ['', 's', 'p', 'sp']
         if group_mappings not in valid_options:
             error_msg = 'Option group_mappings of CONFIGURATION section in the configuration file ' \
                         'must be in: ' + str(valid_options)
