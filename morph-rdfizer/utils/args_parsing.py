@@ -206,6 +206,10 @@ def complete_config_file_with_args(config, args):
     :return: ConfigParser object extended with information from arguments
     """
 
+    '''create section CONFIGURATION if nor indicated in the config file'''
+    if not config.has_section('CONFIGURATION'):
+        config.add_section('CONFIGURATION')
+
     '''if parameters are not provided in the config file, take them from arguments'''
     '''mind that ConfigParser store options as strings'''
     if not config.has_option('CONFIGURATION', 'output_dir'):
