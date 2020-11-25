@@ -10,6 +10,7 @@ de Madrid (UPM).
 """
 
 import re, rdflib
+import pandas as pd
 
 
 class TriplesMap:
@@ -173,129 +174,144 @@ class ObjectMap:
         self.language = language if language != "None" else None
 
 
+MAPPING_PARSING_QUERY = """
+    prefix rr: <http://www.w3.org/ns/r2rml#> 
+    prefix rml: <http://semweb.mmlab.be/ns/rml#> 
+    prefix ql: <http://semweb.mmlab.be/ns/ql#> 
+    prefix d2rq: <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#> 
+
+    SELECT DISTINCT 
+        ?triples_map_id ?data_source ?ref_form ?iterator ?tablename ?query
+        ?jdbcDSN ?jdbcDriver ?user ?password
+        ?subject_template ?subject_reference ?subject_constant ?subject_rdf_class ?subject_termtype ?graph
+        ?predicate_constant ?predicate_template ?predicate_reference ?predicate_constant_shortcut
+        ?object_constant ?object_template ?object_reference ?object_termtype ?object_datatype ?object_language
+        ?object_parent_triples_map ?join_condition ?child_value ?parent_value ?object_constant_shortcut
+        ?predicate_object_graph
+        
+    WHERE {
+        ?triples_map_id rml:logicalSource ?_source .
+        OPTIONAL { ?_source rml:source ?data_source . }
+        OPTIONAL { ?_source rml:referenceFormulation ?ref_form . }
+        OPTIONAL { ?_source rml:iterator ?iterator . }
+        OPTIONAL { ?_source rr:tableName ?tablename . }
+        OPTIONAL { ?_source rml:query ?query . }
+        OPTIONAL {
+            ?_source a d2rq:Database ;
+            d2rq:jdbcDSN ?jdbcDSN ;
+            d2rq:jdbcDriver ?jdbcDriver ;
+            d2rq:username ?user ;
+            d2rq:password ?password .
+        }
+
+# Subject -------------------------------------------------------------------------
+        ?triples_map_id rr:subjectMap ?_subject_map .
+        OPTIONAL { ?_subject_map rr:template ?subject_template . }
+        OPTIONAL { ?_subject_map rml:reference ?subject_reference . }
+        OPTIONAL { ?_subject_map rr:constant ?subject_constant . }
+        OPTIONAL { ?_subject_map rr:class ?rdf_class . }
+        OPTIONAL { ?_subject_map rr:termType ?subject_termtype . }
+        OPTIONAL { ?_subject_map rr:graph ?graph . }
+        OPTIONAL {
+            ?_subject_map rr:graphMap ?_graph_structure .
+            ?_graph_structure rr:constant ?graph .
+        }
+        OPTIONAL {
+            ?_subject_map rr:graphMap ?_graph_structure .
+            ?_graph_structure rr:template ?graph .
+        }
+
+# Predicate -----------------------------------------------------------------------
+        OPTIONAL {
+            ?triples_map_id rr:predicateObjectMap ?_predicate_object_map .
+            OPTIONAL {
+                ?_predicate_object_map rr:predicateMap ?_predicate_map .
+                ?_predicate_map rr:constant ?predicate_constant .
+            }
+            OPTIONAL {
+                ?_predicate_object_map rr:predicateMap ?_predicate_map .
+                ?_predicate_map rr:template ?predicate_template .
+            }
+            OPTIONAL {
+                ?_predicate_object_map rr:predicateMap ?_predicate_map .
+                ?_predicate_map rml:reference ?predicate_reference .
+            }
+            OPTIONAL { ?_predicate_object_map rr:predicate ?predicate_constant_shortcut . }
+
+# Object --------------------------------------------------------------------------
+            OPTIONAL {
+                ?_predicate_object_map rr:objectMap ?_object_map .
+                ?_object_map rr:constant ?object_constant .
+                OPTIONAL { ?_object_map rr:termType ?object_termtype . }
+                OPTIONAL { ?_object_map rr:datatype ?object_datatype . }
+                OPTIONAL { ?_object_map rr:language ?object_language . }
+            }
+            OPTIONAL {
+                ?_predicate_object_map rr:objectMap ?_object_map .
+                ?_object_map rr:template ?object_template .
+                OPTIONAL { ?_object_map rr:termType ?object_termtype . }
+                OPTIONAL { ?_object_map rr:datatype ?object_datatype . }
+                OPTIONAL { ?_object_map rr:language ?object_language . }
+            }
+            OPTIONAL {
+                ?_predicate_object_map rr:objectMap ?_object_map .
+                ?_object_map rml:reference ?object_reference .
+                OPTIONAL { ?_object_map rr:termType ?object_termtype . }
+                OPTIONAL { ?_object_map rr:datatype ?object_datatype . }
+                OPTIONAL { ?_object_map rr:language ?object_language . }
+            }
+            OPTIONAL {
+                ?_predicate_object_map rr:objectMap ?_object_map .
+                ?_object_map rr:parentTriplesMap ?object_parent_triples_map .
+                OPTIONAL {
+                    ?_object_map rr:joinCondition ?join_condition .
+                    ?join_condition rr:child ?child_value;
+                                 rr:parent ?parent_value.
+                    OPTIONAL { ?_object_map rr:termType ?object_termtype . }
+                }
+            }
+            OPTIONAL {
+                ?_predicate_object_map rr:object ?object_constant_shortcut .
+                OPTIONAL { ?_object_map rr:datatype ?object_datatype . }
+                OPTIONAL { ?_object_map rr:language ?object_language . }
+            }
+            OPTIONAL { ?_predicate_object_map rr:graph ?predicate_object_graph . }
+            OPTIONAL {
+                ?_predicate_object_map rr:graphMap ?_graph_structure .
+                ?_graph_structure rr:constant ?predicate_object_graph .
+            }
+            OPTIONAL {
+                ?_predicate_object_map rr:graphMap ?_graph_structure .
+                ?_graph_structure rr:template ?predicate_object_graph .
+            }
+        }
+    }"""
+
+
 def parse_rml_mapping_file(mapping_file):
     mapping_graph = rdflib.Graph()
 
     try:
+        '''
+            TO DO: guess mapping file format
+        '''
         mapping_graph.load(mapping_file, format='n3')
     except Exception as n3_mapping_parse_exception:
         raise Exception(n3_mapping_parse_exception)
 
-    mapping_query = """
-        prefix rr: <http://www.w3.org/ns/r2rml#> 
-        prefix rml: <http://semweb.mmlab.be/ns/rml#> 
-        prefix ql: <http://semweb.mmlab.be/ns/ql#> 
-        prefix d2rq: <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#> 
-        
-        SELECT DISTINCT *
-        WHERE {
-            ?triples_map_id rml:logicalSource ?_source .
-            OPTIONAL { ?_source rml:source ?data_source . }
-            OPTIONAL { ?_source rml:referenceFormulation ?ref_form . }
-            OPTIONAL { ?_source rml:iterator ?iterator . }
-            OPTIONAL { ?_source rr:tableName ?tablename . }
-            OPTIONAL { ?_source rml:query ?query . }
-            OPTIONAL {
-                ?_source a d2rq:Database ;
-                d2rq:jdbcDSN ?jdbcDSN ;
-                d2rq:jdbcDriver ?jdbcDriver ;
-                d2rq:username ?user ;
-                d2rq:password ?password .
-            }
+    mapping_query_results = mapping_graph.query(MAPPING_PARSING_QUERY)
 
-    # Subject -------------------------------------------------------------------------
-            ?triples_map_id rr:subjectMap ?_subject_map .
-            OPTIONAL { ?_subject_map rr:template ?subject_template . }
-            OPTIONAL { ?_subject_map rml:reference ?subject_reference . }
-            OPTIONAL { ?_subject_map rr:constant ?subject_constant . }
-            OPTIONAL { ?_subject_map rr:class ?rdf_class . }
-            OPTIONAL { ?_subject_map rr:termType ?termtype . }
-            OPTIONAL { ?_subject_map rr:graph ?graph . }
-            OPTIONAL {
-                ?_subject_map rr:graphMap ?_graph_structure .
-                ?_graph_structure rr:constant ?graph .
-            }
-            OPTIONAL {
-                ?_subject_map rr:graphMap ?_graph_structure .
-                ?_graph_structure rr:template ?graph .
-            }		   
-
-    # Predicate -----------------------------------------------------------------------
-            OPTIONAL {
-                ?triples_map_id rr:predicateObjectMap ?_predicate_object_map .
-                OPTIONAL {
-                    ?_predicate_object_map rr:predicateMap ?_predicate_map .
-                    ?_predicate_map rr:constant ?predicate_constant .
-                }
-                OPTIONAL {
-                    ?_predicate_object_map rr:predicateMap ?_predicate_map .
-                    ?_predicate_map rr:template ?predicate_template .
-                }
-                OPTIONAL {
-                    ?_predicate_object_map rr:predicateMap ?_predicate_map .
-                    ?_predicate_map rml:reference ?predicate_reference .
-                }
-                OPTIONAL { ?_predicate_object_map rr:predicate ?predicate_constant_shortcut . }
-
-    # Object --------------------------------------------------------------------------
-                OPTIONAL {
-                    ?_predicate_object_map rr:objectMap ?_object_map .
-                    ?_object_map rr:constant ?object_constant .
-                    OPTIONAL { ?_object_map rr:termType ?object_termtype . }
-                    OPTIONAL { ?_object_map rr:datatype ?object_datatype . }
-                    OPTIONAL { ?_object_map rr:language ?object_language . }
-                }
-                OPTIONAL {
-                    ?_predicate_object_map rr:objectMap ?_object_map .
-                    ?_object_map rr:template ?object_template .
-                    OPTIONAL { ?_object_map rr:termType ?object_termtype . }
-                    OPTIONAL { ?_object_map rr:datatype ?object_datatype . }
-                    OPTIONAL { ?_object_map rr:language ?object_language . }
-                }
-                OPTIONAL {
-                    ?_predicate_object_map rr:objectMap ?_object_map .
-                    ?_object_map rml:reference ?object_reference .
-                    OPTIONAL { ?_object_map rr:termType ?object_termtype . }
-                    OPTIONAL { ?_object_map rr:datatype ?object_datatype . }
-                    OPTIONAL { ?_object_map rr:language ?object_language . }
-                }
-                OPTIONAL {
-                    ?_predicate_object_map rr:objectMap ?_object_map .
-                    ?_object_map rr:parentTriplesMap ?object_parent_triples_map .
-                    OPTIONAL {
-                        ?_object_map rr:joinCondition ?join_condition .
-                        ?join_condition rr:child ?child_value;
-                                     rr:parent ?parent_value.
-                        OPTIONAL { ?_object_map rr:termType ?object_termtype . }
-                    }
-                }
-                OPTIONAL {
-                    ?_predicate_object_map rr:object ?object_constant_shortcut .
-                    OPTIONAL { ?_object_map rr:datatype ?object_datatype . }
-                    OPTIONAL { ?_object_map rr:language ?object_language . }
-                }
-                OPTIONAL { ?_predicate_object_map rr:graph ?predicate_object_graph . }
-                OPTIONAL {
-                    ?_predicate_object_map rr:graphMap ?_graph_structure .
-                    ?_graph_structure rr:constant ?predicate_object_graph .
-                }
-                OPTIONAL {
-                    ?_predicate_object_map rr:graphMap ?_graph_structure .
-                    ?_graph_structure rr:template ?predicate_object_graph .
-                }
-            }
-        }"""
-
-    mapping_query_results = mapping_graph.query(mapping_query)
-
-'''
+    '''
     triples_map_list = []
 
     for result_triples_map in mapping_query_results:
         triples_map_exists = False
+        print(result_triples_map, '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n')
         for triples_map in triples_map_list:
             triples_map_exists = triples_map_exists or (
                     str(triples_map.triples_map_id) == str(result_triples_map.triples_map_id))
+
+
 
         if not triples_map_exists:
             if result_triples_map.subject_template is not None:
@@ -421,8 +437,6 @@ def parse_rml_mapping_file(mapping_file):
                         triples_map.subject_map.rdf_class.append(result_triples_map.rdf_class)
                     if result_triples_map.graph not in triples_map.subject_map.graph:
                         triples_map.graph.append(result_triples_map.graph)
-
-    print('Parsing time:', str(time.time() - start))
+    
     return triples_map_list
-
 '''
