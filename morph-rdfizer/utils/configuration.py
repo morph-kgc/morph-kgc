@@ -29,6 +29,7 @@ def get_configuration_and_sources(config):
     """
 
     configuration = dict(config.items('CONFIGURATION'))
+    logging.info('CONFIGURATION: ' + str(configuration))
 
     data_sources = {}
     for section in config.sections():
@@ -37,7 +38,6 @@ def get_configuration_and_sources(config):
             '''mind that DEFAULT section is not triggered with config.sections()'''
             data_sources[section] = dict(config.items(section))
 
-    logging.info('CONFIGURATION: ' + str(configuration))
     logging.info('DATA SOURCES: ' + str(data_sources))
 
     return configuration, data_sources
