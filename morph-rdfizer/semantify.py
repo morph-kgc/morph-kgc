@@ -3,7 +3,6 @@ import logging
 import TriplesMap as tp
 from args_parsing import parse_config
 from configuration import configure_logger, get_configuration_and_sources
-from morph_utils import sparql_to_dataframe
 
 
 if __name__ == "__main__":

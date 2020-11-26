@@ -209,7 +209,7 @@ MAPPING_PARSING_QUERY = """
         OPTIONAL { ?_subject_map rr:template ?subject_template . }
         OPTIONAL { ?_subject_map rml:reference ?subject_reference . }
         OPTIONAL { ?_subject_map rr:constant ?subject_constant . }
-        OPTIONAL { ?_subject_map rr:class ?rdf_class . }
+        OPTIONAL { ?_subject_map rr:class ?subject_rdf_class . }
         OPTIONAL { ?_subject_map rr:termType ?subject_termtype . }
         OPTIONAL { ?_subject_map rr:graph ?graph . }
         OPTIONAL {
@@ -285,7 +285,8 @@ MAPPING_PARSING_QUERY = """
                 ?_graph_structure rr:template ?predicate_object_graph .
             }
         }
-    }"""
+    }
+"""
 
 
 def parse_rml_mapping_file(mapping_file):
@@ -300,18 +301,17 @@ def parse_rml_mapping_file(mapping_file):
         raise Exception(n3_mapping_parse_exception)
 
     mapping_query_results = mapping_graph.query(MAPPING_PARSING_QUERY)
+    mappings_df = transform_mappings_into_dataframe(mapping_query_results)
 
-    '''
     triples_map_list = []
 
     for result_triples_map in mapping_query_results:
         triples_map_exists = False
-        print(result_triples_map, '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n')
         for triples_map in triples_map_list:
             triples_map_exists = triples_map_exists or (
                     str(triples_map.triples_map_id) == str(result_triples_map.triples_map_id))
 
-
+'''
 
         if not triples_map_exists:
             if result_triples_map.subject_template is not None:
@@ -440,3 +440,63 @@ def parse_rml_mapping_file(mapping_file):
     
     return triples_map_list
 '''
+
+
+def transform_mappings_into_dataframe(mapping_query_results):
+    '''
+    Transforms the result from a SPARQL query in rdflib to a DataFrame.
+
+    :param mapping_query_results:
+    :return:
+    '''
+
+    mappings_df = pd.DataFrame(columns=[
+        'triples_map_id', 'data_source', 'ref_form', 'iterator', 'tablename', 'query', 'jdbcDSN', 'jdbcDriver', 'user',
+        'password', 'subject_template', 'subject_reference', 'subject_constant', 'subject_rdf_class',
+        'subject_termtype', 'graph', 'predicate_constant', 'predicate_template', 'predicate_reference',
+        'predicate_constant_shortcut', 'object_constant', 'object_template', 'object_reference', 'object_termtype',
+        'object_datatype', 'object_language', 'object_parent_triples_map', 'join_condition', 'child_value',
+        'parent_value', 'object_constant_shortcut', 'predicate_object_graph'
+    ])
+
+    for mapping_rule in mapping_query_results:
+        append_mapping_rule(mappings_df, mapping_rule)
+
+    return mappings_df
+
+
+def append_mapping_rule(mappings_df, mapping_rule):
+    i = len(mappings_df)
+
+    mappings_df.at[i, 'triples_map_id'] = mapping_rule.triples_map_id
+    mappings_df.at[i, 'data_source'] = mapping_rule.data_source
+    mappings_df.at[i, 'ref_form'] = mapping_rule.ref_form
+    mappings_df.at[i, 'iterator'] = mapping_rule.iterator
+    mappings_df.at[i, 'tablename'] = mapping_rule.tablename
+    mappings_df.at[i, 'query'] = mapping_rule.query
+    mappings_df.at[i, 'jdbcDSN'] = mapping_rule.jdbcDSN
+    mappings_df.at[i, 'jdbcDriver'] = mapping_rule.jdbcDriver
+    mappings_df.at[i, 'user'] = mapping_rule.user
+    mappings_df.at[i, 'password'] = mapping_rule.password
+    mappings_df.at[i, 'subject_template'] = mapping_rule.subject_template
+    mappings_df.at[i, 'subject_reference'] = mapping_rule.subject_reference
+    mappings_df.at[i, 'subject_constant'] = mapping_rule.subject_constant
+    mappings_df.at[i, 'subject_rdf_class'] = mapping_rule.subject_rdf_class
+    mappings_df.at[i, 'subject_termtype'] = mapping_rule.subject_termtype
+    mappings_df.at[i, 'graph'] = mapping_rule.graph
+    mappings_df.at[i, 'predicate_constant'] = mapping_rule.predicate_constant
+    mappings_df.at[i, 'predicate_template'] = mapping_rule.predicate_template
+    mappings_df.at[i, 'predicate_reference'] = mapping_rule.predicate_reference
+    mappings_df.at[i, 'predicate_constant_shortcut'] = mapping_rule.predicate_constant_shortcut
+    mappings_df.at[i, 'object_constant'] = mapping_rule.object_constant
+    mappings_df.at[i, 'object_template'] = mapping_rule.object_template
+    mappings_df.at[i, 'object_reference'] = mapping_rule.object_reference
+    mappings_df.at[i, 'object_termtype'] = mapping_rule.object_termtype
+    mappings_df.at[i, 'object_datatype'] = mapping_rule.object_datatype
+    mappings_df.at[i, 'object_language'] = mapping_rule.object_language
+    mappings_df.at[i, 'object_parent_triples_map'] = mapping_rule.object_parent_triples_map
+    mappings_df.at[i, 'join_condition'] = mapping_rule.join_condition
+    mappings_df.at[i, 'child_value'] = mapping_rule.child_value
+    mappings_df.at[i, 'parent_value'] = mapping_rule.parent_value
+    mappings_df.at[i, 'object_constant_shortcut'] = mapping_rule.object_constant_shortcut
+    mappings_df.at[i, 'predicate_object_graph'] = mapping_rule.predicate_object_graph
