@@ -301,7 +301,7 @@ def parse_rml_mapping_file(mapping_file):
         raise Exception(n3_mapping_parse_exception)
 
     mapping_query_results = mapping_graph.query(MAPPING_PARSING_QUERY)
-    mappings_df = transform_mappings_into_dataframe(mapping_query_results)
+    mappings_df = _transform_mappings_into_dataframe(mapping_query_results)
 
     triples_map_list = []
 
@@ -442,7 +442,7 @@ def parse_rml_mapping_file(mapping_file):
 '''
 
 
-def transform_mappings_into_dataframe(mapping_query_results):
+def _transform_mappings_into_dataframe(mapping_query_results):
     '''
     Transforms the result from a SPARQL query in rdflib to a DataFrame.
 
@@ -460,12 +460,12 @@ def transform_mappings_into_dataframe(mapping_query_results):
     ])
 
     for mapping_rule in mapping_query_results:
-        append_mapping_rule(mappings_df, mapping_rule)
+        _append_mapping_rule(mappings_df, mapping_rule)
 
     return mappings_df
 
 
-def append_mapping_rule(mappings_df, mapping_rule):
+def _append_mapping_rule(mappings_df, mapping_rule):
     i = len(mappings_df)
 
     mappings_df.at[i, 'triples_map_id'] = mapping_rule.triples_map_id
