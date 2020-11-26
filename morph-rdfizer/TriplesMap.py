@@ -5,8 +5,8 @@ Its development has been coordinated and supervised by Maria-Esther Vidal. The i
 by Enrique Iglesias and Guillermo Betancourt under the supervision of David Chaves-Fraga, Samaneh Jozashoori,
 and Kemele Endris.
 
-Parts of the code have been modified and/or extended by the Ontology Engineering Group from Universidad Politécnica
-de Madrid (UPM).
+Parts of the code have been modified and/or extended by the Ontology Engineering Group (OEG)
+from Universidad Politécnica de Madrid (UPM).
 """
 
 import re, rdflib
@@ -303,144 +303,6 @@ def parse_rml_mapping_file(mapping_file):
     mapping_query_results = mapping_graph.query(MAPPING_PARSING_QUERY)
     mappings_df = _transform_mappings_into_dataframe(mapping_query_results)
 
-    triples_map_list = []
-
-    for result_triples_map in mapping_query_results:
-        triples_map_exists = False
-        for triples_map in triples_map_list:
-            triples_map_exists = triples_map_exists or (
-                    str(triples_map.triples_map_id) == str(result_triples_map.triples_map_id))
-
-'''
-
-        if not triples_map_exists:
-            if result_triples_map.subject_template is not None:
-                if result_triples_map.rdf_class is None:
-                    reference, condition = string_separetion(str(result_triples_map.subject_template))
-                    subject_map = tm.SubjectMap(str(result_triples_map.subject_template), condition, "template",
-                                                [result_triples_map.rdf_class], result_triples_map.termtype,
-                                                [result_triples_map.graph])
-                else:
-                    reference, condition = string_separetion(str(result_triples_map.subject_template))
-                    subject_map = tm.SubjectMap(str(result_triples_map.subject_template), condition, "template",
-                                                [str(result_triples_map.rdf_class)], result_triples_map.termtype,
-                                                [result_triples_map.graph])
-            elif result_triples_map.subject_reference is not None:
-                if result_triples_map.rdf_class is None:
-                    reference, condition = string_separetion(str(result_triples_map.subject_reference))
-                    subject_map = tm.SubjectMap(str(result_triples_map.subject_reference), condition, "reference",
-                                                [result_triples_map.rdf_class], result_triples_map.termtype,
-                                                [result_triples_map.graph])
-                else:
-                    reference, condition = string_separetion(str(result_triples_map.subject_reference))
-                    subject_map = tm.SubjectMap(str(result_triples_map.subject_reference), condition, "reference",
-                                                [str(result_triples_map.rdf_class)], result_triples_map.termtype,
-                                                [result_triples_map.graph])
-            elif result_triples_map.subject_constant is not None:
-                if result_triples_map.rdf_class is None:
-                    reference, condition = string_separetion(str(result_triples_map.subject_constant))
-                    subject_map = tm.SubjectMap(str(result_triples_map.subject_constant), condition, "constant",
-                                                [result_triples_map.rdf_class], result_triples_map.termtype,
-                                                [result_triples_map.graph])
-                else:
-                    reference, condition = string_separetion(str(result_triples_map.subject_constant))
-                    subject_map = tm.SubjectMap(str(result_triples_map.subject_constant), condition, "constant",
-                                                [str(result_triples_map.rdf_class)], result_triples_map.termtype,
-                                                [result_triples_map.graph])
-
-            mapping_query_prepared = prepareQuery(mapping_query)
-
-            mapping_query_prepared_results = mapping_graph.query(mapping_query_prepared, initBindings={
-                'triples_map_id': result_triples_map.triples_map_id})
-
-            join_predicate = {}
-            predicate_object_maps_list = []
-            predicate_object_graph = {}
-            for result_predicate_object_map in mapping_query_prepared_results:
-                join = True
-                if result_predicate_object_map.predicate_constant is not None:
-                    predicate_map = tm.PredicateMap("constant", str(result_predicate_object_map.predicate_constant), "")
-                    predicate_object_graph[
-                        str(result_predicate_object_map.predicate_constant)] = result_triples_map.predicate_object_graph
-                elif result_predicate_object_map.predicate_constant_shortcut is not None:
-                    predicate_map = tm.PredicateMap("constant shortcut",
-                                                    str(result_predicate_object_map.predicate_constant_shortcut), "")
-                    predicate_object_graph[str(
-                        result_predicate_object_map.predicate_constant_shortcut)] = result_triples_map.predicate_object_graph
-                elif result_predicate_object_map.predicate_template is not None:
-                    template, condition = string_separetion(str(result_predicate_object_map.predicate_template))
-                    predicate_map = tm.PredicateMap("template", template, condition)
-                elif result_predicate_object_map.predicate_reference is not None:
-                    reference, condition = string_separetion(str(result_predicate_object_map.predicate_reference))
-                    predicate_map = tm.PredicateMap("reference", reference, condition)
-                else:
-                    predicate_map = tm.PredicateMap("None", "None", "None")
-
-                if result_predicate_object_map.object_constant is not None:
-                    object_map = tm.ObjectMap("constant", str(result_predicate_object_map.object_constant),
-                                              str(result_predicate_object_map.object_datatype), "None", "None",
-                                              result_predicate_object_map.term, result_predicate_object_map.language)
-                elif result_predicate_object_map.object_template is not None:
-                    object_map = tm.ObjectMap("template", str(result_predicate_object_map.object_template),
-                                              str(result_predicate_object_map.object_datatype), "None", "None",
-                                              result_predicate_object_map.term, result_predicate_object_map.language)
-                elif result_predicate_object_map.object_reference is not None:
-                    object_map = tm.ObjectMap("reference", str(result_predicate_object_map.object_reference),
-                                              str(result_predicate_object_map.object_datatype), "None", "None",
-                                              result_predicate_object_map.term, result_predicate_object_map.language)
-                elif result_predicate_object_map.object_parent_triples_map is not None:
-                    if predicate_map.value not in join_predicate:
-                        join_predicate[predicate_map.value] = {"predicate": predicate_map,
-                                                               "childs": [str(result_predicate_object_map.child_value)],
-                                                               "parents": [
-                                                                   str(result_predicate_object_map.parent_value)],
-                                                               "triples_map": str(
-                                                                   result_predicate_object_map.object_parent_triples_map)}
-                    else:
-                        join_predicate[predicate_map.value]["childs"].append(
-                            str(result_predicate_object_map.child_value))
-                        join_predicate[predicate_map.value]["parents"].append(
-                            str(result_predicate_object_map.parent_value))
-                    join = False
-                elif result_predicate_object_map.object_constant_shortcut is not None:
-                    object_map = tm.ObjectMap("constant shortcut",
-                                              str(result_predicate_object_map.object_constant_shortcut),
-                                              str(result_predicate_object_map.object_datatype), "None", "None",
-                                              result_predicate_object_map.term, result_predicate_object_map.language)
-                else:
-                    object_map = tm.ObjectMap("None", "None", "None", "None", "None", "None", "None")
-                if join:
-                    predicate_object_maps_list += [
-                        tm.PredicateObjectMap(predicate_map, object_map, predicate_object_graph)]
-                join = True
-            if join_predicate:
-                for jp in join_predicate.keys():
-                    object_map = tm.ObjectMap("parent triples map", join_predicate[jp]["triples_map"],
-                                              str(result_predicate_object_map.object_datatype),
-                                              join_predicate[jp]["childs"], join_predicate[jp]["parents"],
-                                              result_predicate_object_map.term, result_predicate_object_map.language)
-                    predicate_object_maps_list += [
-                        tm.PredicateObjectMap(join_predicate[jp]["predicate"], object_map, predicate_object_graph)]
-
-            current_triples_map = tm.TriplesMap(str(result_triples_map.triples_map_id),
-                                                str(result_triples_map.data_source), subject_map,
-                                                predicate_object_maps_list, ref_form=str(result_triples_map.ref_form),
-                                                iterator=str(result_triples_map.iterator),
-                                                tablename=str(result_triples_map.tablename),
-                                                query=str(result_triples_map.query))
-            triples_map_list += [current_triples_map]
-
-        else:
-            for triples_map in triples_map_list:
-                if str(triples_map.triples_map_id) == str(result_triples_map.triples_map_id):
-                    if result_triples_map.rdf_class not in triples_map.subject_map.rdf_class:
-                        triples_map.subject_map.rdf_class.append(result_triples_map.rdf_class)
-                    if result_triples_map.graph not in triples_map.subject_map.graph:
-                        triples_map.graph.append(result_triples_map.graph)
-    
-    return triples_map_list
-'''
-
 
 def _transform_mappings_into_dataframe(mapping_query_results):
     '''
@@ -461,6 +323,9 @@ def _transform_mappings_into_dataframe(mapping_query_results):
 
     for mapping_rule in mapping_query_results:
         _append_mapping_rule(mappings_df, mapping_rule)
+
+    # Make sure there are no duplicated mapping rules (DISTINCT in SPARQL query should already ensure this)
+    mappings_df.drop_duplicates(inplace=True)
 
     return mappings_df
 
