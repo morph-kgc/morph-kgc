@@ -1,4 +1,4 @@
-import argparse, os, re, logging, sys
+import argparse, os, re, logging
 import multiprocessing as mp
 from configparser import ConfigParser, ExtendedInterpolation
 
@@ -127,7 +127,7 @@ def parse_arguments():
     parser.add_argument('-r', '--remove_duplicates', default='yes', type=str,
                         choices=['yes', 'no', 'on', 'off', 'true', 'false', '0', '1'],
                         help='whether to remove duplicate triples in the results')
-    parser.add_argument('-g', '--group_mappings', nargs='?', default='', const='sp',
+    parser.add_argument('-g', '--mapping_groups', nargs='?', default='', const='sp',
                         choices=['s', 'p', 'sp'],
                         help='grouping criteria for mappings. The following criteria and its combinations are '
                              'possible: s: subject, p: predicate, g: named graph')
@@ -162,12 +162,12 @@ def validate_config(config):
             logging.error(error_msg)
             raise ValueError(error_msg)
 
-    if config.has_option('CONFIGURATION', 'group_mappings'):
-        group_mappings = config.get('CONFIGURATION', 'group_mappings')
-        group_mappings = str(group_mappings).lower().strip()
+    if config.has_option('CONFIGURATION', 'mapping_groups'):
+        mapping_groups = config.get('CONFIGURATION', 'mapping_groups')
+        mapping_groups = str(mapping_groups).lower().strip()
         valid_options = ['', 's', 'p', 'sp']
-        if group_mappings not in valid_options:
-            error_msg = 'Option group_mappings of CONFIGURATION section in the configuration file ' \
+        if mapping_groups not in valid_options:
+            error_msg = 'Option mapping_groups of CONFIGURATION section in the configuration file ' \
                         'must be in: ' + str(valid_options)
             raise ValueError(error_msg)
 
@@ -220,8 +220,8 @@ def complete_config_file_with_args(config, args):
         config.set('CONFIGURATION', 'all_in_one_file', args.all_in_one_file)
     if not config.has_option('CONFIGURATION', 'remove_duplicates'):
         config.set('CONFIGURATION', 'remove_duplicates', str(args.remove_duplicates))
-    if not config.has_option('CONFIGURATION', 'group_mappings'):
-        config.set('CONFIGURATION', 'group_mappings', args.group_mappings)
+    if not config.has_option('CONFIGURATION', 'mapping_groups'):
+        config.set('CONFIGURATION', 'mapping_groups', args.mapping_groups)
     if not config.has_option('CONFIGURATION', 'number_of_processes'):
         config.set('CONFIGURATION', 'number_of_processes', str(args.number_of_processes))
     if not config.has_option('CONFIGURATION', 'chunksize'):
