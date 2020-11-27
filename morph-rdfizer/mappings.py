@@ -317,8 +317,11 @@ def _generate_mapping_groups(mappings_df, mapping_groups):
                 root_last_group = mapping_rule['predicate_invariable_part']
                 mappings_df.at[i, 'predicate_group'] = str(num_group)
 
-    mappings_df['mapping_group'] = mappings_df['subject_group'] + '-' + \
-                                   mappings_df['predicate_group']
+    ''' if subject and predicate are grouping criteria separate then with - '''
+    if 's' in mapping_groups and 'p' in mapping_groups:
+        mappings_df['mapping_group'] = mappings_df['subject_group'] + '-' + mappings_df['predicate_group']
+    else:
+        mappings_df['mapping_group'] = mappings_df['subject_group'] + mappings_df['predicate_group']
 
     logging.info(str(len(set(mappings_df['mapping_group']))) + ' different mapping groups were generated.')
 
