@@ -1,17 +1,20 @@
 import rdflib, logging
 import pandas as pd
 
-
 mappings_dataframe_columns = [
-        'triples_map_id', 'data_source', 'ref_form', 'iterator', 'tablename', 'query', 'jdbcDSN', 'jdbcDriver', 'user',
-        'password', 'subject_template', 'subject_reference', 'subject_constant', 'subject_rdf_class',
-        'subject_termtype', 'graph', 'predicate_constant', 'predicate_template', 'predicate_reference',
-        'predicate_constant_shortcut', 'object_constant', 'object_template', 'object_reference', 'object_termtype',
-        'object_datatype', 'object_language', 'object_parent_triples_map', 'join_condition', 'child_value',
-        'parent_value', 'object_constant_shortcut', 'predicate_object_graph'
-    ]
+    'triples_map_id', 'data_source', 'ref_form', 'iterator', 'tablename', 'query', 'jdbcDSN', 'jdbcDriver', 'user',
+    'password', 'subject_template', 'subject_reference', 'subject_constant', 'subject_constant_shortcut',
+    'subject_rdf_class', 'subject_termtype', 'subject_graph', 'predicate_constant', 'predicate_template',
+    'predicate_reference', 'predicate_constant_shortcut', 'object_constant', 'object_template', 'object_reference',
+    'object_termtype', 'object_datatype', 'object_language', 'object_parent_triples_map', 'join_condition',
+    'child_value', 'parent_value', 'object_constant_shortcut', 'predicate_object_graph'
+]
 
-
+"""This query has been reused from SDM-RDFizer (https://github.com/SDM-TIB/SDM-RDFizer). SDM-RDFizer has been developed
+by members of the Scientific Data Management Group at TIB. Its development has been coordinated and supervised by 
+Maria-Esther Vidal. The implementation has been done by Enrique Iglesias and Guillermo Betancourt under the 
+supervision of David Chaves-Fraga, Samaneh Jozashoori, and Kemele Endris.
+It has been partially modified by the Ontology Engineering Group (OEG) from Universidad Politécnica de Madrid (UPM)."""
 MAPPING_PARSING_QUERY = """
     prefix rr: <http://www.w3.org/ns/r2rml#> 
     prefix rml: <http://semweb.mmlab.be/ns/rml#> 
@@ -21,7 +24,8 @@ MAPPING_PARSING_QUERY = """
     SELECT DISTINCT 
         ?triples_map_id ?data_source ?ref_form ?iterator ?tablename ?query
         ?jdbcDSN ?jdbcDriver ?user ?password
-        ?subject_template ?subject_reference ?subject_constant ?subject_rdf_class ?subject_termtype ?graph
+        ?subject_template ?subject_reference ?subject_constant ?subject_constant_shortcut
+        ?subject_rdf_class ?subject_termtype ?subject_graph
         ?predicate_constant ?predicate_template ?predicate_reference ?predicate_constant_shortcut
         ?object_constant ?object_template ?object_reference ?object_termtype ?object_datatype ?object_language
         ?object_parent_triples_map ?join_condition ?child_value ?parent_value ?object_constant_shortcut
@@ -43,21 +47,25 @@ MAPPING_PARSING_QUERY = """
         }
 
 # Subject -------------------------------------------------------------------------
-        ?triples_map_id rr:subjectMap ?_subject_map .
-        OPTIONAL { ?_subject_map rr:template ?subject_template . }
-        OPTIONAL { ?_subject_map rml:reference ?subject_reference . }
-        OPTIONAL { ?_subject_map rr:constant ?subject_constant . }
-        OPTIONAL { ?_subject_map rr:class ?subject_rdf_class . }
-        OPTIONAL { ?_subject_map rr:termType ?subject_termtype . }
-        OPTIONAL { ?_subject_map rr:graph ?graph . }
         OPTIONAL {
+            ?triples_map_id rr:subjectMap ?_subject_map .
+            OPTIONAL { ?_subject_map rr:template ?subject_template . }
+            OPTIONAL { ?_subject_map rml:reference ?subject_reference . }
+            OPTIONAL { ?_subject_map rr:constant ?subject_constant . }
+            OPTIONAL { ?_subject_map rr:class ?subject_rdf_class . }
+            OPTIONAL { ?_subject_map rr:termType ?subject_termtype . }
+            OPTIONAL { ?_subject_map rr:graph ?subject_graph . }
+            OPTIONAL {
             ?_subject_map rr:graphMap ?_graph_structure .
             ?_graph_structure rr:constant ?graph .
+            }
+            OPTIONAL {
+                ?_subject_map rr:graphMap ?_graph_structure .
+                ?_graph_structure rr:template ?graph .
+            }
         }
-        OPTIONAL {
-            ?_subject_map rr:graphMap ?_graph_structure .
-            ?_graph_structure rr:template ?graph .
-        }
+        
+        OPTIONAL { ?triples_map_id rr:subject ?subject_constant_shortcut . }
 
 # Predicate -----------------------------------------------------------------------
         OPTIONAL {
@@ -176,9 +184,10 @@ def _append_mapping_rule(mappings_df, mapping_rule):
     mappings_df.at[i, 'subject_template'] = mapping_rule.subject_template
     mappings_df.at[i, 'subject_reference'] = mapping_rule.subject_reference
     mappings_df.at[i, 'subject_constant'] = mapping_rule.subject_constant
+    mappings_df.at[i, 'subject_constant_shortcut'] = mapping_rule.subject_constant_shortcut
     mappings_df.at[i, 'subject_rdf_class'] = mapping_rule.subject_rdf_class
     mappings_df.at[i, 'subject_termtype'] = mapping_rule.subject_termtype
-    mappings_df.at[i, 'graph'] = mapping_rule.graph
+    mappings_df.at[i, 'subject_graph'] = mapping_rule.subject_graph
     mappings_df.at[i, 'predicate_constant'] = mapping_rule.predicate_constant
     mappings_df.at[i, 'predicate_template'] = mapping_rule.predicate_template
     mappings_df.at[i, 'predicate_reference'] = mapping_rule.predicate_reference
@@ -197,15 +206,135 @@ def _append_mapping_rule(mappings_df, mapping_rule):
     mappings_df.at[i, 'predicate_object_graph'] = mapping_rule.predicate_object_graph
 
 
+def _remove_duplicated_mapping_rules(mappings_df):
+    '''ensure there are no duplicate rules'''
+
+    num_mapping_rules = len(mappings_df)
+    mappings_df.drop_duplicates(inplace=True)
+    if len(mappings_df) < num_mapping_rules:
+        logging.warning('Duplicated mapping rules were found. Ignoring duplicated mapping rules.')
+
+    return mappings_df
+
+
+def _validate_mapping_groups(mappings_df, mapping_groups, source_name):
+    if 's' in mapping_groups:
+        '''
+        Subject is used as grouping criteria. 
+        If there is any subject that is a reference that means it is not a template nor a constant, and it cannot
+        be used as grouping criteria.        
+        '''
+        if mappings_df['subject_reference'].notna().any():
+            raise Exception('Invalid mapping groups criteria ' + mapping_groups + ': mappings cannot be grouped by '
+                                                                                  'subject because mappings of source ' + source_name + ' contain subject terms that are '
+                                                                                                                                        'rr:column or rml:reference.')
+    if 'p' in mapping_groups:
+        '''
+        Predicate is used as grouping criteria. 
+        If there is any predicate that is a reference that means it is not a template nor a constant, and it cannot
+        be used as grouping criteria.
+        '''
+        if mappings_df['subject_reference'].notna().any():
+            raise Exception('Invalid mapping groups criteria ' + mapping_groups + ': mappings cannot be grouped by '
+                                                                                  'predicate because mappings of source ' + source_name + ' contain predicate terms that are '
+                                                                                                                                          'rr:column or rml:reference.')
+
+
+def _get_invariable_part_of_template(template):
+    zero_width_space = '\u200B'
+    template_for_splitting = template.replace('\{', zero_width_space)
+    if '{' in template_for_splitting:
+        invariable_part_of_template = template_for_splitting.split('{')[0]
+        invariable_part_of_template = invariable_part_of_template.replace(zero_width_space, '\{')
+    else:
+        logging.error('Invalid string template ' + template + '. No pairs of unescaped curly braces were found.')
+        raise
+
+    return invariable_part_of_template
+
+
+def _get_mapping_groups_invariable_parts(mappings_df, mapping_groups):
+    mappings_df['subject_invariable_part'] = ''
+    mappings_df['predicate_invariable_part'] = ''
+
+    for i, mapping_rule in mappings_df.iterrows():
+        if 's' in mapping_groups:
+            if mapping_rule['subject_template']:
+                mappings_df.at[i, 'subject_invariable_part'] = \
+                    _get_invariable_part_of_template(mapping_rule['subject_template'])
+            elif mapping_rule['subject_constant']:
+                mappings_df.at[i, 'subject_invariable_part'] = mapping_rule['subject_constant']
+            elif mapping_rule['subject_constant_shortcut']:
+                mappings_df.at[i, 'subject_invariable_part'] = mapping_rule['subject_constant_shortcut']
+            else:
+                logging.error('A valid subject term could not be found.')
+                raise
+        if 'p' in mapping_groups:
+            if mapping_rule['predicate_constant']:
+                mappings_df.at[i, 'predicate_invariable_part'] = mapping_rule['predicate_constant']
+            elif mapping_rule['predicate_constant_shortcut']:
+                mappings_df.at[i, 'predicate_invariable_part'] = mapping_rule['predicate_constant_shortcut']
+            elif mapping_rule['predicate_template']:
+                mappings_df.at[i, 'predicate_invariable_part'] = \
+                    _get_invariable_part_of_template(mapping_rule['predicate_template'])
+            else:
+                logging.error('A valid predicate term could not be found.')
+                raise
+
+    return mappings_df
+
+
+def _generate_mapping_groups(mappings_df, mapping_groups):
+    mappings_df = _get_mapping_groups_invariable_parts(mappings_df, mapping_groups)
+    mappings_df['subject_group'] = ''
+    mappings_df['predicate_group'] = ''
+
+    '''
+        First generate groups for subject. Then generate the groups for predicates. Finally merge both to
+        get the final groups.
+    '''
+
+    if 's' in mapping_groups:
+        mappings_df.sort_values(by='subject_invariable_part', inplace=True, ascending=True)
+        num_group = 0
+        root_last_group = 'zzyy xxww\u200B'
+        for i, mapping_rule in mappings_df.iterrows():
+            if mapping_rule['subject_invariable_part'].startswith(root_last_group):
+                mappings_df.at[i, 'subject_group'] = str(num_group)
+            else:
+                num_group = num_group + 1
+                root_last_group = mapping_rule['subject_invariable_part']
+                mappings_df.at[i, 'subject_group'] = str(num_group)
+    if 'p' in mapping_groups:
+        mappings_df.sort_values(by='predicate_invariable_part', inplace=True, ascending=True)
+        num_group = 0
+        root_last_group = 'zzyy xxww\u200B'
+        for i, mapping_rule in mappings_df.iterrows():
+            if mapping_rule['predicate_invariable_part'].startswith(root_last_group):
+                mappings_df.at[i, 'predicate_group'] = str(num_group)
+            else:
+                num_group = num_group + 1
+                root_last_group = mapping_rule['predicate_invariable_part']
+                mappings_df.at[i, 'predicate_group'] = str(num_group)
+
+    mappings_df['mapping_group'] = mappings_df['subject_group'] + '-' + \
+                                   mappings_df['predicate_group']
+
+    logging.info(str(len(set(mappings_df['mapping_group']))) + ' different mapping groups were generated.')
+
+    return mappings_df
+
+
 def parse_mappings(data_sources, configuration):
     mappings_df = pd.DataFrame(columns=mappings_dataframe_columns)
 
     for source_name, source_options in data_sources.items():
         source_mappings_df = _parse_mapping_file(source_options['mapping_file'])
+        '''TO DO: validate mapping rules'''
+        _validate_mapping_groups(source_mappings_df, configuration['mapping_groups'], source_name)
         mappings_df = pd.concat([mappings_df, source_mappings_df])
 
-    '''ensure there are no duplicate rules'''
-    num_mapping_rules = len(mappings_df)
-    mappings_df.drop_duplicates(inplace=True)
-    if len(mappings_df) < num_mapping_rules:
-        logging.warning('Duplicated mapping rules were found.')
+    mappings_df = _remove_duplicated_mapping_rules(mappings_df)
+    mappings_df = _generate_mapping_groups(mappings_df, configuration['mapping_groups'])
+
+    return mappings_df
