@@ -247,8 +247,7 @@ def _get_invariable_part_of_template(template):
         invariable_part_of_template = template_for_splitting.split('{')[0]
         invariable_part_of_template = invariable_part_of_template.replace(zero_width_space, '\{')
     else:
-        logging.error('Invalid string template ' + template + '. No pairs of unescaped curly braces were found.')
-        raise
+        raise Exception('Invalid string template ' + template + '. No pairs of unescaped curly braces were found.')
 
     return invariable_part_of_template
 
@@ -267,8 +266,9 @@ def _get_mapping_groups_invariable_parts(mappings_df, mapping_groups):
             elif mapping_rule['subject_constant_shortcut']:
                 mappings_df.at[i, 'subject_invariable_part'] = mapping_rule['subject_constant_shortcut']
             else:
-                logging.error('A valid subject term could not be found.')
-                raise
+                raise Exception('An invalid subject term was found at triples map ' + mapping_rule['triples_map_id'] +
+                                '. Subjects terms must be constants or templates in order to generate valid mapping '
+                                'groups by subject.')
         if 'p' in mapping_groups:
             if mapping_rule['predicate_constant']:
                 mappings_df.at[i, 'predicate_invariable_part'] = mapping_rule['predicate_constant']
@@ -278,8 +278,9 @@ def _get_mapping_groups_invariable_parts(mappings_df, mapping_groups):
                 mappings_df.at[i, 'predicate_invariable_part'] = \
                     _get_invariable_part_of_template(mapping_rule['predicate_template'])
             else:
-                logging.error('A valid predicate term could not be found.')
-                raise
+                raise Exception('An invalid predicate term was found at triples map ' + mapping_rule['triples_map_id'] +
+                                '. Predicate terms must be constants or templates in order to generate valid mapping '
+                                'groups by predicate.')
 
     return mappings_df
 
