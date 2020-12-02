@@ -1,3 +1,12 @@
+""" Morph-RDFizer """
+
+__version__ = "0.1"
+__copyright__ = "Copyright (C) 2020 Julián Arenas Guerrero"
+__credits__ = ["Julián Arenas-Guerrero"]
+__maintainer__ = "Julián Arenas-Guerrero"
+__email__ = "julian.arenas.guerrero@upm.es"
+
+
 import logging
 from mappings import parse_mappings
 from args_parsing import parse_config
