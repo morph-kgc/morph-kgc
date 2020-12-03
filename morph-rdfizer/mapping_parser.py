@@ -217,27 +217,27 @@ def _remove_duplicated_mapping_rules(mappings_df):
     return mappings_df
 
 
-def _validate_mapping_groups(mappings_df, mapping_groups, source_name):
-    if 's' in mapping_groups:
+def _validate_mapping_partitions(mappings_df, mapping_partitions, source_name):
+    if 's' in mapping_partitions:
         '''
-        Subject is used as grouping criteria. 
+        Subject is used as partitioning criteria. 
         If there is any subject that is a reference that means it is not a template nor a constant, and it cannot
-        be used as grouping criteria.        
+        be used as partitioning criteria.        
         '''
         if mappings_df['subject_reference'].notna().any():
-            raise Exception('Invalid mapping groups criteria ' + mapping_groups + ': mappings cannot be grouped by '
-                                                                                  'subject because mappings of source ' + source_name + ' contain subject terms that are '
-                                                                                                                                        'rr:column or rml:reference.')
-    if 'p' in mapping_groups:
+            raise Exception('Invalid mapping partitions criteria ' + mapping_partitions + ': mappings cannot be '
+                            'partitioned by subject because mappings of source ' + source_name +
+                            ' contain subject terms that are rr:column or rml:reference.')
+    if 'p' in mapping_partitions:
         '''
-        Predicate is used as grouping criteria. 
+        Predicate is used as partitioning criteria. 
         If there is any predicate that is a reference that means it is not a template nor a constant, and it cannot
-        be used as grouping criteria.
+        be used as partitioning criteria.
         '''
         if mappings_df['subject_reference'].notna().any():
-            raise Exception('Invalid mapping groups criteria ' + mapping_groups + ': mappings cannot be grouped by '
-                                                                                  'predicate because mappings of source ' + source_name + ' contain predicate terms that are '
-                                                                                                                                          'rr:column or rml:reference.')
+            raise Exception('Invalid mapping partitions criteria ' + mapping_partitions +
+                            ': mappings cannot be partitioned by predicate because mappings of source ' + source_name +
+                            ' contain predicate terms that are rr:column or rml:reference.')
 
 
 def _get_invariable_part_of_template(template):
@@ -252,12 +252,12 @@ def _get_invariable_part_of_template(template):
     return invariable_part_of_template
 
 
-def _get_mapping_groups_invariable_parts(mappings_df, mapping_groups):
+def _get_mapping_partitions_invariable_parts(mappings_df, mapping_partitions):
     mappings_df['subject_invariable_part'] = ''
     mappings_df['predicate_invariable_part'] = ''
 
     for i, mapping_rule in mappings_df.iterrows():
-        if 's' in mapping_groups:
+        if 's' in mapping_partitions:
             if mapping_rule['subject_template']:
                 mappings_df.at[i, 'subject_invariable_part'] = \
                     _get_invariable_part_of_template(mapping_rule['subject_template'])
@@ -268,8 +268,8 @@ def _get_mapping_groups_invariable_parts(mappings_df, mapping_groups):
             else:
                 raise Exception('An invalid subject term was found at triples map ' + mapping_rule['triples_map_id'] +
                                 '. Subjects terms must be constants or templates in order to generate valid mapping '
-                                'groups by subject.')
-        if 'p' in mapping_groups:
+                                'partitions by subject.')
+        if 'p' in mapping_partitions:
             if mapping_rule['predicate_constant']:
                 mappings_df.at[i, 'predicate_invariable_part'] = mapping_rule['predicate_constant']
             elif mapping_rule['predicate_constant_shortcut']:
@@ -280,51 +280,51 @@ def _get_mapping_groups_invariable_parts(mappings_df, mapping_groups):
             else:
                 raise Exception('An invalid predicate term was found at triples map ' + mapping_rule['triples_map_id'] +
                                 '. Predicate terms must be constants or templates in order to generate valid mapping '
-                                'groups by predicate.')
+                                'partitions by predicate.')
 
     return mappings_df
 
 
-def _generate_mapping_groups(mappings_df, mapping_groups):
-    mappings_df = _get_mapping_groups_invariable_parts(mappings_df, mapping_groups)
-    mappings_df['subject_group'] = ''
-    mappings_df['predicate_group'] = ''
+def _generate_mapping_partitions(mappings_df, mapping_partitions):
+    mappings_df = _get_mapping_partitions_invariable_parts(mappings_df, mapping_partitions)
+    mappings_df['subject_partition'] = ''
+    mappings_df['predicate_partition'] = ''
 
     '''
-        First generate groups for subject. Then generate the groups for predicates. Finally merge both to
-        get the final groups.
+        First generate partitions for subject. Then generate the partitions for predicates. Finally merge both to
+        get the final partitions.
     '''
 
-    if 's' in mapping_groups:
+    if 's' in mapping_partitions:
         mappings_df.sort_values(by='subject_invariable_part', inplace=True, ascending=True)
-        num_group = 0
-        root_last_group = 'zzyy xxww\u200B'
+        num_partition = 0
+        root_last_partition = 'zzyy xxww\u200B'
         for i, mapping_rule in mappings_df.iterrows():
-            if mapping_rule['subject_invariable_part'].startswith(root_last_group):
-                mappings_df.at[i, 'subject_group'] = str(num_group)
+            if mapping_rule['subject_invariable_part'].startswith(root_last_partition):
+                mappings_df.at[i, 'subject_partition'] = str(num_partition)
             else:
-                num_group = num_group + 1
-                root_last_group = mapping_rule['subject_invariable_part']
-                mappings_df.at[i, 'subject_group'] = str(num_group)
-    if 'p' in mapping_groups:
+                num_partition = num_partition + 1
+                root_last_partition = mapping_rule['subject_invariable_part']
+                mappings_df.at[i, 'subject_partition'] = str(num_partition)
+    if 'p' in mapping_partitions:
         mappings_df.sort_values(by='predicate_invariable_part', inplace=True, ascending=True)
-        num_group = 0
-        root_last_group = 'zzyy xxww\u200B'
+        num_partition = 0
+        root_last_partition = 'zzyy xxww\u200B'
         for i, mapping_rule in mappings_df.iterrows():
-            if mapping_rule['predicate_invariable_part'].startswith(root_last_group):
-                mappings_df.at[i, 'predicate_group'] = str(num_group)
+            if mapping_rule['predicate_invariable_part'].startswith(root_last_partition):
+                mappings_df.at[i, 'predicate_partition'] = str(num_partition)
             else:
-                num_group = num_group + 1
-                root_last_group = mapping_rule['predicate_invariable_part']
-                mappings_df.at[i, 'predicate_group'] = str(num_group)
+                num_partition = num_partition + 1
+                root_last_partition = mapping_rule['predicate_invariable_part']
+                mappings_df.at[i, 'predicate_partition'] = str(num_partition)
 
-    ''' if subject and predicate are grouping criteria separate then with - '''
-    if 's' in mapping_groups and 'p' in mapping_groups:
-        mappings_df['mapping_group'] = mappings_df['subject_group'] + '-' + mappings_df['predicate_group']
+    ''' if subject and predicate are partitioning criteria separate then with - '''
+    if 's' in mapping_partitions and 'p' in mapping_partitions:
+        mappings_df['mapping_partition'] = mappings_df['subject_partition'] + '-' + mappings_df['predicate_partition']
     else:
-        mappings_df['mapping_group'] = mappings_df['subject_group'] + mappings_df['predicate_group']
+        mappings_df['mapping_partition'] = mappings_df['subject_partition'] + mappings_df['predicate_partition']
 
-    logging.info(str(len(set(mappings_df['mapping_group']))) + ' different mapping groups were generated.')
+    logging.info(str(len(set(mappings_df['mapping_partition']))) + ' different mapping partitions were generated.')
 
     return mappings_df
 
@@ -335,11 +335,11 @@ def parse_mappings(data_sources, configuration):
     for source_name, source_options in data_sources.items():
         source_mappings_df = _parse_mapping_file(source_options['mapping_file'])
         '''TO DO: validate mapping rules'''
-        _validate_mapping_groups(source_mappings_df, configuration['mapping_groups'], source_name)
+        _validate_mapping_partitions(source_mappings_df, configuration['mapping_partitions'], source_name)
         logging.info('Mappings for data source ' + str(source_name) + ' successfully parsed.')
         mappings_df = pd.concat([mappings_df, source_mappings_df])
 
     mappings_df = _remove_duplicated_mapping_rules(mappings_df)
-    mappings_df = _generate_mapping_groups(mappings_df, configuration['mapping_groups'])
+    mappings_df = _generate_mapping_partitions(mappings_df, configuration['mapping_partitions'])
 
     return mappings_df

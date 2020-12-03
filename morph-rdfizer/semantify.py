@@ -11,6 +11,7 @@ import logging
 from mapping_parser import parse_mappings
 from args_parser import parse_config
 from configuration import configure_logger, get_configuration_and_sources
+from materializer import materialize
 
 
 if __name__ == "__main__":
@@ -21,3 +22,5 @@ if __name__ == "__main__":
     configuration, data_sources = get_configuration_and_sources(config)
 
     mappings_df = parse_mappings(data_sources, configuration)
+
+    materialize(data_sources, mappings_df)

@@ -127,9 +127,9 @@ def _parse_arguments():
     parser.add_argument('-r', '--remove_duplicates', default='yes', type=str,
                         choices=['yes', 'no', 'on', 'off', 'true', 'false', '0', '1'],
                         help='whether to remove duplicate triples in the results')
-    parser.add_argument('-g', '--mapping_groups', nargs='?', default='', const='sp',
+    parser.add_argument('-g', '--mapping_partitions', nargs='?', default='', const='sp',
                         choices=['s', 'p', 'sp'],
-                        help='grouping criteria for mappings. The following criteria and its combinations are '
+                        help='partitioning criteria for mappings. The following criteria and its combinations are '
                              'possible: s: subject, p: predicate, g: named graph')
     parser.add_argument('-n', '--number_of_processes', default=1, type=_process_number,
                         help='number of parallel processes. 0 to set it to the number of CPUs in the system.')
@@ -162,12 +162,12 @@ def _validate_config(config):
             logging.error(error_msg)
             raise ValueError(error_msg)
 
-    if config.has_option('CONFIGURATION', 'mapping_groups'):
-        mapping_groups = config.get('CONFIGURATION', 'mapping_groups')
-        mapping_groups = str(mapping_groups).lower().strip()
+    if config.has_option('CONFIGURATION', 'mapping_partitions'):
+        mapping_partitions = config.get('CONFIGURATION', 'mapping_partitions')
+        mapping_partitions = str(mapping_partitions).lower().strip()
         valid_options = ['', 's', 'p', 'sp']
-        if mapping_groups not in valid_options:
-            error_msg = 'Option mapping_groups of CONFIGURATION section in the configuration file ' \
+        if mapping_partitions not in valid_options:
+            error_msg = 'Option mapping_partitions of CONFIGURATION section in the configuration file ' \
                         'must be in: ' + str(valid_options)
             raise ValueError(error_msg)
 
@@ -189,7 +189,7 @@ def _validate_config(config):
             - Validate mappings file paths
             - validate mapping are correct
             - validate (or infer) mapping language
-            - validate mapping groups criteria (according to mapping group assumption)
+            - validate mapping partitions criteria (according to mapping partition assumption)
             - validate mappings have no errors
             - check there are no missing options for the sources
     '''
@@ -220,8 +220,8 @@ def _complete_config_file_with_args(config, args):
         config.set('CONFIGURATION', 'all_in_one_file', args.all_in_one_file)
     if not config.has_option('CONFIGURATION', 'remove_duplicates'):
         config.set('CONFIGURATION', 'remove_duplicates', str(args.remove_duplicates))
-    if not config.has_option('CONFIGURATION', 'mapping_groups'):
-        config.set('CONFIGURATION', 'mapping_groups', args.mapping_groups)
+    if not config.has_option('CONFIGURATION', 'mapping_partitions'):
+        config.set('CONFIGURATION', 'mapping_partitions', args.mapping_partitions)
     if not config.has_option('CONFIGURATION', 'number_of_processes'):
         config.set('CONFIGURATION', 'number_of_processes', str(args.number_of_processes))
     if not config.has_option('CONFIGURATION', 'chunksize'):
