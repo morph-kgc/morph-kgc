@@ -2,8 +2,8 @@ import rdflib, logging
 import pandas as pd
 
 mappings_dataframe_columns = [
-    'triples_map_id', 'data_source', 'ref_form', 'iterator', 'tablename', 'query', 'jdbcDSN', 'jdbcDriver', 'user',
-    'password', 'subject_template', 'subject_reference', 'subject_constant',
+    'triples_map_id', 'data_source', 'ref_form', 'iterator', 'tablename', 'query',
+    'subject_template', 'subject_reference', 'subject_constant',
     'subject_rdf_class', 'subject_termtype', 'subject_graph', 'predicate_constant', 'predicate_template',
     'predicate_reference', 'object_constant', 'object_template', 'object_reference',
     'object_termtype', 'object_datatype', 'object_language', 'object_parent_triples_map', 'join_condition',
@@ -23,7 +23,6 @@ MAPPING_PARSING_QUERY = """
 
     SELECT DISTINCT 
         ?triples_map_id ?data_source ?ref_form ?iterator ?tablename ?query
-        ?jdbcDSN ?jdbcDriver ?user ?password
         ?subject_template ?subject_reference ?subject_constant ?subject_constant_shortcut
         ?subject_rdf_class ?subject_termtype ?subject_graph
         ?predicate_constant ?predicate_template ?predicate_reference ?predicate_constant_shortcut
@@ -38,13 +37,6 @@ MAPPING_PARSING_QUERY = """
         OPTIONAL { ?_source rml:iterator ?iterator . }
         OPTIONAL { ?_source rr:tableName ?tablename . }
         OPTIONAL { ?_source rml:query ?query . }
-        OPTIONAL {
-            ?_source a d2rq:Database ;
-            d2rq:jdbcDSN ?jdbcDSN ;
-            d2rq:jdbcDriver ?jdbcDriver ;
-            d2rq:username ?user ;
-            d2rq:password ?password .
-        }
 
 # Subject -------------------------------------------------------------------------
         OPTIONAL {
@@ -135,6 +127,22 @@ MAPPING_PARSING_QUERY = """
 """
 
 
+SOURCE_PARSING_QUERY = """
+    prefix d2rq: <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#> 
+
+    SELECT DISTINCT ?_source ?jdbcDSN ?jdbcDriver ?user ?password
+    WHERE {
+        OPTIONAL {
+            ?_source a d2rq:Database ;
+            d2rq:jdbcDSN ?jdbcDSN ;
+            d2rq:jdbcDriver ?jdbcDriver ;
+            d2rq:username ?user ;
+            d2rq:password ?password .
+        }
+    }
+"""
+
+
 def _parse_mapping_file(mapping_file):
     mapping_graph = rdflib.Graph()
 
@@ -177,10 +185,6 @@ def _append_mapping_rule(mappings_df, mapping_rule):
     mappings_df.at[i, 'iterator'] = mapping_rule.iterator
     mappings_df.at[i, 'tablename'] = mapping_rule.tablename
     mappings_df.at[i, 'query'] = mapping_rule.query
-    mappings_df.at[i, 'jdbcDSN'] = mapping_rule.jdbcDSN
-    mappings_df.at[i, 'jdbcDriver'] = mapping_rule.jdbcDriver
-    mappings_df.at[i, 'user'] = mapping_rule.user
-    mappings_df.at[i, 'password'] = mapping_rule.password
     mappings_df.at[i, 'subject_template'] = mapping_rule.subject_template
     mappings_df.at[i, 'subject_reference'] = mapping_rule.subject_reference
     if mapping_rule.subject_constant:
