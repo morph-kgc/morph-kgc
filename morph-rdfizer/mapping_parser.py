@@ -336,6 +336,7 @@ def parse_mappings(data_sources, configuration):
         source_mappings_df = _parse_mapping_file(source_options['mapping_file'])
         '''TO DO: validate mapping rules'''
         _validate_mapping_groups(source_mappings_df, configuration['mapping_groups'], source_name)
+        logging.info('Mappings for data source ' + str(source_name) + ' successfully parsed.')
         mappings_df = pd.concat([mappings_df, source_mappings_df])
 
     mappings_df = _remove_duplicated_mapping_rules(mappings_df)

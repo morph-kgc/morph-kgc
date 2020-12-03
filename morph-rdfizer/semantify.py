@@ -8,8 +8,8 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 
 import logging
-from mappings import parse_mappings
-from args_parsing import parse_config
+from mapping_parser import parse_mappings
+from args_parser import parse_config
 from configuration import configure_logger, get_configuration_and_sources
 
 
