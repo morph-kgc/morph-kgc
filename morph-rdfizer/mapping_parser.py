@@ -324,6 +324,14 @@ def _generate_mapping_partitions(mappings_df, mapping_partitions):
     else:
         mappings_df['mapping_partition'] = mappings_df['subject_partition'] + mappings_df['predicate_partition']
 
+    '''' drop the auxiliary columns that are just used to get mapping_partition '''
+    mappings_df.drop([
+        'subject_partition',
+        'predicate_partition',
+        'subject_invariable_part',
+        'predicate_invariable_part'],
+        axis=1, inplace=True)
+
     logging.info(str(len(set(mappings_df['mapping_partition']))) + ' different mapping partitions were generated.')
 
     return mappings_df
