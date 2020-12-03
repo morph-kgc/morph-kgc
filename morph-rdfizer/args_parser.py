@@ -3,7 +3,7 @@ import multiprocessing as mp
 from configparser import ConfigParser, ExtendedInterpolation
 
 
-def dir_path(dir_path):
+def _dir_path(dir_path):
     """
     Checks that a directory exists. If the directory does not exist, create the directories in the path.
 
@@ -20,7 +20,7 @@ def dir_path(dir_path):
     return dir_path
 
 
-def file_path(file_path):
+def _file_path(file_path):
     """
     Checks that directories in a file path exist. If they do not exist, create the directories.
 
@@ -38,7 +38,7 @@ def file_path(file_path):
     return file_path
 
 
-def file_name(file_name):
+def _file_name(file_name):
     """
     Generates a valid file name.
 
@@ -55,7 +55,7 @@ def file_name(file_name):
     return file_name
 
 
-def existing_file_path(file_path):
+def _existing_file_path(file_path):
     """
     Checks if a file exists.
 
@@ -72,7 +72,7 @@ def existing_file_path(file_path):
     return file_path
 
 
-def process_number(number):
+def _process_number(number):
     """
     Generates a natural number from a given number. Number is converted to int.
     In case of been 0, the number of cores in the system is generated.
@@ -92,7 +92,7 @@ def process_number(number):
     return whole_number
 
 
-def natural_number_including_zero(number):
+def _natural_number_including_zero(number):
     """
     Generates a natural number (including zero) from a given number.
 
@@ -109,7 +109,7 @@ def natural_number_including_zero(number):
     return whole_number
 
 
-def parse_arguments():
+def _parse_arguments():
     parser = argparse.ArgumentParser(
         description='Generate a knowledge graph from heterogeneous data sources.',
         epilog='Transform your data into knowledge.',
@@ -117,7 +117,7 @@ def parse_arguments():
         argument_default=argparse.SUPPRESS
     )
 
-    parser.add_argument('-c', '--config', type=existing_file_path, required=True,
+    parser.add_argument('-c', '--config', type=_existing_file_path, required=True,
                         help='path to the configuration file')
     parser.add_argument('-o', '--output_dir', default='output', type=str,
                         help='path to the directory storing the results')
@@ -131,9 +131,9 @@ def parse_arguments():
                         choices=['s', 'p', 'sp'],
                         help='grouping criteria for mappings. The following criteria and its combinations are '
                              'possible: s: subject, p: predicate, g: named graph')
-    parser.add_argument('-n', '--number_of_processes', default=1, type=process_number,
+    parser.add_argument('-n', '--number_of_processes', default=1, type=_process_number,
                         help='number of parallel processes. 0 to set it to the number of CPUs in the system.')
-    parser.add_argument('-s', '--chunksize', default=0, type=natural_number_including_zero,
+    parser.add_argument('-s', '--chunksize', default=0, type=_natural_number_including_zero,
                         help='maximum number of rows of data processed at once by a process')
     parser.add_argument('-l', '--logs', nargs='?', const='', type=str,
                         help='file path to write logs to')
@@ -142,15 +142,15 @@ def parse_arguments():
     return parser.parse_args()
 
 
-def validate_config(config):
+def _validate_config(config):
 
     '''Validate options corresponding to the CONFIGURATION section of the configuration file'''
 
     if config.has_option('CONFIGURATION', 'output_dir'):
-        config.set('CONFIGURATION', 'output_dir', dir_path(config.get('CONFIGURATION', 'output_dir')))
+        config.set('CONFIGURATION', 'output_dir', _dir_path(config.get('CONFIGURATION', 'output_dir')))
 
     if config.has_option('CONFIGURATION', 'all_in_one_file'):
-        config.set('CONFIGURATION', 'output_dir', file_name(config.get('CONFIGURATION', 'all_in_one_file')))
+        config.set('CONFIGURATION', 'output_dir', _file_name(config.get('CONFIGURATION', 'all_in_one_file')))
 
     if config.has_option('CONFIGURATION', 'remove_duplicates'):
         remove_duplicates = config.get('CONFIGURATION', 'remove_duplicates')
@@ -173,14 +173,14 @@ def validate_config(config):
 
     if config.has_option('CONFIGURATION', 'number_of_processes'):
         config.set('CONFIGURATION', 'number_of_processes',
-                   str(process_number(config.get('CONFIGURATION', 'number_of_processes'))))
+                   str(_process_number(config.get('CONFIGURATION', 'number_of_processes'))))
 
     if config.has_option('CONFIGURATION', 'chunksize'):
         config.set('CONFIGURATION', 'chunksize',
-                   str(natural_number_including_zero(config.get('CONFIGURATION', 'chunksize'))))
+                   str(_natural_number_including_zero(config.get('CONFIGURATION', 'chunksize'))))
 
     if config.has_option('CONFIGURATION', 'logs'):
-        config.set('CONFIGURATION', 'logs', file_path(config.get('CONFIGURATION', 'logs')))
+        config.set('CONFIGURATION', 'logs', _file_path(config.get('CONFIGURATION', 'logs')))
 
     '''Validate options corresponding to the SOURCES sections of the configuration file'''
 
@@ -197,7 +197,7 @@ def validate_config(config):
     return config
 
 
-def complete_config_file_with_args(config, args):
+def _complete_config_file_with_args(config, args):
     """
     Completes missing options in the configuration file with the options provided via arguments.
     Options specified in the configuration file are prioritized, i.e., if the option is specified in
@@ -233,11 +233,11 @@ def complete_config_file_with_args(config, args):
 
 
 def parse_config():
-    args = parse_arguments()
+    args = _parse_arguments()
 
     config = ConfigParser(interpolation=ExtendedInterpolation())
     config.read(args.config)
-    config = complete_config_file_with_args(config, args)
-    config = validate_config(config)
+    config = _complete_config_file_with_args(config, args)
+    config = _validate_config(config)
 
     return config
