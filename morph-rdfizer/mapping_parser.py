@@ -3,11 +3,11 @@ import pandas as pd
 
 mappings_dataframe_columns = [
     'triples_map_id', 'data_source', 'ref_form', 'iterator', 'tablename', 'query', 'jdbcDSN', 'jdbcDriver', 'user',
-    'password', 'subject_template', 'subject_reference', 'subject_constant', 'subject_constant_shortcut',
+    'password', 'subject_template', 'subject_reference', 'subject_constant',
     'subject_rdf_class', 'subject_termtype', 'subject_graph', 'predicate_constant', 'predicate_template',
-    'predicate_reference', 'predicate_constant_shortcut', 'object_constant', 'object_template', 'object_reference',
+    'predicate_reference', 'object_constant', 'object_template', 'object_reference',
     'object_termtype', 'object_datatype', 'object_language', 'object_parent_triples_map', 'join_condition',
-    'child_value', 'parent_value', 'object_constant_shortcut', 'predicate_object_graph'
+    'child_value', 'parent_value', 'predicate_object_graph'
 ]
 
 """This query has been reused from SDM-RDFizer (https://github.com/SDM-TIB/SDM-RDFizer). SDM-RDFizer has been developed
@@ -183,16 +183,23 @@ def _append_mapping_rule(mappings_df, mapping_rule):
     mappings_df.at[i, 'password'] = mapping_rule.password
     mappings_df.at[i, 'subject_template'] = mapping_rule.subject_template
     mappings_df.at[i, 'subject_reference'] = mapping_rule.subject_reference
-    mappings_df.at[i, 'subject_constant'] = mapping_rule.subject_constant
-    mappings_df.at[i, 'subject_constant_shortcut'] = mapping_rule.subject_constant_shortcut
+    if mapping_rule.subject_constant:
+        mappings_df.at[i, 'subject_constant'] = mapping_rule.subject_constant
+    else:
+        mappings_df.at[i, 'subject_constant'] = mapping_rule.subject_constant_shortcut
     mappings_df.at[i, 'subject_rdf_class'] = mapping_rule.subject_rdf_class
     mappings_df.at[i, 'subject_termtype'] = mapping_rule.subject_termtype
     mappings_df.at[i, 'subject_graph'] = mapping_rule.subject_graph
-    mappings_df.at[i, 'predicate_constant'] = mapping_rule.predicate_constant
+    if mapping_rule.predicate_constant:
+        mappings_df.at[i, 'predicate_constant'] = mapping_rule.predicate_constant
+    else:
+        mappings_df.at[i, 'predicate_constant'] = mapping_rule.predicate_constant_shortcut
     mappings_df.at[i, 'predicate_template'] = mapping_rule.predicate_template
     mappings_df.at[i, 'predicate_reference'] = mapping_rule.predicate_reference
-    mappings_df.at[i, 'predicate_constant_shortcut'] = mapping_rule.predicate_constant_shortcut
-    mappings_df.at[i, 'object_constant'] = mapping_rule.object_constant
+    if mapping_rule.object_constant:
+        mappings_df.at[i, 'object_constant'] = mapping_rule.object_constant
+    else:
+        mappings_df.at[i, 'object_constant'] = mapping_rule.object_constant_shortcut
     mappings_df.at[i, 'object_template'] = mapping_rule.object_template
     mappings_df.at[i, 'object_reference'] = mapping_rule.object_reference
     mappings_df.at[i, 'object_termtype'] = mapping_rule.object_termtype
@@ -202,7 +209,6 @@ def _append_mapping_rule(mappings_df, mapping_rule):
     mappings_df.at[i, 'join_condition'] = mapping_rule.join_condition
     mappings_df.at[i, 'child_value'] = mapping_rule.child_value
     mappings_df.at[i, 'parent_value'] = mapping_rule.parent_value
-    mappings_df.at[i, 'object_constant_shortcut'] = mapping_rule.object_constant_shortcut
     mappings_df.at[i, 'predicate_object_graph'] = mapping_rule.predicate_object_graph
 
 
@@ -263,8 +269,6 @@ def _get_mapping_partitions_invariable_parts(mappings_df, mapping_partitions):
                     _get_invariable_part_of_template(mapping_rule['subject_template'])
             elif mapping_rule['subject_constant']:
                 mappings_df.at[i, 'subject_invariable_part'] = mapping_rule['subject_constant']
-            elif mapping_rule['subject_constant_shortcut']:
-                mappings_df.at[i, 'subject_invariable_part'] = mapping_rule['subject_constant_shortcut']
             else:
                 raise Exception('An invalid subject term was found at triples map ' + mapping_rule['triples_map_id'] +
                                 '. Subjects terms must be constants or templates in order to generate valid mapping '
@@ -272,8 +276,6 @@ def _get_mapping_partitions_invariable_parts(mappings_df, mapping_partitions):
         if 'p' in mapping_partitions:
             if mapping_rule['predicate_constant']:
                 mappings_df.at[i, 'predicate_invariable_part'] = mapping_rule['predicate_constant']
-            elif mapping_rule['predicate_constant_shortcut']:
-                mappings_df.at[i, 'predicate_invariable_part'] = mapping_rule['predicate_constant_shortcut']
             elif mapping_rule['predicate_template']:
                 mappings_df.at[i, 'predicate_invariable_part'] = \
                     _get_invariable_part_of_template(mapping_rule['predicate_template'])
@@ -332,7 +334,7 @@ def _generate_mapping_partitions(mappings_df, mapping_partitions):
         'predicate_invariable_part'],
         axis=1, inplace=True)
 
-    logging.info(str(len(set(mappings_df['mapping_partition']))) + ' different mapping partitions were generated.')
+    logging.info(str(len(set(mappings_df['mapping_partition']))) + ' mapping partitions were generated.')
 
     return mappings_df
 
