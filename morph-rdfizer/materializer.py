@@ -1,45 +1,58 @@
-import logging, re, mysql.connector
+import logging
 import pandas as pd
-
-
-def _get_references_in_template(template):
-    template = template.replace('\{', 'zwy\u200B').replace('\}', 'ywz\u200A')
-
-    references = re.findall('\{([^}]+)', template)
-    references = [reference.replace('zwy\u200B', '\{').replace('ywz\u200A', '\}') for reference in references]
-
-    return references
+import morph_utils
 
 
 def _get_references_in_mapping_rule(mapping_rule):
     references = []
     if mapping_rule['subject_template']:
-        references.extend(_get_references_in_template(str(mapping_rule['subject_template'])))
+        references.extend(morph_utils.get_references_in_template(str(mapping_rule['subject_template'])))
     elif mapping_rule['subject_reference']:
         references.append(str(mapping_rule['subject_reference']))
     if mapping_rule['predicate_template']:
-        references.extend(_get_references_in_template(str(mapping_rule['predicate_template'])))
+        references.extend(morph_utils.get_references_in_template(str(mapping_rule['predicate_template'])))
     elif mapping_rule['predicate_reference']:
         references.append(str(mapping_rule['predicate_reference']))
     if mapping_rule['object_template']:
-        references.extend(_get_references_in_template(str(mapping_rule['object_template'])))
+        references.extend(morph_utils.get_references_in_template(str(mapping_rule['object_template'])))
     elif mapping_rule['object_reference']:
         references.append(str(mapping_rule['object_reference']))
 
     return set(references)
 
 
+def _materialize_template(query_results_df, template):
+    references = morph_utils.get_references_in_template(str(template))
+    for reference in references:
+        splitted_template = template.split('{' + reference + '}')
+        query_results_df['triple'] = query_results_df['triple'] + '<' + splitted_template[0]
+        query_results_df['triple'] = query_results_df['triple'] + query_results_df[reference].astype(str)
+        template = str('{' + reference + '}').join(splitted_template[1:])
+    query_results_df['triple'] = query_results_df['triple'] + template + '> '
+
+    return query_results_df
+
+
+def _materialize_reference(query_results_df, reference):
+    query_results_df['triple'] = query_results_df['triple'] + '"' + query_results_df[str(reference)].astype(str) + '" '
+
+    return query_results_df
+
+
+def _materialize_constant(query_results_df, constant):
+    query_results_df['triple'] = query_results_df['triple'] + '<' + str(constant) + '> '
+
+    return query_results_df
+
 
 def _materialize_mapping_rule(mapping_rule, subject_maps_dict, config):
 
-    mapping_result = pd.DataFrame(columns=['triple'])
-
     query = 'SELECT '
-    if config.get('CONFIGURATION', 'remove_duplicates'):
+    if config.getboolean('CONFIGURATION', 'remove_duplicates'):
         query = query + 'DISTINCT '
 
     if mapping_rule['object_parent_triples_map']:
-        query = None
+        return set()
     else:
         references = _get_references_in_mapping_rule(mapping_rule)
 
@@ -53,19 +66,36 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_dict, config):
         else:
             query = None
 
-    print(config.get(str(mapping_rule['source_name']), 'db'))
-    db_connection = mysql.connector.connect(
-        host=config.get(str(mapping_rule['source_name']), 'host'),
-        port=config.get(str(mapping_rule['source_name']), 'port'),
-        user=config.get(str(mapping_rule['source_name']), 'user'),
-        passwd=config.get(str(mapping_rule['source_name']), 'password'),
-        database=config.get(str(mapping_rule['source_name']), 'db')
-    )
-    try:
-        query_results_df = pd.read_sql(query, con=db_connection)
-    except:
-        print('Something is failing in query')
-    db_connection.close()
+        db_connection = morph_utils.relational_db_connection(config, str(mapping_rule['source_name']))
+
+        try:
+            query_results_df = pd.read_sql(query, con=db_connection)
+        except:
+            raise Except('Query ' + query + ' has failed to execute.')
+        db_connection.close()
+
+        query_results_df['triple'] = ''
+        if mapping_rule['subject_template']:
+            query_results_df = _materialize_template(query_results_df, mapping_rule['subject_template'])
+        elif mapping_rule['subject_constant']:
+            query_results_df = _materialize_constant(query_results_df, mapping_rule['subject_constant'])
+        elif mapping_rule['subject_reference']:
+            query_results_df = _materialize_reference(query_results_df, mapping_rule['subject_reference'])
+        if mapping_rule['predicate_template']:
+            query_results_df = _materialize_template(query_results_df, mapping_rule['predicate_template'])
+        elif mapping_rule['predicate_constant']:
+            query_results_df = _materialize_constant(query_results_df, mapping_rule['predicate_constant'])
+        elif mapping_rule['predicate_reference']:
+            query_results_df = _materialize_reference(query_results_df, mapping_rule['predicate_reference'])
+        if mapping_rule['object_template']:
+            query_results_df = _materialize_template(query_results_df, mapping_rule['object_template'])
+        elif mapping_rule['object_constant']:
+            query_results_df = _materialize_constant(query_results_df, mapping_rule['object_constant'])
+        elif mapping_rule['object_reference']:
+            query_results_df = _materialize_reference(query_results_df, mapping_rule['object_reference'])
+
+        return query_results_df['triple']
+
 
 
 def _get_subject_maps_dict_from_mappings(mappings_df):
@@ -74,7 +104,7 @@ def _get_subject_maps_dict_from_mappings(mappings_df):
         'subject_reference', 'subject_constant', 'subject_rdf_class', 'subject_termtype', 'subject_graph']
     ]
 
-    subject_maps_df.drop_duplicates(inplace=True)
+    subject_maps_df = subject_maps_df.drop_duplicates()
 
     subject_maps_dict = {}
     for i, subject_map in subject_maps_df.iterrows():
@@ -101,6 +131,7 @@ def materialize(mappings_df, config):
     mapping_partitions = [group for _, group in mappings_df.groupby(by='mapping_partition')]
 
     for mapping_partition in mapping_partitions:
+        triples = set()
         for i, mapping_rule in mapping_partition.iterrows():
-            mapping_result = _materialize_mapping_rule(mapping_rule, subject_maps_dict, config)
-
+            result_triples = _materialize_mapping_rule(mapping_rule, subject_maps_dict, config)
+            triples.update(set(result_triples))

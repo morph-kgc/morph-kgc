@@ -127,7 +127,7 @@ def _parse_arguments():
     parser.add_argument('-r', '--remove_duplicates', default='yes', type=str,
                         choices=['yes', 'no', 'on', 'off', 'true', 'false', '0', '1'],
                         help='whether to remove duplicate triples in the results')
-    parser.add_argument('-g', '--mapping_partitions', nargs='?', default='', const='sp',
+    parser.add_argument('-p', '--mapping_partitions', nargs='?', default='', const='sp',
                         choices=['s', 'p', 'sp'],
                         help='partitioning criteria for mappings. The following criteria and its combinations are '
                              'possible: s: subject, p: predicate, g: named graph')
