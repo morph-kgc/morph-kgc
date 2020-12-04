@@ -68,7 +68,7 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_dict, config):
     db_connection.close()
 
 
-def _get_subject_maps_from_mappings(mappings_df):
+def _get_subject_maps_dict_from_mappings(mappings_df):
     subject_maps_df = mappings_df[[
         'triples_map_id', 'data_source', 'ref_form', 'iterator', 'tablename', 'query', 'subject_template',
         'subject_reference', 'subject_constant', 'subject_rdf_class', 'subject_termtype', 'subject_graph']
@@ -97,7 +97,7 @@ def _get_subject_maps_from_mappings(mappings_df):
 
 
 def materialize(mappings_df, config):
-    subject_maps_dict = _get_subject_maps_from_mappings(mappings_df)
+    subject_maps_dict = _get_subject_maps_dict_from_mappings(mappings_df)
     mapping_partitions = [group for _, group in mappings_df.groupby(by='mapping_partition')]
 
     for mapping_partition in mapping_partitions:
