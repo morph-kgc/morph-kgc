@@ -1,4 +1,4 @@
-import logging, re
+import logging, re, mysql.connector
 import pandas as pd
 
 
@@ -30,23 +30,77 @@ def _get_references_in_mapping_rule(mapping_rule):
 
 
 
-def _materialize_mapping_rule(mapping_rule):
+def _materialize_mapping_rule(mapping_rule, subject_maps_dict, config):
 
-    mapping_result = pd.DataFrame(columns=['subject', 'predicate', 'object'])
-    references = _get_references_in_mapping_rule(mapping_rule)
+    mapping_result = pd.DataFrame(columns=['triple'])
 
-    if len(references) > 0:
-        query = 'SELECT '
-        for reference in references:
-            query = query + reference + ', '
-        query = query[:-2] + ' FROM ' + mapping_rule['tablename']
+    query = 'SELECT '
+    if config.get('CONFIGURATION', 'remove_duplicates'):
+        query = query + 'DISTINCT '
+
+    if mapping_rule['object_parent_triples_map']:
+        query = None
+    else:
+        references = _get_references_in_mapping_rule(mapping_rule)
+
+        if len(references) > 0:
+            for reference in references:
+                query = query + reference + ', '
+            query = query[:-2] + ' FROM ' + mapping_rule['tablename'] + ' WHERE '
+            for reference in references:
+                query = query + reference + ' IS NOT NULL AND '
+            query = query[:-4] + ';'
+        else:
+            query = None
+
+    print(config.get(str(mapping_rule['source_name']), 'db'))
+    db_connection = mysql.connector.connect(
+        host=config.get(str(mapping_rule['source_name']), 'host'),
+        port=config.get(str(mapping_rule['source_name']), 'port'),
+        user=config.get(str(mapping_rule['source_name']), 'user'),
+        passwd=config.get(str(mapping_rule['source_name']), 'password'),
+        database=config.get(str(mapping_rule['source_name']), 'db')
+    )
+    try:
+        query_results_df = pd.read_sql(query, con=db_connection)
+    except:
+        print('Something is failing in query')
+    db_connection.close()
 
 
-def materialize(mappings_df):
-    mappings_df.to_csv('out.csv', index=False)
+def _get_subject_maps_from_mappings(mappings_df):
+    subject_maps_df = mappings_df[[
+        'triples_map_id', 'data_source', 'ref_form', 'iterator', 'tablename', 'query', 'subject_template',
+        'subject_reference', 'subject_constant', 'subject_rdf_class', 'subject_termtype', 'subject_graph']
+    ]
+
+    subject_maps_df.drop_duplicates(inplace=True)
+
+    subject_maps_dict = {}
+    for i, subject_map in subject_maps_df.iterrows():
+        subject_maps_dict[subject_map['triples_map_id']] = {
+            'triples_map_id': subject_map['triples_map_id'],
+            'data_source': subject_map['data_source'],
+            'ref_form': subject_map['ref_form'],
+            'iterator': subject_map['iterator'],
+            'tablename': subject_map['tablename'],
+            'query': subject_map['query'],
+            'subject_template': subject_map['subject_template'],
+            'subject_reference': subject_map['subject_reference'],
+            'subject_constant': subject_map['subject_constant'],
+            'subject_rdf_class': subject_map['subject_rdf_class'],
+            'subject_termtype': subject_map['subject_termtype'],
+            'subject_graph': subject_map['subject_graph']
+        }
+
+    return subject_maps_dict
+
+
+def materialize(mappings_df, config):
+    subject_maps_dict = _get_subject_maps_from_mappings(mappings_df)
     mapping_partitions = [group for _, group in mappings_df.groupby(by='mapping_partition')]
 
     for mapping_partition in mapping_partitions:
         for i, mapping_rule in mapping_partition.iterrows():
-            mapping_result = _materialize_mapping_rule(mapping_rule)
+            mapping_result = _materialize_mapping_rule(mapping_rule, subject_maps_dict, config)
 

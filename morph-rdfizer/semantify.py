@@ -23,4 +23,4 @@ if __name__ == "__main__":
 
     mappings_df = parse_mappings(data_sources, configuration)
 
-    materialize(mappings_df)
+    materialize(mappings_df, config)

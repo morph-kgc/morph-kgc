@@ -1,14 +1,20 @@
 import rdflib, logging
 import pandas as pd
 
-mappings_dataframe_columns = [
-    'triples_map_id', 'data_source', 'ref_form', 'iterator', 'tablename', 'query',
+MAPPINGS_DATAFRAME_COLUMNS = [
+    'source_name', 'triples_map_id', 'data_source', 'ref_form', 'iterator', 'tablename', 'query',
     'subject_template', 'subject_reference', 'subject_constant',
     'subject_rdf_class', 'subject_termtype', 'subject_graph', 'predicate_constant', 'predicate_template',
     'predicate_reference', 'object_constant', 'object_template', 'object_reference',
     'object_termtype', 'object_datatype', 'object_language', 'object_parent_triples_map', 'join_condition',
     'child_value', 'parent_value', 'predicate_object_graph'
 ]
+
+
+SOURCES_DATAFRAME_COLUMNS = [
+    'data_source', 'jdbcDSN', 'jdbcDriver', 'user', 'password'
+]
+
 
 """This query has been reused from SDM-RDFizer (https://github.com/SDM-TIB/SDM-RDFizer). SDM-RDFizer has been developed
 by members of the Scientific Data Management Group at TIB. Its development has been coordinated and supervised by 
@@ -49,11 +55,11 @@ MAPPING_PARSING_QUERY = """
             OPTIONAL { ?_subject_map rr:graph ?subject_graph . }
             OPTIONAL {
             ?_subject_map rr:graphMap ?_graph_structure .
-            ?_graph_structure rr:constant ?graph .
+            ?_graph_structure rr:constant ?subject_graph .
             }
             OPTIONAL {
                 ?_subject_map rr:graphMap ?_graph_structure .
-                ?_graph_structure rr:template ?graph .
+                ?_graph_structure rr:template ?subject_graph .
             }
         }
         
@@ -130,10 +136,10 @@ MAPPING_PARSING_QUERY = """
 SOURCE_PARSING_QUERY = """
     prefix d2rq: <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#> 
 
-    SELECT DISTINCT ?_source ?jdbcDSN ?jdbcDriver ?user ?password
+    SELECT DISTINCT ?source ?jdbcDSN ?jdbcDriver ?user ?password
     WHERE {
         OPTIONAL {
-            ?_source a d2rq:Database ;
+            ?source a d2rq:Database ;
             d2rq:jdbcDSN ?jdbcDSN ;
             d2rq:jdbcDriver ?jdbcDriver ;
             d2rq:username ?user ;
@@ -143,7 +149,7 @@ SOURCE_PARSING_QUERY = """
 """
 
 
-def _parse_mapping_file(mapping_file):
+def _parse_mapping_file(mapping_file, source_name):
     mapping_graph = rdflib.Graph()
 
     try:
@@ -155,12 +161,35 @@ def _parse_mapping_file(mapping_file):
         raise Exception(n3_mapping_parse_exception)
 
     mapping_query_results = mapping_graph.query(MAPPING_PARSING_QUERY)
-    mappings_df = _transform_mappings_into_dataframe(mapping_query_results)
+    mappings_df = _transform_mappings_into_dataframe(mapping_query_results, source_name)
 
-    return mappings_df
+    source_query_results = mapping_graph.query(SOURCE_PARSING_QUERY)
+    source_df = _transform_source_into_dataframe(source_query_results, mapping_file)
+
+    return mappings_df, source_df
 
 
-def _transform_mappings_into_dataframe(mapping_query_results):
+def _transform_source_into_dataframe(source_query_results, mapping_file):
+    source_mappings_df = pd.DataFrame(columns=SOURCES_DATAFRAME_COLUMNS)
+
+    for mapping_rule in source_query_results:
+        i = len(source_mappings_df)
+
+        source_mappings_df.at[i, 'data_source'] = mapping_rule.source
+        source_mappings_df.at[i, 'jdbcDSN'] = mapping_rule.jdbcDSN
+        source_mappings_df.at[i, 'jdbcDriver'] = mapping_rule.jdbcDriver
+        source_mappings_df.at[i, 'user'] = mapping_rule.user
+        source_mappings_df.at[i, 'password'] = mapping_rule.password
+
+    if len(source_mappings_df) > 1:
+        raise Exception('More than one source found in mapping file ' + mapping_file + '.')
+    elif len(source_mappings_df) == 0:
+        raise Exception('No sources found in mapping file ' + mapping_file + '.')
+
+    return source_mappings_df
+
+
+def _transform_mappings_into_dataframe(mapping_query_results, source_name):
     '''
     Transforms the result from a SPARQL query in rdflib to a DataFrame.
 
@@ -168,10 +197,12 @@ def _transform_mappings_into_dataframe(mapping_query_results):
     :return:
     '''
 
-    source_mappings_df = pd.DataFrame(columns=mappings_dataframe_columns)
+    source_mappings_df = pd.DataFrame(columns=MAPPINGS_DATAFRAME_COLUMNS)
 
     for mapping_rule in mapping_query_results:
         _append_mapping_rule(source_mappings_df, mapping_rule)
+
+    source_mappings_df['source_name'] = source_name
 
     return source_mappings_df
 
@@ -344,16 +375,20 @@ def _generate_mapping_partitions(mappings_df, mapping_partitions):
 
 
 def parse_mappings(data_sources, configuration):
-    mappings_df = pd.DataFrame(columns=mappings_dataframe_columns)
+    mappings_df = pd.DataFrame(columns=MAPPINGS_DATAFRAME_COLUMNS)
+    sources_df = pd.DataFrame(columns=SOURCES_DATAFRAME_COLUMNS)
 
     for source_name, source_options in data_sources.items():
-        source_mappings_df = _parse_mapping_file(source_options['mapping_file'])
+        source_mappings_df, data_source_df = _parse_mapping_file(source_options['mapping_file'], source_name)
         '''TO DO: validate mapping rules'''
         _validate_mapping_partitions(source_mappings_df, configuration['mapping_partitions'], source_name)
         logging.info('Mappings for data source ' + str(source_name) + ' successfully parsed.')
         mappings_df = pd.concat([mappings_df, source_mappings_df])
+        sources_df = pd.concat([sources_df, data_source_df])
 
     mappings_df = _remove_duplicated_mapping_rules(mappings_df)
     mappings_df = _generate_mapping_partitions(mappings_df, configuration['mapping_partitions'])
+
+    mappings_df = mappings_df.merge(sources_df, on='data_source', how='inner')
 
     return mappings_df
