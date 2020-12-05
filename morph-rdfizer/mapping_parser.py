@@ -3,12 +3,12 @@ import pandas as pd
 
 
 MAPPINGS_DATAFRAME_COLUMNS = [
-    'source_name', 'triples_map_id', 'data_source', 'ref_form', 'iterator', 'tablename', 'query',
+    'source_name', 'triples_map_id', 'data_source', 'object_map', 'ref_form', 'iterator', 'tablename', 'query',
     'subject_template', 'subject_reference', 'subject_constant',
     'subject_rdf_class', 'subject_termtype', 'subject_graph', 'predicate_constant', 'predicate_template',
     'predicate_reference', 'object_constant', 'object_template', 'object_reference',
-    'object_termtype', 'object_datatype', 'object_language', 'object_parent_triples_map', 'join_condition',
-    'child_value', 'parent_value', 'predicate_object_graph'
+    'object_termtype', 'object_datatype', 'object_language', 'object_parent_triples_map', 'join_conditions',
+    'predicate_object_graph'
 ]
 
 
@@ -18,18 +18,16 @@ Maria-Esther Vidal. The implementation has been done by Enrique Iglesias and Gui
 supervision of David Chaves-Fraga, Samaneh Jozashoori, and Kemele Endris.
 It has been partially modified by the Ontology Engineering Group (OEG) from Universidad Politécnica de Madrid (UPM)."""
 MAPPING_PARSING_QUERY = """
-    prefix rr: <http://www.w3.org/ns/r2rml#> 
-    prefix rml: <http://semweb.mmlab.be/ns/rml#> 
-    prefix ql: <http://semweb.mmlab.be/ns/ql#> 
-    prefix d2rq: <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#> 
+    prefix rr: <http://www.w3.org/ns/r2rml#>
+    prefix rml: <http://semweb.mmlab.be/ns/rml#>
 
-    SELECT DISTINCT 
-        ?triples_map_id ?data_source ?ref_form ?iterator ?tablename ?query
+    SELECT DISTINCT
+        ?triples_map_id ?data_source ?ref_form ?iterator ?tablename ?query ?_object_map
         ?subject_template ?subject_reference ?subject_constant ?subject_constant_shortcut
         ?subject_rdf_class ?subject_termtype ?subject_graph
         ?predicate_constant ?predicate_template ?predicate_reference ?predicate_constant_shortcut
         ?object_constant ?object_template ?object_reference ?object_termtype ?object_datatype ?object_language
-        ?object_parent_triples_map ?join_condition ?child_value ?parent_value ?object_constant_shortcut
+        ?object_parent_triples_map ?object_constant_shortcut
         ?predicate_object_graph
 
     WHERE {
@@ -103,12 +101,7 @@ MAPPING_PARSING_QUERY = """
             OPTIONAL {
                 ?_predicate_object_map rr:objectMap ?_object_map .
                 ?_object_map rr:parentTriplesMap ?object_parent_triples_map .
-                OPTIONAL {
-                    ?_object_map rr:joinCondition ?join_condition .
-                    ?join_condition rr:child ?child_value;
-                                 rr:parent ?parent_value.
-                    OPTIONAL { ?_object_map rr:termType ?object_termtype . }
-                }
+                OPTIONAL { ?_object_map rr:termType ?object_termtype . }
             }
             OPTIONAL {
                 ?_predicate_object_map rr:object ?object_constant_shortcut .
@@ -129,6 +122,19 @@ MAPPING_PARSING_QUERY = """
 """
 
 
+JOIN_CONDITION_PARSING_QUERY = """
+    prefix rr: <http://www.w3.org/ns/r2rml#>
+    prefix rml: <http://semweb.mmlab.be/ns/rml#>
+
+    SELECT DISTINCT ?_object_map ?join_condition ?child_value ?parent_value
+    WHERE {
+        ?_object_map rr:joinCondition ?join_condition .
+        ?join_condition rr:child ?child_value;
+                        rr:parent ?parent_value.
+    }
+"""
+
+
 def _parse_mapping_file(mapping_file, source_name):
     mapping_graph = rdflib.Graph()
 
@@ -141,12 +147,13 @@ def _parse_mapping_file(mapping_file, source_name):
         raise Exception(n3_mapping_parse_exception)
 
     mapping_query_results = mapping_graph.query(MAPPING_PARSING_QUERY)
-    mappings_df = _transform_mappings_into_dataframe(mapping_query_results, source_name)
+    join_query_results = mapping_graph.query(JOIN_CONDITION_PARSING_QUERY)
+    mappings_df = _transform_mappings_into_dataframe(mapping_query_results, join_query_results, source_name)
 
     return mappings_df
 
 
-def _transform_mappings_into_dataframe(mapping_query_results, source_name):
+def _transform_mappings_into_dataframe(mapping_query_results, join_query_results, source_name):
     '''
     Transforms the result from a SPARQL query in rdflib to a DataFrame.
 
@@ -155,13 +162,29 @@ def _transform_mappings_into_dataframe(mapping_query_results, source_name):
     '''
 
     source_mappings_df = pd.DataFrame(columns=MAPPINGS_DATAFRAME_COLUMNS)
-
     for mapping_rule in mapping_query_results:
         _append_mapping_rule(source_mappings_df, mapping_rule)
+
+    join_conditions_dict = _get_join_object_maps_join_conditions(join_query_results)
+    source_mappings_df['join_conditions'] = source_mappings_df['object_map'].map(join_conditions_dict)
+    source_mappings_df.drop('object_map', axis=1, inplace=True)
 
     source_mappings_df['source_name'] = source_name
 
     return source_mappings_df
+
+
+def _get_join_object_maps_join_conditions(join_query_results):
+    join_conditions_dict = {}
+
+    for join_condition in join_query_results:
+        if join_condition._object_map not in join_conditions_dict:
+            join_conditions_dict[join_condition._object_map] = {}
+
+        join_conditions_dict[join_condition._object_map][join_condition.join_condition] = \
+            {'child_value': str(join_condition.child_value), 'parent_value': str(join_condition.parent_value)}
+
+    return join_conditions_dict
 
 
 def _append_mapping_rule(mappings_df, mapping_rule):
@@ -169,6 +192,7 @@ def _append_mapping_rule(mappings_df, mapping_rule):
 
     mappings_df.at[i, 'triples_map_id'] = mapping_rule.triples_map_id
     mappings_df.at[i, 'data_source'] = mapping_rule.data_source
+    mappings_df.at[i, 'object_map'] = mapping_rule._object_map
     mappings_df.at[i, 'ref_form'] = mapping_rule.ref_form
     mappings_df.at[i, 'iterator'] = mapping_rule.iterator
     mappings_df.at[i, 'tablename'] = mapping_rule.tablename
@@ -198,9 +222,6 @@ def _append_mapping_rule(mappings_df, mapping_rule):
     mappings_df.at[i, 'object_datatype'] = mapping_rule.object_datatype
     mappings_df.at[i, 'object_language'] = mapping_rule.object_language
     mappings_df.at[i, 'object_parent_triples_map'] = mapping_rule.object_parent_triples_map
-    mappings_df.at[i, 'join_condition'] = mapping_rule.join_condition
-    mappings_df.at[i, 'child_value'] = mapping_rule.child_value
-    mappings_df.at[i, 'parent_value'] = mapping_rule.parent_value
     mappings_df.at[i, 'predicate_object_graph'] = mapping_rule.predicate_object_graph
 
 
