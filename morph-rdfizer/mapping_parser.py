@@ -167,6 +167,8 @@ def _transform_mappings_into_dataframe(mapping_query_results, join_query_results
 
     join_conditions_dict = _get_join_object_maps_join_conditions(join_query_results)
     source_mappings_df['join_conditions'] = source_mappings_df['object_map'].map(join_conditions_dict)
+    # needed for later hashing the dataframe
+    source_mappings_df['join_conditions'] = source_mappings_df['join_conditions'].astype(str)
     source_mappings_df.drop('object_map', axis=1, inplace=True)
 
     source_mappings_df['source_name'] = source_name
@@ -181,7 +183,7 @@ def _get_join_object_maps_join_conditions(join_query_results):
         if join_condition._object_map not in join_conditions_dict:
             join_conditions_dict[join_condition._object_map] = {}
 
-        join_conditions_dict[join_condition._object_map][join_condition.join_condition] = \
+        join_conditions_dict[join_condition._object_map][str(join_condition.join_condition)] = \
             {'child_value': str(join_condition.child_value), 'parent_value': str(join_condition.parent_value)}
 
     return join_conditions_dict

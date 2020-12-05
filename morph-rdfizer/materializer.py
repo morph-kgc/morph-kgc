@@ -3,20 +3,22 @@ import pandas as pd
 import morph_utils
 
 
-def _get_references_in_mapping_rule(mapping_rule):
+def _get_references_in_mapping_rule(mapping_rule, only_subject_map=False):
     references = []
     if mapping_rule['subject_template']:
         references.extend(morph_utils.get_references_in_template(str(mapping_rule['subject_template'])))
     elif mapping_rule['subject_reference']:
         references.append(str(mapping_rule['subject_reference']))
-    if mapping_rule['predicate_template']:
-        references.extend(morph_utils.get_references_in_template(str(mapping_rule['predicate_template'])))
-    elif mapping_rule['predicate_reference']:
-        references.append(str(mapping_rule['predicate_reference']))
-    if mapping_rule['object_template']:
-        references.extend(morph_utils.get_references_in_template(str(mapping_rule['object_template'])))
-    elif mapping_rule['object_reference']:
-        references.append(str(mapping_rule['object_reference']))
+
+    if not only_subject_map:
+        if mapping_rule['predicate_template']:
+            references.extend(morph_utils.get_references_in_template(str(mapping_rule['predicate_template'])))
+        elif mapping_rule['predicate_reference']:
+            references.append(str(mapping_rule['predicate_reference']))
+        if mapping_rule['object_template']:
+            references.extend(morph_utils.get_references_in_template(str(mapping_rule['object_template'])))
+        elif mapping_rule['object_reference']:
+            references.append(str(mapping_rule['object_reference']))
 
     return set(references)
 
@@ -45,13 +47,20 @@ def _materialize_constant(query_results_df, constant):
     return query_results_df
 
 
-def _materialize_mapping_rule(mapping_rule, subject_maps_dict, config):
+def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
 
     query = 'SELECT '
     if config.getboolean('CONFIGURATION', 'remove_duplicates'):
         query = query + 'DISTINCT '
 
     if mapping_rule['object_parent_triples_map']:
+        child_references = _get_references_in_mapping_rule(mapping_rule)
+        parent_triples_map_rule = \
+            subject_maps_df[subject_maps_df.triples_map_id==mapping_rule['object_parent_triples_map']].iloc[0]
+        parent_references = _get_references_in_mapping_rule(parent_triples_map_rule, only_subject_map=True)
+
+        # SELECT DISTINCT * FROM (SELECT trip_id, stop_id, arrival_time FROM STOP_TIMES WHERE stop_id IS NOT NULL AND trip_id IS NOT NULL AND arrival_time IS NOT NULL) AS child, (SELECT stop_id FROM STOPS WHERE stop_id IS NOT NULL) AS parent WHERE child.stop_id=parent.stop_id;
+
         return set()
     else:
         references = _get_references_in_mapping_rule(mapping_rule)
@@ -106,32 +115,18 @@ def _get_subject_maps_dict_from_mappings(mappings_df):
 
     subject_maps_df = subject_maps_df.drop_duplicates()
 
-    subject_maps_dict = {}
-    for i, subject_map in subject_maps_df.iterrows():
-        subject_maps_dict[subject_map['triples_map_id']] = {
-            'triples_map_id': subject_map['triples_map_id'],
-            'data_source': subject_map['data_source'],
-            'ref_form': subject_map['ref_form'],
-            'iterator': subject_map['iterator'],
-            'tablename': subject_map['tablename'],
-            'query': subject_map['query'],
-            'subject_template': subject_map['subject_template'],
-            'subject_reference': subject_map['subject_reference'],
-            'subject_constant': subject_map['subject_constant'],
-            'subject_rdf_class': subject_map['subject_rdf_class'],
-            'subject_termtype': subject_map['subject_termtype'],
-            'subject_graph': subject_map['subject_graph']
-        }
+    if len(list(subject_maps_df['triples_map_id'])) > len(set(subject_maps_df['triples_map_id'])):
+        raise Exception('One or more triples maps have incongruencies in subject maps.')
 
-    return subject_maps_dict
+    return subject_maps_df
 
 
 def materialize(mappings_df, config):
-    subject_maps_dict = _get_subject_maps_dict_from_mappings(mappings_df)
+    subject_maps_df = _get_subject_maps_dict_from_mappings(mappings_df)
     mapping_partitions = [group for _, group in mappings_df.groupby(by='mapping_partition')]
 
     for mapping_partition in mapping_partitions:
         triples = set()
         for i, mapping_rule in mapping_partition.iterrows():
-            result_triples = _materialize_mapping_rule(mapping_rule, subject_maps_dict, config)
+            result_triples = _materialize_mapping_rule(mapping_rule, subject_maps_df, config)
             triples.update(set(result_triples))
