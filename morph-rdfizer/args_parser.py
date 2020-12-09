@@ -118,25 +118,28 @@ def _parse_arguments():
     )
 
     parser.add_argument('-c', '--config', type=_existing_file_path, required=True,
-                        help='path to the configuration file')
+                        help='path to the configuration file.')
     parser.add_argument('-o', '--output_dir', default='output', type=str,
-                        help='path to the directory storing the results')
+                        help='path to the directory storing the results.')
     parser.add_argument('-f', '--all_in_one_file', type=str,
                         help='if a file name is specified, all the results will be stored in this file. '
                              'If no file is specified the results will be stored in multiple files.')
-    parser.add_argument('-r', '--remove_duplicates', default='yes', type=str,
+    parser.add_argument('-r', '--remove_duplicates', default='no', type=str,
                         choices=['yes', 'no', 'on', 'off', 'true', 'false', '0', '1'],
-                        help='whether to remove duplicate triples in the results')
+                        help='whether to remove duplicate triples in the results.')
+    parser.add_argument('-d', '--push_down_distinctS', default='no', type=str,
+                        choices=['yes', 'no', 'on', 'off', 'true', 'false', '0', '1'],
+                        help='whether to retrieve distinct results from data sources.')
     parser.add_argument('-p', '--mapping_partitions', nargs='?', default='', const='sp',
                         choices=['s', 'p', 'sp'],
                         help='partitioning criteria for mappings. The following criteria and its combinations are '
-                             'possible: s: subject, p: predicate, g: named graph')
+                             'possible: s: subject, p: predicate.')
     parser.add_argument('-n', '--number_of_processes', default=1, type=_process_number,
                         help='number of parallel processes. 0 to set it to the number of CPUs in the system.')
     parser.add_argument('-s', '--chunksize', default=0, type=_natural_number_including_zero,
-                        help='maximum number of rows of data processed at once by a process')
+                        help='maximum number of rows of data processed at once by a process.')
     parser.add_argument('-l', '--logs', nargs='?', const='', type=str,
-                        help='file path to write logs to')
+                        help='file path to write logs to.')
     parser.add_argument('-v', '--version', action='version', version='Morph-RDFizer 0.1')
 
     return parser.parse_args()
@@ -157,19 +160,30 @@ def _validate_config(config):
         remove_duplicates = str(remove_duplicates).lower().strip()
         valid_options = ['yes', 'no', 'on', 'off', 'true', 'false', '0', '1']
         if remove_duplicates not in valid_options:
-            error_msg = 'Option remove_duplicates of CONFIGURATION section in the configuration file ' \
-                        'must be in: ' + str(valid_options)
-            logging.error(error_msg)
-            raise ValueError(error_msg)
+            logging.error('Option remove_duplicates must be in: ' + str(valid_options))
+            raise ValueError('Option remove_duplicates must be in: ' + str(valid_options))
+
+        if config.has_option('CONFIGURATION', 'push_down_distinctS'):
+            push_down_distinctS = config.get('CONFIGURATION', 'push_down_distinctS')
+            push_down_distinctS = str(push_down_distinctS).lower().strip()
+            valid_options = ['yes', 'no', 'on', 'off', 'true', 'false', '0', '1']
+            if push_down_distinctS not in valid_options:
+                logging.error('Option push_down_distincts must be in: ' + str(valid_options))
+                raise ValueError('Option push_down_distincts must be in: ' + str(valid_options))
+            if not config.getboolean('CONFIGURATION', 'remove_duplicates') and \
+                    config.getboolean('CONFIGURATION', 'push_down_distinctS'):
+                error_msg = 'Option remove_duplicates=' + remove_duplicates + ' but option push_down_distincts=' \
+                                + push_down_distinctS + '. If duplicates are not to be removed, then ' \
+                                'pushing down distincts is not valid.'
+                logging.error(error_msg)
+                raise ValueError(error_msg)
 
     if config.has_option('CONFIGURATION', 'mapping_partitions'):
         mapping_partitions = config.get('CONFIGURATION', 'mapping_partitions')
         mapping_partitions = str(mapping_partitions).lower().strip()
         valid_options = ['', 's', 'p', 'sp']
         if mapping_partitions not in valid_options:
-            error_msg = 'Option mapping_partitions of CONFIGURATION section in the configuration file ' \
-                        'must be in: ' + str(valid_options)
-            raise ValueError(error_msg)
+            raise ValueError('Option mapping_partitions must be in: ' + str(valid_options))
 
     if config.has_option('CONFIGURATION', 'number_of_processes'):
         config.set('CONFIGURATION', 'number_of_processes',
@@ -220,6 +234,8 @@ def _complete_config_file_with_args(config, args):
         config.set('CONFIGURATION', 'all_in_one_file', args.all_in_one_file)
     if not config.has_option('CONFIGURATION', 'remove_duplicates'):
         config.set('CONFIGURATION', 'remove_duplicates', str(args.remove_duplicates))
+    if not config.has_option('CONFIGURATION', 'push_down_distinctS'):
+        config.set('CONFIGURATION', 'push_down_distinctS', str(args.push_down_distinctS))
     if not config.has_option('CONFIGURATION', 'mapping_partitions'):
         config.set('CONFIGURATION', 'mapping_partitions', args.mapping_partitions)
     if not config.has_option('CONFIGURATION', 'number_of_processes'):

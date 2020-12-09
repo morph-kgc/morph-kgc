@@ -1,7 +1,7 @@
 """ Morph-RDFizer """
 
 __version__ = "0.1"
-__copyright__ = "Copyright (C) 2020 Julián Arenas Guerrero"
+__copyright__ = "Copyright (C) 2020 Julián Arenas-Guerrero"
 __credits__ = ["Julián Arenas-Guerrero"]
 __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"

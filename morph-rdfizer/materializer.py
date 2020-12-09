@@ -54,7 +54,7 @@ def _materialize_constant(query_results_df, constant):
 def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
 
     query = 'SELECT '
-    if config.getboolean('CONFIGURATION', 'remove_duplicates'):
+    if config.getboolean('CONFIGURATION', 'push_down_distincts'):
         query = query + 'DISTINCT '
 
     if mapping_rule['object_parent_triples_map']:
@@ -194,14 +194,13 @@ def materialize(mappings_df, config):
     mapping_partitions = [group for _, group in mappings_df.groupby(by='mapping_partition')]
 
     for mapping_partition in mapping_partitions:
-        triples = set()
-        for i, mapping_rule in mapping_partition.iterrows():
-            result_triples = _materialize_mapping_rule(mapping_rule, subject_maps_df, config)
-            triples.update(set(result_triples))
-
-        file1 = open("result.txt", "w")
-        for r in list(triples):
-            file1.write(r + '.\n')
-        file1.close()
-
-        print(len(triples))
+        if config.getboolean('CONFIGURATION', 'remove_duplicates'):
+            triples = set()
+            for i, mapping_rule in mapping_partition.iterrows():
+                result_triples = _materialize_mapping_rule(mapping_rule, subject_maps_df, config)
+                triples.update(set(result_triples))
+        else:
+            triples = []
+            for i, mapping_rule in mapping_partition.iterrows():
+                result_triples = _materialize_mapping_rule(mapping_rule, subject_maps_df, config)
+                triples.extend(list(result_triples))
