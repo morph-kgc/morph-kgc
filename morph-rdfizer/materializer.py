@@ -31,7 +31,7 @@ def _materialize_template(query_results_df, template, columns_alias=''):
         splitted_template = template.split('{' + reference + '}')
         query_results_df['triple'] = query_results_df['triple'] + splitted_template[0]
         query_results_df['triple'] = query_results_df['triple'] + \
-                                     query_results_df[columns_alias + reference].astype(str)
+                                     query_results_df[columns_alias + reference]
         template = str('{' + reference + '}').join(splitted_template[1:])
     query_results_df['triple'] = query_results_df['triple'] + template + '> '
 
@@ -40,7 +40,7 @@ def _materialize_template(query_results_df, template, columns_alias=''):
 
 def _materialize_reference(query_results_df, reference, columns_alias=''):
     query_results_df['triple'] = query_results_df['triple'] + '"' + \
-                                 query_results_df[columns_alias + str(reference)].astype(str) + '" '
+                                 query_results_df[columns_alias + str(reference)] + '" '
 
     return query_results_df
 
@@ -105,6 +105,9 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
             raise Except('Query ' + query + ' has failed to execute.')
         db_connection.close()
 
+        for col_name in list(query_results_df.columns):
+            query_results_df[col_name] = query_results_df[col_name].astype(str)
+
         query_results_df['triple'] = ''
         if mapping_rule['subject_template']:
             query_results_df = _materialize_template(
@@ -150,6 +153,9 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
         except:
             raise Except('Query ' + query + ' has failed to execute.')
         db_connection.close()
+
+        for col_name in list(query_results_df.columns):
+            query_results_df[col_name] = query_results_df[col_name].astype(str)
 
         query_results_df['triple'] = ''
         if mapping_rule['subject_template']:

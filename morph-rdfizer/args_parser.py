@@ -127,7 +127,7 @@ def _parse_arguments():
     parser.add_argument('-r', '--remove_duplicates', default='no', type=str,
                         choices=['yes', 'no', 'on', 'off', 'true', 'false', '0', '1'],
                         help='whether to remove duplicate triples in the results.')
-    parser.add_argument('-d', '--push_down_distinctS', default='no', type=str,
+    parser.add_argument('-d', '--push_down_distincts', default='no', type=str,
                         choices=['yes', 'no', 'on', 'off', 'true', 'false', '0', '1'],
                         help='whether to retrieve distinct results from data sources.')
     parser.add_argument('-p', '--mapping_partitions', nargs='?', default='', const='sp',
@@ -163,17 +163,17 @@ def _validate_config(config):
             logging.error('Option remove_duplicates must be in: ' + str(valid_options))
             raise ValueError('Option remove_duplicates must be in: ' + str(valid_options))
 
-        if config.has_option('CONFIGURATION', 'push_down_distinctS'):
-            push_down_distinctS = config.get('CONFIGURATION', 'push_down_distinctS')
-            push_down_distinctS = str(push_down_distinctS).lower().strip()
+        if config.has_option('CONFIGURATION', 'push_down_distincts'):
+            push_down_distincts = config.get('CONFIGURATION', 'push_down_distincts')
+            push_down_distincts = str(push_down_distincts).lower().strip()
             valid_options = ['yes', 'no', 'on', 'off', 'true', 'false', '0', '1']
-            if push_down_distinctS not in valid_options:
+            if push_down_distincts not in valid_options:
                 logging.error('Option push_down_distincts must be in: ' + str(valid_options))
                 raise ValueError('Option push_down_distincts must be in: ' + str(valid_options))
             if not config.getboolean('CONFIGURATION', 'remove_duplicates') and \
-                    config.getboolean('CONFIGURATION', 'push_down_distinctS'):
+                    config.getboolean('CONFIGURATION', 'push_down_distincts'):
                 error_msg = 'Option remove_duplicates=' + remove_duplicates + ' but option push_down_distincts=' \
-                                + push_down_distinctS + '. If duplicates are not to be removed, then ' \
+                                + push_down_distincts + '. If duplicates are not to be removed, then ' \
                                 'pushing down distincts is not valid.'
                 logging.error(error_msg)
                 raise ValueError(error_msg)
@@ -234,8 +234,8 @@ def _complete_config_file_with_args(config, args):
         config.set('CONFIGURATION', 'all_in_one_file', args.all_in_one_file)
     if not config.has_option('CONFIGURATION', 'remove_duplicates'):
         config.set('CONFIGURATION', 'remove_duplicates', str(args.remove_duplicates))
-    if not config.has_option('CONFIGURATION', 'push_down_distinctS'):
-        config.set('CONFIGURATION', 'push_down_distinctS', str(args.push_down_distinctS))
+    if not config.has_option('CONFIGURATION', 'push_down_distincts'):
+        config.set('CONFIGURATION', 'push_down_distincts', str(args.push_down_distincts))
     if not config.has_option('CONFIGURATION', 'mapping_partitions'):
         config.set('CONFIGURATION', 'mapping_partitions', args.mapping_partitions)
     if not config.has_option('CONFIGURATION', 'number_of_processes'):
