@@ -360,6 +360,7 @@ def parse_mappings(data_sources, configuration):
     for source_name, source_options in data_sources.items():
         source_mappings_df = _parse_mapping_file(source_options['mapping_file'], source_name)
         '''TO DO: validate mapping rules'''
+
         _validate_mapping_partitions(source_mappings_df, configuration['mapping_partitions'], source_name)
         logging.info('Mappings for data source ' + str(source_name) + ' successfully parsed.')
         mappings_df = pd.concat([mappings_df, source_mappings_df])

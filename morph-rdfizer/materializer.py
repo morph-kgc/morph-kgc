@@ -2,6 +2,8 @@ import logging
 import pandas as pd
 import morph_utils
 
+import relational_source
+
 
 def _get_references_in_mapping_rule(mapping_rule, only_subject_map=False):
     references = []
@@ -52,7 +54,6 @@ def _materialize_constant(query_results_df, constant):
 
 
 def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
-
     query = 'SELECT '
     if config.getboolean('CONFIGURATION', 'push_down_distincts'):
         query = query + 'DISTINCT '
@@ -98,7 +99,7 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
 
         logging.info(query)
 
-        db_connection = morph_utils.relational_db_connection(config, str(mapping_rule['source_name']))
+        db_connection = relational_source.relational_db_connection(config, str(mapping_rule['source_name']))
         try:
             query_results_df = pd.read_sql(query, con=db_connection)
         except:
@@ -147,7 +148,7 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
         else:
             query = None
 
-        db_connection = morph_utils.relational_db_connection(config, str(mapping_rule['source_name']))
+        db_connection = relational_source.relational_db_connection(config, str(mapping_rule['source_name']))
         try:
             query_results_df = pd.read_sql(query, con=db_connection)
         except:
@@ -199,14 +200,17 @@ def materialize(mappings_df, config):
     subject_maps_df = _get_subject_maps_dict_from_mappings(mappings_df)
     mapping_partitions = [group for _, group in mappings_df.groupby(by='mapping_partition')]
 
-    for mapping_partition in mapping_partitions:
-        if config.getboolean('CONFIGURATION', 'remove_duplicates'):
+    if config.getboolean('CONFIGURATION', 'remove_duplicates'):
+        for mapping_partition in mapping_partitions:
             triples = set()
             for i, mapping_rule in mapping_partition.iterrows():
                 result_triples = _materialize_mapping_rule(mapping_rule, subject_maps_df, config)
                 triples.update(set(result_triples))
-        else:
+    else:
+        for mapping_partition in mapping_partitions:
             triples = []
             for i, mapping_rule in mapping_partition.iterrows():
                 result_triples = _materialize_mapping_rule(mapping_rule, subject_maps_df, config)
                 triples.extend(list(result_triples))
+
+

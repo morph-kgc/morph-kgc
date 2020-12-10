@@ -5,7 +5,7 @@ from configparser import ConfigParser, ExtendedInterpolation
 
 def _dir_path(dir_path):
     """
-    Checks that a directory exists. If the directory does not exist, create the directories in the path.
+    Checks that a directory exists. If the directory does not exist, it creates the directories in the path.
 
     :param dir_path: the path to the directory
     :type dir_path: str
@@ -22,11 +22,11 @@ def _dir_path(dir_path):
 
 def _file_path(file_path):
     """
-    Checks that directories in a file path exist. If they do not exist, create the directories.
+    Checks that directories in a file path exist. If they do not exist, it creates the directories.
 
-    :param file_path: the path to the log file
+    :param file_path: the path to the file
     :type file_path: str
-    :return the path to the log file
+    :return the path to the file
     :rtype str
     """
 
@@ -40,7 +40,7 @@ def _file_path(file_path):
 
 def _file_name(file_name):
     """
-    Generates a valid file name.
+    Generates a valid file name from an input file name.
 
     :param file_name: the original file name
     :type file_name: str
@@ -72,7 +72,7 @@ def _existing_file_path(file_path):
     return file_path
 
 
-def _process_number(number):
+def _processes_number(number):
     """
     Generates a natural number from a given number. Number is converted to int.
     In case of been 0, the number of cores in the system is generated.
@@ -109,100 +109,54 @@ def _natural_number_including_zero(number):
     return whole_number
 
 
-def _parse_arguments():
-    parser = argparse.ArgumentParser(
-        description='Generate a knowledge graph from heterogeneous data sources.',
-        epilog='Transform your data into knowledge.',
-        allow_abbrev=False,
-        argument_default=argparse.SUPPRESS
-    )
-
-    parser.add_argument('-c', '--config', type=_existing_file_path, required=True,
-                        help='path to the configuration file.')
-    parser.add_argument('-o', '--output_dir', default='output', type=str,
-                        help='path to the directory storing the results.')
-    parser.add_argument('-f', '--all_in_one_file', type=str,
-                        help='if a file name is specified, all the results will be stored in this file. '
-                             'If no file is specified the results will be stored in multiple files.')
-    parser.add_argument('-r', '--remove_duplicates', default='no', type=str,
-                        choices=['yes', 'no', 'on', 'off', 'true', 'false', '0', '1'],
-                        help='whether to remove duplicate triples in the results.')
-    parser.add_argument('-d', '--push_down_distincts', default='no', type=str,
-                        choices=['yes', 'no', 'on', 'off', 'true', 'false', '0', '1'],
-                        help='whether to retrieve distinct results from data sources.')
-    parser.add_argument('-p', '--mapping_partitions', nargs='?', default='', const='sp',
-                        choices=['s', 'p', 'sp'],
-                        help='partitioning criteria for mappings. The following criteria and its combinations are '
-                             'possible: s: subject, p: predicate.')
-    parser.add_argument('-n', '--number_of_processes', default=1, type=_process_number,
-                        help='number of parallel processes. 0 to set it to the number of CPUs in the system.')
-    parser.add_argument('-s', '--chunksize', default=0, type=_natural_number_including_zero,
-                        help='maximum number of rows of data processed at once by a process.')
-    parser.add_argument('-l', '--logs', nargs='?', const='', type=str,
-                        help='file path to write logs to.')
-    parser.add_argument('-v', '--version', action='version', version='Morph-RDFizer 0.1')
-
-    return parser.parse_args()
-
-
 def _validate_config(config):
+    """
+    Validates that the configuration file is correct.
 
-    '''Validate options corresponding to the CONFIGURATION section of the configuration file'''
+    :param config: configuration object
+    :type config: configparser
+    :return validated configuration object
+    :rtype configparser
+    """
 
-    if config.has_option('CONFIGURATION', 'output_dir'):
-        config.set('CONFIGURATION', 'output_dir', _dir_path(config.get('CONFIGURATION', 'output_dir')))
+    ''' Validate CONFIGURATION section '''
 
-    if config.has_option('CONFIGURATION', 'all_in_one_file'):
-        config.set('CONFIGURATION', 'output_dir', _file_name(config.get('CONFIGURATION', 'all_in_one_file')))
+    config.set('CONFIGURATION', 'output_dir', _dir_path(config.get('CONFIGURATION', 'output_dir')))
 
-    if config.has_option('CONFIGURATION', 'remove_duplicates'):
-        remove_duplicates = config.get('CONFIGURATION', 'remove_duplicates')
-        remove_duplicates = str(remove_duplicates).lower().strip()
-        valid_options = ['yes', 'no', 'on', 'off', 'true', 'false', '0', '1']
-        if remove_duplicates not in valid_options:
-            logging.error('Option remove_duplicates must be in: ' + str(valid_options))
-            raise ValueError('Option remove_duplicates must be in: ' + str(valid_options))
+    # output_file has no default value, it is needed to check if it is in the config
+    if config.has_option('CONFIGURATION', 'output_file'):
+        config.set('CONFIGURATION', 'output_file', _file_name(config.get('CONFIGURATION', 'output_file')))
 
-        if config.has_option('CONFIGURATION', 'push_down_distincts'):
-            push_down_distincts = config.get('CONFIGURATION', 'push_down_distincts')
-            push_down_distincts = str(push_down_distincts).lower().strip()
-            valid_options = ['yes', 'no', 'on', 'off', 'true', 'false', '0', '1']
-            if push_down_distincts not in valid_options:
-                logging.error('Option push_down_distincts must be in: ' + str(valid_options))
-                raise ValueError('Option push_down_distincts must be in: ' + str(valid_options))
-            if not config.getboolean('CONFIGURATION', 'remove_duplicates') and \
-                    config.getboolean('CONFIGURATION', 'push_down_distincts'):
-                error_msg = 'Option remove_duplicates=' + remove_duplicates + ' but option push_down_distincts=' \
-                                + push_down_distincts + '. If duplicates are not to be removed, then ' \
-                                'pushing down distincts is not valid.'
-                logging.error(error_msg)
-                raise ValueError(error_msg)
+    remove_duplicates = config.getboolean('CONFIGURATION', 'remove_duplicates')
+    push_down_distincts = config.getboolean('CONFIGURATION', 'push_down_distincts')
+    if not remove_duplicates and push_down_distincts:
+        error_msg = 'Option remove_duplicates=' + remove_duplicates + ' but option push_down_distincts=' \
+                        + push_down_distincts + '. If duplicates are not to be removed, then ' \
+                        'pushing down distincts is not valid.'
+        logging.error(error_msg)
+        raise ValueError(error_msg)
 
-    if config.has_option('CONFIGURATION', 'mapping_partitions'):
-        mapping_partitions = config.get('CONFIGURATION', 'mapping_partitions')
-        mapping_partitions = str(mapping_partitions).lower().strip()
-        valid_options = ['', 's', 'p', 'sp']
-        if mapping_partitions not in valid_options:
-            raise ValueError('Option mapping_partitions must be in: ' + str(valid_options))
+    mapping_partitions = config.get('CONFIGURATION', 'mapping_partitions')
+    mapping_partitions = str(mapping_partitions).lower().strip()
+    valid_options = ['', 's', 'p', 'sp']
+    if mapping_partitions not in valid_options:
+        raise ValueError('Option mapping_partitions must be in: ' + str(valid_options))
 
-    if config.has_option('CONFIGURATION', 'number_of_processes'):
-        config.set('CONFIGURATION', 'number_of_processes',
-                   str(_process_number(config.get('CONFIGURATION', 'number_of_processes'))))
+    config.set('CONFIGURATION', 'number_of_processes',
+               str(_processes_number(config.get('CONFIGURATION', 'number_of_processes'))))
 
-    if config.has_option('CONFIGURATION', 'chunksize'):
-        config.set('CONFIGURATION', 'chunksize',
-                   str(_natural_number_including_zero(config.get('CONFIGURATION', 'chunksize'))))
+    config.set('CONFIGURATION', 'chunksize',
+               str(_natural_number_including_zero(config.get('CONFIGURATION', 'chunksize'))))
 
+    # logs has no default value, it is needed to check if it is in the config
     if config.has_option('CONFIGURATION', 'logs'):
         config.set('CONFIGURATION', 'logs', _file_path(config.get('CONFIGURATION', 'logs')))
 
-    '''Validate options corresponding to the SOURCES sections of the configuration file'''
+    ''' Validate sections referering to data sources '''
 
     '''
         TODO:
             - Validate mappings file paths
-            - validate mapping are correct
-            - validate (or infer) mapping language
             - validate mapping partitions criteria (according to mapping partition assumption)
             - validate mappings have no errors
             - check there are no missing options for the sources
@@ -218,20 +172,24 @@ def _complete_config_file_with_args(config, args):
     the configuration file the option in the arguments is ignored.
 
     :param config: the ConfigParser object
+    :type config: argparse
     :param args: the argparse object
-    :return: ConfigParser object extended with information from arguments
+    :type args: configparser
+    :return ConfigParser object extended with information from arguments
+    :rtype configparser
     """
 
-    '''create section CONFIGURATION if nor indicated in the config file'''
+    ''' Create section CONFIGURATION if it does not exist in the config file '''
     if not config.has_section('CONFIGURATION'):
         config.add_section('CONFIGURATION')
 
-    '''if parameters are not provided in the config file, take them from arguments'''
-    '''mind that ConfigParser store options as strings'''
+    ''' If parameters are not provided in the config file, take them from arguments.
+        mind that ConfigParser store options as strings'''
     if not config.has_option('CONFIGURATION', 'output_dir'):
         config.set('CONFIGURATION', 'output_dir', args.output_dir)
-    if not config.has_option('CONFIGURATION', 'all_in_one_file') and 'all_in_one_file' in args:
-        config.set('CONFIGURATION', 'all_in_one_file', args.all_in_one_file)
+    # output_file has no default value, it is needed to check if it is in the args
+    if not config.has_option('CONFIGURATION', 'output_file') and 'output_file' in args:
+        config.set('CONFIGURATION', 'output_file', args.output_file)
     if not config.has_option('CONFIGURATION', 'remove_duplicates'):
         config.set('CONFIGURATION', 'remove_duplicates', str(args.remove_duplicates))
     if not config.has_option('CONFIGURATION', 'push_down_distincts'):
@@ -242,13 +200,65 @@ def _complete_config_file_with_args(config, args):
         config.set('CONFIGURATION', 'number_of_processes', str(args.number_of_processes))
     if not config.has_option('CONFIGURATION', 'chunksize'):
         config.set('CONFIGURATION', 'chunksize', str(args.chunksize))
+    # logs has no default value, it is needed to check if it is in the args
     if not config.has_option('CONFIGURATION', 'logs') and 'logs' in args:
         config.set('CONFIGURATION', 'logs', args.logs)
 
     return config
 
 
+def _parse_arguments():
+    """
+    Parses command line arguments of the engine.
+
+    :return parsed arguments
+    """
+
+    parser = argparse.ArgumentParser(
+        description='Generate knowledge graphs from heterogeneous data sources.',
+        epilog='Transform data into knowledge.',
+        allow_abbrev=False,
+        argument_default=argparse.SUPPRESS
+    )
+
+    parser.add_argument('-c', '--config', type=_existing_file_path, required=True,
+                        help='Path to the configuration file.')
+    parser.add_argument('-d', '--output_dir', default='output', type=str,
+                        help='Path to the directory storing the results.')
+    parser.add_argument('-f', '--output_file', type=str,
+                        help='If a file name is specified, all the results will be stored in this file. '
+                             'If no file is specified the results will be stored in multiple files.')
+    parser.add_argument('-r', '--remove_duplicates', default='no', type=str,
+                        choices=['yes', 'no', 'on', 'off', 'true', 'false', '0', '1'],
+                        help='Whether to remove duplicated triples in the results.')
+    parser.add_argument('-p', '--mapping_partitions', nargs='?', default='', const='sp',
+                        choices=['s', 'p', 'sp'],
+                        help='Partitioning criteria for mappings. s for using subjects and p for using predicates. If '
+                             'this parameter is not provided, no mapping partitions will be considered.')
+    parser.add_argument('--push_down_distincts', default='no', type=str,
+                        choices=['yes', 'no', 'on', 'off', 'true', 'false', '0', '1'],
+                        help='Whether to retrieve distinct results from data sources.')
+    parser.add_argument('--number_of_processes', default=1, type=_processes_number,
+                        help='Number of parallel processes. 0 to set it to the number of CPUs in the system.')
+    parser.add_argument('--chunksize', default=0, type=_natural_number_including_zero,
+                        help='Maximum number of rows of data processed at once by a process.')
+    parser.add_argument('-l', '--logs', nargs='?', const='', type=str,
+                        help='File path to write logs to. If no path is provided logs are redirected to stdout.')
+    parser.add_argument('-v', '--version', action='version', version='Morph-RDFizer 0.1')
+
+    return parser.parse_args()
+
+
 def parse_config():
+    """
+    Parses command line arguments and the configuration file. It also validates that values are correct.
+    Arguments in the config file have more priority than command line arguments, if specified, command line
+    arguments will overwrite config file ones.
+
+    :return configuration with command line arguments and config file arguments
+    :rtype configparser
+    """
+
     args = _parse_arguments()
 
     config = ConfigParser(interpolation=ExtendedInterpolation())
