@@ -19,31 +19,6 @@ def _configure_logger(config, level=logging.INFO):
         logging.basicConfig(level=logging.WARNING)
 
 
-def _get_configuration_and_sources(config):
-    """
-    Separates the sources from the configuration options.
-
-    :param config: ConfigParser object
-    :type config: configparser
-    :return: tuple with the configuration options and the sources
-    :rtype tuple
-    """
-
-    configuration = dict(config.items('CONFIGURATION'))
-    logging.info('CONFIGURATION: ' + str(configuration))
-
-    data_sources = {}
-    for section in config.sections():
-        if section != 'CONFIGURATION':
-            ''' if section is not configuration then it is a data source.
-                Mind that DEFAULT section is not triggered with config.sections(). '''
-            data_sources[section] = dict(config.items(section))
-
-    logging.info('DATA SOURCES: ' + str(data_sources))
-
-    return configuration, data_sources
-
-
 def _dir_path(dir_path):
     """
     Checks that a directory exists. If the directory does not exist, it creates the directories in the path.
@@ -296,7 +271,7 @@ def parse_config():
     Arguments in the config file have more priority than command line arguments, if specified, command line
     arguments will overwrite config file ones. Logger is configured.
 
-    :return config object populated with command line arguments and config file arguments
+    :return config object populated with command line arguments and config file arguments,
     :rtype configparser
     """
 
@@ -309,7 +284,5 @@ def parse_config():
     config = _validate_config_configuration_section(config)
     _configure_logger(config)
     config = _validate_config_data_sources_sections(config)
-
-    configuration, data_sources = _get_configuration_and_sources(config)
 
     return config

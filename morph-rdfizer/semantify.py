@@ -11,12 +11,14 @@ import logging
 from mapping_parser import parse_mappings
 from args_parser import parse_config
 from materializer import materialize
+from morph_utils import get_configuration_and_sources
 
 
 if __name__ == "__main__":
 
     config = parse_config()
 
-    mappings_df = parse_mappings(data_sources, dict(config.items('CONFIGURATION')))
+    configuration, data_sources = get_configuration_and_sources(config)
+    mappings_df = parse_mappings(data_sources, configuration)
 
     materialize(mappings_df, config)
