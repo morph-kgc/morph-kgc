@@ -3,6 +3,47 @@ import multiprocessing as mp
 from configparser import ConfigParser, ExtendedInterpolation
 
 
+def _configure_logger(config, level=logging.INFO):
+    """
+    Configures the logger based on input arguments. If no logging argument is provided, log level is set to WARNING.
+
+    :param config: the ConfigParser object
+    :type config: configparser
+    :param level: logging level to use
+    """
+
+    if config.has_option('CONFIGURATION', 'logs'):
+        logging.basicConfig(filename=config.get('CONFIGURATION', 'logs'),
+                            format='%(levelname)s | %(asctime)s | %(message)s', filemode='w', level=level)
+    else:
+        logging.basicConfig(level=logging.WARNING)
+
+
+def _get_configuration_and_sources(config):
+    """
+    Separates the sources from the configuration options.
+
+    :param config: ConfigParser object
+    :type config: configparser
+    :return: tuple with the configuration options and the sources
+    :rtype tuple
+    """
+
+    configuration = dict(config.items('CONFIGURATION'))
+    logging.info('CONFIGURATION: ' + str(configuration))
+
+    data_sources = {}
+    for section in config.sections():
+        if section != 'CONFIGURATION':
+            ''' if section is not configuration then it is a data source.
+                Mind that DEFAULT section is not triggered with config.sections(). '''
+            data_sources[section] = dict(config.items(section))
+
+    logging.info('DATA SOURCES: ' + str(data_sources))
+
+    return configuration, data_sources
+
+
 def _dir_path(dir_path):
     """
     Checks that a directory exists. If the directory does not exist, it creates the directories in the path.
@@ -109,17 +150,28 @@ def _natural_number_including_zero(number):
     return whole_number
 
 
-def _validate_config(config):
-    """
-    Validates that the configuration file is correct.
+def _validate_config_data_sources_sections(config):
+    raise ValueError('TODO: validate data sources section')
 
-    :param config: configuration object
+    for section in config.sections():
+        if section != 'CONFIGURATION':
+            ''' if section is not configuration then it is a data source.
+                Mind that DEFAULT section is not triggered with config.sections(). '''
+            #data_sources[section] = dict(config.items(section))
+            pass
+
+    return config
+
+
+def _validate_config_configuration_section(config):
+    """
+    Validates that the configuration section in the config file is correct.
+
+    :param config: config object
     :type config: configparser
-    :return validated configuration object
+    :return config object with validated configuration section
     :rtype configparser
     """
-
-    ''' Validate CONFIGURATION section '''
 
     config.set('CONFIGURATION', 'output_dir', _dir_path(config.get('CONFIGURATION', 'output_dir')))
 
@@ -131,9 +183,8 @@ def _validate_config(config):
     push_down_distincts = config.getboolean('CONFIGURATION', 'push_down_distincts')
     if not remove_duplicates and push_down_distincts:
         error_msg = 'Option remove_duplicates=' + remove_duplicates + ' but option push_down_distincts=' \
-                        + push_down_distincts + '. If duplicates are not to be removed, then ' \
-                        'pushing down distincts is not valid.'
-        logging.error(error_msg)
+                    + push_down_distincts + '. If duplicates are not to be removed, then ' \
+                                            'pushing down distincts is not valid.'
         raise ValueError(error_msg)
 
     mapping_partitions = config.get('CONFIGURATION', 'mapping_partitions')
@@ -152,24 +203,14 @@ def _validate_config(config):
     if config.has_option('CONFIGURATION', 'logs'):
         config.set('CONFIGURATION', 'logs', _file_path(config.get('CONFIGURATION', 'logs')))
 
-    ''' Validate sections referering to data sources '''
-
-    '''
-        TODO:
-            - Validate mappings file paths
-            - validate mapping partitions criteria (according to mapping partition assumption)
-            - validate mappings have no errors
-            - check there are no missing options for the sources
-    '''
-
     return config
 
 
 def _complete_config_file_with_args(config, args):
     """
-    Completes missing options in the configuration file with the options provided via arguments.
-    Options specified in the configuration file are prioritized, i.e., if the option is specified in
-    the configuration file the option in the arguments is ignored.
+    Completes missing options in the config file with the options provided via arguments.
+    Options specified in the config file are prioritized, i.e., if the option is specified in
+    the config file the option in the arguments is ignored.
 
     :param config: the ConfigParser object
     :type config: argparse
@@ -251,11 +292,11 @@ def _parse_arguments():
 
 def parse_config():
     """
-    Parses command line arguments and the configuration file. It also validates that values are correct.
+    Parses command line arguments and the config file. It also validates that values are correct.
     Arguments in the config file have more priority than command line arguments, if specified, command line
-    arguments will overwrite config file ones.
+    arguments will overwrite config file ones. Logger is configured.
 
-    :return configuration with command line arguments and config file arguments
+    :return config object populated with command line arguments and config file arguments
     :rtype configparser
     """
 
@@ -264,6 +305,11 @@ def parse_config():
     config = ConfigParser(interpolation=ExtendedInterpolation())
     config.read(args.config)
     config = _complete_config_file_with_args(config, args)
-    config = _validate_config(config)
+
+    config = _validate_config_configuration_section(config)
+    _configure_logger(config)
+    config = _validate_config_data_sources_sections(config)
+
+    configuration, data_sources = _get_configuration_and_sources(config)
 
     return config
