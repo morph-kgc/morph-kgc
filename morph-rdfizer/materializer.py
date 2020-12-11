@@ -1,7 +1,7 @@
 import logging
 import pandas as pd
-import morph_utils
 
+import morph_utils
 import relational_source
 
 

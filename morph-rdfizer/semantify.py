@@ -8,17 +8,16 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 
 import logging
+
 from mapping_parser import parse_mappings
 from args_parser import parse_config
 from materializer import materialize
-from morph_utils import get_configuration_and_sources
 
 
 if __name__ == "__main__":
 
     config = parse_config()
 
-    configuration, data_sources = get_configuration_and_sources(config)
-    mappings_df = parse_mappings(data_sources, configuration)
+    mappings_df = parse_mappings(config)
 
     materialize(mappings_df, config)

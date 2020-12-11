@@ -1,4 +1,5 @@
-import logging, mysql.connector
+import logging
+import mysql.connector
 
 
 def relational_db_connection(config, source_name):

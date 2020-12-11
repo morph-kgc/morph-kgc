@@ -1,5 +1,9 @@
-import argparse, os, re, logging
+import argparse
+import os
+import re
+import logging
 import multiprocessing as mp
+
 from configparser import ConfigParser, ExtendedInterpolation
 
 
@@ -17,6 +21,26 @@ def _configure_logger(config, level=logging.INFO):
                             format='%(levelname)s | %(asctime)s | %(message)s', filemode='w', level=level)
     else:
         logging.basicConfig(level=logging.WARNING)
+
+
+def _log_parsed_configuration_and_data_sources(config):
+    """
+    Logs configuration and data sources parsed from the command line arguments and the config file.
+
+    :param config: ConfigParser object
+    :type config: configparser
+    """
+
+    logging.info('CONFIGURATION: ' + str(dict(config.items('CONFIGURATION'))))
+
+    data_sources = {}
+    for section in config.sections():
+        if section != 'CONFIGURATION':
+            ''' if section is not configuration then it is a data source.
+                Mind that DEFAULT section is not triggered with config.sections(). '''
+            data_sources[section] = dict(config.items(section))
+
+    logging.info('DATA SOURCES: ' + str(data_sources))
 
 
 def _dir_path(dir_path):
@@ -126,14 +150,28 @@ def _natural_number_including_zero(number):
 
 
 def _validate_config_data_sources_sections(config):
-    raise ValueError('TODO: validate data sources section')
 
     for section in config.sections():
         if section != 'CONFIGURATION':
             ''' if section is not configuration then it is a data source.
                 Mind that DEFAULT section is not triggered with config.sections(). '''
-            #data_sources[section] = dict(config.items(section))
-            pass
+
+            mapping_file = config.get(section, 'mapping_file')
+            if not os.path.exists(mapping_file):
+                raise FileNotFoundError('mapping_file=' + str(mapping_file) + ' in section ' + section +
+                                        ' of config file could not be found.')
+
+            source_type = config.get(section, 'source_type').lower()
+            if source_type in ['mysql', 'postgresql', 'oracle', 'sqlserver']:
+                # config.get to check that required parameters are provided
+                config.get(section, 'user')
+                config.get(section, 'password')
+                config.get(section, 'host')
+                config.get(section, 'port')
+                config.get(section, 'db')
+            else:
+                raise ValueError('source_type=' + config.get(section, 'source_type') + ' in section ' + section +
+                                 ' of config file is not valid.')
 
     return config
 
@@ -284,5 +322,7 @@ def parse_config():
     config = _validate_config_configuration_section(config)
     _configure_logger(config)
     config = _validate_config_data_sources_sections(config)
+
+    _log_parsed_configuration_and_data_sources(config)
 
     return config
