@@ -19,7 +19,7 @@ by members of the Scientific Data Management Group at TIB. Its development has b
 Maria-Esther Vidal. The implementation has been done by Enrique Iglesias and Guillermo Betancourt under the 
 supervision of David Chaves-Fraga, Samaneh Jozashoori, and Kemele Endris.
 It has been partially modified by the Ontology Engineering Group (OEG) from Universidad Politécnica de Madrid (UPM)."""
-MAPPING_PARSING_QUERY = """
+RML_MAPPING_PARSING_QUERY = """
     prefix rr: <http://www.w3.org/ns/r2rml#>
     prefix rml: <http://semweb.mmlab.be/ns/rml#>
 
@@ -41,6 +41,7 @@ MAPPING_PARSING_QUERY = """
         OPTIONAL { ?_source rml:query ?query . }
 
 # Subject -------------------------------------------------------------------------
+
         OPTIONAL {
             ?triples_map_id rr:subjectMap ?_subject_map .
             OPTIONAL { ?_subject_map rr:template ?subject_template . }
@@ -62,6 +63,7 @@ MAPPING_PARSING_QUERY = """
         OPTIONAL { ?triples_map_id rr:subject ?subject_constant_shortcut . }
 
 # Predicate -----------------------------------------------------------------------
+
         OPTIONAL {
             ?triples_map_id rr:predicateObjectMap ?_predicate_object_map .
             OPTIONAL {
@@ -79,6 +81,7 @@ MAPPING_PARSING_QUERY = """
             OPTIONAL { ?_predicate_object_map rr:predicate ?predicate_constant_shortcut . }
 
 # Object --------------------------------------------------------------------------
+
             OPTIONAL {
                 ?_predicate_object_map rr:objectMap ?_object_map .
                 ?_object_map rr:constant ?object_constant .
@@ -124,9 +127,114 @@ MAPPING_PARSING_QUERY = """
 """
 
 
+R2RML_MAPPING_PARSING_QUERY = """
+    prefix rr: <http://www.w3.org/ns/r2rml#>
+
+# RML compliance: ?data_source ?ref_form ?iterator --------------------------------
+
+    SELECT DISTINCT
+        ?triples_map_id ?data_source ?ref_form ?iterator ?tablename ?query ?_object_map
+        ?subject_template ?subject_reference ?subject_constant ?subject_constant_shortcut
+        ?subject_rdf_class ?subject_termtype ?subject_graph
+        ?predicate_constant ?predicate_template ?predicate_reference ?predicate_constant_shortcut
+        ?object_constant ?object_template ?object_reference ?object_termtype ?object_datatype ?object_language
+        ?object_parent_triples_map ?object_constant_shortcut
+        ?predicate_object_graph
+
+    WHERE {
+        ?triples_map_id rr:logicalTable ?_source .
+        OPTIONAL { ?_source rr:tableName ?tablename . }
+        OPTIONAL { ?_source rr:sqlQuery ?query . }
+
+# Subject -------------------------------------------------------------------------
+
+        OPTIONAL {
+            ?triples_map_id rr:subjectMap ?_subject_map .
+            OPTIONAL { ?_subject_map rr:template ?subject_template . }
+            OPTIONAL { ?_subject_map rr:column ?subject_reference . }
+            OPTIONAL { ?_subject_map rr:constant ?subject_constant . }
+            OPTIONAL { ?_subject_map rr:class ?subject_rdf_class . }
+            OPTIONAL { ?_subject_map rr:termType ?subject_termtype . }
+            OPTIONAL { ?_subject_map rr:graph ?subject_graph . }
+            OPTIONAL {
+            ?_subject_map rr:graphMap ?_graph_structure .
+            ?_graph_structure rr:constant ?subject_graph .
+            }
+            OPTIONAL {
+                ?_subject_map rr:graphMap ?_graph_structure .
+                ?_graph_structure rr:template ?subject_graph .
+            }
+        }
+
+        OPTIONAL { ?triples_map_id rr:subject ?subject_constant_shortcut . }
+        
+# Predicate -----------------------------------------------------------------------
+
+        OPTIONAL {
+            ?triples_map_id rr:predicateObjectMap ?_predicate_object_map .
+            OPTIONAL {
+                ?_predicate_object_map rr:predicateMap ?_predicate_map .
+                ?_predicate_map rr:constant ?predicate_constant .
+            }
+            OPTIONAL {
+                ?_predicate_object_map rr:predicateMap ?_predicate_map .
+                ?_predicate_map rr:template ?predicate_template .
+            }
+            OPTIONAL {
+                ?_predicate_object_map rr:predicateMap ?_predicate_map .
+                ?_predicate_map rr:column ?predicate_reference .
+            }
+            OPTIONAL { ?_predicate_object_map rr:predicate ?predicate_constant_shortcut . }
+
+# Object --------------------------------------------------------------------------
+
+            OPTIONAL {
+                ?_predicate_object_map rr:objectMap ?_object_map .
+                ?_object_map rr:constant ?object_constant .
+                OPTIONAL { ?_object_map rr:termType ?object_termtype . }
+                OPTIONAL { ?_object_map rr:datatype ?object_datatype . }
+                OPTIONAL { ?_object_map rr:language ?object_language . }
+            }
+            OPTIONAL {
+                ?_predicate_object_map rr:objectMap ?_object_map .
+                ?_object_map rr:template ?object_template .
+                OPTIONAL { ?_object_map rr:termType ?object_termtype . }
+                OPTIONAL { ?_object_map rr:datatype ?object_datatype . }
+                OPTIONAL { ?_object_map rr:language ?object_language . }
+            }
+            OPTIONAL {
+                ?_predicate_object_map rr:objectMap ?_object_map .
+                ?_object_map rr:column ?object_reference .
+                OPTIONAL { ?_object_map rr:termType ?object_termtype . }
+                OPTIONAL { ?_object_map rr:datatype ?object_datatype . }
+                OPTIONAL { ?_object_map rr:language ?object_language . }
+            }
+            OPTIONAL {
+                ?_predicate_object_map rr:objectMap ?_object_map .
+                ?_object_map rr:parentTriplesMap ?object_parent_triples_map .
+                OPTIONAL { ?_object_map rr:termType ?object_termtype . }
+            }
+            OPTIONAL {
+                ?_predicate_object_map rr:object ?object_constant_shortcut .
+                OPTIONAL { ?_object_map rr:datatype ?object_datatype . }
+                OPTIONAL { ?_object_map rr:language ?object_language . }
+            }
+            OPTIONAL { ?_predicate_object_map rr:graph ?predicate_object_graph . }
+            OPTIONAL {
+                ?_predicate_object_map rr:graphMap ?_graph_structure .
+                ?_graph_structure rr:constant ?predicate_object_graph .
+            }
+            OPTIONAL {
+                ?_predicate_object_map rr:graphMap ?_graph_structure .
+                ?_graph_structure rr:template ?predicate_object_graph .
+            }
+        }
+    }
+"""
+
+
 JOIN_CONDITION_PARSING_QUERY = """
     prefix rr: <http://www.w3.org/ns/r2rml#>
-    prefix rml: <http://semweb.mmlab.be/ns/rml#>
 
     SELECT DISTINCT ?_object_map ?join_condition ?child_value ?parent_value
     WHERE {
@@ -138,7 +246,6 @@ JOIN_CONDITION_PARSING_QUERY = """
 
 
 def _infer_mapping_language_from_graph(mapping_graph, source_name):
-
     # Check if mapping language is RML
     rml_query = '''
         prefix rml: <http://semweb.mmlab.be/ns/rml#>
@@ -146,6 +253,7 @@ def _infer_mapping_language_from_graph(mapping_graph, source_name):
     '''
     mapping_language_results = mapping_graph.query(rml_query)
     if len(mapping_language_results) > 0:
+        logging.info('RML mapping language inferred for data source ' + source_name + '.')
         return 'RML'
 
     # Check if mapping language is R2RML
@@ -155,6 +263,7 @@ def _infer_mapping_language_from_graph(mapping_graph, source_name):
     '''
     mapping_language_results = mapping_graph.query(r2rml_query)
     if len(mapping_language_results) > 0:
+        logging.info('R2RML mapping language inferred for data source ' + source_name + '.')
         return 'R2RML'
 
     # If mappings file does not have rml:logicalSource or rr:logicalTable it is not valid
@@ -170,11 +279,16 @@ def _parse_mapping_file(source_options, source_name):
         raise Exception(n3_mapping_parse_exception)
 
     mapping_language = _infer_mapping_language_from_graph(mapping_graph, source_name)
+    if mapping_language == 'RML':
+        mapping_parsing_query = RML_MAPPING_PARSING_QUERY
+    elif mapping_language == 'R2RML':
+        mapping_parsing_query = R2RML_MAPPING_PARSING_QUERY
 
-    mapping_query_results = mapping_graph.query(MAPPING_PARSING_QUERY)
+    mapping_query_results = mapping_graph.query(mapping_parsing_query)
+
     join_query_results = mapping_graph.query(JOIN_CONDITION_PARSING_QUERY)
     mappings_df = _transform_mappings_into_dataframe(mapping_query_results, join_query_results, source_options,
-                                                     source_name)
+                                                         source_name)
 
     return mappings_df
 

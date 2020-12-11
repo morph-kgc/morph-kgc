@@ -213,4 +213,4 @@ def materialize(mappings_df, config):
                 result_triples = _materialize_mapping_rule(mapping_rule, subject_maps_df, config)
                 triples.extend(list(result_triples))
 
-
+    print(len(triples))
