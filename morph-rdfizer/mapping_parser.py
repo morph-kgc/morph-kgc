@@ -4,12 +4,13 @@ import pandas as pd
 
 
 MAPPINGS_DATAFRAME_COLUMNS = [
-    'source_name', 'triples_map_id', 'data_source', 'object_map', 'ref_form', 'iterator', 'tablename', 'query',
-    'subject_template', 'subject_reference', 'subject_constant',
-    'subject_rdf_class', 'subject_termtype', 'subject_graph', 'predicate_constant', 'predicate_template',
-    'predicate_reference', 'object_constant', 'object_template', 'object_reference',
-    'object_termtype', 'object_datatype', 'object_language', 'object_parent_triples_map', 'join_conditions',
-    'predicate_object_graph'
+    'source_name', 'source_attributes',
+    'triples_map_id', 'data_source', 'object_map', 'ref_form', 'iterator', 'tablename', 'query',
+    'subject_template', 'subject_reference', 'subject_constant', 'subject_rdf_class', 'subject_termtype',
+    'subject_graph',
+    'predicate_constant', 'predicate_template', 'predicate_reference',
+    'object_constant', 'object_template', 'object_reference', 'object_termtype', 'object_datatype', 'object_language',
+    'object_parent_triples_map', 'join_conditions', 'predicate_object_graph'
 ]
 
 
@@ -136,25 +137,49 @@ JOIN_CONDITION_PARSING_QUERY = """
 """
 
 
-def _parse_mapping_file(mapping_file, source_name):
-    mapping_graph = rdflib.Graph()
+def _infer_mapping_language_from_graph(mapping_graph, source_name):
 
+    # Check if mapping language is RML
+    rml_query = '''
+        prefix rml: <http://semweb.mmlab.be/ns/rml#>
+        SELECT ?s WHERE { ?s rml:logicalSource ?o . } LIMIT 1
+    '''
+    mapping_language_results = mapping_graph.query(rml_query)
+    if len(mapping_language_results) > 0:
+        return 'RML'
+
+    # Check if mapping language is R2RML
+    r2rml_query = '''
+        prefix rr: <http://www.w3.org/ns/r2rml#>
+        SELECT ?s WHERE { ?s rr:logicalTable ?o . } LIMIT 1
+    '''
+    mapping_language_results = mapping_graph.query(r2rml_query)
+    if len(mapping_language_results) > 0:
+        return 'R2RML'
+
+    # If mappings file does not have rml:logicalSource or rr:logicalTable it is not valid
+    raise Exception('It was not possible to infer the mapping language for data source ' + source_name +
+                    '. Check the corresponding mappings file.')
+
+
+def _parse_mapping_file(source_options, source_name):
+    mapping_graph = rdflib.Graph()
     try:
-        '''
-            TO DO: guess mapping file format
-        '''
-        mapping_graph.load(mapping_file, format='n3')
+        mapping_graph.load(source_options['mapping_file'], format='n3')
     except Exception as n3_mapping_parse_exception:
         raise Exception(n3_mapping_parse_exception)
 
+    mapping_language = _infer_mapping_language_from_graph(mapping_graph, source_name)
+
     mapping_query_results = mapping_graph.query(MAPPING_PARSING_QUERY)
     join_query_results = mapping_graph.query(JOIN_CONDITION_PARSING_QUERY)
-    mappings_df = _transform_mappings_into_dataframe(mapping_query_results, join_query_results, source_name)
+    mappings_df = _transform_mappings_into_dataframe(mapping_query_results, join_query_results, source_options,
+                                                     source_name)
 
     return mappings_df
 
 
-def _transform_mappings_into_dataframe(mapping_query_results, join_query_results, source_name):
+def _transform_mappings_into_dataframe(mapping_query_results, join_query_results, source_options, source_name):
     '''
     Transforms the result from a SPARQL query in rdflib to a DataFrame.
 
@@ -173,6 +198,7 @@ def _transform_mappings_into_dataframe(mapping_query_results, join_query_results
     source_mappings_df.drop('object_map', axis=1, inplace=True)
 
     source_mappings_df['source_name'] = source_name
+    source_mappings_df['source_attributes'] = str(dict(source_options))
 
     return source_mappings_df
 
@@ -383,8 +409,7 @@ def parse_mappings(config):
     mappings_df = pd.DataFrame(columns=MAPPINGS_DATAFRAME_COLUMNS)
 
     for source_name, source_options in data_sources.items():
-        source_mappings_df = _parse_mapping_file(source_options['mapping_file'], source_name)
-        '''TO DO: validate mapping rules'''
+        source_mappings_df = _parse_mapping_file(source_options, source_name)
 
         _validate_mapping_partitions(source_mappings_df, configuration['mapping_partitions'], source_name)
         logging.info('Mappings for data source ' + str(source_name) + ' successfully parsed.')
