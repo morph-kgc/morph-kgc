@@ -212,5 +212,3 @@ def materialize(mappings_df, config):
             for i, mapping_rule in mapping_partition.iterrows():
                 result_triples = _materialize_mapping_rule(mapping_rule, subject_maps_df, config)
                 triples.extend(list(result_triples))
-
-    print(len(triples))

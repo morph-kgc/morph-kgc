@@ -5,6 +5,7 @@ import logging
 import multiprocessing as mp
 
 from configparser import ConfigParser, ExtendedInterpolation
+from validator_collection import validators
 
 
 def _configure_logger(config, level=logging.INFO):
@@ -112,6 +113,23 @@ def _existing_file_path(file_path):
     return file_path
 
 
+def _uri(uri):
+    """
+    Validated if a URI is valid. If no URI is provided it is also valid.
+
+    :param uri: URI
+    :type uri: str
+    :return validated URI
+    :rtype str
+    """
+
+    uri = str(uri).strip()
+    if uri != '':
+        validators.url(uri)
+
+    return uri
+
+
 def _processes_number(number):
     """
     Generates a natural number from a given number. Number is converted to int.
@@ -186,11 +204,19 @@ def _validate_config_configuration_section(config):
     :rtype configparser
     """
 
+    config.set('CONFIGURATION', 'default_graph', _uri(config.get('CONFIGURATION', 'default_graph')))
     config.set('CONFIGURATION', 'output_dir', _dir_path(config.get('CONFIGURATION', 'output_dir')))
 
     # output_file has no default value, it is needed to check if it is in the config
     if config.has_option('CONFIGURATION', 'output_file'):
         config.set('CONFIGURATION', 'output_file', _file_name(config.get('CONFIGURATION', 'output_file')))
+
+    output_format = config.get('CONFIGURATION', 'output_format')
+    output_format = str(output_format).lower().strip()
+    valid_options = ['ntriples', 'nquads']
+    if output_format not in valid_options:
+        raise ValueError('Option output_format must be in: ' + str(valid_options))
+    config.set('CONFIGURATION', 'output_format', output_format)
 
     remove_duplicates = config.getboolean('CONFIGURATION', 'remove_duplicates')
     push_down_distincts = config.getboolean('CONFIGURATION', 'push_down_distincts')
@@ -205,6 +231,7 @@ def _validate_config_configuration_section(config):
     valid_options = ['', 's', 'p', 'sp']
     if mapping_partitions not in valid_options:
         raise ValueError('Option mapping_partitions must be in: ' + str(valid_options))
+    config.set('CONFIGURATION', 'mapping_partitions', mapping_partitions)
 
     config.set('CONFIGURATION', 'number_of_processes',
                str(_processes_number(config.get('CONFIGURATION', 'number_of_processes'))))
@@ -239,11 +266,15 @@ def _complete_config_file_with_args(config, args):
 
     ''' If parameters are not provided in the config file, take them from arguments.
         mind that ConfigParser store options as strings'''
+    if not config.has_option('CONFIGURATION', 'default_graph'):
+        config.set('CONFIGURATION', 'default_graph', args.default_graph)
     if not config.has_option('CONFIGURATION', 'output_dir'):
         config.set('CONFIGURATION', 'output_dir', args.output_dir)
     # output_file has no default value, it is needed to check if it is in the args
     if not config.has_option('CONFIGURATION', 'output_file') and 'output_file' in args:
         config.set('CONFIGURATION', 'output_file', args.output_file)
+    if not config.has_option('CONFIGURATION', 'output_format'):
+        config.set('CONFIGURATION', 'output_format', args.output_format)
     if not config.has_option('CONFIGURATION', 'remove_duplicates'):
         config.set('CONFIGURATION', 'remove_duplicates', str(args.remove_duplicates))
     if not config.has_option('CONFIGURATION', 'push_down_distincts'):
@@ -277,11 +308,16 @@ def _parse_arguments():
 
     parser.add_argument('-c', '--config', type=_existing_file_path, required=True,
                         help='Path to the configuration file.')
+    parser.add_argument('-g', '--default_graph', default='', type=_uri,
+                        help='Default graph to add triples to.')
     parser.add_argument('-d', '--output_dir', default='output', type=str,
                         help='Path to the directory storing the results.')
-    parser.add_argument('-f', '--output_file', type=str,
+    parser.add_argument('-o', '--output_file', type=str,
                         help='If a file name is specified, all the results will be stored in this file. '
                              'If no file is specified the results will be stored in multiple files.')
+    parser.add_argument('-f', '--output_format', default='ntriples', type=str,
+                        choices=['ntriples', 'nquads'],
+                        help='Output serialization format.')
     parser.add_argument('-r', '--remove_duplicates', default='no', type=str,
                         choices=['yes', 'no', 'on', 'off', 'true', 'false', '0', '1'],
                         help='Whether to remove duplicated triples in the results.')
