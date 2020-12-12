@@ -41,7 +41,6 @@ RML_MAPPING_PARSING_QUERY = """
         OPTIONAL { ?_source rml:query ?query . }
 
 # Subject -------------------------------------------------------------------------
-
         OPTIONAL {
             ?triples_map_id rr:subjectMap ?_subject_map .
             OPTIONAL { ?_subject_map rr:template ?subject_template . }
@@ -63,7 +62,6 @@ RML_MAPPING_PARSING_QUERY = """
         OPTIONAL { ?triples_map_id rr:subject ?subject_constant_shortcut . }
 
 # Predicate -----------------------------------------------------------------------
-
         OPTIONAL {
             ?triples_map_id rr:predicateObjectMap ?_predicate_object_map .
             OPTIONAL {
@@ -81,7 +79,6 @@ RML_MAPPING_PARSING_QUERY = """
             OPTIONAL { ?_predicate_object_map rr:predicate ?predicate_constant_shortcut . }
 
 # Object --------------------------------------------------------------------------
-
             OPTIONAL {
                 ?_predicate_object_map rr:objectMap ?_object_map .
                 ?_object_map rr:constant ?object_constant .
@@ -131,7 +128,6 @@ R2RML_MAPPING_PARSING_QUERY = """
     prefix rr: <http://www.w3.org/ns/r2rml#>
 
 # RML compliance: ?data_source ?ref_form ?iterator --------------------------------
-
     SELECT DISTINCT
         ?triples_map_id ?data_source ?ref_form ?iterator ?tablename ?query ?_object_map
         ?subject_template ?subject_reference ?subject_constant ?subject_constant_shortcut
@@ -147,7 +143,6 @@ R2RML_MAPPING_PARSING_QUERY = """
         OPTIONAL { ?_source rr:sqlQuery ?query . }
 
 # Subject -------------------------------------------------------------------------
-
         OPTIONAL {
             ?triples_map_id rr:subjectMap ?_subject_map .
             OPTIONAL { ?_subject_map rr:template ?subject_template . }
@@ -169,7 +164,6 @@ R2RML_MAPPING_PARSING_QUERY = """
         OPTIONAL { ?triples_map_id rr:subject ?subject_constant_shortcut . }
         
 # Predicate -----------------------------------------------------------------------
-
         OPTIONAL {
             ?triples_map_id rr:predicateObjectMap ?_predicate_object_map .
             OPTIONAL {
@@ -187,7 +181,6 @@ R2RML_MAPPING_PARSING_QUERY = """
             OPTIONAL { ?_predicate_object_map rr:predicate ?predicate_constant_shortcut . }
 
 # Object --------------------------------------------------------------------------
-
             OPTIONAL {
                 ?_predicate_object_map rr:objectMap ?_object_map .
                 ?_object_map rr:constant ?object_constant .
@@ -369,7 +362,7 @@ def _append_mapping_rule(mappings_df, mapping_rule):
 
 
 def _remove_duplicated_mapping_rules(mappings_df):
-    '''ensure there are no duplicate rules'''
+    ''' Ensure there are no duplicate rules '''
 
     num_mapping_rules = len(mappings_df)
     mappings_df.drop_duplicates(inplace=True)

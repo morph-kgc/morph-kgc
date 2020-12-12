@@ -233,9 +233,12 @@ def _validate_config_configuration_section(config):
 
     mapping_partitions = config.get('CONFIGURATION', 'mapping_partitions')
     mapping_partitions = str(mapping_partitions).lower().strip()
-    valid_options = ['', 's', 'p', 'sp']
+    valid_options = ['', 's', 'p', 'g', 'sp', 'sg', 'pg', 'spg']
     if mapping_partitions not in valid_options:
         raise ValueError('Option mapping_partitions must be in: ' + str(valid_options))
+    elif output_format == 'nquads' and 'g' in mapping_partitions:
+        raise Exception('Option mapping_partitions is ' + mapping_partitions + ', but graphs cannot be used as '
+                        'mapping partition criteria if output_format is nquads.')
     config.set('CONFIGURATION', 'mapping_partitions', mapping_partitions)
 
     config.set('CONFIGURATION', 'number_of_processes',
@@ -327,7 +330,7 @@ def _parse_arguments():
                         choices=['yes', 'no', 'on', 'off', 'true', 'false', '0', '1'],
                         help='Whether to remove duplicated triples in the results.')
     parser.add_argument('-p', '--mapping_partitions', nargs='?', default='', const='sp',
-                        choices=['s', 'p', 'sp'],
+                        choices=['', 's', 'p', 'g', 'sp', 'sg', 'pg', 'spg'],
                         help='Partitioning criteria for mappings. s for using subjects and p for using predicates. If '
                              'this parameter is not provided, no mapping partitions will be considered.')
     parser.add_argument('--push_down_distincts', default='no', type=str,
