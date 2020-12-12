@@ -216,6 +216,11 @@ def _validate_config_configuration_section(config):
     valid_options = ['ntriples', 'nquads']
     if output_format not in valid_options:
         raise ValueError('Option output_format must be in: ' + str(valid_options))
+    elif output_format == 'nquads' and config.get('CONFIGURATION', 'default_graph') == '':
+        raise Exception('It is necessary to provide a valid default_graph value if output_format option is ' +
+                        output_format + '.')
+
+
     config.set('CONFIGURATION', 'output_format', output_format)
 
     remove_duplicates = config.getboolean('CONFIGURATION', 'remove_duplicates')
