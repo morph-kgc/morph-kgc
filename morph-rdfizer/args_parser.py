@@ -355,7 +355,8 @@ def _parse_arguments():
                         help='Maximum number of rows of data processed at once by a process.')
     parser.add_argument('-l', '--logs', nargs='?', const='', type=str,
                         help='File path to write logs to. If no path is provided logs are redirected to stdout.')
-    parser.add_argument('-v', '--version', action='version', version='Morph-RDFizer ' + __version__)
+    parser.add_argument('-v', '--version', action='version', version='Morph-RDFizer ' + __version__ + ' | ' +
+                                                                     __copyright__)
 
     return parser.parse_args()
 
