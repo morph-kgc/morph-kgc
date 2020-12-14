@@ -17,6 +17,8 @@ import pandas as pd
 import morph_utils
 import relational_source
 
+from urllib.parse import quote
+
 
 def _get_references_in_mapping_rule(mapping_rule, only_subject_map=False):
     references = []
@@ -122,6 +124,9 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
         for col_name in list(query_results_df.columns):
             query_results_df[col_name] = query_results_df[col_name].astype(str)
 
+        # URI encoding
+        query_results_df = query_results_df.applymap(lambda x: quote(x))
+
         query_results_df['triple'] = ''
         if mapping_rule['subject_template']:
             query_results_df = _materialize_template(
@@ -161,6 +166,8 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
         else:
             query = None
 
+        logging.info(query)
+
         db_connection = relational_source.relational_db_connection(config, str(mapping_rule['source_name']))
         try:
             query_results_df = pd.read_sql(query, con=db_connection)
@@ -170,6 +177,9 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
 
         for col_name in list(query_results_df.columns):
             query_results_df[col_name] = query_results_df[col_name].astype(str)
+
+        # URI encoding
+        query_results_df = query_results_df.applymap(lambda x: quote(x))
 
         query_results_df['triple'] = ''
         if mapping_rule['subject_template']:

@@ -17,7 +17,7 @@ import pandas as pd
 
 
 MAPPINGS_DATAFRAME_COLUMNS = [
-    'source_name', 'source_attributes',
+    'source_name',
     'triples_map_id', 'data_source', 'object_map', 'ref_form', 'iterator', 'tablename', 'query',
     'subject_template', 'subject_reference', 'subject_constant', 'subject_rdf_class', 'subject_termtype',
     'subject_graph',
@@ -291,13 +291,12 @@ def _parse_mapping_file(source_options, source_name):
     mapping_query_results = mapping_graph.query(mapping_parsing_query)
 
     join_query_results = mapping_graph.query(JOIN_CONDITION_PARSING_QUERY)
-    mappings_df = _transform_mappings_into_dataframe(mapping_query_results, join_query_results, source_options,
-                                                         source_name)
+    mappings_df = _transform_mappings_into_dataframe(mapping_query_results, join_query_results, source_name)
 
     return mappings_df
 
 
-def _transform_mappings_into_dataframe(mapping_query_results, join_query_results, source_options, source_name):
+def _transform_mappings_into_dataframe(mapping_query_results, join_query_results, source_name):
     '''
     Transforms the result from a SPARQL query in rdflib to a DataFrame.
 
@@ -316,7 +315,6 @@ def _transform_mappings_into_dataframe(mapping_query_results, join_query_results
     source_mappings_df.drop('object_map', axis=1, inplace=True)
 
     source_mappings_df['source_name'] = source_name
-    source_mappings_df['source_attributes'] = str(dict(source_options))
 
     return source_mappings_df
 
