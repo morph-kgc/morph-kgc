@@ -1,3 +1,16 @@
+""" Morph-RDFizer """
+
+__author__ = "Julián Arenas-Guerrero"
+__copyright__ = "Copyright (C) 2020 Julián Arenas-Guerrero"
+__credits__ = ["Julián Arenas-Guerrero"]
+
+__license__ = "Apache-2.0"
+__version__ = "0.1"
+__maintainer__ = "Julián Arenas-Guerrero"
+__email__ = "arenas.guerrero.julian@outlook.com"
+__status__ = 'Prototype'
+
+
 import rdflib
 import logging
 import pandas as pd
@@ -58,7 +71,6 @@ RML_MAPPING_PARSING_QUERY = """
                 ?_graph_structure rr:template ?subject_graph .
             }
         }
-        
         OPTIONAL { ?triples_map_id rr:subject ?subject_constant_shortcut . }
 
 # Predicate -----------------------------------------------------------------------
@@ -160,7 +172,6 @@ R2RML_MAPPING_PARSING_QUERY = """
                 ?_graph_structure rr:template ?subject_graph .
             }
         }
-
         OPTIONAL { ?triples_map_id rr:subject ?subject_constant_shortcut . }
         
 # Predicate -----------------------------------------------------------------------
@@ -393,6 +404,11 @@ def _validate_mapping_partitions(mappings_df, mapping_partitions, source_name):
             raise Exception('Invalid mapping partitions criteria ' + mapping_partitions +
                             ': mappings cannot be partitioned by predicate because mappings of source ' + source_name +
                             ' contain predicate terms that are rr:column or rml:reference.')
+    if 'g' in mapping_partitions:
+        '''
+            TODO
+        '''
+        pass
 
 
 def _get_invariable_part_of_template(template):
@@ -432,6 +448,11 @@ def _get_mapping_partitions_invariable_parts(mappings_df, mapping_partitions):
                 raise Exception('An invalid predicate term was found at triples map ' + mapping_rule['triples_map_id'] +
                                 '. Predicate terms must be constants or templates in order to generate valid mapping '
                                 'partitions by predicate.')
+        if 'g' in mapping_partitions:
+            '''
+                TODO
+            '''
+            pass
 
     return mappings_df
 
@@ -468,6 +489,11 @@ def _generate_mapping_partitions(mappings_df, mapping_partitions):
                 num_partition = num_partition + 1
                 root_last_partition = mapping_rule['predicate_invariable_part']
                 mappings_df.at[i, 'predicate_partition'] = str(num_partition)
+    if 'g' in mapping_partitions:
+        '''
+            TODO
+        '''
+        pass
 
     ''' if subject and predicate are partitioning criteria separate then with - '''
     if 's' in mapping_partitions and 'p' in mapping_partitions:

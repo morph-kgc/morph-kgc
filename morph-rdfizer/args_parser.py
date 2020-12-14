@@ -1,3 +1,16 @@
+""" Morph-RDFizer """
+
+__author__ = "Julián Arenas-Guerrero"
+__copyright__ = "Copyright (C) 2020 Julián Arenas-Guerrero"
+__credits__ = ["Julián Arenas-Guerrero"]
+
+__license__ = "Apache-2.0"
+__version__ = "0.1"
+__maintainer__ = "Julián Arenas-Guerrero"
+__email__ = "arenas.guerrero.julian@outlook.com"
+__status__ = 'Prototype'
+
+
 import argparse
 import os
 import re
@@ -309,12 +322,12 @@ def _parse_arguments():
 
     parser = argparse.ArgumentParser(
         description='Generate knowledge graphs from heterogeneous data sources.',
-        epilog='Transform data into knowledge.',
+        epilog=__copyright__,
         allow_abbrev=False,
         argument_default=argparse.SUPPRESS
     )
 
-    parser.add_argument('-c', '--config', type=_existing_file_path, required=True,
+    parser.add_argument('config', type=_existing_file_path,
                         help='Path to the configuration file.')
     parser.add_argument('-g', '--default_graph', default='', type=_uri,
                         help='Default graph to add triples to.')
@@ -342,7 +355,7 @@ def _parse_arguments():
                         help='Maximum number of rows of data processed at once by a process.')
     parser.add_argument('-l', '--logs', nargs='?', const='', type=str,
                         help='File path to write logs to. If no path is provided logs are redirected to stdout.')
-    parser.add_argument('-v', '--version', action='version', version='Morph-RDFizer 0.1')
+    parser.add_argument('-v', '--version', action='version', version='Morph-RDFizer ' + __version__)
 
     return parser.parse_args()
 
