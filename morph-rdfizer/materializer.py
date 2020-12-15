@@ -125,7 +125,8 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
             query_results_df[col_name] = query_results_df[col_name].astype(str)
 
         # URI encoding
-        query_results_df = query_results_df.applymap(lambda x: quote(x))
+        # Look at R2RML spec, rr:columns are not to be percent encoded
+        query_results_df = query_results_df.applymap(lambda x: quote(x, safe='://'))
 
         query_results_df['triple'] = ''
         if mapping_rule['subject_template']:
@@ -179,7 +180,8 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
             query_results_df[col_name] = query_results_df[col_name].astype(str)
 
         # URI encoding
-        query_results_df = query_results_df.applymap(lambda x: quote(x))
+        # Look at R2RML spec, rr:columns are not to be percent encoded
+        query_results_df = query_results_df.applymap(lambda x: quote(x, safe='://'))
 
         query_results_df['triple'] = ''
         if mapping_rule['subject_template']:
