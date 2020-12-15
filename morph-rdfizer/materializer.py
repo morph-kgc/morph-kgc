@@ -237,3 +237,8 @@ def materialize(mappings_df, config):
             for i, mapping_rule in mapping_partition.iterrows():
                 result_triples = _materialize_mapping_rule(mapping_rule, subject_maps_df, config)
                 triples.extend(list(result_triples))
+
+    f = open(config.get('CONFIGURATION', 'output_file'), "w")
+    for triple in triples:
+        f.write(triple + '. \n')
+    f.close()
