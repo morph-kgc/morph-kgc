@@ -1,1 +1,1 @@
-# morph-rdfizer
+# morph-kgc

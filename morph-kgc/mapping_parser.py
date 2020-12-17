@@ -1,4 +1,4 @@
-""" Morph-RDFizer """
+""" Morph-KGC """
 
 __author__ = "Julián Arenas-Guerrero"
 __copyright__ = "Copyright (C) 2020 Julián Arenas-Guerrero"
@@ -28,8 +28,8 @@ MAPPINGS_DATAFRAME_COLUMNS = [
 
 
 """This query has been reused from SDM-RDFizer (https://github.com/SDM-TIB/SDM-RDFizer). SDM-RDFizer has been developed
-by members of the Scientific Data Management Group at TIB. Its development has been coordinated and supervised by 
-Maria-Esther Vidal. The implementation has been done by Enrique Iglesias and Guillermo Betancourt under the 
+by members of the Scientific Data Management Group at TIB. Its development has been coordinated and supervised by
+Maria-Esther Vidal. The implementation has been done by Enrique Iglesias and Guillermo Betancourt under the
 supervision of David Chaves-Fraga, Samaneh Jozashoori, and Kemele Endris.
 It has been partially modified by the Ontology Engineering Group (OEG) from Universidad Politécnica de Madrid (UPM)."""
 RML_MAPPING_PARSING_QUERY = """
@@ -173,7 +173,7 @@ R2RML_MAPPING_PARSING_QUERY = """
             }
         }
         OPTIONAL { ?triples_map_id rr:subject ?subject_constant_shortcut . }
-        
+
 # Predicate -----------------------------------------------------------------------
         OPTIONAL {
             ?triples_map_id rr:predicateObjectMap ?_predicate_object_map .
@@ -384,9 +384,9 @@ def _remove_duplicated_mapping_rules(mappings_df):
 def _validate_mapping_partitions(mappings_df, mapping_partitions, source_name):
     if 's' in mapping_partitions:
         '''
-        Subject is used as partitioning criteria. 
+        Subject is used as partitioning criteria.
         If there is any subject that is a reference that means it is not a template nor a constant, and it cannot
-        be used as partitioning criteria.        
+        be used as partitioning criteria.
         '''
         if mappings_df['subject_reference'].notna().any():
             raise Exception('Invalid mapping partitions criteria ' + mapping_partitions + ': mappings cannot be '
@@ -394,7 +394,7 @@ def _validate_mapping_partitions(mappings_df, mapping_partitions, source_name):
                             ' contain subject terms that are rr:column or rml:reference.')
     if 'p' in mapping_partitions:
         '''
-        Predicate is used as partitioning criteria. 
+        Predicate is used as partitioning criteria.
         If there is any predicate that is a reference that means it is not a template nor a constant, and it cannot
         be used as partitioning criteria.
         '''
