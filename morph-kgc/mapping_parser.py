@@ -39,11 +39,11 @@ RML_MAPPING_PARSING_QUERY = """
 
     SELECT DISTINCT
         ?triples_map_id ?data_source ?ref_form ?iterator ?tablename ?query ?_object_map
-        ?subject_template ?subject_reference ?subject_constant ?subject_constant_shortcut
+        ?subject_template ?subject_reference ?subject_constant
         ?subject_rdf_class ?subject_termtype ?subject_graph
-        ?predicate_constant ?predicate_template ?predicate_reference ?predicate_constant_shortcut
+        ?predicate_constant ?predicate_template ?predicate_reference
         ?object_constant ?object_template ?object_reference ?object_termtype ?object_datatype ?object_language
-        ?object_parent_triples_map ?object_constant_shortcut
+        ?object_parent_triples_map
         ?predicate_object_graph
 
     WHERE {
@@ -72,7 +72,7 @@ RML_MAPPING_PARSING_QUERY = """
                 ?_graph_structure rr:template ?subject_graph_reference .
             }
         }
-        OPTIONAL { ?triples_map_id rr:subject ?subject_constant_shortcut . }
+        OPTIONAL { ?triples_map_id rr:subject ?subject_constant . }
 
 # Predicate -----------------------------------------------------------------------
         OPTIONAL {
@@ -89,7 +89,7 @@ RML_MAPPING_PARSING_QUERY = """
                 ?_predicate_object_map rr:predicateMap ?_predicate_map .
                 ?_predicate_map rml:reference ?predicate_reference .
             }
-            OPTIONAL { ?_predicate_object_map rr:predicate ?predicate_constant_shortcut . }
+            OPTIONAL { ?_predicate_object_map rr:predicate ?predicate_constant . }
 
 # Object --------------------------------------------------------------------------
             OPTIONAL {
@@ -119,7 +119,7 @@ RML_MAPPING_PARSING_QUERY = """
                 OPTIONAL { ?_object_map rr:termType ?object_termtype . }
             }
             OPTIONAL {
-                ?_predicate_object_map rr:object ?object_constant_shortcut .
+                ?_predicate_object_map rr:object ?object_constant .
                 OPTIONAL { ?_object_map rr:datatype ?object_datatype . }
                 OPTIONAL { ?_object_map rr:language ?object_language . }
             }
@@ -143,11 +143,11 @@ R2RML_MAPPING_PARSING_QUERY = """
 # RML compliance: ?data_source ?ref_form ?iterator --------------------------------
     SELECT DISTINCT
         ?triples_map_id ?data_source ?ref_form ?iterator ?tablename ?query ?_object_map
-        ?subject_template ?subject_reference ?subject_constant ?subject_constant_shortcut
+        ?subject_template ?subject_reference ?subject_constant
         ?subject_rdf_class ?subject_termtype ?subject_graph_constant ?subject_graph_reference
-        ?predicate_constant ?predicate_template ?predicate_reference ?predicate_constant_shortcut
+        ?predicate_constant ?predicate_template ?predicate_reference
         ?object_constant ?object_template ?object_reference ?object_termtype ?object_datatype ?object_language
-        ?object_parent_triples_map ?object_constant_shortcut
+        ?object_parent_triples_map
         ?predicate_object_graph_constant ?predicate_object_graph_reference
 
     WHERE {
@@ -173,7 +173,7 @@ R2RML_MAPPING_PARSING_QUERY = """
                 ?_graph_structure rr:template ?subject_graph_reference .
             }
         }
-        OPTIONAL { ?triples_map_id rr:subject ?subject_constant_shortcut . }
+        OPTIONAL { ?triples_map_id rr:subject ?subject_constant . }
 
 # Predicate -----------------------------------------------------------------------
         OPTIONAL {
@@ -190,7 +190,7 @@ R2RML_MAPPING_PARSING_QUERY = """
                 ?_predicate_object_map rr:predicateMap ?_predicate_map .
                 ?_predicate_map rr:column ?predicate_reference .
             }
-            OPTIONAL { ?_predicate_object_map rr:predicate ?predicate_constant_shortcut . }
+            OPTIONAL { ?_predicate_object_map rr:predicate ?predicate_constant . }
 
 # Object --------------------------------------------------------------------------
             OPTIONAL {
@@ -220,7 +220,7 @@ R2RML_MAPPING_PARSING_QUERY = """
                 OPTIONAL { ?_object_map rr:termType ?object_termtype . }
             }
             OPTIONAL {
-                ?_predicate_object_map rr:object ?object_constant_shortcut .
+                ?_predicate_object_map rr:object ?object_constant .
                 OPTIONAL { ?_object_map rr:datatype ?object_datatype . }
                 OPTIONAL { ?_object_map rr:language ?object_language . }
             }
@@ -346,24 +346,15 @@ def _append_mapping_rule(mappings_df, mapping_rule):
     mappings_df.at[i, 'query'] = mapping_rule.query
     mappings_df.at[i, 'subject_template'] = mapping_rule.subject_template
     mappings_df.at[i, 'subject_reference'] = mapping_rule.subject_reference
-    if mapping_rule.subject_constant:
-        mappings_df.at[i, 'subject_constant'] = mapping_rule.subject_constant
-    else:
-        mappings_df.at[i, 'subject_constant'] = mapping_rule.subject_constant_shortcut
+    mappings_df.at[i, 'subject_constant'] = mapping_rule.subject_constant
     mappings_df.at[i, 'subject_rdf_class'] = mapping_rule.subject_rdf_class
     mappings_df.at[i, 'subject_termtype'] = mapping_rule.subject_termtype
     mappings_df.at[i, 'subject_graph_constant'] = mapping_rule.subject_graph_constant
     mappings_df.at[i, 'subject_graph_reference'] = mapping_rule.subject_graph_reference
-    if mapping_rule.predicate_constant:
-        mappings_df.at[i, 'predicate_constant'] = mapping_rule.predicate_constant
-    else:
-        mappings_df.at[i, 'predicate_constant'] = mapping_rule.predicate_constant_shortcut
+    mappings_df.at[i, 'predicate_constant'] = mapping_rule.predicate_constant
     mappings_df.at[i, 'predicate_template'] = mapping_rule.predicate_template
     mappings_df.at[i, 'predicate_reference'] = mapping_rule.predicate_reference
-    if mapping_rule.object_constant:
-        mappings_df.at[i, 'object_constant'] = mapping_rule.object_constant
-    else:
-        mappings_df.at[i, 'object_constant'] = mapping_rule.object_constant_shortcut
+    mappings_df.at[i, 'object_constant'] = mapping_rule.object_constant
     mappings_df.at[i, 'object_template'] = mapping_rule.object_template
     mappings_df.at[i, 'object_reference'] = mapping_rule.object_reference
     mappings_df.at[i, 'object_termtype'] = mapping_rule.object_termtype
