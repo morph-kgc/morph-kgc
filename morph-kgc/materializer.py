@@ -13,6 +13,7 @@ __status__ = 'Prototype'
 
 import logging
 import pandas as pd
+import numpy as np
 
 import morph_utils
 import relational_source
@@ -22,19 +23,19 @@ from urllib.parse import quote
 
 def _get_references_in_mapping_rule(mapping_rule, only_subject_map=False):
     references = []
-    if mapping_rule['subject_template']:
+    if pd.notna(mapping_rule['subject_template']):
         references.extend(morph_utils.get_references_in_template(str(mapping_rule['subject_template'])))
-    elif mapping_rule['subject_reference']:
+    elif pd.notna(mapping_rule['subject_reference']):
         references.append(str(mapping_rule['subject_reference']))
 
     if not only_subject_map:
-        if mapping_rule['predicate_template']:
+        if pd.notna(mapping_rule['predicate_template']):
             references.extend(morph_utils.get_references_in_template(str(mapping_rule['predicate_template'])))
-        elif mapping_rule['predicate_reference']:
+        elif pd.notna(mapping_rule['predicate_reference']):
             references.append(str(mapping_rule['predicate_reference']))
-        if mapping_rule['object_template']:
+        if pd.notna(mapping_rule['object_template']):
             references.extend(morph_utils.get_references_in_template(str(mapping_rule['object_template'])))
-        elif mapping_rule['object_reference']:
+        elif pd.notna(mapping_rule['object_reference']):
             references.append(str(mapping_rule['object_reference']))
 
     return set(references)
@@ -73,7 +74,7 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
     if config.getboolean('CONFIGURATION', 'push_down_distincts'):
         query = query + 'DISTINCT '
 
-    if mapping_rule['object_parent_triples_map']:
+    if pd.notna(mapping_rule['object_parent_triples_map']):
         child_references = _get_references_in_mapping_rule(mapping_rule)
 
         parent_triples_map_rule = \
@@ -118,7 +119,7 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
         try:
             query_results_df = pd.read_sql(query, con=db_connection)
         except:
-            raise Except('Query ' + query + ' has failed to execute.')
+            raise Exception('Query ' + query + ' has failed to execute.')
         db_connection.close()
 
         for col_name in list(query_results_df.columns):
@@ -129,28 +130,28 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
         query_results_df = query_results_df.applymap(lambda x: quote(x, safe='://'))
 
         query_results_df['triple'] = ''
-        if mapping_rule['subject_template']:
+        if pd.notna(mapping_rule['subject_template']):
             query_results_df = _materialize_template(
                 query_results_df, mapping_rule['subject_template'], columns_alias='child_')
-        elif mapping_rule['subject_constant']:
+        elif pd.notna(mapping_rule['subject_constant']):
             query_results_df = _materialize_constant(query_results_df, mapping_rule['subject_constant'])
-        elif mapping_rule['subject_reference']:
+        elif pd.notna(mapping_rule['subject_reference']):
             query_results_df = _materialize_reference(
                 query_results_df, mapping_rule['subject_reference'], columns_alias='child_')
-        if mapping_rule['predicate_template']:
+        if pd.notna(mapping_rule['predicate_template']):
             query_results_df = _materialize_template(
                 query_results_df, mapping_rule['predicate_template'], columns_alias='child_')
-        elif mapping_rule['predicate_constant']:
+        elif pd.notna(mapping_rule['predicate_constant']):
             query_results_df = _materialize_constant(query_results_df, mapping_rule['predicate_constant'])
-        elif mapping_rule['predicate_reference']:
+        elif pd.notna(mapping_rule['predicate_reference']):
             query_results_df = _materialize_reference(
                 query_results_df, mapping_rule['predicate_reference'], columns_alias='child_')
-        if parent_triples_map_rule['subject_template']:
+        if pd.notna(parent_triples_map_rule['subject_template']):
             query_results_df = _materialize_template(
                 query_results_df, parent_triples_map_rule['subject_template'], columns_alias='parent_')
-        elif parent_triples_map_rule['subject_constant']:
+        elif pd.notna(parent_triples_map_rule['subject_constant']):
             query_results_df = _materialize_constant(query_results_df, parent_triples_map_rule['subject_constant'])
-        elif parent_triples_map_rule['subject_reference']:
+        elif pd.notna(parent_triples_map_rule['subject_reference']):
             query_results_df = _materialize_reference(
                 query_results_df, parent_triples_map_rule['subject_reference'], columns_alias='parent_')
 
@@ -173,7 +174,7 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
         try:
             query_results_df = pd.read_sql(query, con=db_connection)
         except:
-            raise Except('Query ' + query + ' has failed to execute.')
+            raise Exception('Query ' + query + ' has failed to execute.')
         db_connection.close()
 
         for col_name in list(query_results_df.columns):
@@ -184,33 +185,33 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
         query_results_df = query_results_df.applymap(lambda x: quote(x, safe='://'))
 
         query_results_df['triple'] = ''
-        if mapping_rule['subject_template']:
+        if pd.notna(mapping_rule['subject_template']):
             query_results_df = _materialize_template(query_results_df, mapping_rule['subject_template'])
-        elif mapping_rule['subject_constant']:
+        elif pd.notna(mapping_rule['subject_constant']):
             query_results_df = _materialize_constant(query_results_df, mapping_rule['subject_constant'])
-        elif mapping_rule['subject_reference']:
+        elif pd.notna(mapping_rule['subject_reference']):
             query_results_df = _materialize_reference(query_results_df, mapping_rule['subject_reference'])
-        if mapping_rule['predicate_template']:
+        if pd.notna(mapping_rule['predicate_template']):
             query_results_df = _materialize_template(query_results_df, mapping_rule['predicate_template'])
-        elif mapping_rule['predicate_constant']:
+        elif pd.notna(mapping_rule['predicate_constant']):
             query_results_df = _materialize_constant(query_results_df, mapping_rule['predicate_constant'])
-        elif mapping_rule['predicate_reference']:
+        elif pd.notna(mapping_rule['predicate_reference']):
             query_results_df = _materialize_reference(query_results_df, mapping_rule['predicate_reference'])
-        if mapping_rule['object_template']:
+        if pd.notna(mapping_rule['object_template']):
             query_results_df = _materialize_template(query_results_df, mapping_rule['object_template'])
-        elif mapping_rule['object_constant']:
+        elif pd.notna(mapping_rule['object_constant']):
             query_results_df = _materialize_constant(query_results_df, mapping_rule['object_constant'])
-        elif mapping_rule['object_reference']:
+        elif pd.notna(mapping_rule['object_reference']):
             query_results_df = _materialize_reference(query_results_df, mapping_rule['object_reference'])
 
     return query_results_df['triple']
 
 
-
 def _get_subject_maps_dict_from_mappings(mappings_df):
     subject_maps_df = mappings_df[[
         'triples_map_id', 'data_source', 'ref_form', 'iterator', 'tablename', 'query', 'subject_template',
-        'subject_reference', 'subject_constant', 'subject_rdf_class', 'subject_termtype', 'subject_graph']
+        'subject_reference', 'subject_constant', 'subject_termtype', 'subject_graph_constant',
+        'subject_graph_reference']
     ]
 
     subject_maps_df = subject_maps_df.drop_duplicates()
@@ -237,6 +238,8 @@ def materialize(mappings_df, config):
             for i, mapping_rule in mapping_partition.iterrows():
                 result_triples = _materialize_mapping_rule(mapping_rule, subject_maps_df, config)
                 triples.extend(list(result_triples))
+
+    print(len(triples))
 
     f = open(config.get('CONFIGURATION', 'output_file'), "w")
     for triple in triples:

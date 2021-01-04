@@ -20,10 +20,11 @@ MAPPINGS_DATAFRAME_COLUMNS = [
     'source_name',
     'triples_map_id', 'data_source', 'object_map', 'ref_form', 'iterator', 'tablename', 'query',
     'subject_template', 'subject_reference', 'subject_constant', 'subject_rdf_class', 'subject_termtype',
-    'subject_graph',
+    'subject_graph_constant', 'subject_graph_reference',
     'predicate_constant', 'predicate_template', 'predicate_reference',
     'object_constant', 'object_template', 'object_reference', 'object_termtype', 'object_datatype', 'object_language',
-    'object_parent_triples_map', 'join_conditions', 'predicate_object_graph'
+    'object_parent_triples_map', 'join_conditions', 'predicate_object_graph_constant',
+    'predicate_object_graph_reference'
 ]
 
 
@@ -61,14 +62,14 @@ RML_MAPPING_PARSING_QUERY = """
             OPTIONAL { ?_subject_map rr:constant ?subject_constant . }
             OPTIONAL { ?_subject_map rr:class ?subject_rdf_class . }
             OPTIONAL { ?_subject_map rr:termType ?subject_termtype . }
-            OPTIONAL { ?_subject_map rr:graph ?subject_graph . }
+            OPTIONAL { ?_subject_map rr:graph ?subject_graph_constant . }
             OPTIONAL {
             ?_subject_map rr:graphMap ?_graph_structure .
-            ?_graph_structure rr:constant ?subject_graph .
+            ?_graph_structure rr:constant ?subject_graph_constant .
             }
             OPTIONAL {
                 ?_subject_map rr:graphMap ?_graph_structure .
-                ?_graph_structure rr:template ?subject_graph .
+                ?_graph_structure rr:template ?subject_graph_reference .
             }
         }
         OPTIONAL { ?triples_map_id rr:subject ?subject_constant_shortcut . }
@@ -122,14 +123,14 @@ RML_MAPPING_PARSING_QUERY = """
                 OPTIONAL { ?_object_map rr:datatype ?object_datatype . }
                 OPTIONAL { ?_object_map rr:language ?object_language . }
             }
-            OPTIONAL { ?_predicate_object_map rr:graph ?predicate_object_graph . }
+            OPTIONAL { ?_predicate_object_map rr:graph ?predicate_object_graph_constant . }
             OPTIONAL {
                 ?_predicate_object_map rr:graphMap ?_graph_structure .
-                ?_graph_structure rr:constant ?predicate_object_graph .
+                ?_graph_structure rr:constant ?predicate_object_graph_constant .
             }
             OPTIONAL {
                 ?_predicate_object_map rr:graphMap ?_graph_structure .
-                ?_graph_structure rr:template ?predicate_object_graph .
+                ?_graph_structure rr:template ?predicate_object_graph_reference .
             }
         }
     }
@@ -143,11 +144,11 @@ R2RML_MAPPING_PARSING_QUERY = """
     SELECT DISTINCT
         ?triples_map_id ?data_source ?ref_form ?iterator ?tablename ?query ?_object_map
         ?subject_template ?subject_reference ?subject_constant ?subject_constant_shortcut
-        ?subject_rdf_class ?subject_termtype ?subject_graph
+        ?subject_rdf_class ?subject_termtype ?subject_graph_constant ?subject_graph_reference
         ?predicate_constant ?predicate_template ?predicate_reference ?predicate_constant_shortcut
         ?object_constant ?object_template ?object_reference ?object_termtype ?object_datatype ?object_language
         ?object_parent_triples_map ?object_constant_shortcut
-        ?predicate_object_graph
+        ?predicate_object_graph_constant ?predicate_object_graph_reference
 
     WHERE {
         ?triples_map_id rr:logicalTable ?_source .
@@ -162,14 +163,14 @@ R2RML_MAPPING_PARSING_QUERY = """
             OPTIONAL { ?_subject_map rr:constant ?subject_constant . }
             OPTIONAL { ?_subject_map rr:class ?subject_rdf_class . }
             OPTIONAL { ?_subject_map rr:termType ?subject_termtype . }
-            OPTIONAL { ?_subject_map rr:graph ?subject_graph . }
+            OPTIONAL { ?_subject_map rr:graph ?subject_graph_constant . }
             OPTIONAL {
             ?_subject_map rr:graphMap ?_graph_structure .
-            ?_graph_structure rr:constant ?subject_graph .
+            ?_graph_structure rr:constant ?subject_graph_constant .
             }
             OPTIONAL {
                 ?_subject_map rr:graphMap ?_graph_structure .
-                ?_graph_structure rr:template ?subject_graph .
+                ?_graph_structure rr:template ?subject_graph_reference .
             }
         }
         OPTIONAL { ?triples_map_id rr:subject ?subject_constant_shortcut . }
@@ -223,14 +224,14 @@ R2RML_MAPPING_PARSING_QUERY = """
                 OPTIONAL { ?_object_map rr:datatype ?object_datatype . }
                 OPTIONAL { ?_object_map rr:language ?object_language . }
             }
-            OPTIONAL { ?_predicate_object_map rr:graph ?predicate_object_graph . }
+            OPTIONAL { ?_predicate_object_map rr:graph ?predicate_object_graph_constant . }
             OPTIONAL {
                 ?_predicate_object_map rr:graphMap ?_graph_structure .
-                ?_graph_structure rr:constant ?predicate_object_graph .
+                ?_graph_structure rr:constant ?predicate_object_graph_constant .
             }
             OPTIONAL {
                 ?_predicate_object_map rr:graphMap ?_graph_structure .
-                ?_graph_structure rr:template ?predicate_object_graph .
+                ?_graph_structure rr:template ?predicate_object_graph_reference .
             }
         }
     }
@@ -283,6 +284,7 @@ def _parse_mapping_file(source_options, source_name):
         raise Exception(n3_mapping_parse_exception)
 
     mapping_language = _infer_mapping_language_from_graph(mapping_graph, source_name)
+    mapping_parsing_query = ''
     if mapping_language == 'RML':
         mapping_parsing_query = RML_MAPPING_PARSING_QUERY
     elif mapping_language == 'R2RML':
@@ -350,7 +352,8 @@ def _append_mapping_rule(mappings_df, mapping_rule):
         mappings_df.at[i, 'subject_constant'] = mapping_rule.subject_constant_shortcut
     mappings_df.at[i, 'subject_rdf_class'] = mapping_rule.subject_rdf_class
     mappings_df.at[i, 'subject_termtype'] = mapping_rule.subject_termtype
-    mappings_df.at[i, 'subject_graph'] = mapping_rule.subject_graph
+    mappings_df.at[i, 'subject_graph_constant'] = mapping_rule.subject_graph_constant
+    mappings_df.at[i, 'subject_graph_reference'] = mapping_rule.subject_graph_reference
     if mapping_rule.predicate_constant:
         mappings_df.at[i, 'predicate_constant'] = mapping_rule.predicate_constant
     else:
@@ -367,7 +370,8 @@ def _append_mapping_rule(mappings_df, mapping_rule):
     mappings_df.at[i, 'object_datatype'] = mapping_rule.object_datatype
     mappings_df.at[i, 'object_language'] = mapping_rule.object_language
     mappings_df.at[i, 'object_parent_triples_map'] = mapping_rule.object_parent_triples_map
-    mappings_df.at[i, 'predicate_object_graph'] = mapping_rule.predicate_object_graph
+    mappings_df.at[i, 'predicate_object_graph_constant'] = mapping_rule.predicate_object_graph_constant
+    mappings_df.at[i, 'predicate_object_graph_reference'] = mapping_rule.predicate_object_graph_reference
 
 
 def _remove_duplicated_mapping_rules(mappings_df):
@@ -534,6 +538,33 @@ def _get_configuration_and_sources(config):
     return configuration, data_sources
 
 
+def  _rdf_class_to_pom(mappings_df):
+    '''Transform subject rdf class into separate POM'''
+
+    initial_mapping_df = mappings_df.copy()
+
+    for i, row in initial_mapping_df.iterrows():
+        if pd.notna(row['subject_rdf_class']):
+            j = len(mappings_df)
+            mappings_df.at[j, 'source_name'] = row['source_name']
+            # add rdf_class at the beginning to avoid problems in later processing
+            mappings_df.at[j, 'triples_map_id'] = 'rdf_class_' + str(row['triples_map_id'])
+            mappings_df.at[j, 'tablename'] = row['tablename']
+            mappings_df.at[j, 'subject_template'] = row['subject_template']
+            mappings_df.at[j, 'subject_reference'] = row['subject_reference']
+            mappings_df.at[j, 'subject_constant'] = row['subject_constant']
+            mappings_df.at[j, 'subject_graph_constant'] = row['subject_graph_constant']
+            mappings_df.at[j, 'subject_graph_reference'] = row['subject_graph_reference']
+            mappings_df.at[j, 'subject_termtype'] = row['subject_termtype']
+            mappings_df.at[j, 'predicate_constant'] = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'
+            mappings_df.at[j, 'object_constant'] = row['subject_rdf_class']
+
+    mappings_df.drop('subject_rdf_class', axis=1, inplace=True)
+    mappings_df.drop_duplicates(inplace=True)
+
+    return mappings_df
+
+
 def parse_mappings(config):
     configuration, data_sources = _get_configuration_and_sources(config)
 
@@ -543,10 +574,14 @@ def parse_mappings(config):
         source_mappings_df = _parse_mapping_file(source_options, source_name)
 
         _validate_mapping_partitions(source_mappings_df, configuration['mapping_partitions'], source_name)
-        logging.info('Mappings for data source ' + str(source_name) + ' successfully parsed.')
         mappings_df = pd.concat([mappings_df, source_mappings_df])
+        logging.info('Mappings for data source ' + str(source_name) + ' successfully parsed.')
 
     mappings_df = _remove_duplicated_mapping_rules(mappings_df)
+    mappings_df = _rdf_class_to_pom(mappings_df)
     mappings_df = _generate_mapping_partitions(mappings_df, configuration['mapping_partitions'])
+
+    mappings_df.sort_values(by='tablename', inplace=True)
+    mappings_df.to_csv('out.csv', index=False)
 
     return mappings_df
