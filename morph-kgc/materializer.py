@@ -241,7 +241,9 @@ def materialize(mappings_df, config):
 
     print(len(triples))
 
+    '''
     f = open(config.get('CONFIGURATION', 'output_file'), "w")
     for triple in triples:
         f.write(triple + '. \n')
     f.close()
+    '''
