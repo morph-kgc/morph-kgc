@@ -572,7 +572,4 @@ def parse_mappings(config):
     mappings_df = _rdf_class_to_pom(mappings_df)
     mappings_df = _generate_mapping_partitions(mappings_df, configuration['mapping_partitions'])
 
-    mappings_df.sort_values(by='tablename', inplace=True)
-    mappings_df.to_csv('out.csv', index=False)
-
     return mappings_df
