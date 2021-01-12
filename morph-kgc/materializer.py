@@ -12,59 +12,108 @@ __status__ = 'Prototype'
 
 
 import logging
+import re
 import pandas as pd
-import numpy as np
 
-import morph_utils
 import relational_source
 
 from urllib.parse import quote
 
 
+def _get_references_in_template(template):
+    template = template.replace('\{', 'zwy\u200B').replace('\}', 'ywz\u200A')
+
+    references = re.findall('\{([^}]+)', template)
+    references = [reference.replace('zwy\u200B', '\{').replace('ywz\u200A', '\}') for reference in references]
+
+    return references
+
+
 def _get_references_in_mapping_rule(mapping_rule, only_subject_map=False):
     references = []
     if pd.notna(mapping_rule['subject_template']):
-        references.extend(morph_utils.get_references_in_template(str(mapping_rule['subject_template'])))
+        references.extend(_get_references_in_template(str(mapping_rule['subject_template'])))
     elif pd.notna(mapping_rule['subject_reference']):
         references.append(str(mapping_rule['subject_reference']))
 
     if not only_subject_map:
         if pd.notna(mapping_rule['predicate_template']):
-            references.extend(morph_utils.get_references_in_template(str(mapping_rule['predicate_template'])))
+            references.extend(_get_references_in_template(str(mapping_rule['predicate_template'])))
         elif pd.notna(mapping_rule['predicate_reference']):
             references.append(str(mapping_rule['predicate_reference']))
         if pd.notna(mapping_rule['object_template']):
-            references.extend(morph_utils.get_references_in_template(str(mapping_rule['object_template'])))
+            references.extend(_get_references_in_template(str(mapping_rule['object_template'])))
         elif pd.notna(mapping_rule['object_reference']):
             references.append(str(mapping_rule['object_reference']))
 
     return set(references)
 
 
-def _materialize_template(query_results_df, template, columns_alias=''):
-    references = morph_utils.get_references_in_template(str(template))
+def _materialize_template(query_results_df, template, columns_alias='', termtype='http://www.w3.org/ns/r2rml#IRI', language_tag='', datatype=''):
+    references = _get_references_in_template(str(template))
 
-    query_results_df['triple'] = query_results_df['triple'] + '<'
+    if str(termtype).strip() == 'http://www.w3.org/ns/r2rml#Literal':
+        query_results_df['triple'] = query_results_df['triple'] + '"'
+    else:
+        query_results_df['triple'] = query_results_df['triple'] + '<'
+
     for reference in references:
+        query_results_df['reference_results'] = query_results_df[columns_alias + reference]
+
+        if str(termtype).strip() == 'http://www.w3.org/ns/r2rml#IRI':
+            query_results_df['reference_results'] = query_results_df['reference_results'].apply(lambda x: quote(x))
+
         splitted_template = template.split('{' + reference + '}')
         query_results_df['triple'] = query_results_df['triple'] + splitted_template[0]
-        query_results_df['triple'] = query_results_df['triple'] + \
-                                     query_results_df[columns_alias + reference]
+        query_results_df['triple'] = query_results_df['triple'] + query_results_df['reference_results']
         template = str('{' + reference + '}').join(splitted_template[1:])
-    query_results_df['triple'] = query_results_df['triple'] + template + '> '
+
+    if str(termtype).strip() == 'http://www.w3.org/ns/r2rml#Literal':
+        query_results_df['triple'] = query_results_df['triple'] + '"'
+        if language_tag:
+            query_results_df['triple'] = query_results_df['triple'] + '@' + language_tag + ' '
+        elif datatype:
+            query_results_df['triple'] = query_results_df['triple'] + '^^<' + datatype + '> '
+        else:
+            query_results_df['triple'] = query_results_df['triple'] + ' '
+    else:
+        query_results_df['triple'] = query_results_df['triple'] + '> '
 
     return query_results_df
 
 
-def _materialize_reference(query_results_df, reference, columns_alias=''):
-    query_results_df['triple'] = query_results_df['triple'] + '"' + \
-                                 query_results_df[columns_alias + str(reference)] + '" '
+def _materialize_reference(query_results_df, reference, columns_alias='', termtype='http://www.w3.org/ns/r2rml#Literal', language_tag='', datatype=''):
+    query_results_df['reference_results'] = query_results_df[columns_alias + str(reference)]
+
+    if str(termtype).strip() == 'http://www.w3.org/ns/r2rml#IRI':
+        query_results_df['reference_results'] = query_results_df['reference_results'].apply(lambda x: quote(x, safe='://'))
+        query_results_df['triple'] = query_results_df['triple'] + '<' + query_results_df['reference_results'] + '> '
+    elif str(termtype).strip() == 'http://www.w3.org/ns/r2rml#Literal':
+        query_results_df['triple'] = query_results_df['triple'] + '"' + query_results_df['reference_results'] + '"'
+        if language_tag:
+            query_results_df['triple'] = query_results_df['triple'] + '@' + language_tag + ' '
+        elif datatype:
+            query_results_df['triple'] = query_results_df['triple'] + '^^<' + datatype + '> '
+        else:
+            query_results_df['triple'] = query_results_df['triple'] + ' '
 
     return query_results_df
 
 
-def _materialize_constant(query_results_df, constant):
-    query_results_df['triple'] = query_results_df['triple'] + '<' + str(constant) + '> '
+def _materialize_constant(query_results_df, constant, termtype='http://www.w3.org/ns/r2rml#IRI', language_tag='', datatype=''):
+    if str(termtype).strip() == 'http://www.w3.org/ns/r2rml#Literal':
+        complete_constant = '"' + constant + '"'
+
+        if language_tag:
+            complete_constant = complete_constant + '@' + language_tag + ' '
+        elif datatype:
+            complete_constant = complete_constant + '^^<' + datatype + '> '
+        else:
+            complete_constant = complete_constant + ' '
+    else:
+        complete_constant = '<' + str(constant) + '> '
+
+    query_results_df['triple'] = query_results_df['triple'] + complete_constant
 
     return query_results_df
 
@@ -117,7 +166,7 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
 
         db_connection = relational_source.relational_db_connection(config, str(mapping_rule['source_name']))
         try:
-            query_results_df = pd.read_sql(query, con=db_connection)
+            query_results_df = pd.read_sql(query, con=db_connection, coerce_float=config.getboolean('CONFIGURATION', 'coerce_float'))
         except:
             raise Exception('Query ' + query + ' has failed to execute.')
         db_connection.close()
@@ -125,19 +174,15 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
         for col_name in list(query_results_df.columns):
             query_results_df[col_name] = query_results_df[col_name].astype(str)
 
-        # URI encoding
-        # Look at R2RML spec, rr:columns are not to be percent encoded
-        query_results_df = query_results_df.applymap(lambda x: quote(x, safe='://'))
-
         query_results_df['triple'] = ''
         if pd.notna(mapping_rule['subject_template']):
             query_results_df = _materialize_template(
-                query_results_df, mapping_rule['subject_template'], columns_alias='child_')
+                query_results_df, mapping_rule['subject_template'], termtype=mapping_rule['subject_termtype'], columns_alias='child_')
         elif pd.notna(mapping_rule['subject_constant']):
-            query_results_df = _materialize_constant(query_results_df, mapping_rule['subject_constant'])
+            query_results_df = _materialize_constant(query_results_df, mapping_rule['subject_constant'], termtype=mapping_rule['subject_termtype'])
         elif pd.notna(mapping_rule['subject_reference']):
             query_results_df = _materialize_reference(
-                query_results_df, mapping_rule['subject_reference'], columns_alias='child_')
+                query_results_df, mapping_rule['subject_reference'], termtype=mapping_rule['subject_termtype'], columns_alias='child_')
         if pd.notna(mapping_rule['predicate_template']):
             query_results_df = _materialize_template(
                 query_results_df, mapping_rule['predicate_template'], columns_alias='child_')
@@ -148,12 +193,12 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
                 query_results_df, mapping_rule['predicate_reference'], columns_alias='child_')
         if pd.notna(parent_triples_map_rule['subject_template']):
             query_results_df = _materialize_template(
-                query_results_df, parent_triples_map_rule['subject_template'], columns_alias='parent_')
+                query_results_df, parent_triples_map_rule['subject_template'], termtype=parent_triples_map_rule['subject_termtype'], columns_alias='parent_')
         elif pd.notna(parent_triples_map_rule['subject_constant']):
-            query_results_df = _materialize_constant(query_results_df, parent_triples_map_rule['subject_constant'])
+            query_results_df = _materialize_constant(query_results_df, parent_triples_map_rule['subject_constant'], termtype=parent_triples_map_rule['subject_termtype'])
         elif pd.notna(parent_triples_map_rule['subject_reference']):
             query_results_df = _materialize_reference(
-                query_results_df, parent_triples_map_rule['subject_reference'], columns_alias='parent_')
+                query_results_df, parent_triples_map_rule['subject_reference'], termtype=parent_triples_map_rule['subject_termtype'], columns_alias='parent_')
 
     else:
         references = _get_references_in_mapping_rule(mapping_rule)
@@ -172,7 +217,7 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
 
         db_connection = relational_source.relational_db_connection(config, str(mapping_rule['source_name']))
         try:
-            query_results_df = pd.read_sql(query, con=db_connection)
+            query_results_df = pd.read_sql(query, con=db_connection, coerce_float=config.getboolean('CONFIGURATION', 'coerce_float'))
         except:
             raise Exception('Query ' + query + ' has failed to execute.')
         db_connection.close()
@@ -180,17 +225,13 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
         for col_name in list(query_results_df.columns):
             query_results_df[col_name] = query_results_df[col_name].astype(str)
 
-        # URI encoding
-        # Look at R2RML spec, rr:columns are not to be percent encoded
-        query_results_df = query_results_df.applymap(lambda x: quote(x, safe='://'))
-
         query_results_df['triple'] = ''
         if pd.notna(mapping_rule['subject_template']):
-            query_results_df = _materialize_template(query_results_df, mapping_rule['subject_template'])
+            query_results_df = _materialize_template(query_results_df, mapping_rule['subject_template'], termtype=mapping_rule['subject_termtype'])
         elif pd.notna(mapping_rule['subject_constant']):
-            query_results_df = _materialize_constant(query_results_df, mapping_rule['subject_constant'])
+            query_results_df = _materialize_constant(query_results_df, mapping_rule['subject_constant'], termtype=mapping_rule['subject_termtype'])
         elif pd.notna(mapping_rule['subject_reference']):
-            query_results_df = _materialize_reference(query_results_df, mapping_rule['subject_reference'])
+            query_results_df = _materialize_reference(query_results_df, mapping_rule['subject_reference'], termtype=mapping_rule['subject_termtype'])
         if pd.notna(mapping_rule['predicate_template']):
             query_results_df = _materialize_template(query_results_df, mapping_rule['predicate_template'])
         elif pd.notna(mapping_rule['predicate_constant']):
@@ -198,11 +239,11 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
         elif pd.notna(mapping_rule['predicate_reference']):
             query_results_df = _materialize_reference(query_results_df, mapping_rule['predicate_reference'])
         if pd.notna(mapping_rule['object_template']):
-            query_results_df = _materialize_template(query_results_df, mapping_rule['object_template'])
+            query_results_df = _materialize_template(query_results_df, mapping_rule['object_template'], termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
         elif pd.notna(mapping_rule['object_constant']):
-            query_results_df = _materialize_constant(query_results_df, mapping_rule['object_constant'])
+            query_results_df = _materialize_constant(query_results_df, mapping_rule['object_constant'], termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
         elif pd.notna(mapping_rule['object_reference']):
-            query_results_df = _materialize_reference(query_results_df, mapping_rule['object_reference'])
+            query_results_df = _materialize_reference(query_results_df, mapping_rule['object_reference'], termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
 
     return query_results_df['triple']
 
@@ -241,9 +282,10 @@ def materialize(mappings_df, config):
 
     print(len(triples))
 
-    '''
+
+    # REMOVE NON PRINTABLE CHARACTERS THIS WAY IS VERY SLOW!
+    output = ''
     f = open(config.get('CONFIGURATION', 'output_file'), "w")
     for triple in triples:
-        f.write(triple + '. \n')
+        f.write(''.join(c for c in triple if c.isprintable()) + '.\n')
     f.close()
-    '''

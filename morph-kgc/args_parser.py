@@ -339,7 +339,7 @@ def _parse_arguments():
     parser.add_argument('-f', '--output_format', default='ntriples', type=str,
                         choices=['ntriples', 'nquads'],
                         help='Output serialization format.')
-    parser.add_argument('-r', '--remove_duplicates', default='no', type=str,
+    parser.add_argument('-r', '--remove_duplicates', default='yes', type=str,
                         choices=['yes', 'no', 'on', 'off', 'true', 'false', '0', '1'],
                         help='Whether to remove duplicated triples in the results.')
     parser.add_argument('-p', '--mapping_partitions', nargs='?', default='', const='sp',
@@ -349,7 +349,7 @@ def _parse_arguments():
     parser.add_argument('--push_down_distincts', default='no', type=str,
                         choices=['yes', 'no', 'on', 'off', 'true', 'false', '0', '1'],
                         help='Whether to retrieve distinct results from data sources.')
-    parser.add_argument('--number_of_processes', default=1, type=_processes_number,
+    parser.add_argument('--number_of_processes', default=0, type=_processes_number,
                         help='Number of parallel processes. 0 to set it to the number of CPUs in the system.')
     parser.add_argument('--chunksize', default=0, type=_natural_number_including_zero,
                         help='Maximum number of rows of data processed at once by a process.')

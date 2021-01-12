@@ -21,7 +21,5 @@ from materializer import materialize
 if __name__ == "__main__":
 
     config = parse_config()
-
     mappings_df = parse_mappings(config)
-
     materialize(mappings_df, config)

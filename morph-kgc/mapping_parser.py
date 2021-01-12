@@ -556,6 +556,20 @@ def  _rdf_class_to_pom(mappings_df):
     return mappings_df
 
 
+def _complete_termtypes(mappings_df):
+    for i, mapping_rule in mappings_df.iterrows():
+        if pd.isna(mapping_rule['subject_termtype']):
+            mappings_df.at[i, 'subject_termtype'] = 'http://www.w3.org/ns/r2rml#IRI'
+        if pd.isna(mapping_rule['object_termtype']):
+            if pd.notna(mapping_rule['object_language']) or pd.notna(mapping_rule['object_datatype']) or \
+                    pd.notna(mapping_rule['object_reference']):
+                mappings_df.at[i, 'object_termtype'] = 'http://www.w3.org/ns/r2rml#Literal'
+            else:
+                mappings_df.at[i, 'object_termtype'] = 'http://www.w3.org/ns/r2rml#IRI'
+
+    return mappings_df
+
+
 def parse_mappings(config):
     configuration, data_sources = _get_configuration_and_sources(config)
 
@@ -571,5 +585,7 @@ def parse_mappings(config):
     mappings_df = _remove_duplicated_mapping_rules(mappings_df)
     mappings_df = _rdf_class_to_pom(mappings_df)
     mappings_df = _generate_mapping_partitions(mappings_df, configuration['mapping_partitions'])
+
+    mappings_df = _complete_termtypes(mappings_df)
 
     return mappings_df
