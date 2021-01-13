@@ -549,6 +549,7 @@ def  _rdf_class_to_pom(mappings_df):
             mappings_df.at[j, 'subject_termtype'] = row['subject_termtype']
             mappings_df.at[j, 'predicate_constant'] = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'
             mappings_df.at[j, 'object_constant'] = row['subject_rdf_class']
+            mappings_df.at[j, 'object_termtype'] = 'http://www.w3.org/ns/r2rml#IRI'
 
     mappings_df.drop('subject_rdf_class', axis=1, inplace=True)
     mappings_df.drop_duplicates(inplace=True)
@@ -585,7 +586,6 @@ def parse_mappings(config):
     mappings_df = _remove_duplicated_mapping_rules(mappings_df)
     mappings_df = _rdf_class_to_pom(mappings_df)
     mappings_df = _generate_mapping_partitions(mappings_df, configuration['mapping_partitions'])
-
     mappings_df = _complete_termtypes(mappings_df)
 
     return mappings_df
