@@ -280,12 +280,13 @@ def materialize(mappings_df, config):
                 result_triples = _materialize_mapping_rule(mapping_rule, subject_maps_df, config)
                 triples.extend(list(result_triples))
 
-    print(len(triples))
 
+    print("Number of triples: " + str(len(triples)))
 
     # REMOVE NON PRINTABLE CHARACTERS THIS WAY IS VERY SLOW!
     output = ''
     f = open(config.get('CONFIGURATION', 'output_file'), "w")
     for triple in triples:
-        f.write(''.join(c for c in triple if c.isprintable()) + '.\n')
+        #f.write(''.join(c for c in triple if c.isprintable()) + '.\n')
+        f.write(triple + '.\n')
     f.close()
