@@ -21,6 +21,24 @@ from configparser import ConfigParser, ExtendedInterpolation
 from validator_collection import validators
 
 
+ARGUMENTS_DEFAULT = {
+    'default_graph': '',
+    'output_dir': 'output',
+    'output_format': 'ntriples',
+    'remove_duplicates': 'yes',
+    'mapping_partitions': '',
+    'push_down_distincts': 'no',
+    'number_of_processes': 0,
+    'chunksize': 0,
+    'coerce_float': 'no'
+}
+
+VALID_ARGUMENTS = {
+    'output_format': ['ntriples', 'nquads'],
+    'mapping_partitions': ['', 's', 'p', 'g', 'sp', 'sg', 'pg', 'spg']
+}
+
+
 def _configure_logger(config, level=logging.INFO):
     """
     Configures the logger based on input arguments. If no logging argument is provided, log level is set to WARNING.
@@ -181,7 +199,6 @@ def _natural_number_including_zero(number):
 
 
 def _validate_config_data_sources_sections(config):
-
     for section in config.sections():
         if section != 'CONFIGURATION':
             ''' if section is not configuration then it is a data source.
@@ -226,9 +243,8 @@ def _validate_config_configuration_section(config):
 
     output_format = config.get('CONFIGURATION', 'output_format')
     output_format = str(output_format).lower().strip()
-    valid_options = ['ntriples', 'nquads']
-    if output_format not in valid_options:
-        raise ValueError('Option output_format must be in: ' + str(valid_options))
+    if output_format not in VALID_ARGUMENTS['output_format']:
+        raise ValueError('Option output_format must be in: ' + VALID_ARGUMENTS['output_format'])
     elif output_format == 'nquads' and config.get('CONFIGURATION', 'default_graph') == '':
         raise Exception('It is necessary to provide a valid default_graph value if output_format option is ' +
                         output_format + '.')
@@ -246,9 +262,8 @@ def _validate_config_configuration_section(config):
 
     mapping_partitions = config.get('CONFIGURATION', 'mapping_partitions')
     mapping_partitions = str(mapping_partitions).lower().strip()
-    valid_options = ['', 's', 'p', 'g', 'sp', 'sg', 'pg', 'spg']
-    if mapping_partitions not in valid_options:
-        raise ValueError('Option mapping_partitions must be in: ' + str(valid_options))
+    if mapping_partitions not in VALID_ARGUMENTS['mapping_partitions']:
+        raise ValueError('Option mapping_partitions must be in: ' + str(VALID_ARGUMENTS['mapping_partitions']))
     elif output_format == 'nquads' and 'g' in mapping_partitions:
         raise Exception('Option mapping_partitions is ' + mapping_partitions + ', but graphs cannot be used as '
                         'mapping partition criteria if output_format is nquads.')
@@ -259,6 +274,8 @@ def _validate_config_configuration_section(config):
 
     config.set('CONFIGURATION', 'chunksize',
                str(_natural_number_including_zero(config.get('CONFIGURATION', 'chunksize'))))
+
+    config.getboolean('CONFIGURATION', 'coerce_float')
 
     # logs has no default value, it is needed to check if it is in the config
     if config.has_option('CONFIGURATION', 'logs'):
@@ -291,23 +308,21 @@ def _complete_config_file_with_args(config, args):
         config.set('CONFIGURATION', 'default_graph', args.default_graph)
     if not config.has_option('CONFIGURATION', 'output_dir'):
         config.set('CONFIGURATION', 'output_dir', args.output_dir)
-    # output_file has no default value, it is needed to check if it is in the args
-    if not config.has_option('CONFIGURATION', 'output_file') and 'output_file' in args:
-        config.set('CONFIGURATION', 'output_file', args.output_file)
     if not config.has_option('CONFIGURATION', 'output_format'):
         config.set('CONFIGURATION', 'output_format', args.output_format)
     if not config.has_option('CONFIGURATION', 'remove_duplicates'):
-        config.set('CONFIGURATION', 'remove_duplicates', str(args.remove_duplicates))
+        config.set('CONFIGURATION', 'remove_duplicates', ARGUMENTS_DEFAULT['remove_duplicates'])
     if not config.has_option('CONFIGURATION', 'push_down_distincts'):
-        config.set('CONFIGURATION', 'push_down_distincts', str(args.push_down_distincts))
+        config.set('CONFIGURATION', 'push_down_distincts', ARGUMENTS_DEFAULT['push_down_distincts'])
     if not config.has_option('CONFIGURATION', 'mapping_partitions'):
         config.set('CONFIGURATION', 'mapping_partitions', args.mapping_partitions)
     if not config.has_option('CONFIGURATION', 'number_of_processes'):
-        config.set('CONFIGURATION', 'number_of_processes', str(args.number_of_processes))
+        config.set('CONFIGURATION', 'number_of_processes', str(ARGUMENTS_DEFAULT['number_of_processes']))
     if not config.has_option('CONFIGURATION', 'chunksize'):
-        config.set('CONFIGURATION', 'chunksize', str(args.chunksize))
-    # logs has no default value, it is needed to check if it is in the args
-    if not config.has_option('CONFIGURATION', 'logs') and 'logs' in args:
+        config.set('CONFIGURATION', 'chunksize', str(ARGUMENTS_DEFAULT['chunksize']))
+    if not config.has_option('CONFIGURATION', 'coerce_float'):
+        config.set('CONFIGURATION', 'coerce_float', ARGUMENTS_DEFAULT['coerce_float'])
+    if not config.has_option('CONFIGURATION', 'logs'):
         config.set('CONFIGURATION', 'logs', args.logs)
 
     return config
@@ -329,30 +344,20 @@ def _parse_arguments():
 
     parser.add_argument('config', type=_existing_file_path,
                         help='Path to the configuration file.')
-    parser.add_argument('-g', '--default_graph', default='', type=_uri,
+    parser.add_argument('-g', '--default_graph', default=ARGUMENTS_DEFAULT['default_graph'], type=_uri,
                         help='Default graph to add triples to.')
-    parser.add_argument('-d', '--output_dir', default='output', type=str,
+    parser.add_argument('-d', '--output_dir', default=ARGUMENTS_DEFAULT['output_dir'], type=str,
                         help='Path to the directory storing the results.')
     parser.add_argument('-o', '--output_file', type=str,
                         help='If a file name is specified, all the results will be stored in this file. '
                              'If no file is specified the results will be stored in multiple files.')
-    parser.add_argument('-f', '--output_format', default='ntriples', type=str,
-                        choices=['ntriples', 'nquads'],
+    parser.add_argument('-f', '--output_format', default=ARGUMENTS_DEFAULT['output_format'], type=str,
+                        choices=VALID_ARGUMENTS['output_format'],
                         help='Output serialization format.')
-    parser.add_argument('-r', '--remove_duplicates', default='yes', type=str,
-                        choices=['yes', 'no', 'on', 'off', 'true', 'false', '0', '1'],
-                        help='Whether to remove duplicated triples in the results.')
-    parser.add_argument('-p', '--mapping_partitions', nargs='?', default='', const='sp',
-                        choices=['', 's', 'p', 'g', 'sp', 'sg', 'pg', 'spg'],
+    parser.add_argument('-p', '--mapping_partitions', nargs='?', default=ARGUMENTS_DEFAULT['mapping_partitions'],
+                        const='sp', choices=VALID_ARGUMENTS['mapping_partitions'],
                         help='Partitioning criteria for mappings. s for using subjects and p for using predicates. If '
                              'this parameter is not provided, no mapping partitions will be considered.')
-    parser.add_argument('--push_down_distincts', default='no', type=str,
-                        choices=['yes', 'no', 'on', 'off', 'true', 'false', '0', '1'],
-                        help='Whether to retrieve distinct results from data sources.')
-    parser.add_argument('--number_of_processes', default=0, type=_processes_number,
-                        help='Number of parallel processes. 0 to set it to the number of CPUs in the system.')
-    parser.add_argument('--chunksize', default=0, type=_natural_number_including_zero,
-                        help='Maximum number of rows of data processed at once by a process.')
     parser.add_argument('-l', '--logs', nargs='?', const='', type=str,
                         help='File path to write logs to. If no path is provided logs are redirected to stdout.')
     parser.add_argument('-v', '--version', action='version', version='Morph-KGC' + __version__ + ' | ' +
