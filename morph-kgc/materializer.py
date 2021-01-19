@@ -285,7 +285,7 @@ def materialize(mappings_df, config):
 
     # REMOVE NON PRINTABLE CHARACTERS THIS WAY IS VERY SLOW!
     output = ''
-    f = open(config.get('CONFIGURATION', 'output_file'), "w")
+    f = open(config.get('CONFIGURATION', 'output_dir') + '/' + config.get('CONFIGURATION', 'output_file'), "w")
     for triple in triples:
         #f.write(''.join(c for c in triple if c.isprintable()) + '.\n')
         f.write(triple + '.\n')

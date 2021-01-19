@@ -24,6 +24,7 @@ from validator_collection import validators
 ARGUMENTS_DEFAULT = {
     'default_graph': '',
     'output_dir': 'output',
+    'output_file': '',
     'output_format': 'ntriples',
     'remove_duplicates': 'yes',
     'mapping_partitions': '',
@@ -35,7 +36,8 @@ ARGUMENTS_DEFAULT = {
 
 VALID_ARGUMENTS = {
     'output_format': ['ntriples', 'nquads'],
-    'mapping_partitions': ['', 's', 'p', 'g', 'sp', 'sg', 'pg', 'spg']
+    'mapping_partitions': ['', 's', 'p', 'g', 'sp', 'sg', 'pg', 'spg'],
+    'source_type': ['mysql', 'postgresql', 'oracle', 'sqlserver']
 }
 
 
@@ -204,13 +206,13 @@ def _validate_config_data_sources_sections(config):
             ''' if section is not configuration then it is a data source.
                 Mind that DEFAULT section is not triggered with config.sections(). '''
 
-            mapping_file = config.get(section, 'mapping_file')
-            if not os.path.exists(mapping_file):
-                raise FileNotFoundError('mapping_file=' + str(mapping_file) + ' in section ' + section +
-                                        ' of config file could not be found.')
+            mapping_files = config.get(section, 'mapping_files')
+            for mapping_file in mapping_files.split(','):
+                if not os.path.exists(mapping_file.strip()):
+                    raise FileNotFoundError('mapping_file=' + str(mapping_file) + ' in section ' + section +
+                                            ' of config file could not be found.')
 
-            source_type = config.get(section, 'source_type').lower()
-            if source_type in ['mysql', 'postgresql', 'oracle', 'sqlserver']:
+            if config.get(section, 'source_type').lower() in VALID_ARGUMENTS['source_type']:
                 # config.get to check that required parameters are provided
                 config.get(section, 'user')
                 config.get(section, 'password')
@@ -308,6 +310,8 @@ def _complete_config_file_with_args(config, args):
         config.set('CONFIGURATION', 'default_graph', args.default_graph)
     if not config.has_option('CONFIGURATION', 'output_dir'):
         config.set('CONFIGURATION', 'output_dir', args.output_dir)
+    if not config.has_option('CONFIGURATION', 'output_file'):
+        config.set('CONFIGURATION', 'output_file', args.output_file)
     if not config.has_option('CONFIGURATION', 'output_format'):
         config.set('CONFIGURATION', 'output_format', args.output_format)
     if not config.has_option('CONFIGURATION', 'remove_duplicates'):
@@ -348,7 +352,7 @@ def _parse_arguments():
                         help='Default graph to add triples to.')
     parser.add_argument('-d', '--output_dir', default=ARGUMENTS_DEFAULT['output_dir'], type=str,
                         help='Path to the directory storing the results.')
-    parser.add_argument('-o', '--output_file', type=str,
+    parser.add_argument('-o', '--output_file', default=ARGUMENTS_DEFAULT['output_file'], type=str,
                         help='If a file name is specified, all the results will be stored in this file. '
                              'If no file is specified the results will be stored in multiple files.')
     parser.add_argument('-f', '--output_format', default=ARGUMENTS_DEFAULT['output_format'], type=str,

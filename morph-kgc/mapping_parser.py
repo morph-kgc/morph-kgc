@@ -251,6 +251,8 @@ JOIN_CONDITION_PARSING_QUERY = """
 
 
 def _infer_mapping_language_from_graph(mapping_graph, source_name):
+    rml_inferred = False
+
     # Check if mapping language is RML
     rml_query = '''
         prefix rml: <http://semweb.mmlab.be/ns/rml#>
@@ -259,7 +261,7 @@ def _infer_mapping_language_from_graph(mapping_graph, source_name):
     mapping_language_results = mapping_graph.query(rml_query)
     if len(mapping_language_results) > 0:
         logging.info('RML mapping language inferred for data source ' + source_name + '.')
-        return 'RML'
+        rml_inferred = True
 
     # Check if mapping language is R2RML
     r2rml_query = '''
@@ -269,17 +271,24 @@ def _infer_mapping_language_from_graph(mapping_graph, source_name):
     mapping_language_results = mapping_graph.query(r2rml_query)
     if len(mapping_language_results) > 0:
         logging.info('R2RML mapping language inferred for data source ' + source_name + '.')
-        return 'R2RML'
+        if rml_inferred:
+            raise Exception('Both, RML and R2RML were inferred for the mappings for data source ' + source_name)
+        else:
+            return 'R2RML'
+
+    if rml_inferred:
+        return 'RML'
 
     # If mappings file does not have rml:logicalSource or rr:logicalTable it is not valid
     raise Exception('It was not possible to infer the mapping language for data source ' + source_name +
                     '. Check the corresponding mappings file.')
 
 
-def _parse_mapping_file(source_options, source_name):
+def _parse_mapping_files(source_options, source_name):
     mapping_graph = rdflib.Graph()
     try:
-        mapping_graph.load(source_options['mapping_file'], format='n3')
+        for mapping_file in source_options['mapping_files'].split(','):
+            mapping_graph.load(mapping_file.strip(), format='n3')
     except Exception as n3_mapping_parse_exception:
         raise Exception(n3_mapping_parse_exception)
 
@@ -577,7 +586,7 @@ def parse_mappings(config):
     mappings_df = pd.DataFrame(columns=MAPPINGS_DATAFRAME_COLUMNS)
 
     for source_name, source_options in data_sources.items():
-        source_mappings_df = _parse_mapping_file(source_options, source_name)
+        source_mappings_df = _parse_mapping_files(source_options, source_name)
 
         _validate_mapping_partitions(source_mappings_df, configuration['mapping_partitions'], source_name)
         mappings_df = pd.concat([mappings_df, source_mappings_df])
@@ -587,5 +596,6 @@ def parse_mappings(config):
     mappings_df = _rdf_class_to_pom(mappings_df)
     mappings_df = _generate_mapping_partitions(mappings_df, configuration['mapping_partitions'])
     mappings_df = _complete_termtypes(mappings_df)
+
 
     return mappings_df
