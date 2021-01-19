@@ -10,5 +10,6 @@ __pycache__/
 .settings/
 .cache*
 .project
+.DS_Store
 
 *.pyc
