@@ -267,7 +267,7 @@ def _validate_config_configuration_section(config):
     if mapping_partitions not in VALID_ARGUMENTS['mapping_partitions']:
         raise ValueError('Option mapping_partitions must be in: ' + str(VALID_ARGUMENTS['mapping_partitions']))
     elif output_format == 'nquads' and 'g' in mapping_partitions:
-        raise Exception('Option mapping_partitions is ' + mapping_partitions + ', but graphs cannot be used as '
+        raise Exception('Option mapping_partitions is "' + mapping_partitions + '", but graphs cannot be used as '
                         'mapping partition criteria if output_format is nquads.')
     config.set('CONFIGURATION', 'mapping_partitions', mapping_partitions)
 

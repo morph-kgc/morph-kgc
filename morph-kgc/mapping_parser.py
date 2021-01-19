@@ -20,11 +20,11 @@ MAPPINGS_DATAFRAME_COLUMNS = [
     'source_name',
     'triples_map_id', 'data_source', 'object_map', 'ref_form', 'iterator', 'tablename', 'query',
     'subject_template', 'subject_reference', 'subject_constant', 'subject_rdf_class', 'subject_termtype',
-    'subject_graph_constant', 'subject_graph_reference',
+    'graph_constant', 'graph_reference', 'graph_template',
     'predicate_constant', 'predicate_template', 'predicate_reference',
     'object_constant', 'object_template', 'object_reference', 'object_termtype', 'object_datatype', 'object_language',
-    'object_parent_triples_map', 'join_conditions', 'predicate_object_graph_constant',
-    'predicate_object_graph_reference'
+    'object_parent_triples_map', 'join_conditions',
+    'predicate_object_graph_constant', 'predicate_object_graph_reference', 'predicate_object_graph_template'
 ]
 
 
@@ -40,11 +40,12 @@ RML_MAPPING_PARSING_QUERY = """
     SELECT DISTINCT
         ?triples_map_id ?data_source ?ref_form ?iterator ?tablename ?query ?_object_map
         ?subject_template ?subject_reference ?subject_constant
-        ?subject_rdf_class ?subject_termtype ?subject_graph
+        ?subject_rdf_class ?subject_termtype
+        ?graph_constant ?graph_reference ?graph_template
         ?predicate_constant ?predicate_template ?predicate_reference
         ?object_constant ?object_template ?object_reference ?object_termtype ?object_datatype ?object_language
         ?object_parent_triples_map
-        ?predicate_object_graph
+        ?predicate_object_graph_constant ?predicate_object_graph_reference ?predicate_object_graph_template
 
     WHERE {
         ?triples_map_id rml:logicalSource ?_source .
@@ -62,14 +63,18 @@ RML_MAPPING_PARSING_QUERY = """
             OPTIONAL { ?_subject_map rr:constant ?subject_constant . }
             OPTIONAL { ?_subject_map rr:class ?subject_rdf_class . }
             OPTIONAL { ?_subject_map rr:termType ?subject_termtype . }
-            OPTIONAL { ?_subject_map rr:graph ?subject_graph_constant . }
+            OPTIONAL { ?_subject_map rr:graph ?graph_constant . }
             OPTIONAL {
-            ?_subject_map rr:graphMap ?_graph_structure .
-            ?_graph_structure rr:constant ?subject_graph_constant .
+                ?_subject_map rr:graphMap ?_graph_structure .
+                ?_graph_structure rr:constant ?graph_constant .
             }
             OPTIONAL {
                 ?_subject_map rr:graphMap ?_graph_structure .
-                ?_graph_structure rr:template ?subject_graph_reference .
+                ?_graph_structure rr:template ?graph_template .
+            }
+            OPTIONAL {
+                ?_subject_map rr:graphMap ?_graph_structure .
+                ?_graph_structure rr:reference ?graph_reference .
             }
         }
         OPTIONAL { ?triples_map_id rr:subject ?subject_constant . }
@@ -130,7 +135,11 @@ RML_MAPPING_PARSING_QUERY = """
             }
             OPTIONAL {
                 ?_predicate_object_map rr:graphMap ?_graph_structure .
-                ?_graph_structure rr:template ?predicate_object_graph_reference .
+                ?_graph_structure rr:template ?predicate_object_graph_template .
+            }
+            OPTIONAL {
+                ?_predicate_object_map rr:graphMap ?_graph_structure .
+                ?_graph_structure rr:reference ?predicate_object_graph_reference .
             }
         }
     }
@@ -144,11 +153,12 @@ R2RML_MAPPING_PARSING_QUERY = """
     SELECT DISTINCT
         ?triples_map_id ?data_source ?ref_form ?iterator ?tablename ?query ?_object_map
         ?subject_template ?subject_reference ?subject_constant
-        ?subject_rdf_class ?subject_termtype ?subject_graph_constant ?subject_graph_reference
+        ?subject_rdf_class ?subject_termtype
+        ?graph_constant ?graph_reference ?graph_template
         ?predicate_constant ?predicate_template ?predicate_reference
         ?object_constant ?object_template ?object_reference ?object_termtype ?object_datatype ?object_language
         ?object_parent_triples_map
-        ?predicate_object_graph_constant ?predicate_object_graph_reference
+        ?predicate_object_graph_constant ?predicate_object_graph_reference ?predicate_object_graph_template
 
     WHERE {
         ?triples_map_id rr:logicalTable ?_source .
@@ -163,14 +173,18 @@ R2RML_MAPPING_PARSING_QUERY = """
             OPTIONAL { ?_subject_map rr:constant ?subject_constant . }
             OPTIONAL { ?_subject_map rr:class ?subject_rdf_class . }
             OPTIONAL { ?_subject_map rr:termType ?subject_termtype . }
-            OPTIONAL { ?_subject_map rr:graph ?subject_graph_constant . }
+            OPTIONAL { ?_subject_map rr:graph ?graph_constant . }
             OPTIONAL {
-            ?_subject_map rr:graphMap ?_graph_structure .
-            ?_graph_structure rr:constant ?subject_graph_constant .
+                ?_subject_map rr:graphMap ?_graph_structure .
+                ?_graph_structure rr:constant ?graph_constant .
             }
             OPTIONAL {
                 ?_subject_map rr:graphMap ?_graph_structure .
-                ?_graph_structure rr:template ?subject_graph_reference .
+                ?_graph_structure rr:template ?graph_template .
+            }
+            OPTIONAL {
+                ?_subject_map rr:graphMap ?_graph_structure .
+                ?_graph_structure rr:column ?graph_reference .
             }
         }
         OPTIONAL { ?triples_map_id rr:subject ?subject_constant . }
@@ -231,7 +245,11 @@ R2RML_MAPPING_PARSING_QUERY = """
             }
             OPTIONAL {
                 ?_predicate_object_map rr:graphMap ?_graph_structure .
-                ?_graph_structure rr:template ?predicate_object_graph_reference .
+                ?_graph_structure rr:template ?predicate_object_graph_template .
+            }
+            OPTIONAL {
+                ?_predicate_object_map rr:graphMap ?_graph_structure .
+                ?_graph_structure rr:column ?predicate_object_graph_reference .
             }
         }
     }
@@ -358,8 +376,9 @@ def _append_mapping_rule(mappings_df, mapping_rule):
     mappings_df.at[i, 'subject_constant'] = mapping_rule.subject_constant
     mappings_df.at[i, 'subject_rdf_class'] = mapping_rule.subject_rdf_class
     mappings_df.at[i, 'subject_termtype'] = mapping_rule.subject_termtype
-    mappings_df.at[i, 'subject_graph_constant'] = mapping_rule.subject_graph_constant
-    mappings_df.at[i, 'subject_graph_reference'] = mapping_rule.subject_graph_reference
+    mappings_df.at[i, 'graph_constant'] = mapping_rule.graph_constant
+    mappings_df.at[i, 'graph_template'] = mapping_rule.graph_template
+    mappings_df.at[i, 'graph_reference'] = mapping_rule.graph_reference
     mappings_df.at[i, 'predicate_constant'] = mapping_rule.predicate_constant
     mappings_df.at[i, 'predicate_template'] = mapping_rule.predicate_template
     mappings_df.at[i, 'predicate_reference'] = mapping_rule.predicate_reference
@@ -372,6 +391,7 @@ def _append_mapping_rule(mappings_df, mapping_rule):
     mappings_df.at[i, 'object_parent_triples_map'] = mapping_rule.object_parent_triples_map
     mappings_df.at[i, 'predicate_object_graph_constant'] = mapping_rule.predicate_object_graph_constant
     mappings_df.at[i, 'predicate_object_graph_reference'] = mapping_rule.predicate_object_graph_reference
+    mappings_df.at[i, 'predicate_object_graph_template'] = mapping_rule.predicate_object_graph_template
 
 
 def _remove_duplicated_mapping_rules(mappings_df):
@@ -495,7 +515,7 @@ def _generate_mapping_partitions(mappings_df, mapping_partitions):
         '''
             TODO
         '''
-        pass
+        raise
 
     ''' if subject and predicate are partitioning criteria separate then with - '''
     if 's' in mapping_partitions and 'p' in mapping_partitions:
@@ -553,8 +573,9 @@ def  _rdf_class_to_pom(mappings_df):
             mappings_df.at[j, 'subject_template'] = row['subject_template']
             mappings_df.at[j, 'subject_reference'] = row['subject_reference']
             mappings_df.at[j, 'subject_constant'] = row['subject_constant']
-            mappings_df.at[j, 'subject_graph_constant'] = row['subject_graph_constant']
-            mappings_df.at[j, 'subject_graph_reference'] = row['subject_graph_reference']
+            mappings_df.at[j, 'graph_constant'] = row['graph_constant']
+            mappings_df.at[j, 'graph_reference'] = row['graph_reference']
+            mappings_df.at[j, 'graph_template'] = row['graph_template']
             mappings_df.at[j, 'subject_termtype'] = row['subject_termtype']
             mappings_df.at[j, 'predicate_constant'] = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'
             mappings_df.at[j, 'object_constant'] = row['subject_rdf_class']
@@ -594,8 +615,7 @@ def parse_mappings(config):
 
     mappings_df = _remove_duplicated_mapping_rules(mappings_df)
     mappings_df = _rdf_class_to_pom(mappings_df)
-    mappings_df = _generate_mapping_partitions(mappings_df, configuration['mapping_partitions'])
     mappings_df = _complete_termtypes(mappings_df)
-
+    mappings_df = _generate_mapping_partitions(mappings_df, configuration['mapping_partitions'])
 
     return mappings_df

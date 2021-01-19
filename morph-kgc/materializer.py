@@ -251,11 +251,11 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
 def _get_subject_maps_dict_from_mappings(mappings_df):
     subject_maps_df = mappings_df[[
         'triples_map_id', 'data_source', 'ref_form', 'iterator', 'tablename', 'query', 'subject_template',
-        'subject_reference', 'subject_constant', 'subject_termtype', 'subject_graph_constant',
-        'subject_graph_reference']
+        'subject_reference', 'subject_constant', 'subject_termtype',
+        'graph_constant', 'graph_reference', 'graph_template']
     ]
 
-    subject_maps_df = subject_maps_df.drop_duplicates()
+    subject_maps_df.drop_duplicates(inplace=True)
 
     if len(list(subject_maps_df['triples_map_id'])) > len(set(subject_maps_df['triples_map_id'])):
         raise Exception('One or more triples maps have incongruencies in subject maps.')
