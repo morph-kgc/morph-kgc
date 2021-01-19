@@ -1,0 +1,13 @@
+version: '3.1'
+services:
+  postgresql:
+    container_name: r2rmltc-postgres
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: r2rml
+      POSTGRES_USER: r2rml
+      POSTGRES_DB: r2rml
+    ports:
+      - "5432:5432"
+    

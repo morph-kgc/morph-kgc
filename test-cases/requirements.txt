@@ -1,0 +1,4 @@
+rdflib==5.0.0
+mysql-connector-python==8.0.22
+psycopg2-binary==2.8.6
+requests==2.25.1
