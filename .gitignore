@@ -4,6 +4,8 @@ log/
 testing/
 venv/
 
+r2rml-test-cases/logs
+
 __pycache__/
 
 .idea
