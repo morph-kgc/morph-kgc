@@ -213,6 +213,7 @@ def _validate_config_data_sources_sections(config):
                                             ' of config file could not be found.')
 
             if config.get(section, 'source_type').lower() in VALID_ARGUMENTS['source_type']:
+                config.set(section, 'source_type', config.get(section, 'source_type').lower())
                 # config.get to check that required parameters are provided
                 config.get(section, 'user')
                 config.get(section, 'password')
@@ -250,7 +251,6 @@ def _validate_config_configuration_section(config):
     elif output_format == 'nquads' and config.get('CONFIGURATION', 'default_graph') == '':
         raise Exception('It is necessary to provide a valid default_graph value if output_format option is ' +
                         output_format + '.')
-
 
     config.set('CONFIGURATION', 'output_format', output_format)
 
@@ -327,7 +327,8 @@ def _complete_config_file_with_args(config, args):
     if not config.has_option('CONFIGURATION', 'coerce_float'):
         config.set('CONFIGURATION', 'coerce_float', ARGUMENTS_DEFAULT['coerce_float'])
     if not config.has_option('CONFIGURATION', 'logs'):
-        config.set('CONFIGURATION', 'logs', args.logs)
+        if 'logs' in args:
+            config.set('CONFIGURATION', 'logs', args.logs)
 
     return config
 
@@ -360,8 +361,8 @@ def _parse_arguments():
                         help='Output serialization format.')
     parser.add_argument('-p', '--mapping_partitions', nargs='?', default=ARGUMENTS_DEFAULT['mapping_partitions'],
                         const='sp', choices=VALID_ARGUMENTS['mapping_partitions'],
-                        help='Partitioning criteria for mappings. s for using subjects and p for using predicates. If '
-                             'this parameter is not provided, no mapping partitions will be considered.')
+                        help='Partitioning criteria for mappings. s for using subjects, p for using predicates, '
+                             'g for using graphs.')
     parser.add_argument('-l', '--logs', nargs='?', const='', type=str,
                         help='File path to write logs to. If no path is provided logs are redirected to stdout.')
     parser.add_argument('-v', '--version', action='version', version='Morph-KGC' + __version__ + ' | ' +

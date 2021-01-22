@@ -14,6 +14,7 @@ __status__ = 'Prototype'
 import rdflib
 import logging
 import pandas as pd
+import numpy as np
 
 
 MAPPINGS_DATAFRAME_COLUMNS = [
@@ -448,6 +449,7 @@ def _get_invariable_part_of_template(template):
 def _get_mapping_partitions_invariable_parts(mappings_df, mapping_partitions):
     mappings_df['subject_invariable_part'] = ''
     mappings_df['predicate_invariable_part'] = ''
+    mappings_df['graph_invariable_part'] = ''
 
     for i, mapping_rule in mappings_df.iterrows():
         if 's' in mapping_partitions:
@@ -471,10 +473,15 @@ def _get_mapping_partitions_invariable_parts(mappings_df, mapping_partitions):
                                 '. Predicate terms must be constants or templates in order to generate valid mapping '
                                 'partitions by predicate.')
         if 'g' in mapping_partitions:
-            '''
-                TODO
-            '''
-            pass
+            if mapping_rule['graph_constant']:
+                mappings_df.at[i, 'graph_invariable_part'] = mapping_rule['graph_constant']
+            elif mapping_rule['graph_template']:
+                mappings_df.at[i, 'graph_invariable_part'] = \
+                    _get_invariable_part_of_template(mapping_rule['graph_template'])
+            else:
+                raise Exception('An invalid graph term was found at triples map ' + mapping_rule['triples_map_id'] +
+                                '. Graph terms must be constants or templates in order to generate valid mapping '
+                                'partitions by graph.')
 
     return mappings_df
 
@@ -483,6 +490,7 @@ def _generate_mapping_partitions(mappings_df, mapping_partitions):
     mappings_df = _get_mapping_partitions_invariable_parts(mappings_df, mapping_partitions)
     mappings_df['subject_partition'] = ''
     mappings_df['predicate_partition'] = ''
+    mappings_df['graph_partition'] = ''
 
     '''
         First generate partitions for subject. Then generate the partitions for predicates. Finally merge both to
@@ -512,23 +520,35 @@ def _generate_mapping_partitions(mappings_df, mapping_partitions):
                 root_last_partition = mapping_rule['predicate_invariable_part']
                 mappings_df.at[i, 'predicate_partition'] = str(num_partition)
     if 'g' in mapping_partitions:
-        '''
-            TODO
-        '''
-        raise
+        mappings_df.sort_values(by='graph_invariable_part', inplace=True, ascending=True)
+        num_partition = 0
+        root_last_partition = 'zzyy xxww\u200B'
+        for i, mapping_rule in mappings_df.iterrows():
+            if mapping_rule['graph_invariable_part'].startswith(root_last_partition):
+                mappings_df.at[i, 'graph_partition'] = str(num_partition)
+            else:
+                num_partition = num_partition + 1
+                root_last_partition = mapping_rule['graph_invariable_part']
+                mappings_df.at[i, 'graph_partition'] = str(num_partition)
 
-    ''' if subject and predicate are partitioning criteria separate then with - '''
+    ''' generate final partition names '''
     if 's' in mapping_partitions and 'p' in mapping_partitions:
         mappings_df['mapping_partition'] = mappings_df['subject_partition'] + '-' + mappings_df['predicate_partition']
     else:
         mappings_df['mapping_partition'] = mappings_df['subject_partition'] + mappings_df['predicate_partition']
+    if 'g' in mapping_partitions and 's' not in mapping_partitions and 'p' not in mapping_partitions:
+        mappings_df['mapping_partition'] = mappings_df['graph_partition']
+    elif 'g' in mapping_partitions:
+        mappings_df['mapping_partition'] = mappings_df['mapping_partition'] + '-' + mappings_df['graph_partition']
 
     '''' drop the auxiliary columns that are just used to get mapping_partition '''
     mappings_df.drop([
         'subject_partition',
         'predicate_partition',
         'subject_invariable_part',
-        'predicate_invariable_part'],
+        'predicate_invariable_part',
+        'graph_partition',
+        'graph_invariable_part'],
         axis=1, inplace=True)
 
     logging.info(str(len(set(mappings_df['mapping_partition']))) + ' mapping partitions were generated.')
@@ -567,7 +587,7 @@ def  _rdf_class_to_pom(mappings_df):
         if pd.notna(row['subject_rdf_class']):
             j = len(mappings_df)
             mappings_df.at[j, 'source_name'] = row['source_name']
-            # add rdf_class at the beginning to avoid problems in later processing
+            # add rdf_class_ at the beginning to avoid problems in later processing
             mappings_df.at[j, 'triples_map_id'] = 'rdf_class_' + str(row['triples_map_id'])
             mappings_df.at[j, 'tablename'] = row['tablename']
             mappings_df.at[j, 'subject_template'] = row['subject_template']
@@ -601,6 +621,45 @@ def _complete_termtypes(mappings_df):
     return mappings_df
 
 
+def _set_pom_graphs(mappings_df, default_graph):
+    for i, mapping_rule in mappings_df.iterrows():
+        if pd.isna(mapping_rule['graph_constant']) and pd.isna(mapping_rule['graph_reference']) and \
+                pd.isna(mapping_rule['graph_template']):
+            if pd.isna(mapping_rule['predicate_object_graph_constant']) and \
+                    pd.isna(mapping_rule['predicate_object_graph_reference']) and \
+                    pd.isna(mapping_rule['predicate_object_graph_template']):
+                mappings_df.at[i, 'graph_constant'] = default_graph
+
+    aux_mappings_df = mappings_df.copy()
+    for i, mapping_rule in aux_mappings_df.iterrows():
+        if pd.notna(mapping_rule['predicate_object_graph_constant']):
+            j = len(mappings_df)
+            mappings_df.loc[j] = mapping_rule
+            mappings_df.at[j, 'graph_constant'] = mapping_rule['predicate_object_graph_constant']
+        if pd.notna(mapping_rule['predicate_object_graph_template']):
+            j = len(mappings_df)
+            mappings_df.loc[j] = mapping_rule
+            mappings_df.at[j, 'graph_template'] = mapping_rule['predicate_object_graph_template']
+        if pd.notna(mapping_rule['predicate_object_graph_reference']):
+            j = len(mappings_df)
+            mappings_df.loc[j] = mapping_rule
+            mappings_df.at[j, 'graph_reference'] = mapping_rule['predicate_object_graph_reference']
+
+    mappings_df = mappings_df.drop(columns=['predicate_object_graph_constant', 'predicate_object_graph_template',
+                                            'predicate_object_graph_reference'])
+    mappings_df = mappings_df.dropna(subset=['graph_constant', 'graph_template', 'graph_reference'], how='all')
+    mappings_df.drop_duplicates(inplace=True)
+
+    return mappings_df
+
+
+def _complete_source_types(mappings_df, config):
+    for i, mapping_rule in mappings_df.iterrows():
+        mappings_df.at[i, 'source_type'] = config.get(mapping_rule['source_name'], 'source_type').lower()
+
+    return mappings_df
+
+
 def parse_mappings(config):
     configuration, data_sources = _get_configuration_and_sources(config)
 
@@ -615,7 +674,9 @@ def parse_mappings(config):
 
     mappings_df = _remove_duplicated_mapping_rules(mappings_df)
     mappings_df = _rdf_class_to_pom(mappings_df)
+    mappings_df = _set_pom_graphs(mappings_df, config.get('CONFIGURATION', 'default_graph'))
     mappings_df = _complete_termtypes(mappings_df)
     mappings_df = _generate_mapping_partitions(mappings_df, configuration['mapping_partitions'])
+    mappings_df = _complete_source_types(mappings_df, config)
 
     return mappings_df

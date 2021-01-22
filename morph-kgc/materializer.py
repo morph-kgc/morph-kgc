@@ -255,7 +255,7 @@ def _get_subject_maps_dict_from_mappings(mappings_df):
         'graph_constant', 'graph_reference', 'graph_template']
     ]
 
-    subject_maps_df.drop_duplicates(inplace=True)
+    subject_maps_df = subject_maps_df.drop_duplicates()
 
     if len(list(subject_maps_df['triples_map_id'])) > len(set(subject_maps_df['triples_map_id'])):
         raise Exception('One or more triples maps have incongruencies in subject maps.')
