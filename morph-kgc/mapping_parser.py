@@ -626,14 +626,14 @@ def _complete_termtypes(mappings_df):
     return mappings_df
 
 
-def _set_pom_graphs(mappings_df, default_graph):
+def _set_pom_graphs(mappings_df):
     for i, mapping_rule in mappings_df.iterrows():
         if pd.isna(mapping_rule['graph_constant']) and pd.isna(mapping_rule['graph_reference']) and \
                 pd.isna(mapping_rule['graph_template']):
             if pd.isna(mapping_rule['predicate_object_graph_constant']) and \
                     pd.isna(mapping_rule['predicate_object_graph_reference']) and \
                     pd.isna(mapping_rule['predicate_object_graph_template']):
-                mappings_df.at[i, 'graph_constant'] = default_graph
+                mappings_df.at[i, 'graph_constant'] = ''    # default graph
 
     aux_mappings_df = mappings_df.copy()
     for i, mapping_rule in aux_mappings_df.iterrows():
@@ -722,7 +722,7 @@ def parse_mappings(config):
 
     mappings_df = _remove_duplicated_mapping_rules(mappings_df)
     mappings_df = _rdf_class_to_pom(mappings_df)
-    mappings_df = _set_pom_graphs(mappings_df, config.get('CONFIGURATION', 'default_graph'))
+    mappings_df = _set_pom_graphs(mappings_df)
     mappings_df = _complete_termtypes(mappings_df)
     mappings_df = _generate_mapping_partitions(mappings_df, configuration['mapping_partitions'])
     mappings_df = _complete_source_types(mappings_df, config)

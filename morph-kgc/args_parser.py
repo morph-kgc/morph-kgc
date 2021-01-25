@@ -22,7 +22,6 @@ from validator_collection import validators
 
 
 ARGUMENTS_DEFAULT = {
-    'default_graph': '',
     'output_dir': 'output',
     'output_file': '',
     'output_format': 'ntriples',
@@ -236,7 +235,6 @@ def _validate_config_configuration_section(config):
     :rtype configparser
     """
 
-    config.set('CONFIGURATION', 'default_graph', _uri(config.get('CONFIGURATION', 'default_graph')))
     config.set('CONFIGURATION', 'output_dir', _dir_path(config.get('CONFIGURATION', 'output_dir')))
 
     # output_file has no default value, it is needed to check if it is in the config
@@ -247,10 +245,6 @@ def _validate_config_configuration_section(config):
     output_format = str(output_format).lower().strip()
     if output_format not in VALID_ARGUMENTS['output_format']:
         raise ValueError('Option output_format must be in: ' + VALID_ARGUMENTS['output_format'])
-    elif output_format == 'nquads' and config.get('CONFIGURATION', 'default_graph') == '':
-        raise Exception('It is necessary to provide a valid default_graph value if output_format option is ' +
-                        output_format + '.')
-
     config.set('CONFIGURATION', 'output_format', output_format)
 
     config.getboolean('CONFIGURATION', 'push_down_distincts')
@@ -299,8 +293,6 @@ def _complete_config_file_with_args(config, args):
 
     ''' If parameters are not provided in the config file, take them from arguments.
         mind that ConfigParser store options as strings'''
-    if not config.has_option('CONFIGURATION', 'default_graph'):
-        config.set('CONFIGURATION', 'default_graph', args.default_graph)
     if not config.has_option('CONFIGURATION', 'output_dir'):
         config.set('CONFIGURATION', 'output_dir', args.output_dir)
     if not config.has_option('CONFIGURATION', 'output_file'):
@@ -308,6 +300,7 @@ def _complete_config_file_with_args(config, args):
     if not config.has_option('CONFIGURATION', 'output_format'):
         config.set('CONFIGURATION', 'output_format', args.output_format)
     if not config.has_option('CONFIGURATION', 'push_down_distincts'):
+        config.set('CONFIGURATION', 'push_down_distincts', ARGUMENTS_DEFAULT['push_down_distincts'])
         config.set('CONFIGURATION', 'push_down_distincts', ARGUMENTS_DEFAULT['push_down_distincts'])
     if not config.has_option('CONFIGURATION', 'mapping_partitions'):
         config.set('CONFIGURATION', 'mapping_partitions', args.mapping_partitions)
@@ -340,8 +333,6 @@ def _parse_arguments():
 
     parser.add_argument('config', type=_existing_file_path,
                         help='Path to the configuration file.')
-    parser.add_argument('-g', '--default_graph', default=ARGUMENTS_DEFAULT['default_graph'], type=_uri,
-                        help='Default graph to add triples to.')
     parser.add_argument('-d', '--output_dir', default=ARGUMENTS_DEFAULT['output_dir'], type=str,
                         help='Path to the directory storing the results.')
     parser.add_argument('-o', '--output_file', default=ARGUMENTS_DEFAULT['output_file'], type=str,
