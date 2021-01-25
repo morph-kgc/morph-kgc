@@ -170,17 +170,7 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
                     '=parent.parent_' + join_condition['parent_value'] + ' AND '
         query = query[:-4] + ';'
 
-        logging.info(query)
-
-        db_connection = relational_source.relational_db_connection(config, str(mapping_rule['source_name']))
-        try:
-            query_results_df = pd.read_sql(query, con=db_connection, coerce_float=config.getboolean('CONFIGURATION', 'coerce_float'))
-        except:
-            raise Exception('Query ' + query + ' has failed to execute.')
-        db_connection.close()
-
-        for col_name in list(query_results_df.columns):
-            query_results_df[col_name] = query_results_df[col_name].astype(str)
+        query_results_df = relational_source.execute_relational_query(query, config, mapping_rule['source_name'])
 
         query_results_df['triple'] = ''
         if pd.notna(mapping_rule['subject_template']):
@@ -221,17 +211,7 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
         else:
             query = None
 
-        logging.info(query)
-
-        db_connection = relational_source.relational_db_connection(config, str(mapping_rule['source_name']))
-        try:
-            query_results_df = pd.read_sql(query, con=db_connection, coerce_float=config.getboolean('CONFIGURATION', 'coerce_float'))
-        except:
-            raise Exception('Query ' + query + ' has failed to execute.')
-        db_connection.close()
-
-        for col_name in list(query_results_df.columns):
-            query_results_df[col_name] = query_results_df[col_name].astype(str)
+        query_results_df = relational_source.execute_relational_query(query, config, mapping_rule['source_name'])
 
         query_results_df['triple'] = ''
         if pd.notna(mapping_rule['subject_template']):

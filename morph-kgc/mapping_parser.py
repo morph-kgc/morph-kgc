@@ -14,7 +14,8 @@ __status__ = 'Prototype'
 import rdflib
 import logging
 import pandas as pd
-import numpy as np
+
+import relational_source
 
 
 MAPPINGS_DATAFRAME_COLUMNS = [
@@ -27,6 +28,29 @@ MAPPINGS_DATAFRAME_COLUMNS = [
     'object_parent_triples_map', 'join_conditions',
     'predicate_object_graph_constant', 'predicate_object_graph_reference', 'predicate_object_graph_template'
 ]
+
+
+SQL_RDF_DATATYPE = {
+    'INTEGER': 'http://www.w3.org/2001/XMLSchema#integer',
+    'INT': 'http://www.w3.org/2001/XMLSchema#integer',
+    'SMALLINT': 'http://www.w3.org/2001/XMLSchema#integer',
+    'DECIMAL': 'http://www.w3.org/2001/XMLSchema#decimal',
+    'NUMERIC': 'http://www.w3.org/2001/XMLSchema#decimal',
+    'FLOAT': 'http://www.w3.org/2001/XMLSchema#double',
+    'REAL': 'http://www.w3.org/2001/XMLSchema#double',
+    'DOUBLE': 'http://www.w3.org/2001/XMLSchema#double',
+    'BOOL': 'http://www.w3.org/2001/XMLSchema#boolean',
+    'TINYINT': 'http://www.w3.org/2001/XMLSchema#boolean',
+    'BOOLEAN': 'http://www.w3.org/2001/XMLSchema#boolean',
+    'DATE': 'http://www.w3.org/2001/XMLSchema#date',
+    'TIME': 'http://www.w3.org/2001/XMLSchema#time',
+    'DATETIME': 'http://www.w3.org/2001/XMLSchema#',
+    'TIMESTAMP': 'http://www.w3.org/2001/XMLSchema#dateTime',
+    'BINARY': 'http://www.w3.org/2001/XMLSchema#hexBinary',
+    'VARBINARY': 'http://www.w3.org/2001/XMLSchema#hexBinary',
+    'BIT': 'http://www.w3.org/2001/XMLSchema#hexBinary',
+    'YEAR': 'http://www.w3.org/2001/XMLSchema#integer'
+}
 
 
 """This query has been reused from SDM-RDFizer (https://github.com/SDM-TIB/SDM-RDFizer). SDM-RDFizer has been developed
@@ -710,6 +734,19 @@ def _remove_delimiters_from_identifiers(mappings_df):
     return mappings_df
 
 
+def _infer_datatypes(mappings_df, config):
+    for i, mapping_rule in mappings_df.iterrows():
+        if mapping_rule['object_termtype'] == 'http://www.w3.org/ns/r2rml#Literal':
+            if pd.isna(mapping_rule['object_datatype']) and pd.isna(mapping_rule['object_language']):
+                data_type = relational_source.get_column_datatype(config, mapping_rule['source_name'],
+                                                                  mapping_rule['tablename'],
+                                                                  mapping_rule['object_reference']).upper()
+                if data_type in SQL_RDF_DATATYPE:
+                    mappings_df.at[i, 'object_datatype'] = SQL_RDF_DATATYPE[data_type]
+
+    return mappings_df
+
+
 def parse_mappings(config):
     configuration, data_sources = _get_configuration_and_sources(config)
 
@@ -727,7 +764,11 @@ def parse_mappings(config):
     mappings_df = _generate_mapping_partitions(mappings_df, configuration['mapping_partitions'])
     mappings_df = _complete_source_types(mappings_df, config)
     mappings_df = _remove_delimiters_from_identifiers(mappings_df)
+    mappings_df = _infer_datatypes(mappings_df, config)
 
     _validate_mapping_partitions(mappings_df, configuration['mapping_partitions'])
+
+    mappings_df.to_csv('m.csv', index=False)
+    raise
 
     return mappings_df

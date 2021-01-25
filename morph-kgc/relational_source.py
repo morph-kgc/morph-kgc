@@ -12,9 +12,10 @@ __status__ = 'Prototype'
 
 import logging
 import mysql.connector
+import pandas as pd
 
 
-def relational_db_connection(config, source_name):
+def _relational_db_connection(config, source_name):
     source_type = config.get(source_name, 'source_type').lower()
 
     if source_type == 'mysql':
@@ -27,3 +28,32 @@ def relational_db_connection(config, source_name):
         )
     else:
         raise ValueError('source_type ' + str(source_type) + ' in configuration file is not valid.')
+
+
+def execute_relational_query(query, config, source_name):
+    logging.info(query)
+
+    db_connection = _relational_db_connection(config, source_name)
+    try:
+        query_results_df = pd.read_sql(query, con=db_connection,
+                                       coerce_float=config.getboolean('CONFIGURATION', 'coerce_float'))
+    except:
+        raise Exception('Query ' + query + ' has failed to execute.')
+    db_connection.close()
+
+    for col_name in list(query_results_df.columns):
+        query_results_df[col_name] = query_results_df[col_name].astype(str)
+
+    return query_results_df
+
+
+def get_column_datatype(config, source_name, table_name, column_name):
+    db_connection = _relational_db_connection(config, source_name)
+    query = "select data_type from information_schema.columns where table_name='" + table_name + "' and column_name='" + column_name + "' ;"
+    try:
+        query_results_df = pd.read_sql(query, con=db_connection,
+                                       coerce_float=config.getboolean('CONFIGURATION', 'coerce_float'))
+    except:
+        raise Exception('Query ' + query + ' has failed to execute.')
+
+    return query_results_df['data_type'][0]
