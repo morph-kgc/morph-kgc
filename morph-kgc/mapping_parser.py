@@ -13,6 +13,7 @@ __status__ = 'Prototype'
 
 import rdflib
 import logging
+import sql_metadata
 import pandas as pd
 
 import relational_source
@@ -741,12 +742,22 @@ def _infer_datatypes(mappings_df, config):
     for i, mapping_rule in mappings_df.iterrows():
         if mapping_rule['object_termtype'] == 'http://www.w3.org/ns/r2rml#Literal':
             if pd.isna(mapping_rule['object_datatype']) and pd.isna(mapping_rule['object_language']):
-                data_type = relational_source.get_column_datatype(config, mapping_rule['source_name'],
-                                                                  mapping_rule['tablename'],
-                                                                  mapping_rule['object_reference']).upper()
-                if data_type in SQL_RDF_DATATYPE:
-                    mappings_df.at[i, 'object_datatype'] = SQL_RDF_DATATYPE[data_type]
-
+                if pd.notna(mapping_rule['tablename']):
+                    data_type = relational_source.get_column_datatype(config, mapping_rule['source_name'],
+                                                                      mapping_rule['tablename'],
+                                                                      mapping_rule['object_reference']).upper()
+                    if data_type in SQL_RDF_DATATYPE:
+                        mappings_df.at[i, 'object_datatype'] = SQL_RDF_DATATYPE[data_type]
+                elif pd.notna(mapping_rule['query']):
+                    table_names = sql_metadata.get_query_tables(mapping_rule['query'])
+                    for table_name in table_names:
+                        try:
+                            data_type = relational_source.get_column_datatype(config, mapping_rule['source_name'],
+                                                                          table_name, mapping_rule['object_reference']).upper()
+                            if data_type in SQL_RDF_DATATYPE:
+                                mappings_df.at[i, 'object_datatype'] = SQL_RDF_DATATYPE[data_type]
+                        except:
+                            pass
     return mappings_df
 
 
