@@ -26,7 +26,6 @@ ARGUMENTS_DEFAULT = {
     'output_dir': 'output',
     'output_file': '',
     'output_format': 'ntriples',
-    'remove_duplicates': 'yes',
     'mapping_partitions': '',
     'push_down_distincts': 'no',
     'number_of_processes': 0,
@@ -254,13 +253,7 @@ def _validate_config_configuration_section(config):
 
     config.set('CONFIGURATION', 'output_format', output_format)
 
-    remove_duplicates = config.getboolean('CONFIGURATION', 'remove_duplicates')
-    push_down_distincts = config.getboolean('CONFIGURATION', 'push_down_distincts')
-    if not remove_duplicates and push_down_distincts:
-        error_msg = 'Option remove_duplicates=' + remove_duplicates + ' but option push_down_distincts=' \
-                    + push_down_distincts + '. If duplicates are not to be removed, then ' \
-                                            'pushing down distincts is not valid.'
-        raise ValueError(error_msg)
+    config.getboolean('CONFIGURATION', 'push_down_distincts')
 
     mapping_partitions = config.get('CONFIGURATION', 'mapping_partitions')
     mapping_partitions = str(mapping_partitions).lower().strip()
@@ -314,8 +307,6 @@ def _complete_config_file_with_args(config, args):
         config.set('CONFIGURATION', 'output_file', args.output_file)
     if not config.has_option('CONFIGURATION', 'output_format'):
         config.set('CONFIGURATION', 'output_format', args.output_format)
-    if not config.has_option('CONFIGURATION', 'remove_duplicates'):
-        config.set('CONFIGURATION', 'remove_duplicates', ARGUMENTS_DEFAULT['remove_duplicates'])
     if not config.has_option('CONFIGURATION', 'push_down_distincts'):
         config.set('CONFIGURATION', 'push_down_distincts', ARGUMENTS_DEFAULT['push_down_distincts'])
     if not config.has_option('CONFIGURATION', 'mapping_partitions'):
