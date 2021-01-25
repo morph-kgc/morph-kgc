@@ -50,10 +50,13 @@ def execute_relational_query(query, config, source_name):
 def get_column_datatype(config, source_name, table_name, column_name):
     db_connection = _relational_db_connection(config, source_name)
     query = "select data_type from information_schema.columns where table_name='" + table_name + "' and column_name='" + column_name + "' ;"
+
     try:
-        query_results_df = pd.read_sql(query, con=db_connection,
-                                       coerce_float=config.getboolean('CONFIGURATION', 'coerce_float'))
+        query_results_df = pd.read_sql(query, con=db_connection)
     except:
         raise Exception('Query ' + query + ' has failed to execute.')
 
-    return query_results_df['data_type'][0]
+    if 'data_type' in query_results_df.columns:
+        return query_results_df['data_type'][0]
+    elif 'DATA_TYPE' in query_results_df.columns:
+        return query_results_df['DATA_TYPE'][0]

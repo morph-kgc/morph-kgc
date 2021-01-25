@@ -360,7 +360,7 @@ def _transform_mappings_into_dataframe(mapping_query_results, join_query_results
 
     source_mappings_df = pd.DataFrame(columns=MAPPINGS_DATAFRAME_COLUMNS)
     for mapping_rule in mapping_query_results:
-        _append_mapping_rule(source_mappings_df, mapping_rule)
+        source_mappings_df = _append_mapping_rule(source_mappings_df, mapping_rule)
 
     join_conditions_dict = _get_join_object_maps_join_conditions(join_query_results)
     source_mappings_df['join_conditions'] = source_mappings_df['object_map'].map(join_conditions_dict)
@@ -417,6 +417,8 @@ def _append_mapping_rule(mappings_df, mapping_rule):
     mappings_df.at[i, 'predicate_object_graph_constant'] = mapping_rule.predicate_object_graph_constant
     mappings_df.at[i, 'predicate_object_graph_reference'] = mapping_rule.predicate_object_graph_reference
     mappings_df.at[i, 'predicate_object_graph_template'] = mapping_rule.predicate_object_graph_template
+
+    return mappings_df
 
 
 def _remove_duplicated_mapping_rules(mappings_df):
@@ -619,6 +621,7 @@ def  _rdf_class_to_pom(mappings_df):
             # add rdf_class_ at the beginning to avoid problems in later processing
             mappings_df.at[j, 'triples_map_id'] = 'rdf_class_' + str(row['triples_map_id'])
             mappings_df.at[j, 'tablename'] = row['tablename']
+            mappings_df.at[j, 'query'] = row['query']
             mappings_df.at[j, 'subject_template'] = row['subject_template']
             mappings_df.at[j, 'subject_reference'] = row['subject_reference']
             mappings_df.at[j, 'subject_constant'] = row['subject_constant']
@@ -764,11 +767,9 @@ def parse_mappings(config):
     mappings_df = _generate_mapping_partitions(mappings_df, configuration['mapping_partitions'])
     mappings_df = _complete_source_types(mappings_df, config)
     mappings_df = _remove_delimiters_from_identifiers(mappings_df)
+
     mappings_df = _infer_datatypes(mappings_df, config)
 
     _validate_mapping_partitions(mappings_df, configuration['mapping_partitions'])
-
-    mappings_df.to_csv('m.csv', index=False)
-    raise
 
     return mappings_df

@@ -1,4 +1,4 @@
 <Bob_Smith_30.0> <http://xmlns.com/foaf/0.1/name> "Bob Smith" .
-<Sue_Jones_20.0> <http://example.com/amount> "20.0" .
-<Bob_Smith_30.0> <http://example.com/amount> "30.0" .
+<Bob_Smith_30.0> <http://example.com/amount> "30.0"^^<http://www.w3.org/2001/XMLSchema#double> .
+<Sue_Jones_20.0> <http://example.com/amount> "20.0"^^<http://www.w3.org/2001/XMLSchema#double> .
 <Sue_Jones_20.0> <http://xmlns.com/foaf/0.1/name> "Sue Jones" .
