@@ -1,64 +1,64 @@
-tester,platform,testid,result
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0000,passed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0001a,passed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0001b,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0002a,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0002b,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0002c,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0002d,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0002e,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0002f,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0002g,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0002h,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0002i,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0002j,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0003a,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0003b,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0003c,passed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0004a,passed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0004b,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0005a,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0005b,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0006a,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0007a,passed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0007b,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0007c,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0007d,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0007e,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0007f,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0007g,passed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0007h,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0008a,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0008b,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0008c,passed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0009a,passed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0009b,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0009c,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0009d,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0010a,passed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0010b,passed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0010c,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0011a,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0011b,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0012a,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0012b,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0012c,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0012d,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0012e,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0013a,passed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0014a,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0014b,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0014c,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0014d,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0015a,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0015b,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0016a,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0016b,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0016c,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0016d,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0016e,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0018a,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0019a,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0019b,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0020a,failed
-https://jarenas.oeg-upm.net/,https://morph.oeg.fi.upm.es/tool/morph-kgc,R2RMLTC0020b,failed
+tester,platform,rdbms,testid,result
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0000,passed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0001a,passed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0001b,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0002a,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0002b,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0002c,passed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0002d,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0002e,passed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0002f,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0002g,passed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0002h,passed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0002i,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0002j,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0003a,passed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0003b,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0003c,passed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0004a,passed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0004b,passed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0005a,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0005b,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0006a,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0007a,passed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0007b,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0007c,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0007d,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0007e,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0007f,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0007g,passed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0007h,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0008a,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0008b,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0008c,passed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0009a,passed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0009b,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0009c,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0009d,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0010a,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0010b,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0010c,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0011a,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0011b,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0012a,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0012b,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0012c,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0012d,passed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0012e,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0013a,passed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0014a,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0014b,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0014c,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0014d,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0015a,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0015b,passed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0016a,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0016b,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0016c,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0016d,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0016e,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0018a,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0019a,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0019b,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0020a,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0020b,failed

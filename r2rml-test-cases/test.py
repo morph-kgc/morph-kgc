@@ -33,9 +33,8 @@ def test_all():
             print("-----------------------------------------------------------------")
             print("Testing R2RML test-case: " + t_identifier + " (" + t_title + ")")
             print("Purpose of this test is: " + purpose)
-            result = run_test(t_identifier, r2rml, test_uri, expected_output)
-            results.append([config["tester"]["tester_url"], config["engine"]["engine_url"], t_identifier, result])
-            print(t_identifier + "," + result)
+            run_test(t_identifier, r2rml, test_uri, expected_output)
+
 
 
 def test_one(identifier):
@@ -49,9 +48,7 @@ def test_one(identifier):
     print("Testing R2RML test-case: " + identifier + " (" + t_title + ")")
     print("Purpose of this test is: " + purpose)
     database_load(database)
-    result = run_test(identifier, r2rml, test_uri, expected_output)
-    results.append([config["tester"]["tester_url"], config["engine"]["engine_url"], identifier, result])
-    print(identifier + "," + result)
+    run_test(identifier, r2rml, test_uri, expected_output)
 
 
 def database_up():
@@ -101,6 +98,8 @@ def database_load(database_script):
 def run_test(t_identifier, mapping, test_uri, expected_output):
     os.system("cp " + t_identifier + "/" + mapping + " r2rml.ttl")
     expected_output_graph = Graph()
+    if os.path.isfile(config["properties"]["output_results"]):
+        os.system("rm "+config["properties"]["output_results"])
 
     if expected_output:
         output = manifest_graph.value(subject=test_uri, predicate=RDB2RDFTEST.output, object=None)
@@ -110,23 +109,23 @@ def run_test(t_identifier, mapping, test_uri, expected_output):
 
     # if there is output file
     if os.path.isfile(config["properties"]["output_results"]):
-        # and expected output is true
         os.system("cp " + config["properties"]["output_results"] + " " + t_identifier + "/engine_output-"+database_system+".ttl")
+        # and expected output is true
         if expected_output:
             output_graph = Graph()
-
-            # and graphs are equal
             iso_expected = compare.to_isomorphic(expected_output_graph)
+            # trying to parse the output (e.g., not valid RDF)
             try:
-                # if the output is not a valid rdf graph
                 output_graph.parse(config["properties"]["output_results"],
                                    format=config["properties"]["output_format"])
                 iso_output = compare.to_isomorphic(output_graph)
+                # and graphs are equal
                 if iso_expected == iso_output:
                     result = passed
                 # and graphs are distinct
                 else:
                     result = failed
+            # output is not valid RDF
             except:
                 result = failed
 
@@ -142,18 +141,27 @@ def run_test(t_identifier, mapping, test_uri, expected_output):
         else:
             result = passed
 
-    return result
+    results.append(
+        [config["tester"]["tester_name"], config["engine"]["engine_name"], database_system, t_identifier, result])
+    print(t_identifier + "," + result)
 
 
 def generate_results():
-    with open('results-' + database_system + '.csv', 'w', newline='') as file:
+    with open('results.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerows(results)
 
     print("Generating the RDF results using EARL vocabulary")
-    #os.system("java -jar rmlmapper.jar -m mapping.rml.ttl -o results-" + database_system + ".ttl -d")
-    os.system("rm metadata.csv r2rml.ttl")
+    os.system("java -jar rmlmapper.jar -m mapping.rml.ttl -o results-" + database_system + ".ttl -d")
+    os.system("rm metadata.csv r2rml.ttl && mv results.csv results-" + database_system + ".csv")
 
+
+def merge_results():
+    if os.path.isfile("results-mysql.ttl") and os.path.isfile("results-postgresql.ttl"):
+        final_results = Graph()
+        final_results.parse("results-mysql.ttl", format="ntriples")
+        final_results.parse("results-postgresql.ttl", format="ntriples")
+        final_results.serialize("results.ttl", format="ntriples")
 
 def get_database_url():
     if database_system == "mysql":
@@ -182,14 +190,14 @@ if __name__ == "__main__":
     TESTDEC = Namespace("http://www.w3.org/2006/03/test-description#")
     DCELEMENTS = Namespace("http://purl.org/dc/elements/1.1/")
 
-    results = [["tester", "platform", "testid", "result"]]
+    results = [["tester", "platform", "rdbms", "testid", "result"]]
     metadata = [
         ["tester_name", "tester_url", "tester_contact", "test_date", "engine_version", "engine_name", "engine_created",
-         "engine_url", "database"],
+         "engine_url", "database", "database_name"],
         [config["tester"]["tester_name"], config["tester"]["tester_url"], config["tester"]["tester_contact"],
          config["engine"]["test_date"],
          config["engine"]["engine_version"], config["engine"]["engine_name"], config["engine"]["engine_created"],
-         config["engine"]["engine_url"], get_database_url()]]
+         config["engine"]["engine_url"], get_database_url(), database_system]]
     failed = "failed"
     passed = "passed"
     with open('metadata.csv', 'w', newline='') as file:
@@ -207,3 +215,4 @@ if __name__ == "__main__":
         generate_results()
 
     database_down()
+    merge_results()

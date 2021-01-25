@@ -20,6 +20,14 @@ import relational_source
 from urllib.parse import quote
 
 
+ENGINE_DELIMITERS = {
+    'mysql': '`',
+    'postgresql': '"',
+    'oracle': '"',
+    'sqlserver': '"'
+}
+
+
 def _get_references_in_template(template):
     template = template.replace('\{', 'zwy\u200B').replace('\}', 'ywz\u200A')
 

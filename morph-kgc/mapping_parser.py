@@ -406,7 +406,7 @@ def _remove_duplicated_mapping_rules(mappings_df):
     return mappings_df
 
 
-def _validate_mapping_partitions(mappings_df, mapping_partitions, source_name):
+def _validate_mapping_partitions(mappings_df, mapping_partitions):
     if 's' in mapping_partitions:
         '''
         Subject is used as partitioning criteria.
@@ -415,8 +415,8 @@ def _validate_mapping_partitions(mappings_df, mapping_partitions, source_name):
         '''
         if mappings_df['subject_reference'].notna().any():
             raise Exception('Invalid mapping partitions criteria ' + mapping_partitions + ': mappings cannot be '
-                            'partitioned by subject because mappings of source ' + source_name +
-                            ' contain subject terms that are rr:column or rml:reference.')
+                            'partitioned by subject because mappings contain subject terms that are rr:column or '
+                            'rml:reference.')
     if 'p' in mapping_partitions:
         '''
         Predicate is used as partitioning criteria.
@@ -425,13 +425,18 @@ def _validate_mapping_partitions(mappings_df, mapping_partitions, source_name):
         '''
         if mappings_df['subject_reference'].notna().any():
             raise Exception('Invalid mapping partitions criteria ' + mapping_partitions +
-                            ': mappings cannot be partitioned by predicate because mappings of source ' + source_name +
-                            ' contain predicate terms that are rr:column or rml:reference.')
+                            ': mappings cannot be partitioned by predicate because mappings contain predicate terms '
+                            'that are rr:column or rml:reference.')
     if 'g' in mapping_partitions:
         '''
-            TODO
+        Graph is used as partitioning criteria.
+        If there is any graph that is a reference that means it is not a template nor a constant, and it cannot
+        be used as partitioning criteria.
         '''
-        pass
+        if mappings_df['graph_reference'].notna().any():
+            raise Exception('Invalid mapping partitions criteria ' + mapping_partitions +
+                            ': mappings cannot be partitioned by graph because mappings '
+                            'contain graph terms that are rr:column or rml:reference.')
 
 
 def _get_invariable_part_of_template(template):
@@ -660,6 +665,51 @@ def _complete_source_types(mappings_df, config):
     return mappings_df
 
 
+def _is_delimited(value):
+    value = str(value)
+    if len(value) > 2:
+        if value[0] == '"' and value[len(value) - 1] == '"':
+            return True
+    return False
+
+
+def _get_valid_identifier_name(name):
+    if str(name) != 'nan':
+        if _is_delimited(name):
+            return name[1:-1]
+    return name
+
+
+def _get_valid_template_identifiers(template):
+    if template:
+        if str(template) != 'nan':
+            return template.replace('{"', '{').replace('"}', '}')
+
+    return template
+
+
+def _remove_delimiters_from_identifiers(mappings_df):
+    for i, mapping_rule in mappings_df.iterrows():
+        mappings_df.at[i, 'tablename'] = _get_valid_identifier_name(mapping_rule['tablename'])
+        mappings_df.at[i, 'subject_template'] = _get_valid_template_identifiers(mapping_rule['subject_template'])
+        mappings_df.at[i, 'subject_reference'] = _get_valid_identifier_name(mapping_rule['subject_reference'])
+        mappings_df.at[i, 'graph_reference'] = _get_valid_identifier_name(mapping_rule['graph_reference'])
+        mappings_df.at[i, 'graph_template'] = _get_valid_template_identifiers(mapping_rule['graph_template'])
+        mappings_df.at[i, 'predicate_template'] = _get_valid_template_identifiers(mapping_rule['predicate_template'])
+        mappings_df.at[i, 'predicate_reference'] = _get_valid_identifier_name(mapping_rule['predicate_reference'])
+        mappings_df.at[i, 'object_template'] = _get_valid_template_identifiers(mapping_rule['object_template'])
+        mappings_df.at[i, 'object_reference'] = _get_valid_identifier_name(mapping_rule['object_reference'])
+
+        if str(mapping_rule['join_conditions']) != 'nan':
+            join_conditions = eval(mapping_rule['join_conditions'])
+            for key, value in join_conditions.items():
+                join_conditions[key]['child_value'] = _get_valid_identifier_name(join_conditions[key]['child_value'])
+                join_conditions[key]['parent_value'] = _get_valid_identifier_name(join_conditions[key]['parent_value'])
+            mappings_df.at[i, 'join_conditions'] = str(join_conditions)
+
+    return mappings_df
+
+
 def parse_mappings(config):
     configuration, data_sources = _get_configuration_and_sources(config)
 
@@ -667,8 +717,6 @@ def parse_mappings(config):
 
     for source_name, source_options in data_sources.items():
         source_mappings_df = _parse_mapping_files(source_options, source_name)
-
-        _validate_mapping_partitions(source_mappings_df, configuration['mapping_partitions'], source_name)
         mappings_df = pd.concat([mappings_df, source_mappings_df])
         logging.info('Mappings for data source ' + str(source_name) + ' successfully parsed.')
 
@@ -678,5 +726,8 @@ def parse_mappings(config):
     mappings_df = _complete_termtypes(mappings_df)
     mappings_df = _generate_mapping_partitions(mappings_df, configuration['mapping_partitions'])
     mappings_df = _complete_source_types(mappings_df, config)
+    mappings_df = _remove_delimiters_from_identifiers(mappings_df)
+
+    _validate_mapping_partitions(mappings_df, configuration['mapping_partitions'])
 
     return mappings_df

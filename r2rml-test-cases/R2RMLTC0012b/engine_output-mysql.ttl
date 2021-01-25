@@ -1,4 +1,4 @@
-<Sue_Jones> <http://example.com/city> "Madrid" .
-<Bob_Smith> <http://example.com/city> "London" .
-<Sue_Jones> <http://xmlns.com/foaf/0.1/name> "Sue Jones" .
 <Bob_Smith> <http://xmlns.com/foaf/0.1/name> "Bob Smith" .
+<Sue_Jones> <http://example.com/city> "Madrid" .
+<Sue_Jones> <http://xmlns.com/foaf/0.1/name> "Sue Jones" .
+<Bob_Smith> <http://example.com/city> "London" .
