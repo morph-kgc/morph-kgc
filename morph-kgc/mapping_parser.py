@@ -366,6 +366,7 @@ def _transform_mappings_into_dataframe(mapping_query_results, join_query_results
     join_conditions_dict = _get_join_object_maps_join_conditions(join_query_results)
     source_mappings_df['join_conditions'] = source_mappings_df['object_map'].map(join_conditions_dict)
     # needed for later hashing the dataframe
+    source_mappings_df['join_conditions'] = source_mappings_df['join_conditions'].where(pd.notnull(source_mappings_df['join_conditions']), '')
     source_mappings_df['join_conditions'] = source_mappings_df['join_conditions'].astype(str)
     source_mappings_df.drop('object_map', axis=1, inplace=True)
 
@@ -633,6 +634,7 @@ def  _rdf_class_to_pom(mappings_df):
             mappings_df.at[j, 'predicate_constant'] = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'
             mappings_df.at[j, 'object_constant'] = row['subject_rdf_class']
             mappings_df.at[j, 'object_termtype'] = 'http://www.w3.org/ns/r2rml#IRI'
+            mappings_df.at[j, 'join_conditions'] = ''
 
     mappings_df.drop('subject_rdf_class', axis=1, inplace=True)
     mappings_df.drop_duplicates(inplace=True)
@@ -712,7 +714,6 @@ def _get_valid_template_identifiers(template):
     if template:
         if str(template) != 'nan':
             return template.replace('{"', '{').replace('"}', '}')
-
     return template
 
 
@@ -728,12 +729,12 @@ def _remove_delimiters_from_identifiers(mappings_df):
         mappings_df.at[i, 'object_template'] = _get_valid_template_identifiers(mapping_rule['object_template'])
         mappings_df.at[i, 'object_reference'] = _get_valid_identifier_name(mapping_rule['object_reference'])
 
-        if str(mapping_rule['join_conditions']) != 'nan':
+        if mapping_rule['join_conditions']:
             join_conditions = eval(mapping_rule['join_conditions'])
             for key, value in join_conditions.items():
                 join_conditions[key]['child_value'] = _get_valid_identifier_name(join_conditions[key]['child_value'])
                 join_conditions[key]['parent_value'] = _get_valid_identifier_name(join_conditions[key]['parent_value'])
-            mappings_df.at[i, 'join_conditions'] = str(join_conditions)
+                mappings_df.at[i, 'join_conditions'] = str(join_conditions)
 
     return mappings_df
 
@@ -782,5 +783,8 @@ def parse_mappings(config):
     mappings_df = _infer_datatypes(mappings_df, config)
 
     _validate_mapping_partitions(mappings_df, configuration['mapping_partitions'])
+
+    mappings_df.to_csv('m.csv', index=False)
+    raise
 
     return mappings_df
