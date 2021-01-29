@@ -661,7 +661,7 @@ def _set_pom_graphs(mappings_df):
             if pd.isna(mapping_rule['predicate_object_graph_constant']) and \
                     pd.isna(mapping_rule['predicate_object_graph_reference']) and \
                     pd.isna(mapping_rule['predicate_object_graph_template']):
-                mappings_df.at[i, 'graph_constant'] = ''    # default graph
+                mappings_df.at[i, 'graph_constant'] = 'http://www.w3.org/ns/r2rml#defaultGraph'
 
     aux_mappings_df = mappings_df.copy()
     for i, mapping_rule in aux_mappings_df.iterrows():
