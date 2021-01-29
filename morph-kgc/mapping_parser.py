@@ -770,21 +770,19 @@ def parse_mappings(config):
     for source_name, source_options in data_sources.items():
         source_mappings_df = _parse_mapping_files(source_options, source_name)
         mappings_df = pd.concat([mappings_df, source_mappings_df])
+        mappings_df = mappings_df.reset_index()
         logging.info('Mappings for data source ' + str(source_name) + ' successfully parsed.')
 
     mappings_df = _remove_duplicated_mapping_rules(mappings_df)
     mappings_df = _rdf_class_to_pom(mappings_df)
     mappings_df = _set_pom_graphs(mappings_df)
     mappings_df = _complete_termtypes(mappings_df)
-    mappings_df = _generate_mapping_partitions(mappings_df, configuration['mapping_partitions'])
     mappings_df = _complete_source_types(mappings_df, config)
     mappings_df = _remove_delimiters_from_identifiers(mappings_df)
 
     mappings_df = _infer_datatypes(mappings_df, config)
 
+    mappings_df = _generate_mapping_partitions(mappings_df, configuration['mapping_partitions'])
     _validate_mapping_partitions(mappings_df, configuration['mapping_partitions'])
-
-    mappings_df.to_csv('m.csv', index=False)
-    raise
 
     return mappings_df
