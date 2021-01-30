@@ -34,29 +34,6 @@ MAPPINGS_DATAFRAME_COLUMNS = [
 ]
 
 
-SQL_RDF_DATATYPE = {
-    'INTEGER': 'http://www.w3.org/2001/XMLSchema#integer',
-    'INT': 'http://www.w3.org/2001/XMLSchema#integer',
-    'SMALLINT': 'http://www.w3.org/2001/XMLSchema#integer',
-    'DECIMAL': 'http://www.w3.org/2001/XMLSchema#decimal',
-    'NUMERIC': 'http://www.w3.org/2001/XMLSchema#decimal',
-    'FLOAT': 'http://www.w3.org/2001/XMLSchema#double',
-    'REAL': 'http://www.w3.org/2001/XMLSchema#double',
-    'DOUBLE': 'http://www.w3.org/2001/XMLSchema#double',
-    'BOOL': 'http://www.w3.org/2001/XMLSchema#boolean',
-    'TINYINT': 'http://www.w3.org/2001/XMLSchema#boolean',
-    'BOOLEAN': 'http://www.w3.org/2001/XMLSchema#boolean',
-    'DATE': 'http://www.w3.org/2001/XMLSchema#date',
-    'TIME': 'http://www.w3.org/2001/XMLSchema#time',
-    'DATETIME': 'http://www.w3.org/2001/XMLSchema#',
-    'TIMESTAMP': 'http://www.w3.org/2001/XMLSchema#dateTime',
-    'BINARY': 'http://www.w3.org/2001/XMLSchema#hexBinary',
-    'VARBINARY': 'http://www.w3.org/2001/XMLSchema#hexBinary',
-    'BIT': 'http://www.w3.org/2001/XMLSchema#hexBinary',
-    'YEAR': 'http://www.w3.org/2001/XMLSchema#integer'
-}
-
-
 """This query has been reused from SDM-RDFizer (https://github.com/SDM-TIB/SDM-RDFizer). SDM-RDFizer has been developed
 by members of the Scientific Data Management Group at TIB. Its development has been coordinated and supervised by
 Maria-Esther Vidal. The implementation has been done by Enrique Iglesias and Guillermo Betancourt under the
@@ -748,19 +725,15 @@ def _infer_datatypes(mappings_df, config):
             if mapping_rule['object_termtype'] == 'http://www.w3.org/ns/r2rml#Literal':
                 if pd.isna(mapping_rule['object_datatype']) and pd.isna(mapping_rule['object_language']):
                     if pd.notna(mapping_rule['tablename']):
-                        data_type = relational_source.get_column_datatype(config, mapping_rule['source_name'],
+                        mappings_df.at[i, 'object_datatype'] = relational_source.get_column_datatype(config, mapping_rule['source_name'],
                                                                           mapping_rule['tablename'],
                                                                           mapping_rule['object_reference']).upper()
-                        if data_type in SQL_RDF_DATATYPE:
-                            mappings_df.at[i, 'object_datatype'] = SQL_RDF_DATATYPE[data_type]
                     elif pd.notna(mapping_rule['query']):
                         table_names = sql_metadata.get_query_tables(mapping_rule['query'])
                         for table_name in table_names:
                             try:
-                                data_type = relational_source.get_column_datatype(config, mapping_rule['source_name'],
+                                mappings_df.at[i, 'object_datatype'] = relational_source.get_column_datatype(config, mapping_rule['source_name'],
                                                                               table_name, mapping_rule['object_reference']).upper()
-                                if data_type in SQL_RDF_DATATYPE:
-                                    mappings_df.at[i, 'object_datatype'] = SQL_RDF_DATATYPE[data_type]
                             except:
                                 pass
 
@@ -790,5 +763,8 @@ def parse_mappings(config):
 
     mappings_df = _generate_mapping_partitions(mappings_df, configuration['mapping_partitions'])
     _validate_mapping_partitions(mappings_df, configuration['mapping_partitions'])
+
+    raise
+    mappings_df.to_csv('m.csv', index=False)
 
     return mappings_df

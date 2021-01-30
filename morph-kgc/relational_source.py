@@ -15,6 +15,29 @@ import mysql.connector
 import pandas as pd
 
 
+SQL_RDF_DATATYPE = {
+    'INTEGER': 'http://www.w3.org/2001/XMLSchema#integer',
+    'INT': 'http://www.w3.org/2001/XMLSchema#integer',
+    'SMALLINT': 'http://www.w3.org/2001/XMLSchema#integer',
+    'DECIMAL': 'http://www.w3.org/2001/XMLSchema#decimal',
+    'NUMERIC': 'http://www.w3.org/2001/XMLSchema#decimal',
+    'FLOAT': 'http://www.w3.org/2001/XMLSchema#double',
+    'REAL': 'http://www.w3.org/2001/XMLSchema#double',
+    'DOUBLE': 'http://www.w3.org/2001/XMLSchema#double',
+    'BOOL': 'http://www.w3.org/2001/XMLSchema#boolean',
+    'TINYINT': 'http://www.w3.org/2001/XMLSchema#boolean',
+    'BOOLEAN': 'http://www.w3.org/2001/XMLSchema#boolean',
+    'DATE': 'http://www.w3.org/2001/XMLSchema#date',
+    'TIME': 'http://www.w3.org/2001/XMLSchema#time',
+    'DATETIME': 'http://www.w3.org/2001/XMLSchema#',
+    'TIMESTAMP': 'http://www.w3.org/2001/XMLSchema#dateTime',
+    'BINARY': 'http://www.w3.org/2001/XMLSchema#hexBinary',
+    'VARBINARY': 'http://www.w3.org/2001/XMLSchema#hexBinary',
+    'BIT': 'http://www.w3.org/2001/XMLSchema#hexBinary',
+    'YEAR': 'http://www.w3.org/2001/XMLSchema#integer'
+}
+
+
 def _relational_db_connection(config, source_name):
     source_type = config.get(source_name, 'source_type').lower()
 
@@ -56,7 +79,13 @@ def get_column_datatype(config, source_name, table_name, column_name):
     except:
         raise Exception('Query ' + query + ' has failed to execute.')
 
+    data_type = ''
     if 'data_type' in query_results_df.columns:
-        return query_results_df['data_type'][0]
+        data_type = query_results_df['data_type'][0]
     elif 'DATA_TYPE' in query_results_df.columns:
-        return query_results_df['DATA_TYPE'][0]
+        data_type = query_results_df['DATA_TYPE'][0]
+
+    if data_type in SQL_RDF_DATATYPE:
+        return SQL_RDF_DATATYPE[data_type]
+    else:
+        return ''
