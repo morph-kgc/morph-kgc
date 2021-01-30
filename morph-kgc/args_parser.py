@@ -18,7 +18,6 @@ import logging
 import multiprocessing as mp
 
 from configparser import ConfigParser, ExtendedInterpolation
-from validator_collection import validators
 
 
 ARGUMENTS_DEFAULT = {
@@ -145,23 +144,6 @@ def _existing_file_path(file_path):
     return file_path
 
 
-def _uri(uri):
-    """
-    Validated if a URI is valid. If no URI is provided it is also valid.
-
-    :param uri: URI
-    :type uri: str
-    :return validated URI
-    :rtype str
-    """
-
-    uri = str(uri).strip()
-    if uri != '':
-        validators.url(uri)
-
-    return uri
-
-
 def _processes_number(number):
     """
     Generates a natural number from a given number. Number is converted to int.
@@ -201,7 +183,7 @@ def _natural_number_including_zero(number):
 
 def _validate_config_data_sources_sections(config):
     for section in config.sections():
-        if section != 'CONFIGURATION':
+        if section !=  'CONFIGURATION':
             ''' if section is not configuration then it is a data source.
                 Mind that DEFAULT section is not triggered with config.sections(). '''
 

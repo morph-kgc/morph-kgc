@@ -14,6 +14,7 @@ __status__ = 'Prototype'
 import rdflib
 import logging
 import sql_metadata
+import rfc3987
 import pandas as pd
 
 import relational_source
@@ -633,6 +634,10 @@ def _complete_termtypes(mappings_df):
             else:
                 mappings_df.at[i, 'object_termtype'] = 'http://www.w3.org/ns/r2rml#IRI'
 
+    # Convert to str (instead of rdflib object) to avoid problems later
+    mappings_df['subject_termtype'] = mappings_df['subject_termtype'].astype(str)
+    mappings_df['object_termtype'] = mappings_df['object_termtype'].astype(str)
+
     return mappings_df
 
 
@@ -740,6 +745,43 @@ def _infer_datatypes(mappings_df, config):
     return mappings_df
 
 
+def _validate_parsed_mappings(mappings_df):
+    # Check termtypes are correct. Use subset operation.
+    if not (set(mappings_df['subject_termtype'].astype(str)) <= {'http://www.w3.org/ns/r2rml#IRI', 'http://www.w3.org/ns/r2rml#BlankNode'}):
+        raise ValueError('Found an invalid subject termtype. Found values ' + str(set(mappings_df['subject_termtype'].astype(str))) + '. Subject maps must be rr:IRI or rr:BlankNode.')
+    if not (set(mappings_df['object_termtype'].astype(str)) <= {'http://www.w3.org/ns/r2rml#IRI', 'http://www.w3.org/ns/r2rml#BlankNode', 'http://www.w3.org/ns/r2rml#Literal'}):
+        raise ValueError('Found an invalid object termtype. Found values ' + str(set(mappings_df['subject_termtype'].astype(str))) + '. Object maps must be rr:IRI, rr:BlankNode or rr:Literal.')
+
+    # If there is a datatype or language tag then the object map termtype must be a rr:Literal
+    if len(mappings_df.loc[(mappings_df['object_termtype'] != 'http://www.w3.org/ns/r2rml#Literal') & mappings_df['object_datatype'].notnull() & mappings_df['object_language'].notnull()]) > 0:
+        raise Exception('Found object maps with a language tag or a datatype, but that do not have termtype rr:Literal.')
+
+    # Language tags and datatypes cannot be used simultaneously. Language tags are used if both are given
+    if len(mappings_df.loc[mappings_df['object_language'].notnull() & mappings_df['object_datatype'].notnull()]) > 0:
+        logging.warning('Found object maps with a language tag and a datatype. Both of them cannot be used simultaneously for the same object map, and the language tag has preference.')
+
+    # Check constants are valid IRIs
+    constants = list(mappings_df['predicate_constant'].dropna())
+    constants.extend(list(mappings_df['graph_constant'].dropna()))
+    constants.extend(list(mappings_df.loc[(mappings_df['subject_termtype'] == 'http://www.w3.org/ns/r2rml#IRI') & mappings_df['subject_constant'].notnull()]['subject_constant']))
+    constants.extend(list(mappings_df.loc[(mappings_df['object_termtype'] == 'http://www.w3.org/ns/r2rml#IRI') & mappings_df['object_constant'].notnull()]['object_constant']))
+    for constant in set(constants):
+        rfc3987.parse(constant, rule='IRI')
+
+    # Check templates are valid IRIs
+    templates = list(mappings_df['predicate_template'].dropna())
+    templates.extend(list(mappings_df['graph_template'].dropna()))
+    templates.extend(list(mappings_df.loc[(mappings_df['subject_termtype'] == 'http://www.w3.org/ns/r2rml#IRI') & mappings_df['subject_template'].notnull()]['subject_template']))
+    templates.extend(list(mappings_df.loc[(mappings_df['object_termtype'] == 'http://www.w3.org/ns/r2rml#IRI') & mappings_df['object_template'].notnull()]['object_template']))
+    for template in templates:
+        # Validate that at least the invariable part of the template is a valid IRI
+        rfc3987.parse(_get_invariable_part_of_template(template), rule='IRI')
+
+    # Check bankNodes??? take a look what BlancNodes are
+    # Check queries (sqlQuery) are valid
+    # Check data sources exist (CSVs, tables/columns in sql)
+
+
 def parse_mappings(config):
     configuration, data_sources = _get_configuration_and_sources(config)
 
@@ -764,7 +806,6 @@ def parse_mappings(config):
     mappings_df = _generate_mapping_partitions(mappings_df, configuration['mapping_partitions'])
     _validate_mapping_partitions(mappings_df, configuration['mapping_partitions'])
 
-    raise
-    mappings_df.to_csv('m.csv', index=False)
+    _validate_parsed_mappings(mappings_df.copy())
 
     return mappings_df
