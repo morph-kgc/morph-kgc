@@ -785,7 +785,8 @@ def parse_mappings(config):
     mappings_df = _complete_source_types(mappings_df, config)
     mappings_df = _remove_delimiters_from_identifiers(mappings_df)
 
-    mappings_df = _infer_datatypes(mappings_df, config)
+    if config.getboolean('CONFIGURATION', 'infer_datatypes'):
+        mappings_df = _infer_datatypes(mappings_df, config)
 
     mappings_df = _generate_mapping_partitions(mappings_df, configuration['mapping_partitions'])
     _validate_mapping_partitions(mappings_df, configuration['mapping_partitions'])

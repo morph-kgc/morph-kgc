@@ -29,6 +29,7 @@ ARGUMENTS_DEFAULT = {
     'push_down_distincts': 'no',
     'number_of_processes': 0,
     'chunksize': 0,
+    'infer_datatypes': 'yes',
     'coerce_float': 'no'
 }
 
@@ -265,6 +266,7 @@ def _validate_config_configuration_section(config):
                str(_natural_number_including_zero(config.get('CONFIGURATION', 'chunksize'))))
 
     config.getboolean('CONFIGURATION', 'coerce_float')
+    config.getboolean('CONFIGURATION', 'infer_datatypes')
 
     # logs has no default value, it is needed to check if it is in the config
     if config.has_option('CONFIGURATION', 'logs'):
@@ -310,6 +312,8 @@ def _complete_config_file_with_args(config, args):
         config.set('CONFIGURATION', 'chunksize', str(ARGUMENTS_DEFAULT['chunksize']))
     if not config.has_option('CONFIGURATION', 'coerce_float'):
         config.set('CONFIGURATION', 'coerce_float', ARGUMENTS_DEFAULT['coerce_float'])
+    if not config.has_option('CONFIGURATION', 'infer_datatypes'):
+        config.set('CONFIGURATION', 'infer_datatypes', ARGUMENTS_DEFAULT['infer_datatypes'])
     if not config.has_option('CONFIGURATION', 'logs'):
         if 'logs' in args:
             config.set('CONFIGURATION', 'logs', args.logs)
