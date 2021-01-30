@@ -19,6 +19,9 @@ import pandas as pd
 import relational_source
 
 
+RELATIONAL_SOURCE_TYPES = ['mysql', 'postgresql', 'oracle', 'sqlserver']
+
+
 MAPPINGS_DATAFRAME_COLUMNS = [
     'source_name',
     'triples_map_id', 'data_source', 'object_map', 'ref_form', 'iterator', 'tablename', 'query',
@@ -741,24 +744,26 @@ def _remove_delimiters_from_identifiers(mappings_df):
 
 def _infer_datatypes(mappings_df, config):
     for i, mapping_rule in mappings_df.iterrows():
-        if mapping_rule['object_termtype'] == 'http://www.w3.org/ns/r2rml#Literal':
-            if pd.isna(mapping_rule['object_datatype']) and pd.isna(mapping_rule['object_language']):
-                if pd.notna(mapping_rule['tablename']):
-                    data_type = relational_source.get_column_datatype(config, mapping_rule['source_name'],
-                                                                      mapping_rule['tablename'],
-                                                                      mapping_rule['object_reference']).upper()
-                    if data_type in SQL_RDF_DATATYPE:
-                        mappings_df.at[i, 'object_datatype'] = SQL_RDF_DATATYPE[data_type]
-                elif pd.notna(mapping_rule['query']):
-                    table_names = sql_metadata.get_query_tables(mapping_rule['query'])
-                    for table_name in table_names:
-                        try:
-                            data_type = relational_source.get_column_datatype(config, mapping_rule['source_name'],
-                                                                          table_name, mapping_rule['object_reference']).upper()
-                            if data_type in SQL_RDF_DATATYPE:
-                                mappings_df.at[i, 'object_datatype'] = SQL_RDF_DATATYPE[data_type]
-                        except:
-                            pass
+        if mapping_rule['source_type'] in RELATIONAL_SOURCE_TYPES:
+            if mapping_rule['object_termtype'] == 'http://www.w3.org/ns/r2rml#Literal':
+                if pd.isna(mapping_rule['object_datatype']) and pd.isna(mapping_rule['object_language']):
+                    if pd.notna(mapping_rule['tablename']):
+                        data_type = relational_source.get_column_datatype(config, mapping_rule['source_name'],
+                                                                          mapping_rule['tablename'],
+                                                                          mapping_rule['object_reference']).upper()
+                        if data_type in SQL_RDF_DATATYPE:
+                            mappings_df.at[i, 'object_datatype'] = SQL_RDF_DATATYPE[data_type]
+                    elif pd.notna(mapping_rule['query']):
+                        table_names = sql_metadata.get_query_tables(mapping_rule['query'])
+                        for table_name in table_names:
+                            try:
+                                data_type = relational_source.get_column_datatype(config, mapping_rule['source_name'],
+                                                                              table_name, mapping_rule['object_reference']).upper()
+                                if data_type in SQL_RDF_DATATYPE:
+                                    mappings_df.at[i, 'object_datatype'] = SQL_RDF_DATATYPE[data_type]
+                            except:
+                                pass
+
     return mappings_df
 
 
