@@ -11,12 +11,10 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 import logging
 import re
-import pandas as pd
-
-import relational_source
 
 from urllib.parse import quote
 
+from data_sources import relational_source
 
 ENGINE_DELIMITERS = {
     'mysql': '`',

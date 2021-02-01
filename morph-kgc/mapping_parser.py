@@ -17,7 +17,7 @@ import sql_metadata
 import rfc3987
 import pandas as pd
 
-import relational_source
+from data_sources import relational_source
 
 
 RELATIONAL_SOURCE_TYPES = ['mysql', 'postgresql', 'oracle', 'sqlserver']
