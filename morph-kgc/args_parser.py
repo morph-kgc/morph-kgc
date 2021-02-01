@@ -282,9 +282,8 @@ def _complete_config_file_with_args(config, args):
         config.set('CONFIGURATION', 'output_format', args.output_format)
     if not config.has_option('CONFIGURATION', 'push_down_distincts'):
         config.set('CONFIGURATION', 'push_down_distincts', ARGUMENTS_DEFAULT['push_down_distincts'])
-        config.set('CONFIGURATION', 'push_down_distincts', ARGUMENTS_DEFAULT['push_down_distincts'])
     if not config.has_option('CONFIGURATION', 'mapping_partitions'):
-        config.set('CONFIGURATION', 'mapping_partitions', args.mapping_partitions)
+        config.set('CONFIGURATION', 'mapping_partitions', ARGUMENTS_DEFAULT['mapping_partitions'])
     if not config.has_option('CONFIGURATION', 'number_of_processes'):
         config.set('CONFIGURATION', 'number_of_processes', str(ARGUMENTS_DEFAULT['number_of_processes']))
     if not config.has_option('CONFIGURATION', 'chunksize'):

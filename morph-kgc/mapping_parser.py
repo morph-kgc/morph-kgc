@@ -11,6 +11,7 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 import rdflib
 import logging
+import sys
 import sql_metadata
 import rfc3987
 import pandas as pd
@@ -793,6 +794,10 @@ def _validate_parsed_mappings(mappings_df):
 
 
 def parse_mappings(config):
+    input_parsed_mappings_file_path = config.get('CONFIGURATION', 'input_parsed_mappings')
+    if input_parsed_mappings_file_path:
+        return pd.read_csv(input_parsed_mappings_file_path)
+
     configuration, data_sources = _get_configuration_and_sources(config)
 
     mappings_df = pd.DataFrame(columns=MAPPINGS_DATAFRAME_COLUMNS)
@@ -816,5 +821,10 @@ def parse_mappings(config):
     mappings_df = _generate_mapping_partitions(mappings_df, configuration['mapping_partitions'])
 
     _validate_parsed_mappings(mappings_df.copy())
+
+    output_parsed_mappings_file_path = config.get('CONFIGURATION', 'output_parsed_mappings')
+    if output_parsed_mappings_file_path:
+        pd.to_csv(output_parsed_mappings_file_path, index=False)
+        sys.exit()
 
     return mappings_df
