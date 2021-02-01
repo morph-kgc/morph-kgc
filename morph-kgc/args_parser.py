@@ -328,10 +328,6 @@ def _parse_arguments():
     parser.add_argument('-f', '--output_format', default=ARGUMENTS_DEFAULT['output_format'], type=str,
                         choices=VALID_ARGUMENTS['output_format'],
                         help='Output serialization format.')
-    parser.add_argument('-p', '--mapping_partitions', nargs='?', default=ARGUMENTS_DEFAULT['mapping_partitions'],
-                        const='guess', choices=VALID_ARGUMENTS['mapping_partitions'],
-                        help='Partitioning criteria for mappings. s for using subjects, p for using predicates, '
-                             'g for using graphs.')
     parser.add_argument('-l', '--logs', nargs='?', const='', type=str,
                         help='File path to write logs to. If no path is provided logs are redirected to stdout.')
     parser.add_argument('-v', '--version', action='version', version='Morph-KGC' + __version__ + ' | ' +
