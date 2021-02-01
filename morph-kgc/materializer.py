@@ -253,8 +253,8 @@ def materialize(mappings_df, config):
     subject_maps_df = _get_subject_maps_dict_from_mappings(mappings_df)
     mapping_partitions = [group for _, group in mappings_df.groupby(by='mapping_partition')]
 
+    triples = set()
     for mapping_partition in mapping_partitions:
-        triples = set()
         for i, mapping_rule in mapping_partition.iterrows():
             result_triples = _materialize_mapping_rule(mapping_rule, subject_maps_df, config)
             triples.update(set(result_triples))

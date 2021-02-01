@@ -12,7 +12,7 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 import rdflib
 import logging
 import sys
-import csv
+import time
 import sql_metadata
 import rfc3987
 import pandas as pd
@@ -309,7 +309,7 @@ def _infer_mapping_language_from_graph(mapping_graph, source_name):
                     '. Check the corresponding mappings file.')
 
 
-def _parse_mapping_files(source_options, source_name):
+def _parse_mapping_files(source_options, source_name, config):
     mapping_graph = rdflib.Graph()
     try:
         for mapping_file in source_options['mapping_files'].split(','):
@@ -328,6 +328,17 @@ def _parse_mapping_files(source_options, source_name):
 
     join_query_results = mapping_graph.query(JOIN_CONDITION_PARSING_QUERY)
     mappings_df = _transform_mappings_into_dataframe(mapping_query_results, join_query_results, source_name)
+
+    mappings_df = _remove_duplicated_mapping_rules(mappings_df)
+    mappings_df = _rdf_class_to_pom(mappings_df)
+    mappings_df = _set_pom_graphs(mappings_df)
+    mappings_df = _complete_termtypes(mappings_df)
+    mappings_df = _complete_source_types(mappings_df, config)
+    mappings_df = _remove_delimiters_from_identifiers(mappings_df)
+    if config.getboolean('CONFIGURATION', 'infer_datatypes'):
+        mappings_df = _infer_datatypes(mappings_df, config)
+
+    _validate_parsed_mappings(mappings_df)
 
     return mappings_df
 
@@ -800,23 +811,12 @@ def _parse_mappings(config):
     mappings_df = pd.DataFrame(columns=MAPPINGS_DATAFRAME_COLUMNS)
 
     for source_name, source_options in data_sources.items():
-        source_mappings_df = _parse_mapping_files(source_options, source_name)
+        source_mappings_df = _parse_mapping_files(source_options, source_name, config)
         mappings_df = pd.concat([mappings_df, source_mappings_df])
         mappings_df = mappings_df.reset_index(drop=True)
         logging.info('Mappings for data source ' + str(source_name) + ' successfully parsed.')
 
-    mappings_df = _remove_duplicated_mapping_rules(mappings_df)
-    mappings_df = _rdf_class_to_pom(mappings_df)
-    mappings_df = _set_pom_graphs(mappings_df)
-    mappings_df = _complete_termtypes(mappings_df)
-    mappings_df = _complete_source_types(mappings_df, config)
-    mappings_df = _remove_delimiters_from_identifiers(mappings_df)
-    if config.getboolean('CONFIGURATION', 'infer_datatypes'):
-        mappings_df = _infer_datatypes(mappings_df, config)
-
     mappings_df = _generate_mapping_partitions(mappings_df, configuration['mapping_partitions'])
-
-    _validate_parsed_mappings(mappings_df.copy())
 
     return mappings_df.fillna('')
 
@@ -827,7 +827,9 @@ def process_mappings(config):
         mappings_df = pd.read_csv(input_parsed_mappings_path, keep_default_na=False)
         return mappings_df
 
+    start_time_parsing = time.time()
     mappings_df = _parse_mappings(config)
+    logging.info('Mapping parsing time: ' + "{:.3f}".format((time.time() - start_time_parsing)) + ' seconds.')
 
     output_parsed_mappings = config.get('CONFIGURATION', 'output_parsed_mappings')
     if output_parsed_mappings:
