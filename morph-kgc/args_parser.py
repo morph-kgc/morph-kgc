@@ -24,9 +24,11 @@ ARGUMENTS_DEFAULT = {
     'output_dir': 'output',
     'output_file': '',
     'output_format': 'ntriples',
-    'mapping_partitions': '',
+    'mapping_partitions': 'guess',
+    'input_parsed_mappings': '',
+    'output_parsed_mappings': '',
     'push_down_distincts': 'no',
-    'number_of_processes': 0,
+    'number_of_processes': mp.cpu_count(),
     'chunksize': 0,
     'infer_datatypes': 'yes',
     'coerce_float': 'no'
@@ -34,8 +36,9 @@ ARGUMENTS_DEFAULT = {
 
 VALID_ARGUMENTS = {
     'output_format': ['ntriples', 'nquads'],
-    'mapping_partitions': ['', 's', 'p', 'g', 'sp', 'sg', 'pg', 'spg'],
-    'source_type': ['mysql', 'postgresql', 'oracle', 'sqlserver']
+    'mapping_partitions': ['', 's', 'p', 'g', 'sp', 'sg', 'pg', 'spg', 'guess'],
+    'relational_source_type': ['mysql', 'postgresql', 'oracle', 'sqlserver'],
+    'file_source_type': []
 }
 
 
@@ -85,7 +88,7 @@ def _dir_path(dir_path):
     :rtype str
     """
 
-    dir_path = str(dir_path)
+    dir_path = str(dir_path).strip()
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
 
@@ -106,6 +109,8 @@ def _file_path(file_path):
     if not os.path.exists(os.path.dirname(file_path)):
         if os.path.dirname(file_path):
             os.makedirs(os.path.dirname(file_path))
+
+    file_path = os.path.join(os.path.dirname(file_path), _file_name(os.path.basename(file_path)))
 
     return file_path
 
@@ -144,27 +149,7 @@ def _existing_file_path(file_path):
     return file_path
 
 
-def _processes_number(number):
-    """
-    Generates a natural number from a given number. Number is converted to int.
-    In case of been 0, the number of cores in the system is generated.
-
-    :param number: number
-    :type number: str
-    :return natural number
-    :rtype int
-    """
-
-    whole_number = int(number)
-    if whole_number < 0:
-        raise ValueError
-    elif whole_number == 0:
-        whole_number = mp.cpu_count()
-
-    return whole_number
-
-
-def _natural_number_including_zero(number):
+def _natural_number(number, including_zero=False):
     """
     Generates a natural number (including zero) from a given number.
 
@@ -175,7 +160,9 @@ def _natural_number_including_zero(number):
     """
 
     whole_number = int(number)
-    if whole_number < 0:
+    if including_zero and whole_number < 0:
+        raise ValueError
+    elif not including_zero and whole_number <= 0:
         raise ValueError
 
     return whole_number
@@ -193,14 +180,16 @@ def _validate_config_data_sources_sections(config):
                     raise FileNotFoundError('mapping_file=' + str(mapping_file) + ' in section ' + section +
                                             ' of config file could not be found.')
 
-            if config.get(section, 'source_type').lower() in VALID_ARGUMENTS['source_type']:
-                config.set(section, 'source_type', config.get(section, 'source_type').lower())
+            config.set(section, 'source_type', config.get(section, 'source_type').lower())
+            if config.get(section, 'source_type') in VALID_ARGUMENTS['relational_source_type']:
                 # config.get to check that required parameters are provided
                 config.get(section, 'user')
                 config.get(section, 'password')
                 config.get(section, 'host')
                 config.get(section, 'port')
                 config.get(section, 'db')
+            elif config.get(section, 'source_type') in VALID_ARGUMENTS['file_source_type']:
+                pass
             else:
                 raise ValueError('source_type=' + config.get(section, 'source_type') + ' in section ' + section +
                                  ' of config file is not valid.')
@@ -230,26 +219,23 @@ def _validate_config_configuration_section(config):
         raise ValueError('Option output_format must be in: ' + VALID_ARGUMENTS['output_format'])
     config.set('CONFIGURATION', 'output_format', output_format)
 
-    config.getboolean('CONFIGURATION', 'push_down_distincts')
-
     mapping_partitions = config.get('CONFIGURATION', 'mapping_partitions')
     mapping_partitions = str(mapping_partitions).lower().strip()
+    config.set('CONFIGURATION', 'mapping_partitions', mapping_partitions)
     if mapping_partitions not in VALID_ARGUMENTS['mapping_partitions']:
         raise ValueError('Option mapping_partitions must be in: ' + str(VALID_ARGUMENTS['mapping_partitions']))
-    elif output_format == 'nquads' and 'g' in mapping_partitions:
-        raise Exception('Option mapping_partitions is "' + mapping_partitions + '", but graphs cannot be used as '
-                        'mapping partition criteria if output_format is nquads.')
-    config.set('CONFIGURATION', 'mapping_partitions', mapping_partitions)
 
     config.set('CONFIGURATION', 'number_of_processes',
-               str(_processes_number(config.get('CONFIGURATION', 'number_of_processes'))))
-
+               str(_natural_number(config.get('CONFIGURATION', 'number_of_processes'), including_zero=False)))
     config.set('CONFIGURATION', 'chunksize',
-               str(_natural_number_including_zero(config.get('CONFIGURATION', 'chunksize'))))
-
+               str(_natural_number(config.get('CONFIGURATION', 'chunksize'), including_zero=True)))
     config.getboolean('CONFIGURATION', 'coerce_float')
     config.getboolean('CONFIGURATION', 'infer_datatypes')
+    config.getboolean('CONFIGURATION', 'push_down_distincts')
 
+    # output_parsed_mappings has no default value, it is needed to check if it is in the config
+    if config.has_option('CONFIGURATION', 'output_parsed_mappings'):
+        config.set('CONFIGURATION', 'output_parsed_mappings', _file_path(config.get('CONFIGURATION', 'output_parsed_mappings')))
     # logs has no default value, it is needed to check if it is in the config
     if config.has_option('CONFIGURATION', 'logs'):
         config.set('CONFIGURATION', 'logs', _file_path(config.get('CONFIGURATION', 'logs')))
@@ -296,6 +282,10 @@ def _complete_config_file_with_args(config, args):
         config.set('CONFIGURATION', 'coerce_float', ARGUMENTS_DEFAULT['coerce_float'])
     if not config.has_option('CONFIGURATION', 'infer_datatypes'):
         config.set('CONFIGURATION', 'infer_datatypes', ARGUMENTS_DEFAULT['infer_datatypes'])
+    if not config.has_option('CONFIGURATION', 'input_parsed_mappings'):
+        config.set('CONFIGURATION', 'input_parsed_mappings', ARGUMENTS_DEFAULT['input_parsed_mappings'])
+    if not config.has_option('CONFIGURATION', 'output_parsed_mappings'):
+        config.set('CONFIGURATION', 'output_parsed_mappings', ARGUMENTS_DEFAULT['output_parsed_mappings'])
     if not config.has_option('CONFIGURATION', 'logs'):
         if 'logs' in args:
             config.set('CONFIGURATION', 'logs', args.logs)
@@ -328,7 +318,7 @@ def _parse_arguments():
                         choices=VALID_ARGUMENTS['output_format'],
                         help='Output serialization format.')
     parser.add_argument('-p', '--mapping_partitions', nargs='?', default=ARGUMENTS_DEFAULT['mapping_partitions'],
-                        const='sp', choices=VALID_ARGUMENTS['mapping_partitions'],
+                        const='guess', choices=VALID_ARGUMENTS['mapping_partitions'],
                         help='Partitioning criteria for mappings. s for using subjects, p for using predicates, '
                              'g for using graphs.')
     parser.add_argument('-l', '--logs', nargs='?', const='', type=str,

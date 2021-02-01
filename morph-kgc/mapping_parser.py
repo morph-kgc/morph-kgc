@@ -414,36 +414,49 @@ def _remove_duplicated_mapping_rules(mappings_df):
 
 
 def _validate_mapping_partitions(mappings_df, mapping_partitions):
-    if 's' in mapping_partitions:
-        '''
-        Subject is used as partitioning criteria.
-        If there is any subject that is a reference that means it is not a template nor a constant, and it cannot
-        be used as partitioning criteria.
-        '''
-        if mappings_df['subject_reference'].notna().any():
-            raise Exception('Invalid mapping partitions criteria ' + mapping_partitions + ': mappings cannot be '
-                            'partitioned by subject because mappings contain subject terms that are rr:column or '
-                            'rml:reference.')
-    if 'p' in mapping_partitions:
-        '''
-        Predicate is used as partitioning criteria.
-        If there is any predicate that is a reference that means it is not a template nor a constant, and it cannot
-        be used as partitioning criteria.
-        '''
-        if mappings_df['subject_reference'].notna().any():
-            raise Exception('Invalid mapping partitions criteria ' + mapping_partitions +
-                            ': mappings cannot be partitioned by predicate because mappings contain predicate terms '
-                            'that are rr:column or rml:reference.')
-    if 'g' in mapping_partitions:
-        '''
-        Graph is used as partitioning criteria.
-        If there is any graph that is a reference that means it is not a template nor a constant, and it cannot
-        be used as partitioning criteria.
-        '''
-        if mappings_df['graph_reference'].notna().any():
-            raise Exception('Invalid mapping partitions criteria ' + mapping_partitions +
-                            ': mappings cannot be partitioned by graph because mappings '
-                            'contain graph terms that are rr:column or rml:reference.')
+    valid_mapping_partitions = ''
+
+    if 'guess' in mapping_partitions:
+        if not mappings_df['subject_reference'].notna().any():
+            valid_mapping_partitions += 's'
+        if not mappings_df['predicate_reference'].notna().any():
+            valid_mapping_partitions += 'p'
+        if not mappings_df['graph_reference'].notna().any():
+            valid_mapping_partitions += 'g'
+    else:
+        if 's' in mapping_partitions:
+            '''
+            Subject is used as partitioning criteria.
+            If there is any subject that is a reference that means it is not a template nor a constant, and it cannot
+            be used as partitioning criteria. The same for predicate and graph.
+            '''
+            if mappings_df['subject_reference'].notna().any():
+                logging.warning('Invalid mapping partition criteria ' + mapping_partitions + ': mappings cannot be '
+                                'partitioned by subject because mappings contain subject terms that are rr:column or '
+                                'rml:reference.')
+            else:
+                valid_mapping_partitions += 's'
+        if 'p' in mapping_partitions:
+            if mappings_df['predicate_reference'].notna().any():
+                logging.warning('Invalid mapping partition criteria ' + mapping_partitions +
+                                ': mappings cannot be partitioned by predicate because mappings contain predicate terms '
+                                'that are rr:column or rml:reference.')
+            else:
+                valid_mapping_partitions += 'p'
+        if 'g' in mapping_partitions:
+            if mappings_df['graph_reference'].notna().any():
+                logging.warning('Invalid mapping partition criteria ' + mapping_partitions +
+                                ': mappings cannot be partitioned by graph because mappings '
+                                'contain graph terms that are rr:column or rml:reference.')
+            else:
+                valid_mapping_partitions += 'g'
+
+    if mapping_partitions:
+        logging.info('Using ' + valid_mapping_partitions + ' as mapping partition criteria.')
+    else:
+        logging.info('Not using mapping patitioning.')
+
+    return valid_mapping_partitions
 
 
 def _get_invariable_part_of_template(template):
@@ -499,6 +512,8 @@ def _get_mapping_partitions_invariable_parts(mappings_df, mapping_partitions):
 
 
 def _generate_mapping_partitions(mappings_df, mapping_partitions):
+    mapping_partitions = _validate_mapping_partitions(mappings_df, mapping_partitions)
+
     mappings_df = _get_mapping_partitions_invariable_parts(mappings_df, mapping_partitions)
     mappings_df['subject_partition'] = ''
     mappings_df['predicate_partition'] = ''
@@ -563,7 +578,8 @@ def _generate_mapping_partitions(mappings_df, mapping_partitions):
         'graph_invariable_part'],
         axis=1, inplace=True)
 
-    logging.info(str(len(set(mappings_df['mapping_partition']))) + ' mapping partitions were generated.')
+    if mapping_partitions:
+        logging.info(str(len(set(mappings_df['mapping_partition']))) + ' mapping partitions were generated.')
 
     return mappings_df
 
@@ -775,10 +791,6 @@ def _validate_parsed_mappings(mappings_df):
         # Validate that at least the invariable part of the template is a valid IRI
         rfc3987.parse(_get_invariable_part_of_template(template), rule='IRI')
 
-    # Check bankNodes??? take a look what BlancNodes are
-    # Check queries (sqlQuery) are valid
-    # Check data sources exist (CSVs, tables/columns in sql)
-
 
 def parse_mappings(config):
     configuration, data_sources = _get_configuration_and_sources(config)
@@ -802,7 +814,6 @@ def parse_mappings(config):
         mappings_df = _infer_datatypes(mappings_df, config)
 
     mappings_df = _generate_mapping_partitions(mappings_df, configuration['mapping_partitions'])
-    _validate_mapping_partitions(mappings_df, configuration['mapping_partitions'])
 
     _validate_parsed_mappings(mappings_df.copy())
 
