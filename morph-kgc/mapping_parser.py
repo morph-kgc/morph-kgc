@@ -309,26 +309,17 @@ def _infer_mapping_language_from_graph(mapping_graph, source_name):
                     '. Check the corresponding mappings file.')
 
 
-def _parse_mapping_files(config, data_source_name):
-    mapping_graph = rdflib.Graph()
-    try:
-        for mapping_file in config.get(data_source_name, 'mapping_files').split(','):
-            mapping_graph.load(mapping_file.strip(), format='n3')
-    except Exception as n3_mapping_parse_exception:
-        raise Exception(n3_mapping_parse_exception)
+def _get_join_object_maps_join_conditions(join_query_results):
+    join_conditions_dict = {}
 
-    mapping_language = _infer_mapping_language_from_graph(mapping_graph, data_source_name)
-    mapping_parsing_query = ''
-    if mapping_language == 'RML':
-        mapping_parsing_query = RML_MAPPING_PARSING_QUERY
-    elif mapping_language == 'R2RML':
-        mapping_parsing_query = R2RML_MAPPING_PARSING_QUERY
+    for join_condition in join_query_results:
+        if join_condition._object_map not in join_conditions_dict:
+            join_conditions_dict[join_condition._object_map] = {}
 
-    mapping_query_results = mapping_graph.query(mapping_parsing_query)
+        join_conditions_dict[join_condition._object_map][str(join_condition.join_condition)] = \
+            {'child_value': str(join_condition.child_value), 'parent_value': str(join_condition.parent_value)}
 
-    join_query_results = mapping_graph.query(JOIN_CONDITION_PARSING_QUERY)
-
-    return _transform_mappings_into_dataframe(mapping_query_results, join_query_results, data_source_name)
+    return join_conditions_dict
 
 
 def _transform_mappings_into_dataframe(mapping_query_results, join_query_results, source_name):
@@ -353,19 +344,6 @@ def _transform_mappings_into_dataframe(mapping_query_results, join_query_results
     source_mappings_df['source_name'] = source_name
 
     return source_mappings_df
-
-
-def _get_join_object_maps_join_conditions(join_query_results):
-    join_conditions_dict = {}
-
-    for join_condition in join_query_results:
-        if join_condition._object_map not in join_conditions_dict:
-            join_conditions_dict[join_condition._object_map] = {}
-
-        join_conditions_dict[join_condition._object_map][str(join_condition.join_condition)] = \
-            {'child_value': str(join_condition.child_value), 'parent_value': str(join_condition.parent_value)}
-
-    return join_conditions_dict
 
 
 def _append_mapping_rule(mappings_df, mapping_rule):
@@ -403,6 +381,28 @@ def _append_mapping_rule(mappings_df, mapping_rule):
     return mappings_df
 
 
+def _parse_mapping_files(config, data_source_name):
+    mapping_graph = rdflib.Graph()
+    try:
+        for mapping_file in config.get(data_source_name, 'mapping_files').split(','):
+            mapping_graph.load(mapping_file.strip(), format='n3')
+    except Exception as n3_mapping_parse_exception:
+        raise Exception(n3_mapping_parse_exception)
+
+    mapping_language = _infer_mapping_language_from_graph(mapping_graph, data_source_name)
+    mapping_parsing_query = ''
+    if mapping_language == 'RML':
+        mapping_parsing_query = RML_MAPPING_PARSING_QUERY
+    elif mapping_language == 'R2RML':
+        mapping_parsing_query = R2RML_MAPPING_PARSING_QUERY
+
+    mapping_query_results = mapping_graph.query(mapping_parsing_query)
+
+    join_query_results = mapping_graph.query(JOIN_CONDITION_PARSING_QUERY)
+
+    return _transform_mappings_into_dataframe(mapping_query_results, join_query_results, data_source_name)
+
+
 def _remove_duplicated_mapping_rules(mappings_df):
     ''' Ensure there are no duplicate rules '''
 
@@ -410,177 +410,6 @@ def _remove_duplicated_mapping_rules(mappings_df):
     mappings_df.drop_duplicates(inplace=True)
     if len(mappings_df) < num_mapping_rules:
         logging.warning('Duplicated mapping rules were found. Ignoring duplicated mapping rules.')
-
-    return mappings_df
-
-
-def _validate_mapping_partitions(mappings_df, mapping_partitions):
-    valid_mapping_partitions = ''
-
-    if 'guess' in mapping_partitions:
-        if not mappings_df['subject_reference'].notna().any():
-            valid_mapping_partitions += 's'
-        if not mappings_df['predicate_reference'].notna().any():
-            valid_mapping_partitions += 'p'
-        if not mappings_df['graph_reference'].notna().any():
-            valid_mapping_partitions += 'g'
-    else:
-        if 's' in mapping_partitions:
-            '''
-            Subject is used as partitioning criteria.
-            If there is any subject that is a reference that means it is not a template nor a constant, and it cannot
-            be used as partitioning criteria. The same for predicate and graph.
-            '''
-            if mappings_df['subject_reference'].notna().any():
-                logging.warning('Invalid mapping partition criteria ' + mapping_partitions + ': mappings cannot be '
-                                'partitioned by subject because mappings contain subject terms that are rr:column or '
-                                'rml:reference.')
-            else:
-                valid_mapping_partitions += 's'
-        if 'p' in mapping_partitions:
-            if mappings_df['predicate_reference'].notna().any():
-                logging.warning('Invalid mapping partition criteria ' + mapping_partitions +
-                                ': mappings cannot be partitioned by predicate because mappings contain predicate terms '
-                                'that are rr:column or rml:reference.')
-            else:
-                valid_mapping_partitions += 'p'
-        if 'g' in mapping_partitions:
-            if mappings_df['graph_reference'].notna().any():
-                logging.warning('Invalid mapping partition criteria ' + mapping_partitions +
-                                ': mappings cannot be partitioned by graph because mappings '
-                                'contain graph terms that are rr:column or rml:reference.')
-            else:
-                valid_mapping_partitions += 'g'
-
-    if mapping_partitions:
-        logging.info('Using ' + valid_mapping_partitions + ' as mapping partition criteria.')
-    else:
-        logging.info('Not using mapping patitioning.')
-
-    return valid_mapping_partitions
-
-
-def _get_invariable_part_of_template(template):
-    zero_width_space = '\u200B'
-    template_for_splitting = template.replace('\{', zero_width_space)
-    if '{' in template_for_splitting:
-        invariable_part_of_template = template_for_splitting.split('{')[0]
-        invariable_part_of_template = invariable_part_of_template.replace(zero_width_space, '\{')
-    else:
-        raise Exception('Invalid string template ' + template + '. No pairs of unescaped curly braces were found.')
-
-    return invariable_part_of_template
-
-
-def _get_mapping_partitions_invariable_parts(mappings_df, mapping_partitions):
-    mappings_df['subject_invariable_part'] = ''
-    mappings_df['predicate_invariable_part'] = ''
-    mappings_df['graph_invariable_part'] = ''
-
-    for i, mapping_rule in mappings_df.iterrows():
-        if 's' in mapping_partitions:
-            if mapping_rule['subject_template']:
-                mappings_df.at[i, 'subject_invariable_part'] = \
-                    _get_invariable_part_of_template(mapping_rule['subject_template'])
-            elif mapping_rule['subject_constant']:
-                mappings_df.at[i, 'subject_invariable_part'] = mapping_rule['subject_constant']
-            else:
-                raise Exception('An invalid subject term was found at triples map ' + mapping_rule['triples_map_id'] +
-                                '. Subjects terms must be constants or templates in order to generate valid mapping '
-                                'partitions by subject.')
-        if 'p' in mapping_partitions:
-            if mapping_rule['predicate_constant']:
-                mappings_df.at[i, 'predicate_invariable_part'] = mapping_rule['predicate_constant']
-            elif mapping_rule['predicate_template']:
-                mappings_df.at[i, 'predicate_invariable_part'] = \
-                    _get_invariable_part_of_template(mapping_rule['predicate_template'])
-            else:
-                raise Exception('An invalid predicate term was found at triples map ' + mapping_rule['triples_map_id'] +
-                                '. Predicate terms must be constants or templates in order to generate valid mapping '
-                                'partitions by predicate.')
-        if 'g' in mapping_partitions:
-            if mapping_rule['graph_constant']:
-                mappings_df.at[i, 'graph_invariable_part'] = mapping_rule['graph_constant']
-            elif mapping_rule['graph_template']:
-                mappings_df.at[i, 'graph_invariable_part'] = \
-                    _get_invariable_part_of_template(mapping_rule['graph_template'])
-            else:
-                raise Exception('An invalid graph term was found at triples map ' + mapping_rule['triples_map_id'] +
-                                '. Graph terms must be constants or templates in order to generate valid mapping '
-                                'partitions by graph.')
-
-    return mappings_df
-
-
-def _generate_mapping_partitions(mappings_df, mapping_partitions):
-    mapping_partitions = _validate_mapping_partitions(mappings_df, mapping_partitions)
-
-    mappings_df = _get_mapping_partitions_invariable_parts(mappings_df, mapping_partitions)
-    mappings_df['subject_partition'] = ''
-    mappings_df['predicate_partition'] = ''
-    mappings_df['graph_partition'] = ''
-
-    '''
-        First generate partitions for subject. Then generate the partitions for predicates. Finally merge both to
-        get the final partitions.
-    '''
-
-    if 's' in mapping_partitions:
-        mappings_df.sort_values(by='subject_invariable_part', inplace=True, ascending=True)
-        num_partition = 0
-        root_last_partition = 'zzyy xxww\u200B'
-        for i, mapping_rule in mappings_df.iterrows():
-            if mapping_rule['subject_invariable_part'].startswith(root_last_partition):
-                mappings_df.at[i, 'subject_partition'] = str(num_partition)
-            else:
-                num_partition = num_partition + 1
-                root_last_partition = mapping_rule['subject_invariable_part']
-                mappings_df.at[i, 'subject_partition'] = str(num_partition)
-    if 'p' in mapping_partitions:
-        mappings_df.sort_values(by='predicate_invariable_part', inplace=True, ascending=True)
-        num_partition = 0
-        root_last_partition = 'zzyy xxww\u200B'
-        for i, mapping_rule in mappings_df.iterrows():
-            if mapping_rule['predicate_invariable_part'].startswith(root_last_partition):
-                mappings_df.at[i, 'predicate_partition'] = str(num_partition)
-            else:
-                num_partition = num_partition + 1
-                root_last_partition = mapping_rule['predicate_invariable_part']
-                mappings_df.at[i, 'predicate_partition'] = str(num_partition)
-    if 'g' in mapping_partitions:
-        mappings_df.sort_values(by='graph_invariable_part', inplace=True, ascending=True)
-        num_partition = 0
-        root_last_partition = 'zzyy xxww\u200B'
-        for i, mapping_rule in mappings_df.iterrows():
-            if mapping_rule['graph_invariable_part'].startswith(root_last_partition):
-                mappings_df.at[i, 'graph_partition'] = str(num_partition)
-            else:
-                num_partition = num_partition + 1
-                root_last_partition = mapping_rule['graph_invariable_part']
-                mappings_df.at[i, 'graph_partition'] = str(num_partition)
-
-    ''' generate final partition names '''
-    if 's' in mapping_partitions and 'p' in mapping_partitions:
-        mappings_df['mapping_partition'] = mappings_df['subject_partition'] + '-' + mappings_df['predicate_partition']
-    else:
-        mappings_df['mapping_partition'] = mappings_df['subject_partition'] + mappings_df['predicate_partition']
-    if 'g' in mapping_partitions and 's' not in mapping_partitions and 'p' not in mapping_partitions:
-        mappings_df['mapping_partition'] = mappings_df['graph_partition']
-    elif 'g' in mapping_partitions:
-        mappings_df['mapping_partition'] = mappings_df['mapping_partition'] + '-' + mappings_df['graph_partition']
-
-    '''' drop the auxiliary columns that are just used to get mapping_partition '''
-    mappings_df.drop([
-        'subject_partition',
-        'predicate_partition',
-        'subject_invariable_part',
-        'predicate_invariable_part',
-        'graph_partition',
-        'graph_invariable_part'],
-        axis=1, inplace=True)
-
-    if mapping_partitions:
-        logging.info(str(len(set(mappings_df['mapping_partition']))) + ' mapping partitions were generated.')
 
     return mappings_df
 
@@ -793,6 +622,177 @@ def _parse_mappings(config):
     _validate_parsed_mappings(mappings_df)
 
     return mappings_df.fillna('')
+
+
+def _get_invariable_part_of_template(template):
+    zero_width_space = '\u200B'
+    template_for_splitting = template.replace('\{', zero_width_space)
+    if '{' in template_for_splitting:
+        invariable_part_of_template = template_for_splitting.split('{')[0]
+        invariable_part_of_template = invariable_part_of_template.replace(zero_width_space, '\{')
+    else:
+        raise Exception('Invalid string template ' + template + '. No pairs of unescaped curly braces were found.')
+
+    return invariable_part_of_template
+
+
+def _get_mapping_partitions_invariable_parts(mappings_df, mapping_partitions):
+    mappings_df['subject_invariable_part'] = ''
+    mappings_df['predicate_invariable_part'] = ''
+    mappings_df['graph_invariable_part'] = ''
+
+    for i, mapping_rule in mappings_df.iterrows():
+        if 's' in mapping_partitions:
+            if mapping_rule['subject_template']:
+                mappings_df.at[i, 'subject_invariable_part'] = \
+                    _get_invariable_part_of_template(mapping_rule['subject_template'])
+            elif mapping_rule['subject_constant']:
+                mappings_df.at[i, 'subject_invariable_part'] = mapping_rule['subject_constant']
+            else:
+                raise Exception('An invalid subject term was found at triples map ' + mapping_rule['triples_map_id'] +
+                                '. Subjects terms must be constants or templates in order to generate valid mapping '
+                                'partitions by subject.')
+        if 'p' in mapping_partitions:
+            if mapping_rule['predicate_constant']:
+                mappings_df.at[i, 'predicate_invariable_part'] = mapping_rule['predicate_constant']
+            elif mapping_rule['predicate_template']:
+                mappings_df.at[i, 'predicate_invariable_part'] = \
+                    _get_invariable_part_of_template(mapping_rule['predicate_template'])
+            else:
+                raise Exception('An invalid predicate term was found at triples map ' + mapping_rule['triples_map_id'] +
+                                '. Predicate terms must be constants or templates in order to generate valid mapping '
+                                'partitions by predicate.')
+        if 'g' in mapping_partitions:
+            if mapping_rule['graph_constant']:
+                mappings_df.at[i, 'graph_invariable_part'] = mapping_rule['graph_constant']
+            elif mapping_rule['graph_template']:
+                mappings_df.at[i, 'graph_invariable_part'] = \
+                    _get_invariable_part_of_template(mapping_rule['graph_template'])
+            else:
+                raise Exception('An invalid graph term was found at triples map ' + mapping_rule['triples_map_id'] +
+                                '. Graph terms must be constants or templates in order to generate valid mapping '
+                                'partitions by graph.')
+
+    return mappings_df
+
+
+def _validate_mapping_partitions(mappings_df, mapping_partitions):
+    valid_mapping_partitions = ''
+
+    if 'guess' in mapping_partitions:
+        if not mappings_df['subject_reference'].notna().any():
+            valid_mapping_partitions += 's'
+        if not mappings_df['predicate_reference'].notna().any():
+            valid_mapping_partitions += 'p'
+        if not mappings_df['graph_reference'].notna().any():
+            valid_mapping_partitions += 'g'
+    else:
+        if 's' in mapping_partitions:
+            '''
+            Subject is used as partitioning criteria.
+            If there is any subject that is a reference that means it is not a template nor a constant, and it cannot
+            be used as partitioning criteria. The same for predicate and graph.
+            '''
+            if mappings_df['subject_reference'].notna().any():
+                logging.warning('Invalid mapping partition criteria ' + mapping_partitions + ': mappings cannot be '
+                                'partitioned by subject because mappings contain subject terms that are rr:column or '
+                                'rml:reference.')
+            else:
+                valid_mapping_partitions += 's'
+        if 'p' in mapping_partitions:
+            if mappings_df['predicate_reference'].notna().any():
+                logging.warning('Invalid mapping partition criteria ' + mapping_partitions +
+                                ': mappings cannot be partitioned by predicate because mappings contain predicate terms '
+                                'that are rr:column or rml:reference.')
+            else:
+                valid_mapping_partitions += 'p'
+        if 'g' in mapping_partitions:
+            if mappings_df['graph_reference'].notna().any():
+                logging.warning('Invalid mapping partition criteria ' + mapping_partitions +
+                                ': mappings cannot be partitioned by graph because mappings '
+                                'contain graph terms that are rr:column or rml:reference.')
+            else:
+                valid_mapping_partitions += 'g'
+
+    if mapping_partitions:
+        logging.info('Using ' + valid_mapping_partitions + ' as mapping partition criteria.')
+    else:
+        logging.info('Not using mapping patitioning.')
+
+    return valid_mapping_partitions
+
+
+def _generate_mapping_partitions(mappings_df, mapping_partitions):
+    mapping_partitions = _validate_mapping_partitions(mappings_df, mapping_partitions)
+
+    mappings_df = _get_mapping_partitions_invariable_parts(mappings_df, mapping_partitions)
+    mappings_df['subject_partition'] = ''
+    mappings_df['predicate_partition'] = ''
+    mappings_df['graph_partition'] = ''
+
+    '''
+        First generate partitions for subject. Then generate the partitions for predicates. Finally merge both to
+        get the final partitions.
+    '''
+
+    if 's' in mapping_partitions:
+        mappings_df.sort_values(by='subject_invariable_part', inplace=True, ascending=True)
+        num_partition = 0
+        root_last_partition = 'zzyy xxww\u200B'
+        for i, mapping_rule in mappings_df.iterrows():
+            if mapping_rule['subject_invariable_part'].startswith(root_last_partition):
+                mappings_df.at[i, 'subject_partition'] = str(num_partition)
+            else:
+                num_partition = num_partition + 1
+                root_last_partition = mapping_rule['subject_invariable_part']
+                mappings_df.at[i, 'subject_partition'] = str(num_partition)
+    if 'p' in mapping_partitions:
+        mappings_df.sort_values(by='predicate_invariable_part', inplace=True, ascending=True)
+        num_partition = 0
+        root_last_partition = 'zzyy xxww\u200B'
+        for i, mapping_rule in mappings_df.iterrows():
+            if mapping_rule['predicate_invariable_part'].startswith(root_last_partition):
+                mappings_df.at[i, 'predicate_partition'] = str(num_partition)
+            else:
+                num_partition = num_partition + 1
+                root_last_partition = mapping_rule['predicate_invariable_part']
+                mappings_df.at[i, 'predicate_partition'] = str(num_partition)
+    if 'g' in mapping_partitions:
+        mappings_df.sort_values(by='graph_invariable_part', inplace=True, ascending=True)
+        num_partition = 0
+        root_last_partition = 'zzyy xxww\u200B'
+        for i, mapping_rule in mappings_df.iterrows():
+            if mapping_rule['graph_invariable_part'].startswith(root_last_partition):
+                mappings_df.at[i, 'graph_partition'] = str(num_partition)
+            else:
+                num_partition = num_partition + 1
+                root_last_partition = mapping_rule['graph_invariable_part']
+                mappings_df.at[i, 'graph_partition'] = str(num_partition)
+
+    ''' generate final partition names '''
+    if 's' in mapping_partitions and 'p' in mapping_partitions:
+        mappings_df['mapping_partition'] = mappings_df['subject_partition'] + '-' + mappings_df['predicate_partition']
+    else:
+        mappings_df['mapping_partition'] = mappings_df['subject_partition'] + mappings_df['predicate_partition']
+    if 'g' in mapping_partitions and 's' not in mapping_partitions and 'p' not in mapping_partitions:
+        mappings_df['mapping_partition'] = mappings_df['graph_partition']
+    elif 'g' in mapping_partitions:
+        mappings_df['mapping_partition'] = mappings_df['mapping_partition'] + '-' + mappings_df['graph_partition']
+
+    '''' drop the auxiliary columns that are just used to get mapping_partition '''
+    mappings_df.drop([
+        'subject_partition',
+        'predicate_partition',
+        'subject_invariable_part',
+        'predicate_invariable_part',
+        'graph_partition',
+        'graph_invariable_part'],
+        axis=1, inplace=True)
+
+    if mapping_partitions:
+        logging.info(str(len(set(mappings_df['mapping_partition']))) + ' mapping partitions were generated.')
+
+    return mappings_df
 
 
 def process_mappings(config):
