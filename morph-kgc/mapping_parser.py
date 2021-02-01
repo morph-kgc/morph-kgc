@@ -327,20 +327,8 @@ def _parse_mapping_files(config, data_source_name):
     mapping_query_results = mapping_graph.query(mapping_parsing_query)
 
     join_query_results = mapping_graph.query(JOIN_CONDITION_PARSING_QUERY)
-    mappings_df = _transform_mappings_into_dataframe(mapping_query_results, join_query_results, data_source_name)
 
-    mappings_df = _remove_duplicated_mapping_rules(mappings_df)
-    mappings_df = _rdf_class_to_pom(mappings_df)
-    mappings_df = _set_pom_graphs(mappings_df)
-    mappings_df = _complete_termtypes(mappings_df)
-    mappings_df = _complete_source_types(mappings_df, config)
-    mappings_df = _remove_delimiters_from_identifiers(mappings_df)
-    if config.getboolean('CONFIGURATION', 'infer_datatypes'):
-        mappings_df = _infer_datatypes(mappings_df, config)
-
-    _validate_parsed_mappings(mappings_df)
-
-    return mappings_df
+    return _transform_mappings_into_dataframe(mapping_query_results, join_query_results, data_source_name)
 
 
 def _transform_mappings_into_dataframe(mapping_query_results, join_query_results, source_name):
@@ -797,6 +785,17 @@ def _parse_mappings(config):
         mappings_df = pd.concat([mappings_df, source_mappings_df])
         mappings_df = mappings_df.reset_index(drop=True)
         logging.info('Mappings for data source ' + str(data_source_name) + ' successfully parsed.')
+
+    mappings_df = _remove_duplicated_mapping_rules(mappings_df)
+    mappings_df = _rdf_class_to_pom(mappings_df)
+    mappings_df = _set_pom_graphs(mappings_df)
+    mappings_df = _complete_termtypes(mappings_df)
+    mappings_df = _complete_source_types(mappings_df, config)
+    mappings_df = _remove_delimiters_from_identifiers(mappings_df)
+    if config.getboolean('CONFIGURATION', 'infer_datatypes'):
+        mappings_df = _infer_datatypes(mappings_df, config)
+
+    _validate_parsed_mappings(mappings_df)
 
     return mappings_df.fillna('')
 
