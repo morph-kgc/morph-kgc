@@ -254,7 +254,7 @@ def _validate_config_configuration_section(config):
     return config
 
 
-def _complete_config_file_with_args(config, args):
+def _complete_config_file_with_defaults(config, args):
     """
     Completes missing options in the config file with the options provided via arguments.
     Options specified in the config file are prioritized, i.e., if the option is specified in
@@ -275,11 +275,11 @@ def _complete_config_file_with_args(config, args):
     ''' If parameters are not provided in the config file, take them from arguments.
         mind that ConfigParser store options as strings'''
     if not config.has_option('CONFIGURATION', 'output_dir'):
-        config.set('CONFIGURATION', 'output_dir', args.output_dir)
+        config.set('CONFIGURATION', 'output_dir', ARGUMENTS_DEFAULT['output_dir'])
     if not config.has_option('CONFIGURATION', 'output_file'):
-        config.set('CONFIGURATION', 'output_file', args.output_file)
+        config.set('CONFIGURATION', 'output_file', ARGUMENTS_DEFAULT['output_file'])
     if not config.has_option('CONFIGURATION', 'output_format'):
-        config.set('CONFIGURATION', 'output_format', args.output_format)
+        config.set('CONFIGURATION', 'output_format', ARGUMENTS_DEFAULT['output_format'])
     if not config.has_option('CONFIGURATION', 'push_down_sql_distincts'):
         config.set('CONFIGURATION', 'push_down_sql_distincts', ARGUMENTS_DEFAULT['push_down_sql_distincts'])
     if not config.has_option('CONFIGURATION', 'mapping_partitions'):
@@ -317,20 +317,10 @@ def _parse_arguments():
         argument_default=argparse.SUPPRESS
     )
 
-    parser.add_argument('config', type=_existing_file_path,
-                        help='Path to the configuration file.')
-    parser.add_argument('-d', '--output_dir', default=ARGUMENTS_DEFAULT['output_dir'], type=str,
-                        help='Path to the directory storing the results.')
-    parser.add_argument('-o', '--output_file', default=ARGUMENTS_DEFAULT['output_file'], type=str,
-                        help='If a file name is specified, all the results will be stored in this file. '
-                             'If no file is specified the results will be stored in multiple files.')
-    parser.add_argument('-f', '--output_format', default=ARGUMENTS_DEFAULT['output_format'], type=str,
-                        choices=VALID_ARGUMENTS['output_format'],
-                        help='Output serialization format.')
+    parser.add_argument('config', type=_existing_file_path, help='path to the configuration file')
     parser.add_argument('-l', '--logs', nargs='?', const='', type=str,
-                        help='File path to write logs to. If no path is provided logs are redirected to stdout.')
-    parser.add_argument('-v', '--version', action='version', version='Morph-KGC' + __version__ + ' | ' +
-                                                                     __copyright__)
+                        help='redirect logs to stdout or to a file if a path is provided')
+    parser.add_argument('-v', '--version', action='version', version='Morph-KGC ' + __version__ + ' | ' + __copyright__)
 
     return parser.parse_args()
 
@@ -349,7 +339,7 @@ def parse_config():
 
     config = ConfigParser(interpolation=ExtendedInterpolation())
     config.read(args.config)
-    config = _complete_config_file_with_args(config, args)
+    config = _complete_config_file_with_defaults(config, args)
 
     config = _validate_config_configuration_section(config)
     _configure_logger(config)
