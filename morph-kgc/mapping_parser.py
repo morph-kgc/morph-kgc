@@ -12,6 +12,7 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 import rdflib
 import logging
 import sys
+import csv
 import sql_metadata
 import rfc3987
 import pandas as pd
@@ -793,11 +794,7 @@ def _validate_parsed_mappings(mappings_df):
         rfc3987.parse(_get_invariable_part_of_template(template), rule='IRI')
 
 
-def parse_mappings(config):
-    input_parsed_mappings_file_path = config.get('CONFIGURATION', 'input_parsed_mappings')
-    if input_parsed_mappings_file_path:
-        return pd.read_csv(input_parsed_mappings_file_path)
-
+def _parse_mappings(config):
     configuration, data_sources = _get_configuration_and_sources(config)
 
     mappings_df = pd.DataFrame(columns=MAPPINGS_DATAFRAME_COLUMNS)
@@ -805,7 +802,7 @@ def parse_mappings(config):
     for source_name, source_options in data_sources.items():
         source_mappings_df = _parse_mapping_files(source_options, source_name)
         mappings_df = pd.concat([mappings_df, source_mappings_df])
-        mappings_df = mappings_df.reset_index()
+        mappings_df = mappings_df.reset_index(drop=True)
         logging.info('Mappings for data source ' + str(source_name) + ' successfully parsed.')
 
     mappings_df = _remove_duplicated_mapping_rules(mappings_df)
@@ -814,7 +811,6 @@ def parse_mappings(config):
     mappings_df = _complete_termtypes(mappings_df)
     mappings_df = _complete_source_types(mappings_df, config)
     mappings_df = _remove_delimiters_from_identifiers(mappings_df)
-
     if config.getboolean('CONFIGURATION', 'infer_datatypes'):
         mappings_df = _infer_datatypes(mappings_df, config)
 
@@ -822,9 +818,20 @@ def parse_mappings(config):
 
     _validate_parsed_mappings(mappings_df.copy())
 
-    output_parsed_mappings_file_path = config.get('CONFIGURATION', 'output_parsed_mappings')
-    if output_parsed_mappings_file_path:
-        pd.to_csv(output_parsed_mappings_file_path, index=False)
+    return mappings_df.fillna('')
+
+
+def process_mappings(config):
+    input_parsed_mappings_path = config.get('CONFIGURATION', 'input_parsed_mappings')
+    if input_parsed_mappings_path:
+        mappings_df = pd.read_csv(input_parsed_mappings_path, keep_default_na=False)
+        return mappings_df
+
+    mappings_df = _parse_mappings(config)
+
+    output_parsed_mappings = config.get('CONFIGURATION', 'output_parsed_mappings')
+    if output_parsed_mappings:
+        mappings_df.to_csv(output_parsed_mappings, index=False)
         sys.exit()
 
     return mappings_df

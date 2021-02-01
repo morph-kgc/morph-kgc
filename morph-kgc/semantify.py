@@ -9,9 +9,7 @@ __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"
 
 
-import logging
-
-from mapping_parser import parse_mappings
+from mapping_parser import process_mappings
 from args_parser import parse_config
 from materializer import materialize
 
@@ -19,5 +17,5 @@ from materializer import materialize
 if __name__ == "__main__":
 
     config = parse_config()
-    mappings_df = parse_mappings(config)
+    mappings_df = process_mappings(config)
     materialize(mappings_df, config)
