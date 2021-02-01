@@ -585,10 +585,6 @@ def _generate_mapping_partitions(mappings_df, mapping_partitions):
     return mappings_df
 
 
-def _get_data_sources_names(config):
-    return [section for section in config.sections() if section != 'CONFIGURATION']
-
-
 def  _rdf_class_to_pom(mappings_df):
     '''Transform subject rdf class into separate POM'''
 
@@ -776,15 +772,14 @@ def _validate_parsed_mappings(mappings_df):
 
 
 def _parse_mappings(config):
-    data_sources_names = _get_data_sources_names(config)
-
     mappings_df = pd.DataFrame(columns=MAPPINGS_DATAFRAME_COLUMNS)
 
-    for data_source_name in data_sources_names:
-        source_mappings_df = _parse_mapping_files(config, data_source_name)
-        mappings_df = pd.concat([mappings_df, source_mappings_df])
-        mappings_df = mappings_df.reset_index(drop=True)
-        logging.info('Mappings for data source ' + str(data_source_name) + ' successfully parsed.')
+    for config_section in config.sections():
+        if config_section != 'CONFIGURATION':
+            source_mappings_df = _parse_mapping_files(config, config_section)
+            mappings_df = pd.concat([mappings_df, source_mappings_df])
+            mappings_df = mappings_df.reset_index(drop=True)
+            logging.info('Mappings for data source ' + str(config_section) + ' successfully parsed.')
 
     mappings_df = _remove_duplicated_mapping_rules(mappings_df)
     mappings_df = _rdf_class_to_pom(mappings_df)
@@ -801,7 +796,7 @@ def _parse_mappings(config):
 
 
 def process_mappings(config):
-    input_parsed_mappings_path = config.get('CONFIGURATION', 'input_parsed_mappings')
+    input_parsed_mappings_path = config.get('CONFIGURATION', 'input_parsed_mappings_path')
     if input_parsed_mappings_path:
         mappings_df = pd.read_csv(input_parsed_mappings_path, keep_default_na=False)
         return mappings_df
@@ -814,9 +809,9 @@ def process_mappings(config):
     mappings_df = _generate_mapping_partitions(mappings_df, config.get('CONFIGURATION', 'mapping_partitions'))
     logging.info('Mapping partitions generation time: ' + "{:.4f}".format((time.time() - start_mapping_partitions)) + ' seconds.')
 
-    output_parsed_mappings = config.get('CONFIGURATION', 'output_parsed_mappings')
-    if output_parsed_mappings:
-        mappings_df.to_csv(output_parsed_mappings, index=False)
+    output_parsed_mappings_path = config.get('CONFIGURATION', 'output_parsed_mappings_path')
+    if output_parsed_mappings_path:
+        mappings_df.to_csv(output_parsed_mappings_path, index=False)
         sys.exit()
 
     return mappings_df

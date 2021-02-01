@@ -25,8 +25,8 @@ ARGUMENTS_DEFAULT = {
     'output_file': '',
     'output_format': 'ntriples',
     'mapping_partitions': 'guess',
-    'input_parsed_mappings': '',
-    'output_parsed_mappings': '',
+    'input_parsed_mappings_path': '',
+    'output_parsed_mappings_path': '',
     'push_down_sql_distincts': 'no',
     'number_of_processes': mp.cpu_count(),
     'chunksize': 0,
@@ -245,8 +245,8 @@ def _validate_config_configuration_section(config):
     config.getboolean('CONFIGURATION', 'push_down_sql_distincts')
 
     # output_parsed_mappings has no default value, it is needed to check if it is in the config
-    if config.has_option('CONFIGURATION', 'output_parsed_mappings'):
-        config.set('CONFIGURATION', 'output_parsed_mappings', _file_path(config.get('CONFIGURATION', 'output_parsed_mappings')))
+    if config.has_option('CONFIGURATION', 'output_parsed_mappings_path'):
+        config.set('CONFIGURATION', 'output_parsed_mappings_path', _file_path(config.get('CONFIGURATION', 'output_parsed_mappings_path')))
     # logs has no default value, it is needed to check if it is in the config
     if config.has_option('CONFIGURATION', 'logs'):
         config.set('CONFIGURATION', 'logs', _file_path(config.get('CONFIGURATION', 'logs')))
@@ -292,10 +292,10 @@ def _complete_config_file_with_args(config, args):
         config.set('CONFIGURATION', 'coerce_float', ARGUMENTS_DEFAULT['coerce_float'])
     if not config.has_option('CONFIGURATION', 'infer_datatypes'):
         config.set('CONFIGURATION', 'infer_datatypes', ARGUMENTS_DEFAULT['infer_datatypes'])
-    if not config.has_option('CONFIGURATION', 'input_parsed_mappings'):
-        config.set('CONFIGURATION', 'input_parsed_mappings', ARGUMENTS_DEFAULT['input_parsed_mappings'])
-    if not config.has_option('CONFIGURATION', 'output_parsed_mappings'):
-        config.set('CONFIGURATION', 'output_parsed_mappings', ARGUMENTS_DEFAULT['output_parsed_mappings'])
+    if not config.has_option('CONFIGURATION', 'input_parsed_mappings_path'):
+        config.set('CONFIGURATION', 'input_parsed_mappings_path', ARGUMENTS_DEFAULT['input_parsed_mappings_path'])
+    if not config.has_option('CONFIGURATION', 'output_parsed_mappings_path'):
+        config.set('CONFIGURATION', 'output_parsed_mappings_path', ARGUMENTS_DEFAULT['output_parsed_mappings_path'])
     if not config.has_option('CONFIGURATION', 'logs'):
         if 'logs' in args:
             config.set('CONFIGURATION', 'logs', args.logs)
