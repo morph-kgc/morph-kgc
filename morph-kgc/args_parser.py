@@ -97,7 +97,8 @@ def _dir_path(dir_path):
 
 def _file_path(file_path):
     """
-    Checks that directories in a file path exist. If they do not exist, it creates the directories.
+    Checks that directories in a file path exist. If they do not exist, it creates the directories. Also generates
+    a valid file name.
 
     :param file_path: the path to the file
     :type file_path: str
@@ -151,11 +152,13 @@ def _existing_file_path(file_path):
 
 def _natural_number(number, including_zero=False):
     """
-    Generates a natural number (including zero) from a given number.
+    Generates a natural number from a given number.
 
     :param number: number
     :type number: str
-    :return natural number (including zero)
+    :param including_zero: whether to consider zero a valid natural number.
+    :type including_zero: bool
+    :return natural number
     :rtype int
     """
 
@@ -169,6 +172,14 @@ def _natural_number(number, including_zero=False):
 
 
 def _validate_config_data_sources_sections(config):
+    """
+    Validates that the data sources section in the config file are correct.
+
+    :param config: config object
+    :type config: configparser
+    :return config object with validated data sources sections
+    :rtype configparser
+    """
     for section in config.sections():
         if section !=  'CONFIGURATION':
             ''' if section is not configuration then it is a data source.
@@ -250,9 +261,9 @@ def _complete_config_file_with_args(config, args):
     the config file the option in the arguments is ignored.
 
     :param config: the ConfigParser object
-    :type config: argparse
+    :type config: configparser
     :param args: the argparse object
-    :type args: configparser
+    :type args: argparse
     :return ConfigParser object extended with information from arguments
     :rtype configparser
     """
@@ -331,7 +342,7 @@ def _parse_arguments():
 
 def parse_config():
     """
-    Parses command line arguments and the config file. It also validates that values are correct.
+    Parses command line arguments and the config file. It also validates that provided values are correct.
     Arguments in the config file have more priority than command line arguments, if specified, command line
     arguments will overwrite config file ones. Logger is configured.
 
