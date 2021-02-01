@@ -27,7 +27,7 @@ ARGUMENTS_DEFAULT = {
     'mapping_partitions': 'guess',
     'input_parsed_mappings': '',
     'output_parsed_mappings': '',
-    'push_down_distincts': 'no',
+    'push_down_sql_distincts': 'no',
     'number_of_processes': mp.cpu_count(),
     'chunksize': 0,
     'infer_datatypes': 'yes',
@@ -242,7 +242,7 @@ def _validate_config_configuration_section(config):
                str(_natural_number(config.get('CONFIGURATION', 'chunksize'), including_zero=True)))
     config.getboolean('CONFIGURATION', 'coerce_float')
     config.getboolean('CONFIGURATION', 'infer_datatypes')
-    config.getboolean('CONFIGURATION', 'push_down_distincts')
+    config.getboolean('CONFIGURATION', 'push_down_sql_distincts')
 
     # output_parsed_mappings has no default value, it is needed to check if it is in the config
     if config.has_option('CONFIGURATION', 'output_parsed_mappings'):
@@ -280,8 +280,8 @@ def _complete_config_file_with_args(config, args):
         config.set('CONFIGURATION', 'output_file', args.output_file)
     if not config.has_option('CONFIGURATION', 'output_format'):
         config.set('CONFIGURATION', 'output_format', args.output_format)
-    if not config.has_option('CONFIGURATION', 'push_down_distincts'):
-        config.set('CONFIGURATION', 'push_down_distincts', ARGUMENTS_DEFAULT['push_down_distincts'])
+    if not config.has_option('CONFIGURATION', 'push_down_sql_distincts'):
+        config.set('CONFIGURATION', 'push_down_sql_distincts', ARGUMENTS_DEFAULT['push_down_sql_distincts'])
     if not config.has_option('CONFIGURATION', 'mapping_partitions'):
         config.set('CONFIGURATION', 'mapping_partitions', ARGUMENTS_DEFAULT['mapping_partitions'])
     if not config.has_option('CONFIGURATION', 'number_of_processes'):

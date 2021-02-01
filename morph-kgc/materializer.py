@@ -124,7 +124,7 @@ def _materialize_constant(query_results_df, constant, termtype='http://www.w3.or
 
 def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
     query = 'SELECT '
-    if config.getboolean('CONFIGURATION', 'push_down_distincts'):
+    if config.getboolean('CONFIGURATION', 'push_down_sql_distincts'):
         query = query + 'DISTINCT '
 
     if mapping_rule['object_parent_triples_map']:

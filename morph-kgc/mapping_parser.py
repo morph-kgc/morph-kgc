@@ -309,15 +309,15 @@ def _infer_mapping_language_from_graph(mapping_graph, source_name):
                     '. Check the corresponding mappings file.')
 
 
-def _parse_mapping_files(source_options, source_name, config):
+def _parse_mapping_files(config, data_source_name):
     mapping_graph = rdflib.Graph()
     try:
-        for mapping_file in source_options['mapping_files'].split(','):
+        for mapping_file in config.get(data_source_name, 'mapping_files').split(','):
             mapping_graph.load(mapping_file.strip(), format='n3')
     except Exception as n3_mapping_parse_exception:
         raise Exception(n3_mapping_parse_exception)
 
-    mapping_language = _infer_mapping_language_from_graph(mapping_graph, source_name)
+    mapping_language = _infer_mapping_language_from_graph(mapping_graph, data_source_name)
     mapping_parsing_query = ''
     if mapping_language == 'RML':
         mapping_parsing_query = RML_MAPPING_PARSING_QUERY
@@ -327,7 +327,7 @@ def _parse_mapping_files(source_options, source_name, config):
     mapping_query_results = mapping_graph.query(mapping_parsing_query)
 
     join_query_results = mapping_graph.query(JOIN_CONDITION_PARSING_QUERY)
-    mappings_df = _transform_mappings_into_dataframe(mapping_query_results, join_query_results, source_name)
+    mappings_df = _transform_mappings_into_dataframe(mapping_query_results, join_query_results, data_source_name)
 
     mappings_df = _remove_duplicated_mapping_rules(mappings_df)
     mappings_df = _rdf_class_to_pom(mappings_df)
@@ -597,26 +597,8 @@ def _generate_mapping_partitions(mappings_df, mapping_partitions):
     return mappings_df
 
 
-def _get_configuration_and_sources(config):
-    """
-    Separates the sources from the configuration options.
-
-    :param config: ConfigParser object
-    :type config: configparser
-    :return: tuple with the configuration options and the sources
-    :rtype tuple
-    """
-
-    configuration = dict(config.items('CONFIGURATION'))
-
-    data_sources = {}
-    for section in config.sections():
-        if section != 'CONFIGURATION':
-            ''' if section is not configuration then it is a data source.
-                Mind that DEFAULT section is not triggered with config.sections(). '''
-            data_sources[section] = dict(config.items(section))
-
-    return configuration, data_sources
+def _get_data_sources_names(config):
+    return [section for section in config.sections() if section != 'CONFIGURATION']
 
 
 def  _rdf_class_to_pom(mappings_df):
@@ -806,17 +788,15 @@ def _validate_parsed_mappings(mappings_df):
 
 
 def _parse_mappings(config):
-    configuration, data_sources = _get_configuration_and_sources(config)
+    data_sources_names = _get_data_sources_names(config)
 
     mappings_df = pd.DataFrame(columns=MAPPINGS_DATAFRAME_COLUMNS)
 
-    for source_name, source_options in data_sources.items():
-        source_mappings_df = _parse_mapping_files(source_options, source_name, config)
+    for data_source_name in data_sources_names:
+        source_mappings_df = _parse_mapping_files(config, data_source_name)
         mappings_df = pd.concat([mappings_df, source_mappings_df])
         mappings_df = mappings_df.reset_index(drop=True)
-        logging.info('Mappings for data source ' + str(source_name) + ' successfully parsed.')
-
-    mappings_df = _generate_mapping_partitions(mappings_df, configuration['mapping_partitions'])
+        logging.info('Mappings for data source ' + str(data_source_name) + ' successfully parsed.')
 
     return mappings_df.fillna('')
 
@@ -827,9 +807,13 @@ def process_mappings(config):
         mappings_df = pd.read_csv(input_parsed_mappings_path, keep_default_na=False)
         return mappings_df
 
-    start_time_parsing = time.time()
+    start_parsing = time.time()
     mappings_df = _parse_mappings(config)
-    logging.info('Mapping parsing time: ' + "{:.3f}".format((time.time() - start_time_parsing)) + ' seconds.')
+    logging.info('Mapping parsing time: ' + "{:.4f}".format((time.time() - start_parsing)) + ' seconds.')
+
+    start_mapping_partitions = time.time()
+    mappings_df = _generate_mapping_partitions(mappings_df, config.get('CONFIGURATION', 'mapping_partitions'))
+    logging.info('Mapping partitions generation time: ' + "{:.4f}".format((time.time() - start_mapping_partitions)) + ' seconds.')
 
     output_parsed_mappings = config.get('CONFIGURATION', 'output_parsed_mappings')
     if output_parsed_mappings:
