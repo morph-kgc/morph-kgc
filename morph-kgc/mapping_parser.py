@@ -18,9 +18,10 @@ import rfc3987
 import pandas as pd
 
 from data_sources import relational_source
+from args_parser import VALID_ARGUMENTS
 
 
-RELATIONAL_SOURCE_TYPES = ['mysql', 'postgresql', 'oracle', 'sqlserver']
+RELATIONAL_SOURCE_TYPES = VALID_ARGUMENTS['relational_source_type']
 
 
 MAPPINGS_DATAFRAME_COLUMNS = [
