@@ -34,6 +34,7 @@ ARGUMENTS_DEFAULT = {
     'coerce_float': 'no'
 }
 
+
 VALID_ARGUMENTS = {
     'output_format': ['ntriples', 'nquads'],
     'mapping_partitions': ['', 's', 'p', 'g', 'sp', 'sg', 'pg', 'spg', 'guess'],
@@ -47,7 +48,7 @@ def _configure_logger(config, level=logging.INFO):
     Configures the logger based on input arguments. If no logging argument is provided, log level is set to WARNING.
 
     :param config: the ConfigParser object
-    :type config: configparser
+    :type config: ConfigParser
     :param level: logging level to use
     """
 
@@ -63,7 +64,7 @@ def _log_parsed_configuration_and_data_sources(config):
     Logs configuration and data sources parsed from the command line arguments and the config file.
 
     :param config: ConfigParser object
-    :type config: configparser
+    :type config: ConfigParser
     """
 
     logging.info('CONFIGURATION: ' + str(dict(config.items('CONFIGURATION'))))
@@ -176,12 +177,12 @@ def _validate_config_data_sources_sections(config):
     Validates that the data sources section in the config file are correct.
 
     :param config: config object
-    :type config: configparser
+    :type config: ConfigParser
     :return config object with validated data sources sections
     :rtype configparser
     """
     for section in config.sections():
-        if section !=  'CONFIGURATION':
+        if section != 'CONFIGURATION':
             ''' if section is not configuration then it is a data source.
                 Mind that DEFAULT section is not triggered with config.sections(). '''
 
@@ -213,7 +214,7 @@ def _validate_config_configuration_section(config):
     Validates that the configuration section in the config file is correct.
 
     :param config: config object
-    :type config: configparser
+    :type config: ConfigParser
     :return config object with validated configuration section
     :rtype configparser
     """
@@ -227,7 +228,7 @@ def _validate_config_configuration_section(config):
     output_format = config.get('CONFIGURATION', 'output_format')
     output_format = str(output_format).lower().strip()
     if output_format not in VALID_ARGUMENTS['output_format']:
-        raise ValueError('Option output_format must be in: ' + VALID_ARGUMENTS['output_format'])
+        raise ValueError('Option output_format must be in: ' + str(VALID_ARGUMENTS['output_format']))
     config.set('CONFIGURATION', 'output_format', output_format)
 
     mapping_partitions = config.get('CONFIGURATION', 'mapping_partitions')
@@ -246,7 +247,8 @@ def _validate_config_configuration_section(config):
 
     # output_parsed_mappings has no default value, it is needed to check if it is in the config
     if config.has_option('CONFIGURATION', 'output_parsed_mappings_path'):
-        config.set('CONFIGURATION', 'output_parsed_mappings_path', _file_path(config.get('CONFIGURATION', 'output_parsed_mappings_path')))
+        config.set('CONFIGURATION', 'output_parsed_mappings_path',
+                   _file_path(config.get('CONFIGURATION', 'output_parsed_mappings_path')))
     # logs has no default value, it is needed to check if it is in the config
     if config.has_option('CONFIGURATION', 'logs'):
         config.set('CONFIGURATION', 'logs', _file_path(config.get('CONFIGURATION', 'logs')))
@@ -261,7 +263,7 @@ def _complete_config_file_with_defaults(config, args):
     the config file the option in the arguments is ignored.
 
     :param config: the ConfigParser object
-    :type config: configparser
+    :type config: ConfigParser
     :param args: the argparse object
     :type args: argparse
     :return ConfigParser object extended with information from arguments
