@@ -421,7 +421,7 @@ def _transform_mappings_into_dataframe(mapping_query_results, join_query_results
     source_mappings_df['join_conditions'] = source_mappings_df['join_conditions'].astype(str)
     source_mappings_df = source_mappings_df.drop('object_map', axis=1)         # object_map column no longer needed
 
-    # Associate the source name to the mapping rules
+    # associate the source name to the mapping rules
     source_mappings_df['source_name'] = source_name
 
     return source_mappings_df
@@ -830,6 +830,10 @@ def _parse_mappings(config):
     mappings_df = _complete_termtypes(mappings_df)
     mappings_df = _complete_source_types(mappings_df, config)
     mappings_df = _remove_delimiters_from_identifiers(mappings_df)
+
+    # create a unique id for each mapping rule
+    mappings_df.insert(0, 'id', mappings_df.reset_index().index)
+
     # if infer_datatypes is enabled, infer the RDF datatypes for mapping rules of relational data sources
     if config.getboolean('CONFIGURATION', 'infer_datatypes'):
         mappings_df = _infer_datatypes(mappings_df, config)
