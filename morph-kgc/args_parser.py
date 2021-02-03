@@ -19,11 +19,13 @@ import multiprocessing as mp
 
 from configparser import ConfigParser, ExtendedInterpolation
 
+from data_sources import relational_source
+
 
 ARGUMENTS_DEFAULT = {
     'output_dir': 'output',
-    'output_file': '',
-    'output_format': 'ntriples',
+    'output_file': 'result.nq',
+    'output_format': 'nquads',
     'mapping_partitions': 'guess',
     'input_parsed_mappings_path': '',
     'output_parsed_mappings_path': '',
@@ -84,7 +86,7 @@ def _log_parsed_configuration_and_data_sources(config):
     :type config: ConfigParser
     """
 
-    logging.info('CONFIGURATION: ' + str(dict(config.items('CONFIGURATION'))))
+    logging.debug('CONFIGURATION: ' + str(dict(config.items('CONFIGURATION'))))
 
     data_sources = {}
     for section in config.sections():
@@ -93,7 +95,7 @@ def _log_parsed_configuration_and_data_sources(config):
                 Mind that DEFAULT section is not triggered with config.sections(). '''
             data_sources[section] = dict(config.items(section))
 
-    logging.info('DATA SOURCES: ' + str(data_sources))
+    logging.debug('DATA SOURCES: ' + str(data_sources))
 
 
 def _dir_path(dir_path):
@@ -200,27 +202,21 @@ def _validate_config_data_sources_sections(config):
     """
     for section in config.sections():
         if section != 'CONFIGURATION':
-            ''' if section is not configuration then it is a data source.
-                Mind that DEFAULT section is not triggered with config.sections(). '''
+            # if section is not CONFIGURATION then it is a data source
+            # mind that DEFAULT section is not triggered with config.sections().
 
             mapping_files = config.get(section, 'mapping_files')
             for mapping_file in mapping_files.split(','):
                 if not os.path.exists(mapping_file.strip()):
-                    raise FileNotFoundError('mapping_file=' + str(mapping_file) + ' in section ' + section +
+                    raise FileNotFoundError("mapping_file' " + str(mapping_file) + "' in section " + section +
                                             ' of config file could not be found.')
 
             config.set(section, 'source_type', config.get(section, 'source_type').lower())
             if config.get(section, 'source_type') in VALID_ARGUMENTS['relational_source_type']:
-                # config.get to check that required parameters are provided
-                config.get(section, 'user')
-                config.get(section, 'password')
-                config.get(section, 'host')
-                config.get(section, 'port')
-                config.get(section, 'db')
-            elif config.get(section, 'source_type') in VALID_ARGUMENTS['file_source_type']:
-                pass
+                # to check that required parameters are provided and that the connection is ok
+                relational_source.relational_db_connection(config, section)
             else:
-                raise ValueError('source_type=' + config.get(section, 'source_type') + ' in section ' + section +
+                raise ValueError("source_type '" + config.get(section, 'source_type') + "' in section " + section +
                                  ' of config file is not valid.')
 
     return config
@@ -236,14 +232,21 @@ def _validate_config_configuration_section(config):
     :rtype configparser
     """
 
-    config.set('CONFIGURATION', 'output_dir', _dir_path(config.get('CONFIGURATION', 'output_dir')))
-    config.set('CONFIGURATION', 'output_file', _file_name(config.get('CONFIGURATION', 'output_file')))
-
     output_format = config.get('CONFIGURATION', 'output_format')
     output_format = str(output_format).lower().strip()
     if output_format not in VALID_ARGUMENTS['output_format']:
         raise ValueError('Option output_format must be in: ' + str(VALID_ARGUMENTS['output_format']))
     config.set('CONFIGURATION', 'output_format', output_format)
+
+    config.set('CONFIGURATION', 'output_dir', _dir_path(config.get('CONFIGURATION', 'output_dir')))
+
+    output_file = _file_name(config.get('CONFIGURATION', 'output_file'))
+    if output_file:
+        # make sure file extension is correct
+        if output_format == 'ntriples' and os.path.splitext(output_file)[1] != '.nt':
+            config.set('CONFIGURATION', 'output_file', os.path.splitext(output_file)[0] + '.nt')
+        if output_format == 'nquads' and os.path.splitext(output_file)[1] != '.nq':
+            config.set('CONFIGURATION', 'output_file', os.path.splitext(output_file)[0] + '.nq')
 
     mapping_partitions = config.get('CONFIGURATION', 'mapping_partitions')
     mapping_partitions = str(mapping_partitions).lower().strip()

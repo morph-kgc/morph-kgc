@@ -36,25 +36,30 @@ SQL_RDF_DATATYPE = {
 }
 
 
-def _relational_db_connection(config, source_name):
+def relational_db_connection(config, source_name):
     source_type = config.get(source_name, 'source_type').lower()
 
     if source_type == 'mysql':
-        return mysql.connector.connect(
-            host=config.get(source_name, 'host'),
-            port=config.get(source_name, 'port'),
-            user=config.get(source_name, 'user'),
-            passwd=config.get(source_name, 'password'),
-            database=config.get(source_name, 'db'),
-        )
+        try:
+            db_connection = mysql.connector.connect(
+                host=config.get(source_name, 'host'),
+                port=config.get(source_name, 'port'),
+                user=config.get(source_name, 'user'),
+                passwd=config.get(source_name, 'password'),
+                database=config.get(source_name, 'db'),
+            )
+        except mysql.connector.Error as err:
+            raise Exception('Error while connecting to DB of data source ' + source_name + ': {}'.format(err))
     else:
         raise ValueError('source_type ' + str(source_type) + ' in configuration file is not valid.')
+
+    return db_connection
 
 
 def execute_relational_query(query, config, source_name):
     logging.info(query)
 
-    db_connection = _relational_db_connection(config, source_name)
+    db_connection = relational_db_connection(config, source_name)
     try:
         query_results_df = pd.read_sql(query, con=db_connection,
                                        coerce_float=config.getboolean('CONFIGURATION', 'coerce_float'))
@@ -69,7 +74,7 @@ def execute_relational_query(query, config, source_name):
 
 
 def get_column_datatype(config, source_name, table_name, column_name):
-    db_connection = _relational_db_connection(config, source_name)
+    db_connection = relational_db_connection(config, source_name)
     query = "select data_type from information_schema.columns where table_name='" + table_name + "' and column_name='" + column_name + "' ;"
 
     try:
