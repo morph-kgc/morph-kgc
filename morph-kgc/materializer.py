@@ -10,36 +10,27 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 
 import logging
-import re
 
 from urllib.parse import quote
 
 from data_sources import relational_source
-
-
-def _get_references_in_template(template):
-    template = template.replace('\{', 'zwy\u200B').replace('\}', 'ywz\u200A')
-
-    references = re.findall('\{([^}]+)', template)
-    references = [reference.replace('zwy\u200B', '\{').replace('ywz\u200A', '\}') for reference in references]
-
-    return references
+from utils import get_subject_maps, get_references_in_template
 
 
 def _get_references_in_mapping_rule(mapping_rule, only_subject_map=False):
     references = []
     if mapping_rule['subject_template']:
-        references.extend(_get_references_in_template(str(mapping_rule['subject_template'])))
+        references.extend(get_references_in_template(str(mapping_rule['subject_template'])))
     elif mapping_rule['subject_reference']:
         references.append(str(mapping_rule['subject_reference']))
 
     if not only_subject_map:
         if mapping_rule['predicate_template']:
-            references.extend(_get_references_in_template(str(mapping_rule['predicate_template'])))
+            references.extend(get_references_in_template(str(mapping_rule['predicate_template'])))
         elif mapping_rule['predicate_reference']:
             references.append(str(mapping_rule['predicate_reference']))
         if mapping_rule['object_template']:
-            references.extend(_get_references_in_template(str(mapping_rule['object_template'])))
+            references.extend(get_references_in_template(str(mapping_rule['object_template'])))
         elif mapping_rule['object_reference']:
             references.append(str(mapping_rule['object_reference']))
 
@@ -47,7 +38,7 @@ def _get_references_in_mapping_rule(mapping_rule, only_subject_map=False):
 
 
 def _materialize_template(query_results_df, template, columns_alias='', termtype='http://www.w3.org/ns/r2rml#IRI', language_tag='', datatype=''):
-    references = _get_references_in_template(str(template))
+    references = get_references_in_template(str(template))
 
     if str(termtype).strip() == 'http://www.w3.org/ns/r2rml#Literal':
         query_results_df['triple'] = query_results_df['triple'] + '"'
@@ -225,23 +216,8 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
     return query_results_df['triple']
 
 
-def _get_subject_maps_dict_from_mappings(mappings_df):
-    subject_maps_df = mappings_df[[
-        'triples_map_id', 'data_source', 'ref_form', 'iterator', 'tablename', 'query', 'subject_template',
-        'subject_reference', 'subject_constant', 'subject_termtype',
-        'graph_constant', 'graph_reference', 'graph_template']
-    ]
-
-    subject_maps_df = subject_maps_df.drop_duplicates()
-
-    if len(list(subject_maps_df['triples_map_id'])) > len(set(subject_maps_df['triples_map_id'])):
-        raise Exception('One or more triples maps have incongruencies in subject maps.')
-
-    return subject_maps_df
-
-
 def materialize(mappings_df, config):
-    subject_maps_df = _get_subject_maps_dict_from_mappings(mappings_df)
+    subject_maps_df = get_subject_maps(mappings_df)
     mapping_partitions = [group for _, group in mappings_df.groupby(by='mapping_partition')]
 
     triples = set()
