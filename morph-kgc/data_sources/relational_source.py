@@ -57,7 +57,7 @@ def relational_db_connection(config, source_name):
 
 
 def execute_relational_query(query, config, source_name):
-    logging.info(query)
+    logging.debug("SQL query for data source '" + source_name + "': " + query)
 
     db_connection = relational_db_connection(config, source_name)
     try:
@@ -88,7 +88,7 @@ def get_column_datatype(config, source_name, table_name, column_name):
     elif 'DATA_TYPE' in query_results_df.columns:
         data_type = query_results_df['DATA_TYPE'][0]
 
-    if data_type in SQL_RDF_DATATYPE:
-        return SQL_RDF_DATATYPE[data_type]
+    if data_type.upper() in SQL_RDF_DATATYPE:
+        return SQL_RDF_DATATYPE[data_type.upper()]
     else:
         return ''

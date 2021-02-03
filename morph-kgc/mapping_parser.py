@@ -19,6 +19,7 @@ import pandas as pd
 
 from data_sources import relational_source
 from args_parser import VALID_ARGUMENTS
+from utils import get_repeated_elements_in_list
 
 
 RELATIONAL_SOURCE_TYPES = VALID_ARGUMENTS['relational_source_type']
@@ -291,35 +292,36 @@ def _infer_mapping_language_from_graph(mapping_graph, source_name):
 
     rml_inferred = False
 
-    # Check if mapping language is RML
+    # check if mapping language is RML
     rml_query = '''
         prefix rml: <http://semweb.mmlab.be/ns/rml#>
         SELECT ?s WHERE { ?s rml:logicalSource ?o . } LIMIT 1
     '''
     mapping_language_results = mapping_graph.query(rml_query)
     if len(mapping_language_results) > 0:
-        logging.info('RML mapping language inferred for data source ' + source_name + '.')
+        logging.debug("RML mapping language inferred for data source '" + source_name + "'.")
         rml_inferred = True
 
-    # Check if mapping language is R2RML
+    # check if mapping language is R2RML
     r2rml_query = '''
         prefix rr: <http://www.w3.org/ns/r2rml#>
         SELECT ?s WHERE { ?s rr:logicalTable ?o . } LIMIT 1
     '''
     mapping_language_results = mapping_graph.query(r2rml_query)
     if len(mapping_language_results) > 0:
-        logging.info('R2RML mapping language inferred for data source ' + source_name + '.')
-        if rml_inferred:
-            raise Exception('Both, RML and R2RML were inferred for the mappings for data source ' + source_name + '.')
-        else:
+        logging.debug("R2RML mapping language inferred for data source '" + source_name + "'.")
+        if not rml_inferred:
             return 'R2RML'
 
     if rml_inferred:
         return 'RML'
 
-    # If mappings file does not have rml:logicalSource or rr:logicalTable it is not valid
-    raise Exception('It was not possible to infer the mapping language for data source ' + source_name +
-                    '. Check the corresponding mapping files.')
+    # if mappings file does not have rml:logicalSource or rr:logicalTable it is not valid
+
+
+    # if it has both rml:logicalSource and rr:logicalTable it is not valid
+    raise Exception("It was not possible to infer the mapping language for data source '" + source_name +
+                    "'. Check the corresponding mapping files.")
 
 
 def _get_join_object_maps_join_conditions(join_query_results):
@@ -358,7 +360,7 @@ def _append_mapping_rule(mappings_df, mapping_rule):
     :rtype DataFrame
     """
 
-    # Get position for the new mapping rule in the DataFrame
+    # get position for the new mapping rule in the DataFrame
     i = len(mappings_df)
 
     mappings_df.at[i, 'triples_map_id'] = mapping_rule.triples_map_id
@@ -495,7 +497,7 @@ def _rdf_class_to_pom(mappings_df):
 
     for i, row in initial_mapping_df.iterrows():
         if pd.notna(row['subject_rdf_class']):
-            # apped a new mapping rule to mappings_df corresponding to rr:class properties
+            # append a new mapping rule to mappings_df corresponding to rr:class properties
 
             j = len(mappings_df)
 
@@ -534,7 +536,7 @@ def _process_pom_graphs(mappings_df):
     :rtype DataFrame
     """
 
-    # Use rr:defaultGraph for those mapping rules that do not have any graph term
+    # use rr:defaultGraph for those mapping rules that do not have any graph term
     for i, mapping_rule in mappings_df.iterrows():
         if pd.isna(mapping_rule['graph_constant']) and pd.isna(mapping_rule['graph_reference']) and \
                 pd.isna(mapping_rule['graph_template']):
@@ -543,7 +545,7 @@ def _process_pom_graphs(mappings_df):
                     pd.isna(mapping_rule['predicate_object_graph_template']):
                 mappings_df.at[i, 'graph_constant'] = 'http://www.w3.org/ns/r2rml#defaultGraph'
 
-    # Instead of having two columns for each option of graph term (e.g. graph_constant and
+    # instead of having two columns for each option of graph term (e.g. graph_constant and
     # predicate_object_graph_constant) have only one to keep it simple. Do this by appending POM graph terms as new
     # mapping rules in the DataFrame.
     aux_mappings_df = mappings_df.copy()
@@ -599,7 +601,7 @@ def _complete_termtypes(mappings_df):
             else:
                 mappings_df.at[i, 'object_termtype'] = 'http://www.w3.org/ns/r2rml#IRI'
 
-    # Convert to str (instead of rdflib object) to avoid problems later
+    # convert to str (instead of rdflib object) to avoid problems later
     mappings_df['subject_termtype'] = mappings_df['subject_termtype'].astype(str)
     mappings_df['object_termtype'] = mappings_df['object_termtype'].astype(str)
 
@@ -722,10 +724,17 @@ def _infer_datatypes(mappings_df, config):
                 if pd.isna(mapping_rule['object_datatype']) and pd.isna(mapping_rule['object_language']):
 
                     if pd.notna(mapping_rule['tablename']):
-                        mappings_df.at[i, 'object_datatype'] = relational_source.get_column_datatype(
+                        data_type = relational_source.get_column_datatype(
                             config, mapping_rule['source_name'], mapping_rule['tablename'],
                             mapping_rule['object_reference']
-                        ).upper()
+                        )
+
+                        mappings_df.at[i, 'object_datatype'] = data_type
+                        if data_type:
+                            logging.debug("'" + data_type + "' datatype inferred for column '" +
+                                          mapping_rule['object_reference'] + "' of table '" +
+                                          mapping_rule['tablename'] + "' in data source '" +
+                                          mapping_rule['source_name'] + "'.")
 
                     elif pd.notna(mapping_rule['query']):
                         # if mapping rule has a query, get the table names
@@ -735,9 +744,19 @@ def _infer_datatypes(mappings_df, config):
                             # if an exception is thrown, then the reference is no a column in that table, and nothing
                             # is done
                             try:
-                                mappings_df.at[i, 'object_datatype'] = relational_source.get_column_datatype(
+                                data_type = relational_source.get_column_datatype(
                                     config, mapping_rule['source_name'], table_name, mapping_rule['object_reference']
-                                ).upper()
+                                )
+
+                                mappings_df.at[i, 'object_datatype'] = data_type
+                                if data_type:
+                                    logging.debug("'" + data_type + "' datatype inferred for reference '" +
+                                                  mapping_rule['object_reference'] + "' in query (" +
+                                                  mapping_rule['query'] + ") in data source '" +
+                                                  mapping_rule['source_name'] + "'.")
+
+                                # already found it, end looping
+                                break
                             except:
                                 pass
 
@@ -748,7 +767,8 @@ def _validate_parsed_mappings(mappings_df):
     """
     Checks that the mapping rules in the input DataFrame are valid. If something is wrong in the mappings the execution
     is stopped. Specifically it is checked that termtypes are correct, constants and templates are valid IRIs and that
-    language tags and datatypes are used properly.
+    language tags and datatypes are used properly. Also checks that different data sources do not have triples map with
+    the same id.
 
     :param mappings_df: DataFrame populated with mapping rules
     :type mappings_df: DataFrame
@@ -801,6 +821,15 @@ def _validate_parsed_mappings(mappings_df):
         # validate that at least the invariable part of the template is a valid IRI
         rfc3987.parse(_get_invariable_part_of_template(template), rule='IRI')
 
+    # check that a triples map id is not repeated in different data sources
+    aux_mappings_df = mappings_df[['source_name', 'triples_map_id']].drop_duplicates()
+    repeated_triples_map_ids = get_repeated_elements_in_list(list(aux_mappings_df['triples_map_id'].astype(str)))
+    repeated_triples_map_ids = [tm_id for tm_id in repeated_triples_map_ids if not tm_id.startswith('rdf_class_')]
+    if len(repeated_triples_map_ids) > 0:
+        raise Exception('The following triples maps appear in more than one data source: ' +
+                        str(repeated_triples_map_ids) + '. Check the mapping files, one triple map cannot be repeated '
+                        'in different data sources.')
+
 
 def _parse_mappings(config):
     """
@@ -821,7 +850,6 @@ def _parse_mappings(config):
             source_mappings_df = _parse_mapping_files(config, config_section)
             mappings_df = pd.concat([mappings_df, source_mappings_df])
             mappings_df = mappings_df.reset_index(drop=True)
-            logging.info('Mappings for data source ' + str(config_section) + ' successfully parsed.')
 
     # postprocessing of parsed mappings
     mappings_df = _remove_duplicated_mapping_rules(mappings_df)
@@ -832,7 +860,7 @@ def _parse_mappings(config):
     mappings_df = _remove_delimiters_from_identifiers(mappings_df)
 
     # create a unique id for each mapping rule
-    mappings_df.insert(0, 'id', mappings_df.reset_index().index)
+    mappings_df.insert(0, 'id', mappings_df.reset_index(drop=True).index)
 
     # if infer_datatypes is enabled, infer the RDF datatypes for mapping rules of relational data sources
     if config.getboolean('CONFIGURATION', 'infer_datatypes'):
@@ -840,6 +868,8 @@ def _parse_mappings(config):
 
     # check that the parsed mapping rules are correct
     _validate_parsed_mappings(mappings_df)
+
+    logging.info(str(len(mappings_df)) + ' mapping rules retrieved.')
 
     return mappings_df
 
@@ -878,30 +908,30 @@ def _validate_mapping_partition_criteria(mappings_df, mapping_partition_criteria
             be used as partitioning criteria. The same for predicate and graph.
             '''
             if mappings_df['subject_reference'].notna().any():
-                logging.warning('Invalid mapping partition criteria ' + mapping_partition_criteria +
-                                ': mappings cannot be partitioned by subject because mappings contain subject terms '
+                logging.warning("Invalid mapping partition criteria '" + mapping_partition_criteria +
+                                "': mappings cannot be partitioned by subject because mappings contain subject terms "
                                 'that are rr:column or rml:reference.')
             else:
                 valid_mapping_partition_criteria += 's'
 
         if 'p' in mapping_partition_criteria:
             if mappings_df['predicate_reference'].notna().any():
-                logging.warning('Invalid mapping partition criteria ' + mapping_partition_criteria +
-                                ': mappings cannot be partitioned by predicate because mappings contain predicate '
+                logging.warning("Invalid mapping partition criteria '" + mapping_partition_criteria +
+                                "': mappings cannot be partitioned by predicate because mappings contain predicate "
                                 'terms that are rr:column or rml:reference.')
             else:
                 valid_mapping_partition_criteria += 'p'
 
         if 'g' in mapping_partition_criteria:
             if mappings_df['graph_reference'].notna().any():
-                logging.warning('Invalid mapping partition criteria ' + mapping_partition_criteria +
-                                ': mappings cannot be partitioned by graph because mappings '
+                logging.warning("Invalid mapping partition criteria '" + mapping_partition_criteria +
+                                "': mappings cannot be partitioned by graph because mappings "
                                 'contain graph terms that are rr:column or rml:reference.')
             else:
                 valid_mapping_partition_criteria += 'g'
 
     if mapping_partition_criteria:
-        logging.info('Using ' + valid_mapping_partition_criteria + ' as mapping partition criteria.')
+        logging.info("Using '" + valid_mapping_partition_criteria + "' as mapping partition criteria.")
     else:
         logging.info('Not using mapping patitioning.')
 
@@ -927,7 +957,7 @@ def _get_invariable_part_of_template(template):
         invariable_part_of_template = invariable_part_of_template.replace(zero_width_space, '\\{')
     else:
         # no references were found in the template, and therefore the template is invalid
-        raise Exception('Invalid template ' + template + '. No pairs of unescaped curly braces were found.')
+        raise Exception("Invalid template '" + template + "'. No pairs of unescaped curly braces were found.")
 
     return invariable_part_of_template
 
@@ -951,7 +981,6 @@ def _get_mapping_partitions_invariable_parts(mappings_df, mapping_partition_crit
     mappings_df['graph_invariable_part'] = ''
 
     for i, mapping_rule in mappings_df.iterrows():
-
         if 's' in mapping_partition_criteria:
             # subject is selected as partitioning criteria if it is a template or a constant to get the invariable part
             if mapping_rule['subject_template']:
@@ -960,9 +989,8 @@ def _get_mapping_partitions_invariable_parts(mappings_df, mapping_partition_crit
             elif mapping_rule['subject_constant']:
                 mappings_df.at[i, 'subject_invariable_part'] = mapping_rule['subject_constant']
             else:
-                raise Exception('An invalid subject term was found at triples map ' + mapping_rule['triples_map_id'] +
-                                '. Subjects terms must be constants or templates in order to generate valid mapping '
-                                'partitions by subject.')
+                logging.error("Could not get the invariable part of the subject for mapping rule '" +
+                              str(mapping_rule['id']) + "'.")
 
         if 'p' in mapping_partition_criteria:
             if mapping_rule['predicate_constant']:
@@ -971,9 +999,8 @@ def _get_mapping_partitions_invariable_parts(mappings_df, mapping_partition_crit
                 mappings_df.at[i, 'predicate_invariable_part'] = \
                     _get_invariable_part_of_template(mapping_rule['predicate_template'])
             else:
-                raise Exception('An invalid predicate term was found at triples map ' + mapping_rule['triples_map_id'] +
-                                '. Predicate terms must be constants or templates in order to generate valid mapping '
-                                'partitions by predicate.')
+                logging.error("Could not get the invariable part of the predicate for mapping rule '" +
+                              str(mapping_rule['id']) + "'.")
 
         if 'g' in mapping_partition_criteria:
             if mapping_rule['graph_constant']:
@@ -982,9 +1009,8 @@ def _get_mapping_partitions_invariable_parts(mappings_df, mapping_partition_crit
                 mappings_df.at[i, 'graph_invariable_part'] = \
                     _get_invariable_part_of_template(mapping_rule['graph_template'])
             else:
-                raise Exception('An invalid graph term was found at triples map ' + mapping_rule['triples_map_id'] +
-                                '. Graph terms must be constants or templates in order to generate valid mapping '
-                                'partitions by graph.')
+                logging.error("Could not get the invariable part of the graph for mapping rule '" +
+                              str(mapping_rule['id']) + "'.")
 
     return mappings_df
 
@@ -1014,7 +1040,7 @@ def _generate_mapping_partitions(mappings_df, mapping_partition_criteria):
     if 's' in mapping_partitions:
         # sort the mapping rules based on the subject invariable part
         # an invariable part that starts with another invariable part is placed behind in the ordering
-        # E.g. http://example.org/term/something and http://example.org/term: http://example.org/term is placed first
+        # e.g. http://example.org/term/something and http://example.org/term: http://example.org/term is placed first
         mappings_df.sort_values(by='subject_invariable_part', inplace=True, ascending=True)
 
         num_partition = 0
@@ -1023,7 +1049,7 @@ def _generate_mapping_partitions(mappings_df, mapping_partition_criteria):
         # iterate over the mapping rules and check if the invariable part starts with the invariable part of the
         # previous rule
         # if it does, then it is in the same mapping partition than the previous mapping rule
-        # If it does not, then the mapping rule is in a new mapping partition
+        # if it does not, then the mapping rule is in a new mapping partition
         for i, mapping_rule in mappings_df.iterrows():
             if mapping_rule['subject_invariable_part'].startswith(root_last_partition):
                 mappings_df.at[i, 'subject_partition'] = str(num_partition)
@@ -1078,7 +1104,7 @@ def _generate_mapping_partitions(mappings_df, mapping_partition_criteria):
         axis=1, inplace=True)
 
     if mapping_partitions:
-        logging.info(str(len(set(mappings_df['mapping_partition']))) + ' mapping partitions were generated.')
+        logging.info(str(len(set(mappings_df['mapping_partition']))) + ' mapping partitions generated.')
 
     return mappings_df
 
@@ -1100,17 +1126,19 @@ def process_mappings(config):
     if input_parsed_mappings_path:
         # retrieve parsed mapping from file and finish mapping processing
         mappings_df = pd.read_csv(input_parsed_mappings_path, keep_default_na=False)
+        logging.info(str(len(mappings_df)) + ' mappings rules with ' + str(len(set(mappings_df[
+            'mapping_partition']))) + ' mapping partitions loaded from file.')
         return mappings_df
 
     # parse mapping files of every data source in the config
     start_parsing = time.time()
     mappings_df = _parse_mappings(config)
-    logging.info('Mapping parsing time: ' + "{:.4f}".format((time.time() - start_parsing)) + ' seconds.')
+    logging.debug('Mapping parsing time: ' + "{:.4f}".format((time.time() - start_parsing)) + ' seconds.')
 
     # generate mapping partitions for every mapping rule based on the criteria provided in the config
     start_mapping_partitions = time.time()
     mappings_df = _generate_mapping_partitions(mappings_df, config.get('CONFIGURATION', 'mapping_partitions'))
-    logging.info('Mapping partitions generation time: ' + "{:.4f}".format(
+    logging.debug('Mapping partitions generation time: ' + "{:.4f}".format(
         (time.time() - start_mapping_partitions)) + ' seconds.')
 
     # use empty strings, avoid None & NaN
@@ -1120,6 +1148,7 @@ def process_mappings(config):
     if output_parsed_mappings_path:
         # the parsed mappings are to be saved to a file, and the execution of the engine terminates
         mappings_df.sort_values(by=['id'], axis=0).to_csv(output_parsed_mappings_path, index=False)
+        logging.info('Parsed mapping rules saved to file.')
         sys.exit()
 
     return mappings_df

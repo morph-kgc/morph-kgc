@@ -208,16 +208,16 @@ def _validate_config_data_sources_sections(config):
             mapping_files = config.get(section, 'mapping_files')
             for mapping_file in mapping_files.split(','):
                 if not os.path.exists(mapping_file.strip()):
-                    raise FileNotFoundError("mapping_file' " + str(mapping_file) + "' in section " + section +
-                                            ' of config file could not be found.')
+                    raise FileNotFoundError("mapping_file '" + str(mapping_file) + "' in section '" + section +
+                                            "' of config file could not be found.")
 
             config.set(section, 'source_type', config.get(section, 'source_type').lower())
             if config.get(section, 'source_type') in VALID_ARGUMENTS['relational_source_type']:
                 # to check that required parameters are provided and that the connection is ok
                 relational_source.relational_db_connection(config, section)
             else:
-                raise ValueError("source_type '" + config.get(section, 'source_type') + "' in section " + section +
-                                 ' of config file is not valid.')
+                raise ValueError("source_type '" + config.get(section, 'source_type') + "' in section '" + section +
+                                 "' of config file is not valid.")
 
     return config
 
