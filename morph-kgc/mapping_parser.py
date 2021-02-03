@@ -1119,7 +1119,7 @@ def process_mappings(config):
     output_parsed_mappings_path = config.get('CONFIGURATION', 'output_parsed_mappings_path')
     if output_parsed_mappings_path:
         # the parsed mappings are to be saved to a file, and the execution of the engine terminates
-        mappings_df.to_csv(output_parsed_mappings_path, index=False)
+        mappings_df.sort_values(by=['id'], axis=0).to_csv(output_parsed_mappings_path, index=False)
         sys.exit()
 
     return mappings_df
