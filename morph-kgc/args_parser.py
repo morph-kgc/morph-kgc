@@ -31,7 +31,9 @@ ARGUMENTS_DEFAULT = {
     'number_of_processes': mp.cpu_count(),
     'chunksize': 0,
     'infer_datatypes': 'yes',
-    'coerce_float': 'no'
+    'coerce_float': 'no',
+    'logs_file': '',
+    'logging_level': 'info'
 }
 
 
@@ -43,20 +45,35 @@ VALID_ARGUMENTS = {
 }
 
 
-def _configure_logger(config, level=logging.INFO):
+def _configure_logger(config):
     """
     Configures the logger based on input arguments. If no logging argument is provided, log level is set to WARNING.
 
     :param config: the ConfigParser object
     :type config: ConfigParser
-    :param level: logging level to use
     """
 
-    if config.has_option('CONFIGURATION', 'logs'):
-        logging.basicConfig(filename=config.get('CONFIGURATION', 'logs'),
-                            format='%(levelname)s | %(asctime)s | %(message)s', filemode='w', level=level)
+    # get the logging level numeric value
+    logging_level = config.get('CONFIGURATION', 'logging_level')
+    if logging_level == 'critical':
+        logging_level = logging.CRITICAL
+    elif logging_level == 'error':
+        logging_level = logging.ERROR
+    elif logging_level == 'warning':
+        logging_level = logging.WARNING
+    elif logging_level == 'info':
+        logging_level = logging.INFO
+    elif logging_level == 'debug':
+        logging_level = logging.DEBUG
+    elif logging_level == 'notset':
+        logging_level = logging.NOTSET
+
+    if config.get('CONFIGURATION', 'logs_file') == '':
+        logging.basicConfig(format='%(levelname)s | %(asctime)s | %(message)s', level=logging_level)
     else:
-        logging.basicConfig(level=logging.WARNING)
+        logging.basicConfig(filename=config.get('CONFIGURATION', 'logs_file'),
+                            format='%(levelname)s | %(asctime)s | %(message)s', filemode='w',
+                            level=logging_level)
 
 
 def _log_parsed_configuration_and_data_sources(config):
@@ -220,10 +237,7 @@ def _validate_config_configuration_section(config):
     """
 
     config.set('CONFIGURATION', 'output_dir', _dir_path(config.get('CONFIGURATION', 'output_dir')))
-
-    # output_file has no default value, it is needed to check if it is in the config
-    if config.has_option('CONFIGURATION', 'output_file'):
-        config.set('CONFIGURATION', 'output_file', _file_name(config.get('CONFIGURATION', 'output_file')))
+    config.set('CONFIGURATION', 'output_file', _file_name(config.get('CONFIGURATION', 'output_file')))
 
     output_format = config.get('CONFIGURATION', 'output_format')
     output_format = str(output_format).lower().strip()
@@ -245,28 +259,24 @@ def _validate_config_configuration_section(config):
     config.getboolean('CONFIGURATION', 'infer_datatypes')
     config.getboolean('CONFIGURATION', 'push_down_sql_distincts')
 
-    # output_parsed_mappings has no default value, it is needed to check if it is in the config
-    if config.has_option('CONFIGURATION', 'output_parsed_mappings_path'):
-        config.set('CONFIGURATION', 'output_parsed_mappings_path',
-                   _file_path(config.get('CONFIGURATION', 'output_parsed_mappings_path')))
-    # logs has no default value, it is needed to check if it is in the config
-    if config.has_option('CONFIGURATION', 'logs'):
-        config.set('CONFIGURATION', 'logs', _file_path(config.get('CONFIGURATION', 'logs')))
+    config.set('CONFIGURATION', 'output_parsed_mappings_path',
+               _file_path(config.get('CONFIGURATION', 'output_parsed_mappings_path')))
+    config.set('CONFIGURATION', 'logs_file', _file_path(config.get('CONFIGURATION', 'logs_file')))
 
+    config.set('CONFIGURATION', 'logging_level', config.get('CONFIGURATION', 'logging_level').lower())
+    if config.get('CONFIGURATION', 'logging_level') not in ['notset', 'debug', 'info', 'warning', 'error', 'critical']:
+        raise ValueError(
+            'Option logging_level must be in: ' + str(['notset', 'debug', 'info', 'warning', 'error', 'critical']))
     return config
 
 
-def _complete_config_file_with_defaults(config, args):
+def _complete_config_file_with_defaults(config):
     """
-    Completes missing options in the config file with the options provided via arguments.
-    Options specified in the config file are prioritized, i.e., if the option is specified in
-    the config file the option in the arguments is ignored.
+    Completes missing options in the config file with default options.
 
     :param config: the ConfigParser object
     :type config: ConfigParser
-    :param args: the argparse object
-    :type args: argparse
-    :return ConfigParser object extended with information from arguments
+    :return ConfigParser object extended with default options
     :rtype configparser
     """
 
@@ -298,9 +308,10 @@ def _complete_config_file_with_defaults(config, args):
         config.set('CONFIGURATION', 'input_parsed_mappings_path', ARGUMENTS_DEFAULT['input_parsed_mappings_path'])
     if not config.has_option('CONFIGURATION', 'output_parsed_mappings_path'):
         config.set('CONFIGURATION', 'output_parsed_mappings_path', ARGUMENTS_DEFAULT['output_parsed_mappings_path'])
-    if not config.has_option('CONFIGURATION', 'logs'):
-        if 'logs' in args:
-            config.set('CONFIGURATION', 'logs', args.logs)
+    if not config.has_option('CONFIGURATION', 'logs_file'):
+        config.set('CONFIGURATION', 'logs_file', ARGUMENTS_DEFAULT['logs_file'])
+    if not config.has_option('CONFIGURATION', 'logging_level'):
+        config.set('CONFIGURATION', 'logging_level', ARGUMENTS_DEFAULT['logging_level'])
 
     return config
 
@@ -320,8 +331,6 @@ def _parse_arguments():
     )
 
     parser.add_argument('config', type=_existing_file_path, help='path to the configuration file')
-    parser.add_argument('-l', '--logs', nargs='?', const='', type=str,
-                        help='redirect logs to stdout or to a file if a path is provided')
     parser.add_argument('-v', '--version', action='version', version='Morph-KGC ' + __version__ + ' | ' + __copyright__)
 
     return parser.parse_args()
@@ -341,7 +350,7 @@ def parse_config():
 
     config = ConfigParser(interpolation=ExtendedInterpolation())
     config.read(args.config)
-    config = _complete_config_file_with_defaults(config, args)
+    config = _complete_config_file_with_defaults(config)
 
     config = _validate_config_configuration_section(config)
     _configure_logger(config)
