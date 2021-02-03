@@ -395,6 +395,30 @@ def _append_mapping_rule(mappings_df, mapping_rule):
     return mappings_df
 
 
+def _validate_no_repeated_triples_map(mapping_graph, source_name):
+    """
+    Checks that there are no repeated triples maps in the mapping rules of a source.
+
+    :param mapping_graph: rdflib Graph loaded with the mapping rules associated to source_name
+    :type mapping_graph: Graph
+    :param source_name: name of the source to which the mapping rules are associated
+    :type source_name: str
+    """
+
+    query = """
+        prefix rr: <http://www.w3.org/ns/r2rml#>
+        prefix rml: <http://semweb.mmlab.be/ns/rml#>
+
+        SELECT ?triples_map_id
+        WHERE { ?triples_map_id rr:subjectMap ?_subject_map . } """
+
+    triples_map_ids = [str(result.triples_map_id) for result in list(mapping_graph.query(query))]
+    repeated_triples_map_ids = get_repeated_elements_in_list(triples_map_ids)
+    if len(repeated_triples_map_ids) > 0:
+        raise Exception("The following triples maps in data source '" + source_name + "' are repeated: " +
+                        str(repeated_triples_map_ids) + '".')
+
+
 def _transform_mappings_into_dataframe(mapping_query_results, join_query_results, source_name):
     """
     Builds a Pandas DataFrame from the results obtained from [R2]RML_MAPPING_PARSING_QUERY and
@@ -433,7 +457,8 @@ def _parse_mapping_files(config, data_source_name):
     """
     Creates a Pandas DataFrame with the mapping rules for a data source. It loads the mapping files in a rdflib graph
     and recognizes the mapping language used. It performs queries [R2]RML_MAPPING_PARSING_QUERY and
-    JOIN_CONDITION_PARSING_QUERY and process the results to build a DataFrame with the mapping rules.
+    JOIN_CONDITION_PARSING_QUERY and process the results to build a DataFrame with the mapping rules. Also verifies that
+    there are not repeated triples maps in the mappings.
 
     :param config: ConfigParser object
     :type config: ConfigParser
@@ -460,6 +485,9 @@ def _parse_mapping_files(config, data_source_name):
 
     mapping_query_results = mapping_graph.query(mapping_parsing_query)
     join_query_results = mapping_graph.query(JOIN_CONDITION_PARSING_QUERY)
+
+    # check triples maps are not repeated
+    _validate_no_repeated_triples_map(mapping_graph, data_source_name)
 
     return _transform_mappings_into_dataframe(mapping_query_results, join_query_results, data_source_name)
 

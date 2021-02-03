@@ -29,13 +29,14 @@ ARGUMENTS_DEFAULT = {
     'mapping_partitions': 'guess',
     'input_parsed_mappings_path': '',
     'output_parsed_mappings_path': '',
+    'logs_file': '',
+    'logging_level': 'info',
     'push_down_sql_distincts': 'no',
     'number_of_processes': mp.cpu_count(),
-    'chunksize': 0,
+    'chunksize': 0,     # 0 means no chunking
     'infer_datatypes': 'yes',
     'coerce_float': 'no',
-    'logs_file': '',
-    'logging_level': 'info'
+    'only_printable_characters': 'no'
 }
 
 
@@ -256,9 +257,15 @@ def _validate_config_configuration_section(config):
 
     config.set('CONFIGURATION', 'number_of_processes',
                str(_natural_number(config.get('CONFIGURATION', 'number_of_processes'), including_zero=False)))
-    config.set('CONFIGURATION', 'chunksize',
-               str(_natural_number(config.get('CONFIGURATION', 'chunksize'), including_zero=True)))
+
+    chunksize = config.get('CONFIGURATION', 'chunksize')
+    if chunksize:
+        config.set('CONFIGURATION', 'chunksize', str(_natural_number(chunksize, including_zero=True)))
+    else:
+        config.set('CONFIGURATION', 'chunksize', str(ARGUMENTS_DEFAULT['chunksize']))
+
     config.getboolean('CONFIGURATION', 'coerce_float')
+    config.getboolean('CONFIGURATION', 'only_printable_characters')
     config.getboolean('CONFIGURATION', 'infer_datatypes')
     config.getboolean('CONFIGURATION', 'push_down_sql_distincts')
 
@@ -305,6 +312,8 @@ def _complete_config_file_with_defaults(config):
         config.set('CONFIGURATION', 'chunksize', str(ARGUMENTS_DEFAULT['chunksize']))
     if not config.has_option('CONFIGURATION', 'coerce_float'):
         config.set('CONFIGURATION', 'coerce_float', ARGUMENTS_DEFAULT['coerce_float'])
+    if not config.has_option('CONFIGURATION', 'only_printable_characters'):
+        config.set('CONFIGURATION', 'only_printable_characters', ARGUMENTS_DEFAULT['only_printable_characters'])
     if not config.has_option('CONFIGURATION', 'infer_datatypes'):
         config.set('CONFIGURATION', 'infer_datatypes', ARGUMENTS_DEFAULT['infer_datatypes'])
     if not config.has_option('CONFIGURATION', 'input_parsed_mappings_path'):
