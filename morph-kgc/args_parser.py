@@ -24,7 +24,7 @@ from data_sources import relational_source
 
 ARGUMENTS_DEFAULT = {
     'output_dir': 'output',
-    'output_file': 'result.nq',
+    'output_file': 'result',
     'output_format': 'nquads',
     'mapping_partitions': 'guess',
     'input_parsed_mappings_path': '',
@@ -285,12 +285,12 @@ def _complete_config_file_with_defaults(config):
     :rtype configparser
     """
 
-    ''' Create section CONFIGURATION if it does not exist in the config file '''
+    # create section CONFIGURATION if it does not exist in the config file
     if not config.has_section('CONFIGURATION'):
         config.add_section('CONFIGURATION')
 
-    ''' If parameters are not provided in the config file, take them from arguments.
-        mind that ConfigParser store options as strings'''
+    # if parameters are not provided in the config file, take them from arguments
+    # mind that ConfigParser store options as strings
     if not config.has_option('CONFIGURATION', 'output_dir'):
         config.set('CONFIGURATION', 'output_dir', ARGUMENTS_DEFAULT['output_dir'])
     if not config.has_option('CONFIGURATION', 'output_file'):

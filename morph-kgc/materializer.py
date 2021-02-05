@@ -10,27 +10,28 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 
 import logging
+import time
 
 from urllib.parse import quote
 
 from data_sources import relational_source
-from utils import get_subject_maps, get_references_in_template
+import utils
 
 
 def _get_references_in_mapping_rule(mapping_rule, only_subject_map=False):
     references = []
     if mapping_rule['subject_template']:
-        references.extend(get_references_in_template(str(mapping_rule['subject_template'])))
+        references.extend(utils.get_references_in_template(str(mapping_rule['subject_template'])))
     elif mapping_rule['subject_reference']:
         references.append(str(mapping_rule['subject_reference']))
 
     if not only_subject_map:
         if mapping_rule['predicate_template']:
-            references.extend(get_references_in_template(str(mapping_rule['predicate_template'])))
+            references.extend(utils.get_references_in_template(str(mapping_rule['predicate_template'])))
         elif mapping_rule['predicate_reference']:
             references.append(str(mapping_rule['predicate_reference']))
         if mapping_rule['object_template']:
-            references.extend(get_references_in_template(str(mapping_rule['object_template'])))
+            references.extend(utils.get_references_in_template(str(mapping_rule['object_template'])))
         elif mapping_rule['object_reference']:
             references.append(str(mapping_rule['object_reference']))
 
@@ -38,7 +39,7 @@ def _get_references_in_mapping_rule(mapping_rule, only_subject_map=False):
 
 
 def _materialize_template(query_results_df, template, columns_alias='', termtype='http://www.w3.org/ns/r2rml#IRI', language_tag='', datatype=''):
-    references = get_references_in_template(str(template))
+    references = utils.get_references_in_template(str(template))
 
     if str(termtype).strip() == 'http://www.w3.org/ns/r2rml#Literal':
         query_results_df['triple'] = query_results_df['triple'] + '"'
@@ -217,21 +218,16 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
 
 
 def materialize(mappings_df, config):
-    subject_maps_df = get_subject_maps(mappings_df)
+    subject_maps_df = utils.get_subject_maps(mappings_df)
     mapping_partitions = [group for _, group in mappings_df.groupby(by='mapping_partition')]
 
-    triples = set()
+    utils.prepare_output_dir(config, len(mapping_partitions))
+
     for mapping_partition in mapping_partitions:
+        triples = set()
         for i, mapping_rule in mapping_partition.iterrows():
-            result_triples = _materialize_mapping_rule(mapping_rule, subject_maps_df, config)
-            triples.update(set(result_triples))
+            triples.update(set(_materialize_mapping_rule(mapping_rule, subject_maps_df, config)))
+        utils.triples_to_file(triples, config, mapping_partition.iloc[0]['mapping_partition'])
 
-    print("Number of triples: " + str(len(triples)))
-
-    # REMOVE NON PRINTABLE CHARACTERS THIS WAY IS VERY SLOW!
-    output = ''
-    f = open(config.get('CONFIGURATION', 'output_dir') + '/' + config.get('CONFIGURATION', 'output_file'), "w")
-    for triple in triples:
-        #f.write(''.join(c for c in triple if c.isprintable()) + '.\n')
-        f.write(triple + '.\n')
-    f.close()
+    if len(mapping_partitions) > 1:
+        utils.unify_triple_files(config)

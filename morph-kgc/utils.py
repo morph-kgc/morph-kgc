@@ -10,6 +10,8 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 
 import re
+import os
+import shutil
 
 
 def get_repeated_elements_in_list(input_list):
@@ -74,3 +76,79 @@ def get_references_in_template(template):
     references = re.findall('\\{([^}]+)', template)
 
     return list(set(references))
+
+
+def triples_to_file(triples, config, mapping_partition=''):
+    """
+    Write triples to file. If mapping_partition is provided it is used as file name. File extension is inferred from
+    output_format in config. If mapping partition is provided and final results will be in a unique file, the triples
+    are written to a temporary directory.
+
+    :param triples: set of triples to write to file
+    :type triples: set
+    :param config: config object
+    :type config: ConfigParser
+    :param mapping_partition: name of the mapping partition associated to the triples
+    :type mapping_partition: str
+    """
+
+    if mapping_partition:
+        # use mapping partition as file name or get the file name from config
+        if config.get('CONFIGURATION', 'output_file'):
+            # if final output will be in just one file use a tmp dir for the intermediate files created
+            file_path = os.path.join(config.get('CONFIGURATION', 'output_dir'), 'tmp', mapping_partition)
+        else:
+            file_path = os.path.join(config.get('CONFIGURATION', 'output_dir'), mapping_partition)
+    else:
+        # no mapping partitions
+        if config.get('CONFIGURATION', 'output_file'):
+            file_path = os.path.join(config.get('CONFIGURATION', 'output_dir'),
+                                     config.get('CONFIGURATION', 'output_file'))
+            # remove file extension, we will set it based on the output format
+            if file_path.endswith('.nt') or file_path.endswith('.nq'):
+                file_path = file_path[:-3]
+        else:
+            # if no output file, use 'result' as file name
+            file_path = os.path.join(config.get('CONFIGURATION', 'output_dir'), 'result')
+
+    if config.get('CONFIGURATION', 'output_format') == 'ntriples':
+        file_path += '.nt'
+    elif config.get('CONFIGURATION', 'output_format') == 'nquads':
+        file_path += '.nq'
+
+    f = open(file_path, 'w')
+    if config.getboolean('CONFIGURATION', 'only_printable_characters'):
+        for triple in triples:
+            # REMOVING NON PRINTABLE CHARACTERS THIS WAY IS VERY SLOW!
+            f.write(''.join(c for c in triple if c.isprintable()) + '.\n')
+    else:
+        for triple in triples:
+            f.write(triple + '.\n')
+    f.close()
+
+
+def unify_triple_files(config):
+    # if there is output_file then unify, if not, there is nothing to unify
+    output_dir = config.get('CONFIGURATION', 'output_dir')
+    if config.get('CONFIGURATION', 'output_file'):
+        with open(os.path.join(output_dir, config.get('CONFIGURATION', 'output_file')), 'wb') as wfd:
+            for f in os.listdir(os.path.join(output_dir, 'tmp')):
+                with open(os.path.join(output_dir, 'tmp', f), 'rb') as fd:
+                    shutil.copyfileobj(fd, wfd)
+                    os.remove(os.path.join(output_dir, 'tmp', f))
+        os.rmdir(os.path.join(output_dir, 'tmp'))
+
+
+def prepare_output_dir(config, num_mapping_partitions):
+    output_dir = config.get('CONFIGURATION', 'output_dir')
+
+    for obj in os.listdir(output_dir):
+        obj_path = os.path.join(output_dir, obj)
+        if os.path.isdir(obj_path):
+            os.rmdir(obj_path)
+        else:
+            os.remove(obj_path)
+
+    if num_mapping_partitions > 1 and config.get('CONFIGURATION', 'output_file'):
+        # if mapping partitions and unique output file, then tmp dir will be necessary
+        os.makedirs(os.path.join(output_dir, 'tmp'))
