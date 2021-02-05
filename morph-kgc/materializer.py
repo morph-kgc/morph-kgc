@@ -11,6 +11,7 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 import logging
 import time
+import pandas as pd
 
 from urllib.parse import quote
 
@@ -140,7 +141,7 @@ def _materialize_join_mapping_rule_terms(results_df, mapping_rule, parent_triple
             results_df, parent_triples_map_rule['subject_reference'],
             termtype=parent_triples_map_rule['subject_termtype'], columns_alias='parent_')
 
-    return results_df
+    return set(results_df['triple'])
 
 
 def _materialize_mapping_rule_terms(results_df, mapping_rule):
@@ -176,10 +177,12 @@ def _materialize_mapping_rule_terms(results_df, mapping_rule):
                                             language_tag=mapping_rule['object_language'],
                                             datatype=mapping_rule['object_datatype'])
 
-    return results_df
+    return set(results_df['triple'])
 
 
 def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
+    triples = set()
+
     references = _get_references_in_mapping_rule(mapping_rule)
 
     if mapping_rule['object_parent_triples_map']:
@@ -191,15 +194,23 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
             parent_references.add(join_condition['parent_value'])
             references.add(join_condition['child_value'])
 
-        results_df = relational_source.retrieve_rdb_join_results(config, mapping_rule, parent_triples_map_rule,
+        sql_query = relational_source.build_sql_join_query(config, mapping_rule, parent_triples_map_rule,
                                                                  references, parent_references)
-        results_df = _materialize_join_mapping_rule_terms(results_df, mapping_rule, parent_triples_map_rule)
+        db_connection = relational_source.relational_db_connection(config, mapping_rule['source_name'])
+        for query_results_chunk_df in pd.read_sql(sql_query, con=db_connection, chunksize=int(config.get('CONFIGURATION', 'chunksize')), coerce_float=config.getboolean('CONFIGURATION', 'coerce_float')):
+            query_results_chunk_df = utils.dataframe_columns_to_str(query_results_chunk_df)
+            triples.update(_materialize_join_mapping_rule_terms(query_results_chunk_df, mapping_rule, parent_triples_map_rule))
+        db_connection.close()
 
     else:
-        results_df = relational_source.retrieve_rdb_results(config, mapping_rule, references)
-        results_df = _materialize_mapping_rule_terms(results_df, mapping_rule)
+        sql_query = relational_source.build_sql_query(config, mapping_rule, references)
+        db_connection = relational_source.relational_db_connection(config, mapping_rule['source_name'])
+        for query_results_chunk_df in pd.read_sql(sql_query, con=db_connection, chunksize=int(config.get('CONFIGURATION', 'chunksize')), coerce_float=config.getboolean('CONFIGURATION', 'coerce_float')):
+            query_results_chunk_df = utils.dataframe_columns_to_str(query_results_chunk_df)
+            triples.update(_materialize_mapping_rule_terms(query_results_chunk_df, mapping_rule))
+        db_connection.close()
 
-    return results_df['triple']
+    return triples
 
 
 def materialize(mappings_df, config):
@@ -208,14 +219,16 @@ def materialize(mappings_df, config):
 
     utils.prepare_output_dir(config, len(mapping_partitions))
 
+    num_triples = 0
     for mapping_partition in mapping_partitions:
         triples = set()
         for i, mapping_rule in mapping_partition.iterrows():
-            triples.update(set(_materialize_mapping_rule(mapping_rule, subject_maps_df, config)))
+            triples.update(_materialize_mapping_rule(mapping_rule, subject_maps_df, config))
         utils.triples_to_file(triples, config, mapping_partition.iloc[0]['mapping_partition'])
+        num_triples += len(triples)
+
+    logging.info(str(num_triples) + ' triples generated in total.')
 
     if len(mapping_partitions) > 1:
         # if there is more than one mapping partitions, unify the parts
         utils.unify_triple_files(config)
-
-    print(len(triples))

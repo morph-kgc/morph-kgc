@@ -256,9 +256,8 @@ def _validate_config_configuration_section(config):
         raise ValueError('Option mapping_partitions must be in: ' + str(VALID_ARGUMENTS['mapping_partitions']))
 
     config.set('CONFIGURATION', 'number_of_processes',
-               str(_natural_number(config.get('CONFIGURATION', 'number_of_processes'), including_zero=False)))
-    config.set('CONFIGURATION', 'chunksize',
-               str(_natural_number(config.get('CONFIGURATION', 'chunksize'), including_zero=True)))
+               str(_natural_number(config.get('CONFIGURATION', 'number_of_processes'))))
+    config.set('CONFIGURATION', 'chunksize', str(_natural_number(config.get('CONFIGURATION', 'chunksize'))))
     config.getboolean('CONFIGURATION', 'coerce_float')
     config.getboolean('CONFIGURATION', 'only_printable_characters')
     config.getboolean('CONFIGURATION', 'infer_datatypes')

@@ -95,7 +95,7 @@ def get_column_datatype(config, source_name, table_name, column_name):
         return ''
 
 
-def retrieve_rdb_join_results(config, mapping_rule, parent_triples_map_rule, references, parent_references):
+def build_sql_join_query(config, mapping_rule, parent_triples_map_rule, references, parent_references):
     query = 'SELECT '
     if config.getboolean('CONFIGURATION', 'push_down_sql_distincts'):
         query = query + 'DISTINCT '
@@ -128,10 +128,10 @@ def retrieve_rdb_join_results(config, mapping_rule, parent_triples_map_rule, ref
                 '=parent.parent_' + join_condition['parent_value'] + ' AND '
     query = query[:-4] + ';'
 
-    return execute_relational_query(query, config, mapping_rule['source_name'])
+    return query
 
 
-def retrieve_rdb_results(config, mapping_rule, references):
+def build_sql_query(config, mapping_rule, references):
     query = 'SELECT '
     if config.getboolean('CONFIGURATION', 'push_down_sql_distincts'):
         query = query + 'DISTINCT '
@@ -146,4 +146,4 @@ def retrieve_rdb_results(config, mapping_rule, references):
     else:
         query = None
 
-    return execute_relational_query(query, config, mapping_rule['source_name'])
+    return query

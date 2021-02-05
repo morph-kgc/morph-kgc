@@ -12,6 +12,7 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 import re
 import os
 import shutil
+import logging
 
 
 def get_repeated_elements_in_list(input_list):
@@ -126,6 +127,9 @@ def triples_to_file(triples, config, mapping_partition=''):
             f.write(triple + '.\n')
     f.close()
 
+    if mapping_partition:
+        logging.info(str(len(triples)) + " triples generated for mapping partition " + mapping_partition + ".")
+
 
 def unify_triple_files(config):
     """
@@ -145,6 +149,8 @@ def unify_triple_files(config):
                     os.remove(os.path.join(output_dir, 'tmp', f))
         os.rmdir(os.path.join(output_dir, 'tmp'))
 
+        logging.debug('Unified temporary files for mapping partitions results.')
+
 
 def prepare_output_dir(config, num_mapping_partitions):
     """
@@ -161,10 +167,29 @@ def prepare_output_dir(config, num_mapping_partitions):
     for obj in os.listdir(output_dir):
         obj_path = os.path.join(output_dir, obj)
         if os.path.isdir(obj_path):
-            os.rmdir(obj_path)
+            shutil.rmtree(obj_path)
         else:
             os.remove(obj_path)
+
+    logging.debug('Cleaned output directory.')
 
     if num_mapping_partitions > 1 and config.get('CONFIGURATION', 'output_file'):
         # if mapping partitions and unique output file, then temporary dir will be necessary
         os.makedirs(os.path.join(output_dir, 'tmp'))
+        logging.debug('Using temporary directory for mapping partitions results.')
+
+
+def dataframe_columns_to_str(df):
+    """
+    Converts all the columns in the input dataframe to str.
+
+    :param df: dataframe that might have non str columns
+    :type df: DataFrame
+    :return dataframe with all columns converted to str
+    :rtype DataFrame
+    """
+
+    for col_name in list(df.columns):
+        df[col_name] = df[col_name].astype(str)
+
+    return df
