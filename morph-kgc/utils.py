@@ -81,7 +81,7 @@ def get_references_in_template(template):
 def triples_to_file(triples, config, mapping_partition=''):
     """
     Write triples to file. If mapping_partition is provided it is used as file name. File extension is inferred from
-    output_format in config. If mapping partition is provided and final results will be in a unique file, the triples
+    output_format in config. If mapping_partition is provided and final results will be in a unique file, the triples
     are written to a temporary directory.
 
     :param triples: set of triples to write to file
@@ -128,6 +128,13 @@ def triples_to_file(triples, config, mapping_partition=''):
 
 
 def unify_triple_files(config):
+    """
+    Unifies in a unique file all the temporary files with triples created during materialization.
+
+    :param config: config object
+    :type config: ConfigParser
+    """
+
     # if there is output_file then unify, if not, there is nothing to unify
     output_dir = config.get('CONFIGURATION', 'output_dir')
     if config.get('CONFIGURATION', 'output_file'):
@@ -140,6 +147,15 @@ def unify_triple_files(config):
 
 
 def prepare_output_dir(config, num_mapping_partitions):
+    """
+    Removes all files and directories withing output_dir in config. Also generates temporary directory if necessary.
+
+    :param config: config object
+    :type config: ConfigParser
+    :param num_mapping_partitions: number of mapping partitions used during materialization
+    :type num_mapping_partitions: int
+    """
+
     output_dir = config.get('CONFIGURATION', 'output_dir')
 
     for obj in os.listdir(output_dir):
@@ -150,5 +166,5 @@ def prepare_output_dir(config, num_mapping_partitions):
             os.remove(obj_path)
 
     if num_mapping_partitions > 1 and config.get('CONFIGURATION', 'output_file'):
-        # if mapping partitions and unique output file, then tmp dir will be necessary
+        # if mapping partitions and unique output file, then temporary dir will be necessary
         os.makedirs(os.path.join(output_dir, 'tmp'))

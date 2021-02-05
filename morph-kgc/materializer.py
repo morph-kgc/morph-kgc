@@ -230,4 +230,5 @@ def materialize(mappings_df, config):
         utils.triples_to_file(triples, config, mapping_partition.iloc[0]['mapping_partition'])
 
     if len(mapping_partitions) > 1:
+        # if there is more than one mapping partitions, unify the parts
         utils.unify_triple_files(config)
