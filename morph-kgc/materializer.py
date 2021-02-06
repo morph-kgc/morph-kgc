@@ -12,7 +12,9 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 import logging
 import time
 import pandas as pd
+import multiprocessing as mp
 
+from itertools import repeat
 from urllib.parse import quote
 
 from data_sources import relational_source
@@ -213,19 +215,28 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
     return triples
 
 
+def materialize_mapping_partition(mapping_partition, subject_maps_df, config):
+    triples = set()
+    for i, mapping_rule in mapping_partition.iterrows():
+        triples.update(_materialize_mapping_rule(mapping_rule, subject_maps_df, config))
+    utils.triples_to_file(triples, config, mapping_partition.iloc[0]['mapping_partition'])
+
+    return len(triples)
+
+
 def materialize(mappings_df, config):
     subject_maps_df = utils.get_subject_maps(mappings_df)
     mapping_partitions = [group for _, group in mappings_df.groupby(by='mapping_partition')]
 
     utils.prepare_output_dir(config, len(mapping_partitions))
 
-    num_triples = 0
-    for mapping_partition in mapping_partitions:
-        triples = set()
-        for i, mapping_rule in mapping_partition.iterrows():
-            triples.update(_materialize_mapping_rule(mapping_rule, subject_maps_df, config))
-        utils.triples_to_file(triples, config, mapping_partition.iloc[0]['mapping_partition'])
-        num_triples += len(triples)
+    if int(config.get('CONFIGURATION', 'number_of_processes')) == 1:
+        num_triples = 0
+        for mapping_partition in mapping_partitions:
+            num_triples += materialize_mapping_partition(mapping_partition, subject_maps_df, config)
+    else:
+        pool = mp.Pool(int(config.get('CONFIGURATION', 'number_of_processes')))
+        num_triples = sum(pool.starmap(materialize_mapping_partition, zip(mapping_partitions, repeat(subject_maps_df), repeat(config))))
 
     logging.info(str(num_triples) + ' triples generated in total.')
 

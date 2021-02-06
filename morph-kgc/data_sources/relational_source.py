@@ -128,6 +128,8 @@ def build_sql_join_query(config, mapping_rule, parent_triples_map_rule, referenc
                 '=parent.parent_' + join_condition['parent_value'] + ' AND '
     query = query[:-4] + ';'
 
+    logging.debug("SQL query for mapping rule '" + str(mapping_rule['id']) + "': " + query)
+
     return query
 
 
@@ -145,5 +147,7 @@ def build_sql_query(config, mapping_rule, references):
         query = query[:-4] + ';'
     else:
         query = None
+
+    logging.debug("SQL query for mapping rule '" + str(mapping_rule['id']) + "': " + query)
 
     return query

@@ -13,7 +13,7 @@ import rdflib
 import logging
 import sys
 import time
-import sql_metadata
+#import sql_metadata
 import rfc3987
 import pandas as pd
 
@@ -1161,12 +1161,12 @@ def process_mappings(config):
     # parse mapping files of every data source in the config
     start_parsing = time.time()
     mappings_df = _parse_mappings(config)
-    logging.debug('Mapping parsing time: ' + "{:.4f}".format((time.time() - start_parsing)) + ' seconds.')
+    logging.debug('Mappings parsed in ' + "{:.4f}".format((time.time() - start_parsing)) + ' seconds.')
 
     # generate mapping partitions for every mapping rule based on the criteria provided in the config
     start_mapping_partitions = time.time()
     mappings_df = _generate_mapping_partitions(mappings_df, config.get('CONFIGURATION', 'mapping_partitions'))
-    logging.debug('Mapping partitions generation time: ' + "{:.4f}".format(
+    logging.debug('Mapping partitions generated in ' + "{:.4f}".format(
         (time.time() - start_mapping_partitions)) + ' seconds.')
 
     # use empty strings, avoid None & NaN
