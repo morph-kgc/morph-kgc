@@ -34,7 +34,8 @@ ARGUMENTS_DEFAULT = {
     'logging_level': 'info',
     'push_down_sql_distincts': 'no',
     'number_of_processes': mp.cpu_count(),
-    'chunksize': 0,     # 0 means no chunking
+    'start_process_method': 'default',
+    'chunksize': 100000,
     'infer_datatypes': 'yes',
     'coerce_float': 'no',
     'only_printable_characters': 'no'
@@ -45,7 +46,9 @@ VALID_ARGUMENTS = {
     'output_format': ['ntriples', 'nquads'],
     'mapping_partitions': ['', 's', 'p', 'g', 'sp', 'sg', 'pg', 'spg', 'guess'],
     'relational_source_type': ['mysql', 'postgresql', 'oracle', 'sqlserver'],
-    'file_source_type': []
+    'file_source_type': [],
+    'start_process_method': ['default', 'spawn', 'fork', 'forkserver'],
+    'logging_level': ['notset', 'debug', 'info', 'warning', 'error', 'critical']
 }
 
 
@@ -186,9 +189,9 @@ def _natural_number(number, including_zero=False):
 
     whole_number = int(number)
     if including_zero and whole_number < 0:
-        raise ValueError
+        raise ValueError("value must be '0' or greater.")
     elif not including_zero and whole_number <= 0:
-        raise ValueError
+        raise ValueError("Value must be greater than '0'.")
 
     return whole_number
 
@@ -210,7 +213,7 @@ def _validate_config_data_sources_sections(config):
             mapping_files = config.get(section, 'mapping_files')
             for mapping_file in mapping_files.split(','):
                 if not os.path.exists(mapping_file.strip()):
-                    raise FileNotFoundError("mapping_file '" + str(mapping_file) + "' in section '" + section +
+                    raise FileNotFoundError("'mapping_file' value '" + str(mapping_file) + "' provided in section '" + section +
                                             "' of config file could not be found.")
 
             config.set(section, 'source_type', config.get(section, 'source_type').lower())
@@ -218,8 +221,8 @@ def _validate_config_data_sources_sections(config):
                 # to check that required parameters are provided and that the connection is ok
                 relational_source.relational_db_connection(config, section)
             else:
-                raise ValueError("source_type '" + config.get(section, 'source_type') + "' in section '" + section +
-                                 "' of config file is not valid.")
+                raise ValueError("'source_type' value '" + config.get(section, 'source_type') + "' provided in section '" + section +
+                                 "' of config file is not valid. 'source_type' value must be in: " + str(VALID_ARGUMENTS['relational_source_type']) + '.')
 
     return config
 
@@ -235,26 +238,19 @@ def _validate_config_configuration_section(config):
     """
 
     output_format = config.get('CONFIGURATION', 'output_format')
-    output_format = str(output_format).lower().strip()
+    output_format = str(output_format).lower()
     if output_format not in VALID_ARGUMENTS['output_format']:
-        raise ValueError('Option output_format must be in: ' + str(VALID_ARGUMENTS['output_format']))
+        raise ValueError("Value for option 'output_format' in config must be in: " + str(VALID_ARGUMENTS['output_format']))
     config.set('CONFIGURATION', 'output_format', output_format)
 
     config.set('CONFIGURATION', 'output_dir', _dir_path(config.get('CONFIGURATION', 'output_dir')))
-
-    output_file = _file_name(config.get('CONFIGURATION', 'output_file'))
-    if output_file:
-        # make sure file extension is correct
-        if output_format == 'ntriples' and os.path.splitext(output_file)[1] != '.nt':
-            config.set('CONFIGURATION', 'output_file', os.path.splitext(output_file)[0] + '.nt')
-        if output_format == 'nquads' and os.path.splitext(output_file)[1] != '.nq':
-            config.set('CONFIGURATION', 'output_file', os.path.splitext(output_file)[0] + '.nq')
+    config.set('CONFIGURATION', 'output_file', _file_name(config.get('CONFIGURATION', 'output_file')))
 
     mapping_partitions = config.get('CONFIGURATION', 'mapping_partitions')
-    mapping_partitions = str(mapping_partitions).lower().strip()
-    config.set('CONFIGURATION', 'mapping_partitions', mapping_partitions)
+    mapping_partitions = str(mapping_partitions).lower()
     if mapping_partitions not in VALID_ARGUMENTS['mapping_partitions']:
         raise ValueError('Option mapping_partitions must be in: ' + str(VALID_ARGUMENTS['mapping_partitions']))
+    config.set('CONFIGURATION', 'mapping_partitions', mapping_partitions)
 
     config.set('CONFIGURATION', 'number_of_processes',
                str(_natural_number(config.get('CONFIGURATION', 'number_of_processes'))))
@@ -263,15 +259,19 @@ def _validate_config_configuration_section(config):
     config.getboolean('CONFIGURATION', 'only_printable_characters')
     config.getboolean('CONFIGURATION', 'infer_datatypes')
     config.getboolean('CONFIGURATION', 'push_down_sql_distincts')
+    config.getboolean('CONFIGURATION', 'clean_output_dir')
 
     config.set('CONFIGURATION', 'output_parsed_mappings_path',
                _file_path(config.get('CONFIGURATION', 'output_parsed_mappings_path')))
     config.set('CONFIGURATION', 'logs_file', _file_path(config.get('CONFIGURATION', 'logs_file')))
 
     config.set('CONFIGURATION', 'logging_level', config.get('CONFIGURATION', 'logging_level').lower())
-    if config.get('CONFIGURATION', 'logging_level') not in ['notset', 'debug', 'info', 'warning', 'error', 'critical']:
-        raise ValueError(
-            'Option logging_level must be in: ' + str(['notset', 'debug', 'info', 'warning', 'error', 'critical']))
+    if config.get('CONFIGURATION', 'logging_level') not in VALID_ARGUMENTS['logging_level']:
+        raise ValueError("Value for option 'logging_level' in config must be in: " + str(VALID_ARGUMENTS['logging_level']))
+
+    config.set('CONFIGURATION', 'start_process_method', config.get('CONFIGURATION', 'start_process_method').lower())
+    if config.get('CONFIGURATION', 'start_process_method') not in VALID_ARGUMENTS['start_process_method']:
+        raise ValueError("Value for option 'start_process_method' in config must be in: " + str(VALID_ARGUMENTS['start_process_method']))
     return config
 
 
@@ -297,8 +297,12 @@ def _complete_config_file_with_defaults(config):
         config.set('CONFIGURATION', 'output_file', ARGUMENTS_DEFAULT['output_file'])
     if not config.has_option('CONFIGURATION', 'output_format'):
         config.set('CONFIGURATION', 'output_format', ARGUMENTS_DEFAULT['output_format'])
+    elif config.get('CONFIGURATION', 'output_format') == '':
+        config.set('CONFIGURATION', 'output_format', str(ARGUMENTS_DEFAULT['output_format']))
     if not config.has_option('CONFIGURATION', 'push_down_sql_distincts'):
         config.set('CONFIGURATION', 'push_down_sql_distincts', ARGUMENTS_DEFAULT['push_down_sql_distincts'])
+    elif config.get('CONFIGURATION', 'push_down_sql_distincts') == '':
+        config.set('CONFIGURATION', 'push_down_sql_distincts', str(ARGUMENTS_DEFAULT['push_down_sql_distincts']))
     if not config.has_option('CONFIGURATION', 'mapping_partitions'):
         config.set('CONFIGURATION', 'mapping_partitions', ARGUMENTS_DEFAULT['mapping_partitions'])
     if not config.has_option('CONFIGURATION', 'number_of_processes'):
@@ -311,12 +315,20 @@ def _complete_config_file_with_defaults(config):
         config.set('CONFIGURATION', 'clean_output_dir', str(ARGUMENTS_DEFAULT['clean_output_dir']))
     if not config.has_option('CONFIGURATION', 'chunksize'):
         config.set('CONFIGURATION', 'chunksize', str(ARGUMENTS_DEFAULT['chunksize']))
+    elif config.get('CONFIGURATION', 'chunksize') == '':
+        config.set('CONFIGURATION', 'chunksize', str(ARGUMENTS_DEFAULT['chunksize']))
     if not config.has_option('CONFIGURATION', 'coerce_float'):
         config.set('CONFIGURATION', 'coerce_float', ARGUMENTS_DEFAULT['coerce_float'])
+    elif config.get('CONFIGURATION', 'coerce_float') == '':
+        config.set('CONFIGURATION', 'coerce_float', str(ARGUMENTS_DEFAULT['coerce_float']))
     if not config.has_option('CONFIGURATION', 'only_printable_characters'):
         config.set('CONFIGURATION', 'only_printable_characters', ARGUMENTS_DEFAULT['only_printable_characters'])
+    elif config.get('CONFIGURATION', 'only_printable_characters') == '':
+        config.set('CONFIGURATION', 'only_printable_characters', str(ARGUMENTS_DEFAULT['only_printable_characters']))
     if not config.has_option('CONFIGURATION', 'infer_datatypes'):
         config.set('CONFIGURATION', 'infer_datatypes', ARGUMENTS_DEFAULT['infer_datatypes'])
+    elif config.get('CONFIGURATION', 'infer_datatypes') == '':
+        config.set('CONFIGURATION', 'infer_datatypes', str(ARGUMENTS_DEFAULT['infer_datatypes']))
     if not config.has_option('CONFIGURATION', 'input_parsed_mappings_path'):
         config.set('CONFIGURATION', 'input_parsed_mappings_path', ARGUMENTS_DEFAULT['input_parsed_mappings_path'])
     if not config.has_option('CONFIGURATION', 'output_parsed_mappings_path'):
@@ -325,6 +337,12 @@ def _complete_config_file_with_defaults(config):
         config.set('CONFIGURATION', 'logs_file', ARGUMENTS_DEFAULT['logs_file'])
     if not config.has_option('CONFIGURATION', 'logging_level'):
         config.set('CONFIGURATION', 'logging_level', ARGUMENTS_DEFAULT['logging_level'])
+    elif config.get('CONFIGURATION', 'logging_level') == '':
+        config.set('CONFIGURATION', 'logging_level', str(ARGUMENTS_DEFAULT['logging_level']))
+    if not config.has_option('CONFIGURATION', 'start_process_method'):
+        config.set('CONFIGURATION', 'start_process_method', str(ARGUMENTS_DEFAULT['start_process_method']))
+    elif config.get('CONFIGURATION', 'start_process_method') == '':
+        config.set('CONFIGURATION', 'start_process_method', str(ARGUMENTS_DEFAULT['start_process_method']))
 
     return config
 

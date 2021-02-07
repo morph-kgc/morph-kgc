@@ -239,6 +239,8 @@ def materialize(mappings_df, config):
         for mapping_partition in mapping_partitions:
             num_triples += materialize_mapping_partition(mapping_partition, subject_maps_df, config)
     else:
+        if config.get('CONFIGURATION', 'start_process_method') != 'default':
+            mp.set_start_method(config.get('CONFIGURATION', 'start_process_method'))
         pool = mp.Pool(int(config.get('CONFIGURATION', 'number_of_processes')))
         num_triples = sum(pool.starmap(materialize_mapping_partition, zip(mapping_partitions, repeat(subject_maps_df), repeat(config))))
 
