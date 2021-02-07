@@ -212,6 +212,8 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
             triples.update(_materialize_mapping_rule_terms(query_results_chunk_df, mapping_rule))
         db_connection.close()
 
+    logging.info("Number of triples generated for mapping rule '" + str(mapping_rule['id']) + "': " + str(len(triples)) + ".")
+
     return triples
 
 
@@ -221,6 +223,8 @@ def materialize_mapping_partition(mapping_partition, subject_maps_df, config):
         triples.update(_materialize_mapping_rule(mapping_rule, subject_maps_df, config))
     utils.triples_to_file(triples, config, mapping_partition.iloc[0]['mapping_partition'])
 
+    logging.info("Number of triples generated for mapping partition '" + mapping_partition.iloc[0]['mapping_partition'] + "': " + str(len(triples)) + ".")
+
     return len(triples)
 
 
@@ -228,7 +232,7 @@ def materialize(mappings_df, config):
     subject_maps_df = utils.get_subject_maps(mappings_df)
     mapping_partitions = [group for _, group in mappings_df.groupby(by='mapping_partition')]
 
-    utils.prepare_output_dir(config, len(mapping_partitions))
+    utils.clean_output_dir(config)
 
     if int(config.get('CONFIGURATION', 'number_of_processes')) == 1:
         num_triples = 0
@@ -238,8 +242,4 @@ def materialize(mappings_df, config):
         pool = mp.Pool(int(config.get('CONFIGURATION', 'number_of_processes')))
         num_triples = sum(pool.starmap(materialize_mapping_partition, zip(mapping_partitions, repeat(subject_maps_df), repeat(config))))
 
-    logging.info(str(num_triples) + ' triples generated in total.')
-
-    if len(mapping_partitions) > 1:
-        # if there is more than one mapping partitions, unify the parts
-        utils.unify_triple_files(config)
+    logging.info('Number of triples generated in total: ' + str(num_triples) + '.')

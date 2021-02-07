@@ -26,6 +26,7 @@ ARGUMENTS_DEFAULT = {
     'output_dir': 'output',
     'output_file': 'result',
     'output_format': 'nquads',
+    'clean_output_dir': 'yes',
     'mapping_partitions': 'guess',
     'input_parsed_mappings_path': '',
     'output_parsed_mappings_path': '',
@@ -304,6 +305,10 @@ def _complete_config_file_with_defaults(config):
         config.set('CONFIGURATION', 'number_of_processes', str(ARGUMENTS_DEFAULT['number_of_processes']))
     elif config.get('CONFIGURATION', 'number_of_processes') == '':
         config.set('CONFIGURATION', 'number_of_processes', str(ARGUMENTS_DEFAULT['number_of_processes']))
+    if not config.has_option('CONFIGURATION', 'clean_output_dir'):
+        config.set('CONFIGURATION', 'clean_output_dir', str(ARGUMENTS_DEFAULT['clean_output_dir']))
+    elif config.get('CONFIGURATION', 'clean_output_dir') == '':
+        config.set('CONFIGURATION', 'clean_output_dir', str(ARGUMENTS_DEFAULT['clean_output_dir']))
     if not config.has_option('CONFIGURATION', 'chunksize'):
         config.set('CONFIGURATION', 'chunksize', str(ARGUMENTS_DEFAULT['chunksize']))
     if not config.has_option('CONFIGURATION', 'coerce_float'):

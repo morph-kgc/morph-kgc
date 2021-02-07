@@ -93,31 +93,22 @@ def triples_to_file(triples, config, mapping_partition=''):
     :type mapping_partition: str
     """
 
-    if mapping_partition:
-        # use mapping partition as file name or get the file name from config
-        if config.get('CONFIGURATION', 'output_file'):
-            # if final output will be in just one file use a tmp dir for the intermediate files created
-            file_path = os.path.join(config.get('CONFIGURATION', 'output_dir'), 'tmp', mapping_partition)
-        else:
-            file_path = os.path.join(config.get('CONFIGURATION', 'output_dir'), mapping_partition)
+    if config.get('CONFIGURATION', 'output_file'):
+        file_path = os.path.join(config.get('CONFIGURATION', 'output_dir'), config.get('CONFIGURATION', 'output_file'))
+        # remove file extension, we will set it based on the output format
+        if file_path.endswith('.nt') or file_path.endswith('.nq'):
+            file_path = file_path[:-3]
+    elif mapping_partition:
+        file_path = os.path.join(config.get('CONFIGURATION', 'output_dir'), mapping_partition)
     else:
-        # no mapping partitions
-        if config.get('CONFIGURATION', 'output_file'):
-            file_path = os.path.join(config.get('CONFIGURATION', 'output_dir'),
-                                     config.get('CONFIGURATION', 'output_file'))
-            # remove file extension, we will set it based on the output format
-            if file_path.endswith('.nt') or file_path.endswith('.nq'):
-                file_path = file_path[:-3]
-        else:
-            # if no output file, use 'result' as file name
-            file_path = os.path.join(config.get('CONFIGURATION', 'output_dir'), 'result')
+        file_path = os.path.join(config.get('CONFIGURATION', 'output_dir'), 'result')
 
     if config.get('CONFIGURATION', 'output_format') == 'ntriples':
         file_path += '.nt'
     elif config.get('CONFIGURATION', 'output_format') == 'nquads':
         file_path += '.nq'
 
-    f = open(file_path, 'w')
+    f = open(file_path, 'a')
     if config.getboolean('CONFIGURATION', 'only_printable_characters'):
         for triple in triples:
             # REMOVING NON PRINTABLE CHARACTERS THIS WAY IS VERY SLOW!
@@ -127,56 +118,31 @@ def triples_to_file(triples, config, mapping_partition=''):
             f.write(triple + '.\n')
     f.close()
 
-    if mapping_partition:
-        logging.info(str(len(triples)) + " triples generated for mapping partition " + mapping_partition + ".")
 
-
-def unify_triple_files(config):
+def clean_output_dir(config):
     """
-    Unifies in a unique file all the temporary files with triples created during materialization.
+    Removes all files and directories within output_dir in config depending on clean_output_dir parameter. The output
+    file, if provided in config, is always deleted.
 
     :param config: config object
     :type config: ConfigParser
     """
 
-    # if there is output_file then unify, if not, there is nothing to unify
     output_dir = config.get('CONFIGURATION', 'output_dir')
-    if config.get('CONFIGURATION', 'output_file'):
-        with open(os.path.join(output_dir, config.get('CONFIGURATION', 'output_file')), 'wb') as wfd:
-            for f in os.listdir(os.path.join(output_dir, 'tmp')):
-                with open(os.path.join(output_dir, 'tmp', f), 'rb') as fd:
-                    shutil.copyfileobj(fd, wfd)
-                    os.remove(os.path.join(output_dir, 'tmp', f))
-        os.rmdir(os.path.join(output_dir, 'tmp'))
+    output_file = config.get('CONFIGURATION', 'output_file')
+    if output_file:
+        # always delete output file, so that generated triples are not appended to it
+        os.remove(os.path.join(output_dir, output_file))
 
-        logging.debug('Unified temporary files for mapping partitions results.')
+    if config.getboolean('CONFIGURATION', 'clean_output_dir'):
+        for obj in os.listdir(output_dir):
+            obj_path = os.path.join(output_dir, obj)
+            if os.path.isdir(obj_path):
+                shutil.rmtree(obj_path)
+            else:
+                os.remove(obj_path)
 
-
-def prepare_output_dir(config, num_mapping_partitions):
-    """
-    Removes all files and directories withing output_dir in config. Also generates temporary directory if necessary.
-
-    :param config: config object
-    :type config: ConfigParser
-    :param num_mapping_partitions: number of mapping partitions used during materialization
-    :type num_mapping_partitions: int
-    """
-
-    output_dir = config.get('CONFIGURATION', 'output_dir')
-
-    for obj in os.listdir(output_dir):
-        obj_path = os.path.join(output_dir, obj)
-        if os.path.isdir(obj_path):
-            shutil.rmtree(obj_path)
-        else:
-            os.remove(obj_path)
-
-    logging.debug('Cleaned output directory.')
-
-    if num_mapping_partitions > 1 and config.get('CONFIGURATION', 'output_file'):
-        # if mapping partitions and unique output file, then temporary dir will be necessary
-        os.makedirs(os.path.join(output_dir, 'tmp'))
-        logging.debug('Using temporary directory for mapping partitions results.')
+        logging.debug('Cleaned output directory.')
 
 
 def dataframe_columns_to_str(df):
