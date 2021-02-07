@@ -224,8 +224,6 @@ def materialize_mapping_partition(mapping_partition, subject_maps_df, config):
         triples.update(_materialize_mapping_rule(mapping_rule, subject_maps_df, config))
     utils.triples_to_file(triples, config, mapping_partition.iloc[0]['mapping_partition'])
 
-    logging.info("Number of triples generated for mapping partition '" + mapping_partition.iloc[0]['mapping_partition'] + "': " + str(len(triples)) + ".")
-
     return len(triples)
 
 
@@ -242,14 +240,14 @@ def materialize(mappings_df, config):
     else:
         if config.get('CONFIGURATION', 'process_start_method') != 'default':
             mp.set_start_method(config.get('CONFIGURATION', 'process_start_method'))
-        logging.debug("Parallelizing. Using '" + mp.get_start_method() + "' as process start method.")
+        logging.debug("Parallelizing with " + config.get('CONFIGURATION', 'number_of_processes') + " cores. Using '" + mp.get_start_method() + "' as process start method.")
         pool = mp.Pool(int(config.get('CONFIGURATION', 'number_of_processes')))
         if config.getboolean('CONFIGURATION', 'async'):
             logging.debug("Using 'async' for parallelization.")
             triples_res = pool.starmap_async(materialize_mapping_partition, zip(mapping_partitions, repeat(subject_maps_df), repeat(config)))
             num_triples = sum(triples_res.get())
             if not triples_res.successful():
-                logging.critical('Aborting, multiprocessing resulted in error.')
+                logging.critical("Aborting, 'async' multiprocessing resulted in error.")
                 sys.exit()
         else:
             num_triples = sum(pool.starmap(materialize_mapping_partition, zip(mapping_partitions, repeat(subject_maps_df), repeat(config))))
