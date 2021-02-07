@@ -131,8 +131,9 @@ def clean_output_dir(config):
     output_dir = config.get('CONFIGURATION', 'output_dir')
     output_file = config.get('CONFIGURATION', 'output_file')
     if output_file:
-        # always delete output file, so that generated triples are not appended to it
-        os.remove(os.path.join(output_dir, output_file))
+        if os.path.exists(os.path.join(output_dir, output_file)):
+            # always delete output file, so that generated triples are not appended to it
+            os.remove(os.path.join(output_dir, output_file))
 
     if config.getboolean('CONFIGURATION', 'clean_output_dir'):
         for obj in os.listdir(output_dir):
