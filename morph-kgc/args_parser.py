@@ -34,7 +34,8 @@ ARGUMENTS_DEFAULT = {
     'logging_level': 'info',
     'push_down_sql_distincts': 'no',
     'number_of_processes': mp.cpu_count(),
-    'start_process_method': 'default',
+    'process_start_method': 'default',
+    'async': 'no',
     'chunksize': 100000,
     'infer_datatypes': 'yes',
     'coerce_float': 'no',
@@ -47,7 +48,7 @@ VALID_ARGUMENTS = {
     'mapping_partitions': ['', 's', 'p', 'g', 'sp', 'sg', 'pg', 'spg', 'guess'],
     'relational_source_type': ['mysql', 'postgresql', 'oracle', 'sqlserver'],
     'file_source_type': [],
-    'start_process_method': ['default', 'spawn', 'fork', 'forkserver'],
+    'process_start_method': ['default', 'spawn', 'fork', 'forkserver'],
     'logging_level': ['notset', 'debug', 'info', 'warning', 'error', 'critical']
 }
 
@@ -260,6 +261,7 @@ def _validate_config_configuration_section(config):
     config.getboolean('CONFIGURATION', 'infer_datatypes')
     config.getboolean('CONFIGURATION', 'push_down_sql_distincts')
     config.getboolean('CONFIGURATION', 'clean_output_dir')
+    config.getboolean('CONFIGURATION', 'async')
 
     config.set('CONFIGURATION', 'output_parsed_mappings_path',
                _file_path(config.get('CONFIGURATION', 'output_parsed_mappings_path')))
@@ -269,9 +271,9 @@ def _validate_config_configuration_section(config):
     if config.get('CONFIGURATION', 'logging_level') not in VALID_ARGUMENTS['logging_level']:
         raise ValueError("Value for option 'logging_level' in config must be in: " + str(VALID_ARGUMENTS['logging_level']))
 
-    config.set('CONFIGURATION', 'start_process_method', config.get('CONFIGURATION', 'start_process_method').lower())
-    if config.get('CONFIGURATION', 'start_process_method') not in VALID_ARGUMENTS['start_process_method']:
-        raise ValueError("Value for option 'start_process_method' in config must be in: " + str(VALID_ARGUMENTS['start_process_method']))
+    config.set('CONFIGURATION', 'process_start_method', config.get('CONFIGURATION', 'process_start_method').lower())
+    if config.get('CONFIGURATION', 'process_start_method') not in VALID_ARGUMENTS['process_start_method']:
+        raise ValueError("Value for option 'process_start_method' in config must be in: " + str(VALID_ARGUMENTS['process_start_method']))
     return config
 
 
@@ -309,6 +311,10 @@ def _complete_config_file_with_defaults(config):
         config.set('CONFIGURATION', 'number_of_processes', str(ARGUMENTS_DEFAULT['number_of_processes']))
     elif config.get('CONFIGURATION', 'number_of_processes') == '':
         config.set('CONFIGURATION', 'number_of_processes', str(ARGUMENTS_DEFAULT['number_of_processes']))
+    if not config.has_option('CONFIGURATION', 'async'):
+        config.set('CONFIGURATION', 'async', str(ARGUMENTS_DEFAULT['async']))
+    elif config.get('CONFIGURATION', 'async') == '':
+        config.set('CONFIGURATION', 'async', str(ARGUMENTS_DEFAULT['async']))
     if not config.has_option('CONFIGURATION', 'clean_output_dir'):
         config.set('CONFIGURATION', 'clean_output_dir', str(ARGUMENTS_DEFAULT['clean_output_dir']))
     elif config.get('CONFIGURATION', 'clean_output_dir') == '':
@@ -339,10 +345,10 @@ def _complete_config_file_with_defaults(config):
         config.set('CONFIGURATION', 'logging_level', ARGUMENTS_DEFAULT['logging_level'])
     elif config.get('CONFIGURATION', 'logging_level') == '':
         config.set('CONFIGURATION', 'logging_level', str(ARGUMENTS_DEFAULT['logging_level']))
-    if not config.has_option('CONFIGURATION', 'start_process_method'):
-        config.set('CONFIGURATION', 'start_process_method', str(ARGUMENTS_DEFAULT['start_process_method']))
-    elif config.get('CONFIGURATION', 'start_process_method') == '':
-        config.set('CONFIGURATION', 'start_process_method', str(ARGUMENTS_DEFAULT['start_process_method']))
+    if not config.has_option('CONFIGURATION', 'process_start_method'):
+        config.set('CONFIGURATION', 'process_start_method', str(ARGUMENTS_DEFAULT['process_start_method']))
+    elif config.get('CONFIGURATION', 'process_start_method') == '':
+        config.set('CONFIGURATION', 'process_start_method', str(ARGUMENTS_DEFAULT['process_start_method']))
 
     return config
 

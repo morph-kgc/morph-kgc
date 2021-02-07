@@ -11,6 +11,7 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 import logging
 import time
+import sys
 import pandas as pd
 import multiprocessing as mp
 
@@ -239,9 +240,20 @@ def materialize(mappings_df, config):
         for mapping_partition in mapping_partitions:
             num_triples += materialize_mapping_partition(mapping_partition, subject_maps_df, config)
     else:
-        if config.get('CONFIGURATION', 'start_process_method') != 'default':
-            mp.set_start_method(config.get('CONFIGURATION', 'start_process_method'))
+        if config.get('CONFIGURATION', 'process_start_method') != 'default':
+            mp.set_start_method(config.get('CONFIGURATION', 'process_start_method'))
+        logging.debug("Parallelizing. Using '" + mp.get_start_method() + "' as process start method.")
         pool = mp.Pool(int(config.get('CONFIGURATION', 'number_of_processes')))
-        num_triples = sum(pool.starmap(materialize_mapping_partition, zip(mapping_partitions, repeat(subject_maps_df), repeat(config))))
+        if config.getboolean('CONFIGURATION', 'async'):
+            logging.debug("Using 'async' for parallelization.")
+            triples_res = pool.starmap_async(materialize_mapping_partition, zip(mapping_partitions, repeat(subject_maps_df), repeat(config)))
+            num_triples = sum(triples_res.get())
+            if not triples_res.successful():
+                logging.critical('Aborting, multiprocessing resulted in error.')
+                sys.exit()
+        else:
+            num_triples = sum(pool.starmap(materialize_mapping_partition, zip(mapping_partitions, repeat(subject_maps_df), repeat(config))))
+        pool.close()
+        pool.join()
 
     logging.info('Number of triples generated in total: ' + str(num_triples) + '.')
