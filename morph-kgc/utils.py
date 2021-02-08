@@ -65,7 +65,8 @@ def get_subject_maps(mappings_df):
 
 def get_references_in_template(template):
     """
-    Retrieves all reference identifiers in a template-valued term map.
+    Retrieves all reference identifiers in a template-valued term map. References are returned in order of appearance
+    in the template.
 
     :param template: template-valued term map
     :type template: str
@@ -73,9 +74,7 @@ def get_references_in_template(template):
     :rtype list
     """
 
-    references = re.findall('\\{([^}]+)', template)
-
-    return list(set(references))
+    return re.findall('\\{([^}]+)', template)
 
 
 def triples_to_file(triples, config, mapping_partition=''):

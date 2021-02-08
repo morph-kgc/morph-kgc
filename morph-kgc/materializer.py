@@ -61,8 +61,7 @@ def _materialize_template(results_df, template, columns_alias='', termtype='http
             results_df['reference_results'] = results_df['reference_results'].apply(lambda x: quote(x))
 
         splitted_template = template.split('{' + reference + '}')
-        results_df['triple'] = results_df['triple'] + splitted_template[0]
-        results_df['triple'] = results_df['triple'] + results_df['reference_results']
+        results_df['triple'] = results_df['triple'] + splitted_template[0] + results_df['reference_results']
         template = str('{' + reference + '}').join(splitted_template[1:])
 
     if str(termtype).strip() == 'http://www.w3.org/ns/r2rml#Literal':
