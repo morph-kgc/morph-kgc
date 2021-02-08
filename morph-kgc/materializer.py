@@ -38,6 +38,10 @@ def _get_references_in_mapping_rule(mapping_rule, only_subject_map=False):
             references.extend(utils.get_references_in_template(str(mapping_rule['object_template'])))
         elif mapping_rule['object_reference']:
             references.append(str(mapping_rule['object_reference']))
+        if mapping_rule['graph_template']:
+            references.extend(utils.get_references_in_template(str(mapping_rule['graph_template'])))
+        elif mapping_rule['graph_reference']:
+            references.append(str(mapping_rule['graph_reference']))
 
     return set(references)
 
@@ -114,35 +118,30 @@ def _materialize_constant(results_df, constant, termtype='http://www.w3.org/ns/r
 def _materialize_join_mapping_rule_terms(results_df, mapping_rule, parent_triples_map_rule):
     results_df['triple'] = ''
     if mapping_rule['subject_template']:
-        results_df = _materialize_template(
-            results_df, mapping_rule['subject_template'], termtype=mapping_rule['subject_termtype'],
-            columns_alias='child_')
+        results_df = _materialize_template(results_df, mapping_rule['subject_template'], termtype=mapping_rule['subject_termtype'], columns_alias='child_')
     elif mapping_rule['subject_constant']:
-        results_df = _materialize_constant(results_df, mapping_rule['subject_constant'],
-                                           termtype=mapping_rule['subject_termtype'])
+        results_df = _materialize_constant(results_df, mapping_rule['subject_constant'], termtype=mapping_rule['subject_termtype'])
     elif mapping_rule['subject_reference']:
-        results_df = _materialize_reference(
-            results_df, mapping_rule['subject_reference'], termtype=mapping_rule['subject_termtype'],
-            columns_alias='child_')
+        results_df = _materialize_reference(results_df, mapping_rule['subject_reference'], termtype=mapping_rule['subject_termtype'], columns_alias='child_')
     if mapping_rule['predicate_template']:
-        results_df = _materialize_template(
-            results_df, mapping_rule['predicate_template'], columns_alias='child_')
+        results_df = _materialize_template(results_df, mapping_rule['predicate_template'], columns_alias='child_')
     elif mapping_rule['predicate_constant']:
         results_df = _materialize_constant(results_df, mapping_rule['predicate_constant'])
     elif mapping_rule['predicate_reference']:
-        results_df = _materialize_reference(
-            results_df, mapping_rule['predicate_reference'], columns_alias='child_')
+        results_df = _materialize_reference(results_df, mapping_rule['predicate_reference'], termtype='http://www.w3.org/ns/r2rml#IRI', columns_alias='child_')
     if parent_triples_map_rule['subject_template']:
-        results_df = _materialize_template(
-            results_df, parent_triples_map_rule['subject_template'],
-            termtype=parent_triples_map_rule['subject_termtype'], columns_alias='parent_')
+        results_df = _materialize_template(results_df, parent_triples_map_rule['subject_template'], termtype=parent_triples_map_rule['subject_termtype'], columns_alias='parent_')
     elif parent_triples_map_rule['subject_constant']:
-        results_df = _materialize_constant(results_df, parent_triples_map_rule['subject_constant'],
-                                           termtype=parent_triples_map_rule['subject_termtype'])
+        results_df = _materialize_constant(results_df, parent_triples_map_rule['subject_constant'], termtype=parent_triples_map_rule['subject_termtype'])
     elif parent_triples_map_rule['subject_reference']:
-        results_df = _materialize_reference(
-            results_df, parent_triples_map_rule['subject_reference'],
-            termtype=parent_triples_map_rule['subject_termtype'], columns_alias='parent_')
+        results_df = _materialize_reference(results_df, parent_triples_map_rule['subject_reference'], termtype=parent_triples_map_rule['subject_termtype'], columns_alias='parent_')
+    if mapping_rule['graph_template']:
+        results_df = _materialize_template(results_df, mapping_rule['graph_template'], columns_alias='child_')
+    elif mapping_rule['graph_constant']:
+        if mapping_rule['graph_constant'] != 'http://www.w3.org/ns/r2rml#defaultGraph':
+            results_df = _materialize_constant(results_df, mapping_rule['graph_constant'])
+    elif mapping_rule['graph_reference']:
+        results_df = _materialize_reference(results_df, mapping_rule['graph_reference'], termtype='http://www.w3.org/ns/r2rml#IRI', columns_alias='child_')
 
     return set(results_df['triple'])
 
@@ -150,35 +149,30 @@ def _materialize_join_mapping_rule_terms(results_df, mapping_rule, parent_triple
 def _materialize_mapping_rule_terms(results_df, mapping_rule):
     results_df['triple'] = ''
     if mapping_rule['subject_template']:
-        results_df = _materialize_template(results_df, mapping_rule['subject_template'],
-                                           termtype=mapping_rule['subject_termtype'])
+        results_df = _materialize_template(results_df, mapping_rule['subject_template'], termtype=mapping_rule['subject_termtype'])
     elif mapping_rule['subject_constant']:
-        results_df = _materialize_constant(results_df, mapping_rule['subject_constant'],
-                                           termtype=mapping_rule['subject_termtype'])
+        results_df = _materialize_constant(results_df, mapping_rule['subject_constant'], termtype=mapping_rule['subject_termtype'])
     elif mapping_rule['subject_reference']:
-        results_df = _materialize_reference(results_df, mapping_rule['subject_reference'],
-                                            termtype=mapping_rule['subject_termtype'])
+        results_df = _materialize_reference(results_df, mapping_rule['subject_reference'], termtype=mapping_rule['subject_termtype'])
     if mapping_rule['predicate_template']:
         results_df = _materialize_template(results_df, mapping_rule['predicate_template'])
     elif mapping_rule['predicate_constant']:
         results_df = _materialize_constant(results_df, mapping_rule['predicate_constant'])
     elif mapping_rule['predicate_reference']:
-        results_df = _materialize_reference(results_df, mapping_rule['predicate_reference'])
+        results_df = _materialize_reference(results_df, mapping_rule['predicate_reference'], termtype='http://www.w3.org/ns/r2rml#IRI')
     if mapping_rule['object_template']:
-        results_df = _materialize_template(results_df, mapping_rule['object_template'],
-                                           termtype=mapping_rule['object_termtype'],
-                                           language_tag=mapping_rule['object_language'],
-                                           datatype=mapping_rule['object_datatype'])
+        results_df = _materialize_template(results_df, mapping_rule['object_template'], termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
     elif mapping_rule['object_constant']:
-        results_df = _materialize_constant(results_df, mapping_rule['object_constant'],
-                                           termtype=mapping_rule['object_termtype'],
-                                           language_tag=mapping_rule['object_language'],
-                                           datatype=mapping_rule['object_datatype'])
+        results_df = _materialize_constant(results_df, mapping_rule['object_constant'], termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
     elif mapping_rule['object_reference']:
-        results_df = _materialize_reference(results_df, mapping_rule['object_reference'],
-                                            termtype=mapping_rule['object_termtype'],
-                                            language_tag=mapping_rule['object_language'],
-                                            datatype=mapping_rule['object_datatype'])
+        results_df = _materialize_reference(results_df, mapping_rule['object_reference'], termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
+    if mapping_rule['graph_template']:
+        results_df = _materialize_template(results_df, mapping_rule['graph_template'])
+    elif mapping_rule['graph_constant']:
+        if mapping_rule['graph_constant'] != 'http://www.w3.org/ns/r2rml#defaultGraph':
+            results_df = _materialize_constant(results_df, mapping_rule['graph_constant'])
+    elif mapping_rule['graph_reference']:
+        results_df = _materialize_reference(results_df, mapping_rule['graph_reference'], termtype='http://www.w3.org/ns/r2rml#IRI')
 
     return set(results_df['triple'])
 

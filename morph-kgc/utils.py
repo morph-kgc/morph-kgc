@@ -52,8 +52,7 @@ def get_subject_maps(mappings_df):
 
     subject_maps_df = mappings_df[[
         'triples_map_id', 'data_source', 'ref_form', 'iterator', 'tablename', 'query', 'subject_template',
-        'subject_reference', 'subject_constant', 'subject_termtype',
-        'graph_constant', 'graph_reference', 'graph_template']
+        'subject_reference', 'subject_constant', 'subject_termtype']
     ]
 
     subject_maps_df = subject_maps_df.drop_duplicates()

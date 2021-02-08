@@ -13,7 +13,7 @@ import rdflib
 import logging
 import sys
 import time
-#import sql_metadata
+import sql_metadata
 import rfc3987
 import pandas as pd
 
