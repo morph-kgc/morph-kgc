@@ -12,6 +12,7 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 import rdflib
 import logging
 import sys
+import os
 import time
 import sql_metadata
 import rfc3987
@@ -317,8 +318,6 @@ def _infer_mapping_language_from_graph(mapping_graph, source_name):
         return 'RML'
 
     # if mappings file does not have rml:logicalSource or rr:logicalTable it is not valid
-
-
     # if it has both rml:logicalSource and rr:logicalTable it is not valid
     raise Exception("It was not possible to infer the mapping language for data source '" + source_name +
                     "'. Check the corresponding mapping files.")
@@ -456,9 +455,9 @@ def _transform_mappings_into_dataframe(mapping_query_results, join_query_results
 def _parse_mapping_files(config, data_source_name):
     """
     Creates a Pandas DataFrame with the mapping rules for a data source. It loads the mapping files in a rdflib graph
-    and recognizes the mapping language used. It performs queries [R2]RML_MAPPING_PARSING_QUERY and
-    JOIN_CONDITION_PARSING_QUERY and process the results to build a DataFrame with the mapping rules. Also verifies that
-    there are not repeated triples maps in the mappings.
+    and recognizes the mapping language used. Mapping files serialization is automatically guessed.
+    It performs queries [R2]RML_MAPPING_PARSING_QUERY and JOIN_CONDITION_PARSING_QUERY and process the results to
+    build a DataFrame with the mapping rules. Also verifies that there are not repeated triples maps in the mappings.
 
     :param config: ConfigParser object
     :type config: ConfigParser
@@ -470,8 +469,14 @@ def _parse_mapping_files(config, data_source_name):
 
     mapping_graph = rdflib.Graph()
     try:
-        for mapping_file in config.get(data_source_name, 'mapping_files').split(','):
-            mapping_graph.load(mapping_file, format=rdflib.util.guess_format(mapping_file))
+        for mapping_path in config.get(data_source_name, 'mappings').split(','):
+            if os.path.isfile(mapping_path):
+                mapping_graph.load(mapping_path, format=rdflib.util.guess_format(mapping_path))
+            elif os.path.isdir(mapping_path):
+                for mapping_file_name in os.listdir(mapping_path):
+                    mapping_file = os.path.join(mapping_path, mapping_file_name)
+                    if os.path.isfile(mapping_file):
+                        mapping_graph.load(mapping_file, format=rdflib.util.guess_format(mapping_file))
     except Exception as n3_mapping_parse_exception:
         raise Exception(n3_mapping_parse_exception)
 

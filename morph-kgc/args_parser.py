@@ -212,12 +212,6 @@ def _validate_config_data_sources_sections(config):
             # if section is not CONFIGURATION then it is a data source
             # mind that DEFAULT section is not triggered with config.sections().
 
-            mapping_files = config.get(section, 'mapping_files')
-            for mapping_file in mapping_files.split(','):
-                if not os.path.exists(mapping_file.strip()):
-                    raise FileNotFoundError("'mapping_file' value '" + str(mapping_file) + "' provided in section '" + section +
-                                            "' of config file could not be found.")
-
             config.set(section, 'source_type', config.get(section, 'source_type').lower())
             if config.get(section, 'source_type') in VALID_ARGUMENTS['relational_source_type']:
                 # to check that required parameters are provided and that the connection is ok
