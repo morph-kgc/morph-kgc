@@ -1,3 +1,3 @@
 <http://example.com/ns%23Jhon> <http://xmlns.com/foaf/0.1/name> "http://example.com/ns#Jhon" .
-<Juan%20Daniel> <http://xmlns.com/foaf/0.1/name> "Juan Daniel" .
 <Carlos> <http://xmlns.com/foaf/0.1/name> "Carlos" .
+<Juan%20Daniel> <http://xmlns.com/foaf/0.1/name> "Juan Daniel" .

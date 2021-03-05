@@ -142,7 +142,7 @@ def _materialize_join_mapping_rule_terms(results_df, mapping_rule, parent_triple
     elif mapping_rule['graph_reference']:
         results_df = _materialize_reference(results_df, mapping_rule['graph_reference'], termtype='http://www.w3.org/ns/r2rml#IRI', columns_alias='child_')
 
-    return set(results_df['triple'])
+    return list(results_df['triple'])
 
 
 def _materialize_mapping_rule_terms(results_df, mapping_rule):
@@ -173,11 +173,11 @@ def _materialize_mapping_rule_terms(results_df, mapping_rule):
     elif mapping_rule['graph_reference']:
         results_df = _materialize_reference(results_df, mapping_rule['graph_reference'], termtype='http://www.w3.org/ns/r2rml#IRI')
 
-    return set(results_df['triple'])
+    return list(results_df['triple'])
 
 
 def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
-    triples = set()
+    triples = list()
 
     references = _get_references_in_mapping_rule(mapping_rule)
 
@@ -195,7 +195,7 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
         db_connection = relational_source.relational_db_connection(config, mapping_rule['source_name'])
         for query_results_chunk_df in pd.read_sql(sql_query, con=db_connection, chunksize=int(config.get('CONFIGURATION', 'chunksize')), coerce_float=config.getboolean('CONFIGURATION', 'coerce_float')):
             query_results_chunk_df = utils.dataframe_columns_to_str(query_results_chunk_df)
-            triples.update(_materialize_join_mapping_rule_terms(query_results_chunk_df, mapping_rule, parent_triples_map_rule))
+            triples.extend(_materialize_join_mapping_rule_terms(query_results_chunk_df, mapping_rule, parent_triples_map_rule))
         db_connection.close()
 
     else:
@@ -203,7 +203,7 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
         db_connection = relational_source.relational_db_connection(config, mapping_rule['source_name'])
         for query_results_chunk_df in pd.read_sql(sql_query, con=db_connection, chunksize=int(config.get('CONFIGURATION', 'chunksize')), coerce_float=config.getboolean('CONFIGURATION', 'coerce_float')):
             query_results_chunk_df = utils.dataframe_columns_to_str(query_results_chunk_df)
-            triples.update(_materialize_mapping_rule_terms(query_results_chunk_df, mapping_rule))
+            triples.extend(_materialize_mapping_rule_terms(query_results_chunk_df, mapping_rule))
         db_connection.close()
 
     logging.info("Number of triples generated for mapping rule '" + str(mapping_rule['id']) + "': " + str(len(triples)) + ".")
@@ -212,9 +212,17 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
 
 
 def materialize_mapping_partition(mapping_partition, subject_maps_df, config):
-    triples = set()
-    for i, mapping_rule in mapping_partition.iterrows():
-        triples.update(_materialize_mapping_rule(mapping_rule, subject_maps_df, config))
+    if config.getboolean('CONFIGURATION', 'remove_duplicates'):
+        triples = set()
+        for i, mapping_rule in mapping_partition.iterrows():
+            triples.update(set(_materialize_mapping_rule(mapping_rule, subject_maps_df, config)))
+    else:
+        triples = []
+        for i, mapping_rule in mapping_partition.iterrows():
+            triples.extend(_materialize_mapping_rule(mapping_rule, subject_maps_df, config))
+
+    # TODO: for the case of not removing duplicates, write triples in the partition incrementally, so that we consume
+    #       less memory. This is to be done when we support more output format options.
     utils.triples_to_file(triples, config, mapping_partition.iloc[0]['mapping_partition'])
 
     return len(triples)

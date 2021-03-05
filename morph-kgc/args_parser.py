@@ -26,6 +26,7 @@ ARGUMENTS_DEFAULT = {
     'output_dir': 'output',
     'output_file': 'result',
     'output_format': 'nquads',
+    'remove_duplicates': 'yes',
     'clean_output_dir': 'yes',
     'mapping_partitions': 'guess',
     'input_parsed_mappings_path': '',
@@ -260,6 +261,7 @@ def _validate_config_configuration_section(config):
     config.getboolean('CONFIGURATION', 'only_printable_characters')
     config.getboolean('CONFIGURATION', 'infer_datatypes')
     config.getboolean('CONFIGURATION', 'push_down_sql_distincts')
+    config.getboolean('CONFIGURATION', 'remove_duplicates')
     config.getboolean('CONFIGURATION', 'clean_output_dir')
     config.getboolean('CONFIGURATION', 'async')
 
@@ -315,6 +317,10 @@ def _complete_config_file_with_defaults(config):
         config.set('CONFIGURATION', 'async', str(ARGUMENTS_DEFAULT['async']))
     elif config.get('CONFIGURATION', 'async') == '':
         config.set('CONFIGURATION', 'async', str(ARGUMENTS_DEFAULT['async']))
+    if not config.has_option('CONFIGURATION', 'remove_duplicates'):
+        config.set('CONFIGURATION', 'remove_duplicates', str(ARGUMENTS_DEFAULT['remove_duplicates']))
+    elif config.get('CONFIGURATION', 'remove_duplicates') == '':
+        config.set('CONFIGURATION', 'remove_duplicates', str(ARGUMENTS_DEFAULT['remove_duplicates']))
     if not config.has_option('CONFIGURATION', 'clean_output_dir'):
         config.set('CONFIGURATION', 'clean_output_dir', str(ARGUMENTS_DEFAULT['clean_output_dir']))
     elif config.get('CONFIGURATION', 'clean_output_dir') == '':

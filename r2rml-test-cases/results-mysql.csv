@@ -2,7 +2,7 @@ tester,platform,rdbms,testid,result
 Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0000,passed
 Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0001a,passed
 Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0001b,failed
-Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0002a,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0002a,passed
 Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0002b,failed
 Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0002c,passed
 Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0002d,failed
@@ -20,13 +20,13 @@ Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0004b,passed
 Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0005a,passed
 Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0005b,failed
 Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0006a,failed
-Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0007a,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0007a,passed
 Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0007b,failed
 Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0007c,passed
-Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0007d,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0007d,passed
 Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0007e,failed
 Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0007f,failed
-Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0007g,passed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0007g,failed
 Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0007h,failed
 Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0008a,failed
 Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0008b,failed
@@ -45,7 +45,7 @@ Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0012b,failed
 Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0012c,passed
 Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0012d,passed
 Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0012e,failed
-Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0013a,failed
+Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0013a,passed
 Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0014a,failed
 Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0014b,failed
 Julián Arenas-Guerrero,Morph-KGC,mysql,R2RMLTC0014c,failed
