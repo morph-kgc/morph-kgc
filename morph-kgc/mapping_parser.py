@@ -471,7 +471,7 @@ def _parse_mapping_files(config, data_source_name):
     mapping_graph = rdflib.Graph()
     try:
         for mapping_file in config.get(data_source_name, 'mapping_files').split(','):
-            mapping_graph.load(mapping_file.strip(), format='n3')
+            mapping_graph.load(mapping_file, format=rdflib.util.guess_format(mapping_file))
     except Exception as n3_mapping_parse_exception:
         raise Exception(n3_mapping_parse_exception)
 
