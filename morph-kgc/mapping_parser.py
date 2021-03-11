@@ -194,7 +194,7 @@ def _replace_predicates_in_graph(graph, predicate_to_remove, predicate_to_add):
 
 def _mapping_to_rml(mapping_graph, source_name):
     """
-    Recognizes the mapping language of the rules of a source in a mapping graph. If it is R2RML, the mapping rules
+    Recognizes the mapping language of the rules in a graph. If it is R2RML, the mapping rules
     are converted to RML.
 
     :param mapping_graph: rdflib Graph with the mapping rules
