@@ -986,8 +986,15 @@ def _generate_mapping_partitions(mappings_df, mapping_partition_criteria):
         mappings_df.sort_values(by='predicate_invariable_part', inplace=True, ascending=True)
         num_partition = 0
         root_last_partition = 'zzyy xxww\u200B'
+
+        use_equal = mappings_df['predicate_constant'].notna().all()
+        if use_equal:
+            logging.debug('All predicate maps are constants, using strict criteria to generate mapping partitions.')
+
         for i, mapping_rule in mappings_df.iterrows():
-            if mapping_rule['predicate_invariable_part'].startswith(root_last_partition):
+            if use_equal and mapping_rule['predicate_invariable_part'] == root_last_partition:
+                mappings_df.at[i, 'predicate_partition'] = str(num_partition)
+            elif not use_equal and mapping_rule['predicate_invariable_part'].startswith(root_last_partition):
                 mappings_df.at[i, 'predicate_partition'] = str(num_partition)
             else:
                 num_partition = num_partition + 1
@@ -998,8 +1005,15 @@ def _generate_mapping_partitions(mappings_df, mapping_partition_criteria):
         mappings_df.sort_values(by='graph_invariable_part', inplace=True, ascending=True)
         num_partition = 0
         root_last_partition = 'zzyy xxww\u200B'
+
+        use_equal = mappings_df['graph_constant'].notna().all()
+        if use_equal:
+            logging.debug('All graph maps are constants, using strict criteria to generate mapping partitions.')
+
         for i, mapping_rule in mappings_df.iterrows():
-            if mapping_rule['graph_invariable_part'].startswith(root_last_partition):
+            if use_equal and mapping_rule['graph_invariable_part'] == root_last_partition:
+                mappings_df.at[i, 'graph_partition'] = str(num_partition)
+            elif not use_equal and mapping_rule['graph_invariable_part'].startswith(root_last_partition):
                 mappings_df.at[i, 'graph_partition'] = str(num_partition)
             else:
                 num_partition = num_partition + 1
