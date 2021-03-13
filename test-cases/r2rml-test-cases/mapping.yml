@@ -8,8 +8,8 @@ prefixes:
 mappings:
   engine:
     sources:
-        - ['metadata.csv~csv']
-    s:
+      - ['metadata.csv~csv']
+    s: http://kg-construct.github.io/r2rml-implementation-report/TestSubject/$(engine_name)-$(database_name)
     po:
       - [a, [earl:Software,earl:TestSubject]]
       - [dct:hasPart, $(database)~iri]
@@ -21,8 +21,8 @@ mappings:
 
   tester:
     sources:
-        - ['metadata.csv~csv']
-    s:
+      - ['metadata.csv~csv']
+    s: http://kg-construct.github.io/r2rml-implementation-report/Assertor/$(tester_name)
     po:
       - [a, [foaf:Person,earl:Assertor]]
       - [foaf:name, $(tester_name)]
@@ -31,20 +31,20 @@ mappings:
 
   metadata:
     sources:
-        - ['results.csv~csv']
-    s:
+      - ['results.csv~csv']
+    s: http://kg-construct.github.io/r2rml-implementation-report/Assertion/$(tester)-$(platform)-$(rdbms)-$(testid)
     po:
       - [a, earl:Assertion]
       - [earl:mode, earl:automatic~iri]
       - [earl:test, http://www.w3.org/2001/sw/rdb2rdf/test-cases/#$(testid)~iri]
       - p: earl:assertedBy
-        o: 
+        o:
           - mapping: tester
             condition:
               function: equal
               parameters:
                 - [str1, $(tester)]
-                - [str2, $(tester_url)]
+                - [str2, $(tester_name)]
       - p: earl:subject
         o:
           - mapping: engine
@@ -52,7 +52,7 @@ mappings:
               function: equal
               parameters:
                 - [str1, $(platform)]
-                - [str2, $(engine_url)]
+                - [str2, $(engine_name)]
       - p: earl:result
         o:
           - mapping: results
@@ -63,8 +63,8 @@ mappings:
                 - [str2, $(testid)]
   results:
     sources:
-        - ['results.csv~csv']
-    s:
+      - ['results.csv~csv']
+    s: http://kg-construct.github.io/r2rml-implementation-report/TestResult/$(tester)-$(platform)-$(rdbms)-$(testid)-$(result)
     po:
       - [a, earl:TestResult]
       - [earl:outcome, http://www.w3.org/ns/earl#$(result)~iri]

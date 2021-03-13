@@ -6,6 +6,8 @@ import psycopg2
 from configparser import ConfigParser, ExtendedInterpolation
 from rdflib import Graph, RDF, Namespace, compare, Literal, URIRef
 
+mysql_exceptions = ["R2RMLTC0002d", "R2RMLTC0003b", "R2RMLTC0014a", "R2RMLTC0014b", "R2RMLTC0014c"]
+
 
 def test_all():
     q1 = """SELECT ?database_uri WHERE { 
@@ -34,7 +36,6 @@ def test_all():
             print("Testing R2RML test-case: " + t_identifier + " (" + t_title + ")")
             print("Purpose of this test is: " + purpose)
             run_test(t_identifier, r2rml, test_uri, expected_output)
-
 
 
 def test_one(identifier):
@@ -96,20 +97,24 @@ def database_load(database_script):
 
 
 def run_test(t_identifier, mapping, test_uri, expected_output):
+    if database_system == "mysql" and t_identifier in mysql_exceptions:
+        mapping = mapping.replace(".ttl", "") + "-mysql.ttl"
     os.system("cp " + t_identifier + "/" + mapping + " r2rml.ttl")
     expected_output_graph = Graph()
     if os.path.isfile(config["properties"]["output_results"]):
-        os.system("rm "+config["properties"]["output_results"])
+        os.system("rm " + config["properties"]["output_results"])
 
     if expected_output:
         output = manifest_graph.value(subject=test_uri, predicate=RDB2RDFTEST.output, object=None)
         expected_output_graph.parse("./" + t_identifier + "/" + output, format="nquads")
 
-    os.system(config["properties"]["engine_command"] + " > " + t_identifier + "/engine_output-"+database_system+".log")
+    os.system(
+        config["properties"]["engine_command"] + " > " + t_identifier + "/engine_output-" + database_system + ".log")
 
     # if there is output file
     if os.path.isfile(config["properties"]["output_results"]):
-        os.system("cp " + config["properties"]["output_results"] + " " + t_identifier + "/engine_output-"+database_system+".ttl")
+        os.system("cp " + config["properties"][
+            "output_results"] + " " + t_identifier + "/engine_output-" + database_system + ".ttl")
         # and expected output is true
         if expected_output:
             output_graph = Graph()
@@ -162,6 +167,15 @@ def merge_results():
         final_results.parse("results-mysql.ttl", format="ntriples")
         final_results.parse("results-postgresql.ttl", format="ntriples")
         final_results.serialize("results.ttl", format="ntriples")
+    elif os.path.isfile("results-mysql.ttl"):
+        final_results = Graph()
+        final_results.parse("results-mysql.ttl", format="ntriples")
+        final_results.serialize("results.ttl", format="ntriples")
+    elif os.path.isfile("results-postgresql.ttl"):
+        final_results = Graph()
+        final_results.parse("results-postgresql.ttl", format="ntriples")
+        final_results.serialize("results.ttl", format="ntriples")
+
 
 def get_database_url():
     if database_system == "mysql":
