@@ -1,4 +1,0 @@
-<Sue_Jones> <http://xmlns.com/foaf/0.1/name> "Sue Jones" .
-<Sue_Jones> <http://example.com/city> "Madrid" .
-<Bob_Smith> <http://xmlns.com/foaf/0.1/name> "Bob Smith" .
-<Bob_Smith> <http://example.com/city> "London" .
