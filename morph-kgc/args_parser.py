@@ -46,7 +46,7 @@ ARGUMENTS_DEFAULT = {
 
 VALID_ARGUMENTS = {
     'output_format': ['ntriples', 'nquads'],
-    'mapping_partitions': ['', 's', 'p', 'g', 'sp', 'sg', 'pg', 'spg', 'guess'],
+    'mapping_partitions': 'spog',
     'relational_source_type': ['mysql', 'postgresql', 'oracle', 'sqlserver'],
     'file_source_type': [],
     'process_start_method': ['default', 'spawn', 'fork', 'forkserver'],
@@ -244,8 +244,9 @@ def _validate_config_configuration_section(config):
 
     mapping_partitions = config.get('CONFIGURATION', 'mapping_partitions')
     mapping_partitions = str(mapping_partitions).lower()
-    if mapping_partitions not in VALID_ARGUMENTS['mapping_partitions']:
-        raise ValueError('Option mapping_partitions must be in: ' + str(VALID_ARGUMENTS['mapping_partitions']))
+    if mapping_partitions != 'guess' and not (set(mapping_partitions) <= set(VALID_ARGUMENTS['mapping_partitions'])):
+        raise ValueError('Option mapping_partitions must be `guess`, empty, or a subset of `' +
+                         VALID_ARGUMENTS['mapping_partitions'] + '`.')
     config.set('CONFIGURATION', 'mapping_partitions', mapping_partitions)
 
     config.set('CONFIGURATION', 'number_of_processes',

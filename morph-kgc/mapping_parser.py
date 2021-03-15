@@ -743,7 +743,7 @@ def _validate_parsed_mappings(mappings_df):
                                   'object_template'].notnull()]['object_template']))
     for template in templates:
         # validate that at least the invariable part of the template is a valid IRI
-        rfc3987.parse(_get_invariable_part_of_template(template), rule='IRI')
+        rfc3987.parse(_get_invariable_part_of_template(str(template)), rule='IRI')
 
     # check that a triples map id is not repeated in different data sources
     aux_mappings_df = mappings_df[['source_name', 'triples_map_id']].drop_duplicates()
@@ -821,6 +821,7 @@ def _validate_mapping_partition_criteria(mappings_df, mapping_partition_criteria
             valid_mapping_partition_criteria += 's'
         if not mappings_df['predicate_reference'].notna().any():
             valid_mapping_partition_criteria += 'p'
+        valid_mapping_partition_criteria += 'o'
         if not mappings_df['graph_reference'].notna().any():
             valid_mapping_partition_criteria += 'g'
 
@@ -846,6 +847,8 @@ def _validate_mapping_partition_criteria(mappings_df, mapping_partition_criteria
             else:
                 valid_mapping_partition_criteria += 'p'
 
+        valid_mapping_partition_criteria += 'o'
+
         if 'g' in mapping_partition_criteria:
             if mappings_df['graph_reference'].notna().any():
                 logging.warning("Invalid mapping partition criteria '" + mapping_partition_criteria +
@@ -857,7 +860,7 @@ def _validate_mapping_partition_criteria(mappings_df, mapping_partition_criteria
     if mapping_partition_criteria:
         logging.info("Using '" + valid_mapping_partition_criteria + "' as mapping partition criteria.")
     else:
-        logging.info('Not using mapping patitioning.')
+        logging.info('Not using mapping partitioning.')
 
     return valid_mapping_partition_criteria
 
@@ -902,6 +905,7 @@ def _get_mapping_partitions_invariable_parts(mappings_df, mapping_partition_crit
 
     mappings_df['subject_invariable_part'] = ''
     mappings_df['predicate_invariable_part'] = ''
+    mappings_df['object_invariable_part'] = ''
     mappings_df['graph_invariable_part'] = ''
 
     for i, mapping_rule in mappings_df.iterrows():
@@ -909,29 +913,46 @@ def _get_mapping_partitions_invariable_parts(mappings_df, mapping_partition_crit
             # subject is selected as partitioning criteria if it is a template or a constant to get the invariable part
             if mapping_rule['subject_template']:
                 mappings_df.at[i, 'subject_invariable_part'] = \
-                    _get_invariable_part_of_template(mapping_rule['subject_template'])
+                    _get_invariable_part_of_template(str(mapping_rule['subject_template']))
             elif mapping_rule['subject_constant']:
-                mappings_df.at[i, 'subject_invariable_part'] = mapping_rule['subject_constant']
+                mappings_df.at[i, 'subject_invariable_part'] = str(mapping_rule['subject_constant'])
             else:
                 logging.error("Could not get the invariable part of the subject for mapping rule '" +
                               str(mapping_rule['id']) + "'.")
 
         if 'p' in mapping_partition_criteria:
             if mapping_rule['predicate_constant']:
-                mappings_df.at[i, 'predicate_invariable_part'] = mapping_rule['predicate_constant']
+                mappings_df.at[i, 'predicate_invariable_part'] = str(mapping_rule['predicate_constant'])
             elif mapping_rule['predicate_template']:
                 mappings_df.at[i, 'predicate_invariable_part'] = \
-                    _get_invariable_part_of_template(mapping_rule['predicate_template'])
+                    _get_invariable_part_of_template(str(mapping_rule['predicate_template']))
+            else:
+                logging.error("Could not get the invariable part of the predicate for mapping rule '" +
+                              str(mapping_rule['id']) + "'.")
+
+        if 'o' in mapping_partition_criteria:
+            if mapping_rule['object_constant']:
+                mappings_df.at[i, 'object_invariable_part'] = str(mapping_rule['object_constant'])
+            elif mapping_rule['object_template']:
+                mappings_df.at[i, 'object_invariable_part'] = \
+                    _get_invariable_part_of_template(str(mapping_rule['object_template']))
+            elif mapping_rule['object_reference']:
+                if mapping_rule['object_language']:
+                    mappings_df.at[i, 'object_invariable_part'] = '""@' + str(mapping_rule['object_language'])
+                elif mapping_rule['object_datatype']:
+                    mappings_df.at[i, 'object_invariable_part'] = '""^^' + str(mapping_rule['object_datatype'])
+            elif mapping_rule['object_parent_triples_map']:
+                pass    # mapping partitions could be extended with uri invariable part of parent triples map
             else:
                 logging.error("Could not get the invariable part of the predicate for mapping rule '" +
                               str(mapping_rule['id']) + "'.")
 
         if 'g' in mapping_partition_criteria:
             if mapping_rule['graph_constant']:
-                mappings_df.at[i, 'graph_invariable_part'] = mapping_rule['graph_constant']
+                mappings_df.at[i, 'graph_invariable_part'] = str(mapping_rule['graph_constant'])
             elif mapping_rule['graph_template']:
                 mappings_df.at[i, 'graph_invariable_part'] = \
-                    _get_invariable_part_of_template(mapping_rule['graph_template'])
+                    _get_invariable_part_of_template(str(mapping_rule['graph_template']))
             else:
                 logging.error("Could not get the invariable part of the graph for mapping rule '" +
                               str(mapping_rule['id']) + "'.")
@@ -958,14 +979,15 @@ def _generate_mapping_partitions(mappings_df, mapping_partition_criteria):
     mappings_df = _get_mapping_partitions_invariable_parts(mappings_df, mapping_partitions)
     mappings_df['subject_partition'] = ''
     mappings_df['predicate_partition'] = ''
+    mappings_df['object_partition'] = ''
     mappings_df['graph_partition'] = ''
 
-    # generate independent mapping partitions for subjects, predicates and graphs
+    # generate independent mapping partitions for subjects, predicates objects and graphs
     if 's' in mapping_partitions:
         # sort the mapping rules based on the subject invariable part
         # an invariable part that starts with another invariable part is placed behind in the ordering
         # e.g. http://example.org/term/something and http://example.org/term: http://example.org/term is placed first
-        mappings_df.sort_values(by='subject_invariable_part', inplace=True, ascending=True)
+        mappings_df.sort_values(by=['subject_invariable_part', 'subject_termtype'], inplace=True, ascending=True)
 
         num_partition = 0
         root_last_partition = 'zzyy xxww\u200B'
@@ -975,7 +997,9 @@ def _generate_mapping_partitions(mappings_df, mapping_partition_criteria):
         # if it does, then it is in the same mapping partition than the previous mapping rule
         # if it does not, then the mapping rule is in a new mapping partition
         for i, mapping_rule in mappings_df.iterrows():
-            if mapping_rule['subject_invariable_part'].startswith(root_last_partition):
+            if mapping_rule['subject_termtype'] == 'http://www.w3.org/ns/r2rml#BlankNode':
+                pass    # assign the partition `no partition`
+            elif mapping_rule['subject_invariable_part'].startswith(root_last_partition):
                 mappings_df.at[i, 'subject_partition'] = str(num_partition)
             else:
                 num_partition = num_partition + 1
@@ -1001,6 +1025,24 @@ def _generate_mapping_partitions(mappings_df, mapping_partition_criteria):
                 root_last_partition = mapping_rule['predicate_invariable_part']
                 mappings_df.at[i, 'predicate_partition'] = str(num_partition)
 
+    if 'o' in mapping_partitions:
+        mappings_df.sort_values(by=['object_invariable_part', 'object_termtype'], inplace=True, ascending=True)
+
+        num_partition = 0
+        root_last_partition = 'zzyy xxww\u200B'
+
+        for i, mapping_rule in mappings_df.iterrows():
+            if mapping_rule['object_termtype'] == 'http://www.w3.org/ns/r2rml#BlankNode':
+                pass    # assign the partition `no partition`
+            elif not mapping_rule['object_invariable_part']:
+                mappings_df.at[i, 'object_partition'] = '0'
+            elif mapping_rule['object_invariable_part'].startswith(root_last_partition):
+                mappings_df.at[i, 'object_partition'] = str(num_partition)
+            else:
+                num_partition = num_partition + 1
+                root_last_partition = mapping_rule['object_invariable_part']
+                mappings_df.at[i, 'object_partition'] = str(num_partition)
+
     if 'g' in mapping_partitions:
         mappings_df.sort_values(by='graph_invariable_part', inplace=True, ascending=True)
         num_partition = 0
@@ -1022,21 +1064,26 @@ def _generate_mapping_partitions(mappings_df, mapping_partition_criteria):
 
     # aggregate the independent mapping partitions generated for subjects, predicates and graphs to generate the final
     # mapping partitions
-    if 's' in mapping_partitions and 'p' in mapping_partitions:
-        mappings_df['mapping_partition'] = mappings_df['subject_partition'] + '-' + mappings_df['predicate_partition']
-    else:
-        mappings_df['mapping_partition'] = mappings_df['subject_partition'] + mappings_df['predicate_partition']
-    if 'g' in mapping_partitions and 's' not in mapping_partitions and 'p' not in mapping_partitions:
-        mappings_df['mapping_partition'] = mappings_df['graph_partition']
-    elif 'g' in mapping_partitions:
-        mappings_df['mapping_partition'] = mappings_df['mapping_partition'] + '-' + mappings_df['graph_partition']
+    mappings_df['mapping_partition'] = ''
+    if 's' in mapping_partitions:
+        mappings_df['mapping_partition'] = mappings_df['subject_partition'] + '_'
+    if 'p' in mapping_partitions:
+        mappings_df['mapping_partition'] = mappings_df['mapping_partition'] + mappings_df['predicate_partition'] + '_'
+    if 'o' in mapping_partitions:
+        mappings_df['mapping_partition'] = mappings_df['mapping_partition'] + mappings_df['object_partition'] + '_'
+    if 'g' in mapping_partitions:
+        mappings_df['mapping_partition'] = mappings_df['mapping_partition'] + mappings_df['graph_partition'] + '_'
+    if len(mapping_partitions) > 0:
+        mappings_df['mapping_partition'] = mappings_df['mapping_partition'].astype(str).str[:-1]
 
     # drop the auxiliary columns that were created just to generate the mapping partitions
     mappings_df.drop([
         'subject_partition',
-        'predicate_partition',
         'subject_invariable_part',
+        'predicate_partition',
         'predicate_invariable_part',
+        'object_partition',
+        'object_invariable_part',
         'graph_partition',
         'graph_invariable_part'],
         axis=1, inplace=True)
