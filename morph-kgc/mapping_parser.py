@@ -847,7 +847,8 @@ def _validate_mapping_partition_criteria(mappings_df, mapping_partition_criteria
             else:
                 valid_mapping_partition_criteria += 'p'
 
-        valid_mapping_partition_criteria += 'o'
+        if 'o' in mapping_partition_criteria:
+            valid_mapping_partition_criteria += 'o'
 
         if 'g' in mapping_partition_criteria:
             if mappings_df['graph_reference'].notna().any():
