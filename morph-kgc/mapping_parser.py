@@ -999,6 +999,8 @@ def _generate_mapping_partitions(mappings_df, mapping_partition_criteria):
         for i, mapping_rule in mappings_df.iterrows():
             if mapping_rule['subject_termtype'] == 'http://www.w3.org/ns/r2rml#BlankNode':
                 pass    # assign the partition `no partition`
+            elif not mapping_rule['subject_invariable_part']:
+                mappings_df.at[i, 'subject_partition'] = '0'
             elif mapping_rule['subject_invariable_part'].startswith(root_last_partition):
                 mappings_df.at[i, 'subject_partition'] = str(num_partition)
             else:
@@ -1016,7 +1018,9 @@ def _generate_mapping_partitions(mappings_df, mapping_partition_criteria):
             logging.debug('All predicate maps are constants, using strict criteria to generate mapping partitions.')
 
         for i, mapping_rule in mappings_df.iterrows():
-            if use_equal and mapping_rule['predicate_invariable_part'] == root_last_partition:
+            if not mapping_rule['predicate_invariable_part']:
+                mappings_df.at[i, 'predicate_partition'] = '0'
+            elif use_equal and mapping_rule['predicate_invariable_part'] == root_last_partition:
                 mappings_df.at[i, 'predicate_partition'] = str(num_partition)
             elif not use_equal and mapping_rule['predicate_invariable_part'].startswith(root_last_partition):
                 mappings_df.at[i, 'predicate_partition'] = str(num_partition)
@@ -1055,6 +1059,8 @@ def _generate_mapping_partitions(mappings_df, mapping_partition_criteria):
         for i, mapping_rule in mappings_df.iterrows():
             if use_equal and mapping_rule['graph_invariable_part'] == root_last_partition:
                 mappings_df.at[i, 'graph_partition'] = str(num_partition)
+            elif not mapping_rule['graph_invariable_part']:
+                mappings_df.at[i, 'graph_partition'] = '0'
             elif not use_equal and mapping_rule['graph_invariable_part'].startswith(root_last_partition):
                 mappings_df.at[i, 'graph_partition'] = str(num_partition)
             else:
