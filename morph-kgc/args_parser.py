@@ -15,43 +15,11 @@ import argparse
 import os
 import re
 import logging
-import multiprocessing as mp
 
+from constants import ARGUMENTS_DEFAULT, VALID_ARGUMENTS, __version__
 from configparser import ConfigParser, ExtendedInterpolation
 
 from data_sources import relational_source
-
-
-ARGUMENTS_DEFAULT = {
-    'output_dir': 'output',
-    'output_file': 'result',
-    'output_format': 'nquads',
-    'remove_duplicates': 'yes',
-    'clean_output_dir': 'yes',
-    'mapping_partitions': 'guess',
-    'input_parsed_mappings_path': '',
-    'output_parsed_mappings_path': '',
-    'logs_file': '',
-    'logging_level': 'info',
-    'push_down_sql_distincts': 'no',
-    'number_of_processes': mp.cpu_count(),
-    'process_start_method': 'default',
-    'async': 'no',
-    'chunksize': 100000,
-    'infer_datatypes': 'yes',
-    'coerce_float': 'no',
-    'only_printable_characters': 'no'
-}
-
-
-VALID_ARGUMENTS = {
-    'output_format': ['ntriples', 'nquads'],
-    'mapping_partitions': 'spog',
-    'relational_source_type': ['mysql', 'postgresql', 'oracle', 'sqlserver'],
-    'file_source_type': [],
-    'process_start_method': ['default', 'spawn', 'fork', 'forkserver'],
-    'logging_level': ['notset', 'debug', 'info', 'warning', 'error', 'critical']
-}
 
 
 def _configure_logger(config):
@@ -216,9 +184,8 @@ def _validate_config_data_sources_sections(config):
             if config.get(section, 'source_type') in VALID_ARGUMENTS['relational_source_type']:
                 # to check that required parameters are provided and that the connection is ok
                 relational_source.relational_db_connection(config, section)
-            else:
-                raise ValueError("'source_type' value '" + config.get(section, 'source_type') + "' provided in section '" + section +
-                                 "' of config file is not valid. 'source_type' value must be in: " + str(VALID_ARGUMENTS['relational_source_type']) + '.')
+            elif config.get(section, 'source_type') not in VALID_ARGUMENTS['tabular_source_type']:
+                raise ValueError("source_type value `" + config.get(section, 'source_type') + "` provided in section " + section + " is not valid.")
 
     return config
 
@@ -256,6 +223,7 @@ def _validate_config_configuration_section(config):
     config.getboolean('CONFIGURATION', 'only_printable_characters')
     config.getboolean('CONFIGURATION', 'infer_datatypes')
     config.getboolean('CONFIGURATION', 'push_down_sql_distincts')
+    config.getboolean('CONFIGURATION', 'push_down_sql_joins')
     config.getboolean('CONFIGURATION', 'remove_duplicates')
     config.getboolean('CONFIGURATION', 'clean_output_dir')
     config.getboolean('CONFIGURATION', 'async')
@@ -302,6 +270,10 @@ def _complete_config_file_with_defaults(config):
         config.set('CONFIGURATION', 'push_down_sql_distincts', ARGUMENTS_DEFAULT['push_down_sql_distincts'])
     elif config.get('CONFIGURATION', 'push_down_sql_distincts') == '':
         config.set('CONFIGURATION', 'push_down_sql_distincts', str(ARGUMENTS_DEFAULT['push_down_sql_distincts']))
+    if not config.has_option('CONFIGURATION', 'push_down_sql_joins'):
+        config.set('CONFIGURATION', 'push_down_sql_joins', ARGUMENTS_DEFAULT['push_down_sql_joins'])
+    elif config.get('CONFIGURATION', 'push_down_sql_joins') == '':
+        config.set('CONFIGURATION', 'push_down_sql_joins', str(ARGUMENTS_DEFAULT['push_down_sql_joins']))
     if not config.has_option('CONFIGURATION', 'mapping_partitions'):
         config.set('CONFIGURATION', 'mapping_partitions', ARGUMENTS_DEFAULT['mapping_partitions'])
     if not config.has_option('CONFIGURATION', 'number_of_processes'):

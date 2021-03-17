@@ -17,13 +17,12 @@ import time
 import sql_metadata
 import rfc3987
 import pandas as pd
+import constants
 
 from data_sources import relational_source
 from args_parser import VALID_ARGUMENTS
 from utils import get_repeated_elements_in_list
 
-
-RELATIONAL_SOURCE_TYPES = VALID_ARGUMENTS['relational_source_type']
 
 
 MAPPINGS_DATAFRAME_COLUMNS = [
@@ -641,7 +640,7 @@ def _infer_datatypes(mappings_df, config):
 
     for i, mapping_rule in mappings_df.iterrows():
         # datatype inferring only applies to relational data sources
-        if mapping_rule['source_type'] in RELATIONAL_SOURCE_TYPES:
+        if mapping_rule['source_type'] in constants.VALID_ARGUMENTS['relational_source_type']:
             # datatype inferring only applies to literals
             if mapping_rule['object_termtype'] == 'http://www.w3.org/ns/r2rml#Literal':
                 # if the literal has a language tag or an overridden datatype, datatype inference does not apply

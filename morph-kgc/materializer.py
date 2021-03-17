@@ -184,27 +184,40 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
     if mapping_rule['object_parent_triples_map']:
         parent_triples_map_rule = \
             subject_maps_df[subject_maps_df.triples_map_id == mapping_rule['object_parent_triples_map']].iloc[0]
-        parent_references = _get_references_in_mapping_rule(parent_triples_map_rule, only_subject_map=True)
 
-        for key, join_condition in eval(mapping_rule['join_conditions']).items():
-            parent_references.add(join_condition['parent_value'])
-            references.add(join_condition['child_value'])
-
-        sql_query = relational_source.build_sql_join_query(config, mapping_rule, parent_triples_map_rule,
-                                                                 references, parent_references)
-        db_connection = relational_source.relational_db_connection(config, mapping_rule['source_name'])
-        for query_results_chunk_df in pd.read_sql(sql_query, con=db_connection, chunksize=int(config.get('CONFIGURATION', 'chunksize')), coerce_float=config.getboolean('CONFIGURATION', 'coerce_float')):
-            query_results_chunk_df = utils.dataframe_columns_to_str(query_results_chunk_df)
-            triples.extend(_materialize_join_mapping_rule_terms(query_results_chunk_df, mapping_rule, parent_triples_map_rule))
-        db_connection.close()
-
+        # TODO: This is not correct, to be fixed
+        if config.getboolean('CONFIGURATION', 'push_down_sql_joins') and mapping_rule['source_type'] == 'mysql' and parent_triples_map_rule['source_type'] == 'mysql':
+            '''
+            parent_references = _get_references_in_mapping_rule(parent_triples_map_rule, only_subject_map=True)
+    
+            for key, join_condition in eval(mapping_rule['join_conditions']).items():
+                parent_references.add(join_condition['parent_value'])
+                references.add(join_condition['child_value'])
+    
+            sql_query = relational_source.build_sql_join_query(config, mapping_rule, parent_triples_map_rule,
+                                                                     references, parent_references)
+            db_connection = relational_source.relational_db_connection(config, mapping_rule['source_name'])
+            for query_results_chunk_df in pd.read_sql(sql_query, con=db_connection, chunksize=int(config.get('CONFIGURATION', 'chunksize')), coerce_float=config.getboolean('CONFIGURATION', 'coerce_float')):
+                query_results_chunk_df = utils.dataframe_columns_to_str(query_results_chunk_df)
+                triples.extend(_materialize_join_mapping_rule_terms(query_results_chunk_df, mapping_rule, parent_triples_map_rule))
+            db_connection.close()
+            '''
+        else:
+            print('a')
     else:
-        sql_query = relational_source.build_sql_query(config, mapping_rule, references)
-        db_connection = relational_source.relational_db_connection(config, mapping_rule['source_name'])
-        for query_results_chunk_df in pd.read_sql(sql_query, con=db_connection, chunksize=int(config.get('CONFIGURATION', 'chunksize')), coerce_float=config.getboolean('CONFIGURATION', 'coerce_float')):
+        if mapping_rule['source_type'] == 'mysql':
+            sql_query = relational_source.build_sql_query(config, mapping_rule, references)
+            db_connection = relational_source.relational_db_connection(config, mapping_rule['source_name'])
+            result_chunks = pd.read_sql(sql_query, con=db_connection, chunksize=int(config.get('CONFIGURATION', 'chunksize')), coerce_float=config.getboolean('CONFIGURATION', 'coerce_float'))
+        elif mapping_rule['source_type'] == 'csv':
+            result_chunks = pd.read_table(mapping_rule['data_source'], delimiter=',', usecols=_get_references_in_mapping_rule(mapping_rule), engine='c', chunksize=int(config.get('CONFIGURATION', 'chunksize')))
+
+        for query_results_chunk_df in result_chunks:
             query_results_chunk_df = utils.dataframe_columns_to_str(query_results_chunk_df)
             triples.extend(_materialize_mapping_rule_terms(query_results_chunk_df, mapping_rule))
-        db_connection.close()
+
+        if mapping_rule['source_type'] == 'mysql':
+            db_connection.close()
 
     logging.info("Number of triples generated for mapping rule '" + str(mapping_rule['id']) + "': " + str(len(triples)) + ".")
 
