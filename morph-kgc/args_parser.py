@@ -15,8 +15,8 @@ import argparse
 import os
 import re
 import logging
+import constants
 
-from constants import ARGUMENTS_DEFAULT, VALID_ARGUMENTS, __version__
 from configparser import ConfigParser, ExtendedInterpolation
 
 from data_sources import relational_source
@@ -181,10 +181,10 @@ def _validate_config_data_sources_sections(config):
             # mind that DEFAULT section is not triggered with config.sections().
 
             config.set(section, 'source_type', config.get(section, 'source_type').lower())
-            if config.get(section, 'source_type') in VALID_ARGUMENTS['relational_source_type']:
+            if config.get(section, 'source_type') in constants.RELATIONAL_SOURCE_TYPES:
                 # to check that required parameters are provided and that the connection is ok
                 relational_source.relational_db_connection(config, section)
-            elif config.get(section, 'source_type') not in VALID_ARGUMENTS['tabular_source_type']:
+            elif config.get(section, 'source_type') not in constants.VALID_ARGUMENTS['file_source_type']:
                 raise ValueError("source_type value `" + config.get(section, 'source_type') + "` provided in section " + section + " is not valid.")
 
     return config
@@ -202,8 +202,8 @@ def _validate_config_configuration_section(config):
 
     output_format = config.get('CONFIGURATION', 'output_format')
     output_format = str(output_format).lower()
-    if output_format not in VALID_ARGUMENTS['output_format']:
-        raise ValueError("Value for option 'output_format' in config must be in: " + str(VALID_ARGUMENTS['output_format']))
+    if output_format not in constants.VALID_ARGUMENTS['output_format']:
+        raise ValueError("Value for option 'output_format' in config must be in: " + str(constants.VALID_ARGUMENTS['output_format']))
     config.set('CONFIGURATION', 'output_format', output_format)
 
     config.set('CONFIGURATION', 'output_dir', _dir_path(config.get('CONFIGURATION', 'output_dir')))
@@ -211,9 +211,9 @@ def _validate_config_configuration_section(config):
 
     mapping_partitions = config.get('CONFIGURATION', 'mapping_partitions')
     mapping_partitions = str(mapping_partitions).lower()
-    if mapping_partitions != 'guess' and not (set(mapping_partitions) <= set(VALID_ARGUMENTS['mapping_partitions'])):
+    if mapping_partitions != 'guess' and not (set(mapping_partitions) <= set(constants.VALID_ARGUMENTS['mapping_partitions'])):
         raise ValueError('Option mapping_partitions must be `guess`, empty, or a subset of `' +
-                         VALID_ARGUMENTS['mapping_partitions'] + '`.')
+                         constants.VALID_ARGUMENTS['mapping_partitions'] + '`.')
     config.set('CONFIGURATION', 'mapping_partitions', mapping_partitions)
 
     config.set('CONFIGURATION', 'number_of_processes',
@@ -224,7 +224,6 @@ def _validate_config_configuration_section(config):
     config.getboolean('CONFIGURATION', 'infer_datatypes')
     config.getboolean('CONFIGURATION', 'push_down_sql_distincts')
     config.getboolean('CONFIGURATION', 'push_down_sql_joins')
-    config.getboolean('CONFIGURATION', 'remove_duplicates')
     config.getboolean('CONFIGURATION', 'clean_output_dir')
     config.getboolean('CONFIGURATION', 'async')
 
@@ -233,12 +232,12 @@ def _validate_config_configuration_section(config):
     config.set('CONFIGURATION', 'logs_file', _file_path(config.get('CONFIGURATION', 'logs_file')))
 
     config.set('CONFIGURATION', 'logging_level', config.get('CONFIGURATION', 'logging_level').lower())
-    if config.get('CONFIGURATION', 'logging_level') not in VALID_ARGUMENTS['logging_level']:
-        raise ValueError("Value for option 'logging_level' in config must be in: " + str(VALID_ARGUMENTS['logging_level']))
+    if config.get('CONFIGURATION', 'logging_level') not in constants.VALID_ARGUMENTS['logging_level']:
+        raise ValueError("Value for option 'logging_level' in config must be in: " + str(constants.VALID_ARGUMENTS['logging_level']))
 
     config.set('CONFIGURATION', 'process_start_method', config.get('CONFIGURATION', 'process_start_method').lower())
-    if config.get('CONFIGURATION', 'process_start_method') not in VALID_ARGUMENTS['process_start_method']:
-        raise ValueError("Value for option 'process_start_method' in config must be in: " + str(VALID_ARGUMENTS['process_start_method']))
+    if config.get('CONFIGURATION', 'process_start_method') not in constants.VALID_ARGUMENTS['process_start_method']:
+        raise ValueError("Value for option 'process_start_method' in config must be in: " + str(constants.VALID_ARGUMENTS['process_start_method']))
     return config
 
 
@@ -259,69 +258,65 @@ def _complete_config_file_with_defaults(config):
     # if parameters are not provided in the config file, take them from arguments
     # mind that ConfigParser store options as strings
     if not config.has_option('CONFIGURATION', 'output_dir'):
-        config.set('CONFIGURATION', 'output_dir', ARGUMENTS_DEFAULT['output_dir'])
+        config.set('CONFIGURATION', 'output_dir', constants.ARGUMENTS_DEFAULT['output_dir'])
     if not config.has_option('CONFIGURATION', 'output_file'):
-        config.set('CONFIGURATION', 'output_file', ARGUMENTS_DEFAULT['output_file'])
+        config.set('CONFIGURATION', 'output_file', constants.ARGUMENTS_DEFAULT['output_file'])
     if not config.has_option('CONFIGURATION', 'output_format'):
-        config.set('CONFIGURATION', 'output_format', ARGUMENTS_DEFAULT['output_format'])
+        config.set('CONFIGURATION', 'output_format', constants.ARGUMENTS_DEFAULT['output_format'])
     elif config.get('CONFIGURATION', 'output_format') == '':
-        config.set('CONFIGURATION', 'output_format', str(ARGUMENTS_DEFAULT['output_format']))
+        config.set('CONFIGURATION', 'output_format', str(constants.ARGUMENTS_DEFAULT['output_format']))
     if not config.has_option('CONFIGURATION', 'push_down_sql_distincts'):
-        config.set('CONFIGURATION', 'push_down_sql_distincts', ARGUMENTS_DEFAULT['push_down_sql_distincts'])
+        config.set('CONFIGURATION', 'push_down_sql_distincts', constants.ARGUMENTS_DEFAULT['push_down_sql_distincts'])
     elif config.get('CONFIGURATION', 'push_down_sql_distincts') == '':
-        config.set('CONFIGURATION', 'push_down_sql_distincts', str(ARGUMENTS_DEFAULT['push_down_sql_distincts']))
+        config.set('CONFIGURATION', 'push_down_sql_distincts', str(constants.ARGUMENTS_DEFAULT['push_down_sql_distincts']))
     if not config.has_option('CONFIGURATION', 'push_down_sql_joins'):
-        config.set('CONFIGURATION', 'push_down_sql_joins', ARGUMENTS_DEFAULT['push_down_sql_joins'])
+        config.set('CONFIGURATION', 'push_down_sql_joins', constants.ARGUMENTS_DEFAULT['push_down_sql_joins'])
     elif config.get('CONFIGURATION', 'push_down_sql_joins') == '':
-        config.set('CONFIGURATION', 'push_down_sql_joins', str(ARGUMENTS_DEFAULT['push_down_sql_joins']))
+        config.set('CONFIGURATION', 'push_down_sql_joins', str(constants.ARGUMENTS_DEFAULT['push_down_sql_joins']))
     if not config.has_option('CONFIGURATION', 'mapping_partitions'):
-        config.set('CONFIGURATION', 'mapping_partitions', ARGUMENTS_DEFAULT['mapping_partitions'])
+        config.set('CONFIGURATION', 'mapping_partitions', constants.ARGUMENTS_DEFAULT['mapping_partitions'])
     if not config.has_option('CONFIGURATION', 'number_of_processes'):
-        config.set('CONFIGURATION', 'number_of_processes', str(ARGUMENTS_DEFAULT['number_of_processes']))
+        config.set('CONFIGURATION', 'number_of_processes', str(constants.ARGUMENTS_DEFAULT['number_of_processes']))
     elif config.get('CONFIGURATION', 'number_of_processes') == '':
-        config.set('CONFIGURATION', 'number_of_processes', str(ARGUMENTS_DEFAULT['number_of_processes']))
+        config.set('CONFIGURATION', 'number_of_processes', str(constants.ARGUMENTS_DEFAULT['number_of_processes']))
     if not config.has_option('CONFIGURATION', 'async'):
-        config.set('CONFIGURATION', 'async', str(ARGUMENTS_DEFAULT['async']))
+        config.set('CONFIGURATION', 'async', str(constants.ARGUMENTS_DEFAULT['async']))
     elif config.get('CONFIGURATION', 'async') == '':
-        config.set('CONFIGURATION', 'async', str(ARGUMENTS_DEFAULT['async']))
-    if not config.has_option('CONFIGURATION', 'remove_duplicates'):
-        config.set('CONFIGURATION', 'remove_duplicates', str(ARGUMENTS_DEFAULT['remove_duplicates']))
-    elif config.get('CONFIGURATION', 'remove_duplicates') == '':
-        config.set('CONFIGURATION', 'remove_duplicates', str(ARGUMENTS_DEFAULT['remove_duplicates']))
+        config.set('CONFIGURATION', 'async', str(constants.ARGUMENTS_DEFAULT['async']))
     if not config.has_option('CONFIGURATION', 'clean_output_dir'):
-        config.set('CONFIGURATION', 'clean_output_dir', str(ARGUMENTS_DEFAULT['clean_output_dir']))
+        config.set('CONFIGURATION', 'clean_output_dir', str(constants.ARGUMENTS_DEFAULT['clean_output_dir']))
     elif config.get('CONFIGURATION', 'clean_output_dir') == '':
-        config.set('CONFIGURATION', 'clean_output_dir', str(ARGUMENTS_DEFAULT['clean_output_dir']))
+        config.set('CONFIGURATION', 'clean_output_dir', str(constants.ARGUMENTS_DEFAULT['clean_output_dir']))
     if not config.has_option('CONFIGURATION', 'chunksize'):
-        config.set('CONFIGURATION', 'chunksize', str(ARGUMENTS_DEFAULT['chunksize']))
+        config.set('CONFIGURATION', 'chunksize', str(constants.ARGUMENTS_DEFAULT['chunksize']))
     elif config.get('CONFIGURATION', 'chunksize') == '':
-        config.set('CONFIGURATION', 'chunksize', str(ARGUMENTS_DEFAULT['chunksize']))
+        config.set('CONFIGURATION', 'chunksize', str(constants.ARGUMENTS_DEFAULT['chunksize']))
     if not config.has_option('CONFIGURATION', 'coerce_float'):
-        config.set('CONFIGURATION', 'coerce_float', ARGUMENTS_DEFAULT['coerce_float'])
+        config.set('CONFIGURATION', 'coerce_float', constants.ARGUMENTS_DEFAULT['coerce_float'])
     elif config.get('CONFIGURATION', 'coerce_float') == '':
-        config.set('CONFIGURATION', 'coerce_float', str(ARGUMENTS_DEFAULT['coerce_float']))
+        config.set('CONFIGURATION', 'coerce_float', str(constants.ARGUMENTS_DEFAULT['coerce_float']))
     if not config.has_option('CONFIGURATION', 'only_printable_characters'):
-        config.set('CONFIGURATION', 'only_printable_characters', ARGUMENTS_DEFAULT['only_printable_characters'])
+        config.set('CONFIGURATION', 'only_printable_characters', constants.ARGUMENTS_DEFAULT['only_printable_characters'])
     elif config.get('CONFIGURATION', 'only_printable_characters') == '':
-        config.set('CONFIGURATION', 'only_printable_characters', str(ARGUMENTS_DEFAULT['only_printable_characters']))
+        config.set('CONFIGURATION', 'only_printable_characters', str(constants.ARGUMENTS_DEFAULT['only_printable_characters']))
     if not config.has_option('CONFIGURATION', 'infer_datatypes'):
-        config.set('CONFIGURATION', 'infer_datatypes', ARGUMENTS_DEFAULT['infer_datatypes'])
+        config.set('CONFIGURATION', 'infer_datatypes', constants.ARGUMENTS_DEFAULT['infer_datatypes'])
     elif config.get('CONFIGURATION', 'infer_datatypes') == '':
-        config.set('CONFIGURATION', 'infer_datatypes', str(ARGUMENTS_DEFAULT['infer_datatypes']))
+        config.set('CONFIGURATION', 'infer_datatypes', str(constants.ARGUMENTS_DEFAULT['infer_datatypes']))
     if not config.has_option('CONFIGURATION', 'input_parsed_mappings_path'):
-        config.set('CONFIGURATION', 'input_parsed_mappings_path', ARGUMENTS_DEFAULT['input_parsed_mappings_path'])
+        config.set('CONFIGURATION', 'input_parsed_mappings_path', constants.ARGUMENTS_DEFAULT['input_parsed_mappings_path'])
     if not config.has_option('CONFIGURATION', 'output_parsed_mappings_path'):
-        config.set('CONFIGURATION', 'output_parsed_mappings_path', ARGUMENTS_DEFAULT['output_parsed_mappings_path'])
+        config.set('CONFIGURATION', 'output_parsed_mappings_path', constants.ARGUMENTS_DEFAULT['output_parsed_mappings_path'])
     if not config.has_option('CONFIGURATION', 'logs_file'):
-        config.set('CONFIGURATION', 'logs_file', ARGUMENTS_DEFAULT['logs_file'])
+        config.set('CONFIGURATION', 'logs_file', constants.ARGUMENTS_DEFAULT['logs_file'])
     if not config.has_option('CONFIGURATION', 'logging_level'):
-        config.set('CONFIGURATION', 'logging_level', ARGUMENTS_DEFAULT['logging_level'])
+        config.set('CONFIGURATION', 'logging_level', constants.ARGUMENTS_DEFAULT['logging_level'])
     elif config.get('CONFIGURATION', 'logging_level') == '':
-        config.set('CONFIGURATION', 'logging_level', str(ARGUMENTS_DEFAULT['logging_level']))
+        config.set('CONFIGURATION', 'logging_level', str(constants.ARGUMENTS_DEFAULT['logging_level']))
     if not config.has_option('CONFIGURATION', 'process_start_method'):
-        config.set('CONFIGURATION', 'process_start_method', str(ARGUMENTS_DEFAULT['process_start_method']))
+        config.set('CONFIGURATION', 'process_start_method', str(constants.ARGUMENTS_DEFAULT['process_start_method']))
     elif config.get('CONFIGURATION', 'process_start_method') == '':
-        config.set('CONFIGURATION', 'process_start_method', str(ARGUMENTS_DEFAULT['process_start_method']))
+        config.set('CONFIGURATION', 'process_start_method', str(constants.ARGUMENTS_DEFAULT['process_start_method']))
 
     return config
 
@@ -341,7 +336,7 @@ def _parse_arguments():
     )
 
     parser.add_argument('config', type=_existing_file_path, help='path to the configuration file')
-    parser.add_argument('-v', '--version', action='version', version='Morph-KGC ' + __version__ + ' | ' + __copyright__)
+    parser.add_argument('-v', '--version', action='version', version='Morph-KGC ' + constants.__version__ + ' | ' + __copyright__)
 
     return parser.parse_args()
 

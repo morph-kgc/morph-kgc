@@ -20,7 +20,6 @@ import pandas as pd
 import constants
 
 from data_sources import relational_source
-from args_parser import VALID_ARGUMENTS
 from utils import get_repeated_elements_in_list
 
 

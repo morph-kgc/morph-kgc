@@ -36,13 +36,13 @@ ARGUMENTS_DEFAULT = {
     'only_printable_characters': 'no'
 }
 
+RELATIONAL_SOURCE_TYPES = ['mysql', 'postgresql', 'oracle', 'sqlserver']
+TABULAR_SOURCE_TYPES = ['csv']
 
 VALID_ARGUMENTS = {
     'output_format': ['ntriples', 'nquads'],
     'mapping_partitions': 'spog',
-    'relational_source_type': ['mysql', 'postgresql', 'oracle', 'sqlserver'],
-    'tabular_source_type': ['csv'],
-    'file_source_type': [],
+    'file_source_type': RELATIONAL_SOURCE_TYPES + TABULAR_SOURCE_TYPES,
     'process_start_method': ['default', 'spawn', 'fork', 'forkserver'],
     'logging_level': ['notset', 'debug', 'info', 'warning', 'error', 'critical']
 }
