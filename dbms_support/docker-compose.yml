@@ -1,0 +1,44 @@
+version: '3.1'
+services:
+  mysql:
+    container_name: kgc-mysql
+    image: mysql:8.0
+    restart: always
+    volumes:
+     - /data/volumes:/var/lib/mysql
+     - /data:/data  
+    environment:
+      MYSQL_ROOT_PASSWORD: r2rml
+      MYSQL_USER: r2rml
+      MYSQL_PASSWORD: r2rml
+      MYSQL_DATABASE: r2rml
+    ports:
+      - "3306:3306"
+    command: --sql_mode="ANSI_QUOTES"
+	
+  postgresql:
+    container_name: kgc-postgres
+    image: postgres:13
+    restart: always
+    volumes:
+     - /data/:/var/lib/postgresql/data 	
+    environment:
+      POSTGRES_PASSWORD: r2rml
+      POSTGRES_USER: r2rml
+      POSTGRES_DB: r2rml
+    ports:
+      - "5432:5432"
+	  
+  oracle:
+    container_name: kgc-oracle
+    image: 
+    restart: always
+    volumes:
+     - /data/:/u01/app/oracle 	
+    environment:
+      ORACLE_PASSWORD: r2rml
+    ports:
+      - "1521:1521"
+networks:
+  dbms:
+    driver: bridge 
