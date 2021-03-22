@@ -1,5 +1,6 @@
 version: '3.1'
 services:
+# MySQL 
   mysql:
     container_name: kgc-mysql
     image: mysql:8.0
@@ -15,6 +16,7 @@ services:
     ports:
       - "3306:3306"
     command: --sql_mode="ANSI_QUOTES"
+# PostgreSQL     
   postgresql:
     container_name: kgc-postgres
     image: postgres:13
@@ -27,6 +29,7 @@ services:
       POSTGRES_DB: r2rml
     ports:
       - "5432:5432"
+# Oracle      
   oracle:
     container_name: kgc-oracle
     image: 
