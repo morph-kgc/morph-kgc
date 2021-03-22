@@ -165,12 +165,10 @@ class MappingParser:
         self.config = config
 
     def __str__(self):
-        # TODO
-        pass
+        str(self.mappings_df)
 
     def __repr__(self):
-        # TODO
-        pass
+        repr(self.mappings_df)
 
     def parse_mappings(self):
         """
@@ -199,6 +197,8 @@ class MappingParser:
 
         mapping_partitioner = MappingPartitioner(self.mappings_df, self.config)
         self.mappings_df = mapping_partitioner.partition_mappings()
+
+        print()
 
         return self.mappings_df
 
