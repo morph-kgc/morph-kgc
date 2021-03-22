@@ -16,7 +16,6 @@ import sys
 import pandas as pd
 
 from mapping.mapping_parser import MappingParser
-from mapping.mapping_partitioner import MappingPartitioner
 from args_parser import parse_config
 from materializer import materialize
 
@@ -35,10 +34,7 @@ if __name__ == "__main__":
             'mapping_partition']))) + ' mapping partitions loaded from file.')
     else:
         mappings_parser = MappingParser(config)
-        parsed_mappings = mappings_parser.parse_mappings()
-
-        mapping_partitioner = MappingPartitioner(parsed_mappings, config)
-        mappings = mapping_partitioner.partition_mappings()
+        mappings = mappings_parser.parse_mappings()
 
         output_parsed_mappings_path = config.get('CONFIGURATION', 'output_parsed_mappings_path')
         if output_parsed_mappings_path:

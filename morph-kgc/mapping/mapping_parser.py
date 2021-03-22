@@ -17,6 +17,9 @@ import rfc3987
 import pandas as pd
 import constants
 
+
+from mapping.mapping_partitioner import MappingPartitioner
+
 from data_source import relational_source
 from utils import get_repeated_elements_in_list, _get_invariable_part_of_template
 
@@ -193,6 +196,9 @@ class MappingParser:
         self._validate_parsed_mappings()
 
         logging.info(str(len(self.mappings_df)) + ' mapping rules retrieved.')
+
+        mapping_partitioner = MappingPartitioner(self.mappings_df, self.config)
+        self.mappings_df = mapping_partitioner.partition_mappings()
 
         return self.mappings_df
 

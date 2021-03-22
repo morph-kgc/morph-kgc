@@ -199,17 +199,14 @@ class MappingPartitioner:
                 be used as partitioning criteria. The same for predicate and graph.
                 '''
                 if self.mappings_df['subject_reference'].notna().any():
-                    logging.warning("Invalid mapping partition criteria '" + mapping_partition_criteria +
-                                    "': mappings cannot be partitioned by subject because mappings contain subject terms "
-                                    'that are rr:column or rml:reference.')
+                    logging.warning('Invalid mapping partition criteria `' + mapping_partition_criteria +
+                                    '`: mappings cannot be partitioned by subject because mappings contain subject terms that are rr:column or rml:reference.')
                 else:
                     valid_mapping_partition_criteria += 's'
 
             if 'p' in mapping_partition_criteria:
                 if self.mappings_df['predicate_reference'].notna().any():
-                    logging.warning("Invalid mapping partition criteria '" + mapping_partition_criteria +
-                                    "': mappings cannot be partitioned by predicate because mappings contain predicate "
-                                    'terms that are rr:column or rml:reference.')
+                    logging.warning('Invalid mapping partition criteria `' + mapping_partition_criteria + '`: mappings cannot be partitioned by predicate because mappings contain predicate terms that are rr:column or rml:reference.')
                 else:
                     valid_mapping_partition_criteria += 'p'
 
@@ -218,13 +215,16 @@ class MappingPartitioner:
 
             if 'g' in mapping_partition_criteria:
                 if self.mappings_df['graph_reference'].notna().any():
-                    logging.warning("Invalid mapping partition criteria '" + mapping_partition_criteria +
-                                    "': mappings cannot be partitioned by graph because mappings "
+                    logging.warning('Invalid mapping partition criteria `' + mapping_partition_criteria +
+                                    '`: mappings cannot be partitioned by graph because mappings '
                                     'contain graph terms that are rr:column or rml:reference.')
                 else:
                     valid_mapping_partition_criteria += 'g'
 
-        logging.info("Using `" + valid_mapping_partition_criteria + "` as mapping partition criteria.")
+        if valid_mapping_partition_criteria:
+            logging.info('Using `' + valid_mapping_partition_criteria + '` as mapping partition criteria.')
+        else:
+            logging.ingo('Not using mapping partitioning.')
 
         self.config.set('CONFIGURATION', 'mapping_partitions', valid_mapping_partition_criteria)
 
