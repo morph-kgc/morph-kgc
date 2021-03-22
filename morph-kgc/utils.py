@@ -158,3 +158,27 @@ def dataframe_columns_to_str(df):
         df[col_name] = df[col_name].astype(str)
 
     return df
+
+
+def _get_invariable_part_of_template(template):
+    """
+    Retrieves the part of the template before the first reference. This part of the template does not depend on
+    reference and therefore is invariable. If the template has no references, it is an invalid template, and an
+    exception is thrown.
+
+    :param template: template
+    :type template: str
+    :return invariable part of the template
+    :rtype str
+    """
+
+    zero_width_space = '\u200B'
+    template_for_splitting = template.replace('\\{', zero_width_space)
+    if '{' in template_for_splitting:
+        invariable_part_of_template = template_for_splitting.split('{')[0]
+        invariable_part_of_template = invariable_part_of_template.replace(zero_width_space, '\\{')
+    else:
+        # no references were found in the template, and therefore the template is invalid
+        raise Exception("Invalid template '" + template + "'. No pairs of unescaped curly braces were found.")
+
+    return invariable_part_of_template

@@ -224,7 +224,7 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
                 for parent_query_results_chunk_df in pd.read_table(parent_triples_map_rule['data_source'], delimiter=',', usecols=parent_references, engine='c', chunksize=int(config.get('CONFIGURATION', 'chunksize'))):
                     # TODO: when using chunks the number of result obtained is not correct
                     # read_table should directly be in this inner for
-                    raise
+
                     parent_query_results_chunk_df = utils.dataframe_columns_to_str(parent_query_results_chunk_df)
                     parent_query_results_chunk_df = parent_query_results_chunk_df.add_prefix('parent_')
                     # TODO: study merge options
