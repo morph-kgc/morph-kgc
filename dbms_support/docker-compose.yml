@@ -6,8 +6,8 @@ services:
     image: mysql:8.0
     restart: always
     volumes:
-     - /data/volumes:/var/lib/mysql
-     - /data:/data  
+     - /data/volumes_mysql:/var/lib/mysql
+     - /data:/data
     environment:
       MYSQL_ROOT_PASSWORD: r2rml
       MYSQL_USER: r2rml
@@ -22,7 +22,8 @@ services:
     image: postgres:13
     restart: always
     volumes:
-     - /data/:/var/lib/postgresql/data	
+     - /data/volumes_postgresql:/var/lib/postgresql/data
+     - /data:/data
     environment:
       POSTGRES_PASSWORD: r2rml
       POSTGRES_USER: r2rml
@@ -35,7 +36,8 @@ services:
     image: oegdataintegration/oracle-xe-11g
     restart: always
     volumes:
-     - /data/:/u01/app/oracle
+     - /data/volumes_oracle:/u01/app/oracle
+     - /data:/data     
     environment:
       ORACLE_PASSWORD: r2rml
     ports:
