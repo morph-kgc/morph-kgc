@@ -15,7 +15,6 @@ services:
     ports:
       - "3306:3306"
     command: --sql_mode="ANSI_QUOTES"
-	
   postgresql:
     container_name: kgc-postgres
     image: postgres:13
@@ -28,7 +27,6 @@ services:
       POSTGRES_DB: r2rml
     ports:
       - "5432:5432"
-	  
   oracle:
     container_name: kgc-oracle
     image: 
