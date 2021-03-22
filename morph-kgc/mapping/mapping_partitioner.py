@@ -40,8 +40,14 @@ class MappingPartitioner:
         mapping rule.
         """
 
-        mapping_partitions = self._validate_mapping_partition_criteria()
+        self._validate_mapping_partition_criteria()
         self._get_mapping_partitions_invariable_parts()
+        self.generate_mapping_partitions()
+
+        return self.mappings_df
+
+    def generate_mapping_partitions(self):
+        mapping_partitions = self.config.get('CONFIGURATION', 'mapping_partitions')
 
         self.mappings_df['subject_partition'] = ''
         self.mappings_df['predicate_partition'] = ''
@@ -164,8 +170,6 @@ class MappingPartitioner:
         if mapping_partitions:
             logging.info(str(len(set(self.mappings_df['mapping_partition']))) + ' mapping partitions generated.')
 
-        return self.mappings_df
-
     def _validate_mapping_partition_criteria(self):
         """
         Checks that the mapping partitioning criteria is valid. A criteria (subject (s), predicate(p), or graph(g)) is not
@@ -220,12 +224,9 @@ class MappingPartitioner:
                 else:
                     valid_mapping_partition_criteria += 'g'
 
-        if mapping_partition_criteria:
-            logging.info("Using '" + valid_mapping_partition_criteria + "' as mapping partition criteria.")
-        else:
-            logging.info('Not using mapping partitioning.')
+        logging.info("Using `" + valid_mapping_partition_criteria + "` as mapping partition criteria.")
 
-        return valid_mapping_partition_criteria
+        self.config.set('CONFIGURATION', 'mapping_partitions', valid_mapping_partition_criteria)
 
     def _get_mapping_partitions_invariable_parts(self):
         """
