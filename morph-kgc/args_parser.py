@@ -19,7 +19,7 @@ import constants
 
 from configparser import ConfigParser, ExtendedInterpolation
 
-from data_sources import relational_source
+from data_source import relational_source
 
 
 def _configure_logger(config):
