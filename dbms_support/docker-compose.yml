@@ -32,7 +32,7 @@ services:
 # Oracle      
   oracle:
     container_name: kgc-oracle
-    image: 
+    image: oegdataintegration/oracle-xe-11g
     restart: always
     volumes:
      - /data/:/u01/app/oracle 	
