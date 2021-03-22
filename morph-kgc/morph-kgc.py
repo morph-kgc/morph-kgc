@@ -11,6 +11,9 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 import logging
 import time
+import sys
+
+import pandas as pd
 
 from mapping.mapping_parser import MappingParser
 from mapping.mapping_partitioner import MappingPartitioner
@@ -24,11 +27,25 @@ if __name__ == "__main__":
 
     config = parse_config()
 
-    mappings_parser = MappingParser(config)
-    parsed_mappings = mappings_parser.parse_mappings()
+    input_parsed_mappings_path = config.get('CONFIGURATION', 'input_parsed_mappings_path')
+    if input_parsed_mappings_path:
+        # retrieve parsed mapping from file and finish mapping processing
+        mappings = pd.read_csv(input_parsed_mappings_path, keep_default_na=False)
+        logging.info(str(len(mappings)) + ' mappings rules with ' + str(len(set(mappings[
+            'mapping_partition']))) + ' mapping partitions loaded from file.')
+    else:
+        mappings_parser = MappingParser(config)
+        parsed_mappings = mappings_parser.parse_mappings()
 
-    mapping_partitioner = MappingPartitioner(parsed_mappings, config)
-    mappings = mapping_partitioner.partition_mappings()
+        mapping_partitioner = MappingPartitioner(parsed_mappings, config)
+        mappings = mapping_partitioner.partition_mappings()
+
+        output_parsed_mappings_path = config.get('CONFIGURATION', 'output_parsed_mappings_path')
+        if output_parsed_mappings_path:
+            # the parsed mappings are to be saved to a file, and the execution of the engine terminates
+            mappings.sort_values(by=['id'], axis=0).to_csv(output_parsed_mappings_path, index=False)
+            logging.info('Parsed mapping rules saved to file.')
+            sys.exit()
 
     materialize(mappings, config)
 
