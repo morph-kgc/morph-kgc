@@ -19,7 +19,7 @@ import rfc3987
 import pandas as pd
 import constants
 
-from data_sources import relational_source
+from data_source import relational_source
 from utils import get_repeated_elements_in_list
 
 
