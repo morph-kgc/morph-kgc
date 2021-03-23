@@ -23,140 +23,7 @@ from data_source import relational_source
 from utils import get_repeated_elements_in_list, _get_invariable_part_of_template
 
 
-"""This query has been reused from SDM-RDFizer (https://github.com/SDM-TIB/SDM-RDFizer). SDM-RDFizer has been developed
-by members of the Scientific Data Management Group at TIB. Its development has been coordinated and supervised by
-Maria-Esther Vidal. The implementation has been done by Enrique Iglesias and Guillermo Betancourt under the
-supervision of David Chaves-Fraga, Samaneh Jozashoori, and Kemele Endris.
-It has been partially modified by the Ontology Engineering Group (OEG) from Universidad Politécnica de Madrid (UPM)."""
-MAPPING_PARSING_QUERY = """
-    prefix rr: <http://www.w3.org/ns/r2rml#>
-    prefix rml: <http://semweb.mmlab.be/ns/rml#>
-
-    SELECT DISTINCT
-        ?triples_map_id ?data_source ?ref_form ?iterator ?tablename ?query ?object_map
-        ?subject_template ?subject_reference ?subject_constant
-        ?subject_rdf_class ?subject_termtype
-        ?graph_constant ?graph_reference ?graph_template
-        ?predicate_constant ?predicate_template ?predicate_reference
-        ?object_constant ?object_template ?object_reference ?object_termtype ?object_datatype ?object_language
-        ?object_parent_triples_map
-        ?predicate_object_graph_constant ?predicate_object_graph_reference ?predicate_object_graph_template
-
-    WHERE {
-        ?triples_map_id rml:logicalSource ?_source .
-        OPTIONAL { ?_source rml:source ?data_source . }
-        OPTIONAL { ?_source rml:referenceFormulation ?ref_form . }
-        OPTIONAL { ?_source rml:iterator ?iterator . }
-        OPTIONAL { ?_source rr:tableName ?tablename . }
-        OPTIONAL { ?_source rml:query ?query . }
-
-# Subject -------------------------------------------------------------------------
-        OPTIONAL {
-            ?triples_map_id rr:subjectMap ?_subject_map .
-            OPTIONAL { ?_subject_map rr:template ?subject_template . }
-            OPTIONAL { ?_subject_map rml:reference ?subject_reference . }
-            OPTIONAL { ?_subject_map rr:constant ?subject_constant . }
-            OPTIONAL { ?_subject_map rr:class ?subject_rdf_class . }
-            OPTIONAL { ?_subject_map rr:termType ?subject_termtype . }
-            OPTIONAL { ?_subject_map rr:graph ?graph_constant . }
-            OPTIONAL {
-                ?_subject_map rr:graphMap ?_graph_structure .
-                ?_graph_structure rr:constant ?graph_constant .
-            }
-            OPTIONAL {
-                ?_subject_map rr:graphMap ?_graph_structure .
-                ?_graph_structure rr:template ?graph_template .
-            }
-            OPTIONAL {
-                ?_subject_map rr:graphMap ?_graph_structure .
-                ?_graph_structure rr:reference ?graph_reference .
-            }
-        }
-        OPTIONAL { ?triples_map_id rr:subject ?subject_constant . }
-
-# Predicate -----------------------------------------------------------------------
-        OPTIONAL {
-            ?triples_map_id rr:predicateObjectMap ?_predicate_object_map .
-            OPTIONAL {
-                ?_predicate_object_map rr:predicateMap ?_predicate_map .
-                ?_predicate_map rr:constant ?predicate_constant .
-            }
-            OPTIONAL {
-                ?_predicate_object_map rr:predicateMap ?_predicate_map .
-                ?_predicate_map rr:template ?predicate_template .
-            }
-            OPTIONAL {
-                ?_predicate_object_map rr:predicateMap ?_predicate_map .
-                ?_predicate_map rml:reference ?predicate_reference .
-            }
-            OPTIONAL { ?_predicate_object_map rr:predicate ?predicate_constant . }
-
-# Object --------------------------------------------------------------------------
-            OPTIONAL {
-                ?_predicate_object_map rr:objectMap ?object_map .
-                ?object_map rr:constant ?object_constant .
-                OPTIONAL { ?object_map rr:termType ?object_termtype . }
-                OPTIONAL { ?object_map rr:datatype ?object_datatype . }
-                OPTIONAL { ?object_map rr:language ?object_language . }
-            }
-            OPTIONAL {
-                ?_predicate_object_map rr:objectMap ?object_map .
-                ?object_map rr:template ?object_template .
-                OPTIONAL { ?object_map rr:termType ?object_termtype . }
-                OPTIONAL { ?object_map rr:datatype ?object_datatype . }
-                OPTIONAL { ?object_map rr:language ?object_language . }
-            }
-            OPTIONAL {
-                ?_predicate_object_map rr:objectMap ?object_map .
-                ?object_map rml:reference ?object_reference .
-                OPTIONAL { ?object_map rr:termType ?object_termtype . }
-                OPTIONAL { ?object_map rr:datatype ?object_datatype . }
-                OPTIONAL { ?object_map rr:language ?object_language . }
-            }
-            OPTIONAL {
-                ?_predicate_object_map rr:objectMap ?object_map .
-                ?object_map rr:parentTriplesMap ?object_parent_triples_map .
-                OPTIONAL { ?object_map rr:termType ?object_termtype . }
-            }
-            OPTIONAL {
-                ?_predicate_object_map rr:object ?object_constant .
-                OPTIONAL { ?object_map rr:datatype ?object_datatype . }
-                OPTIONAL { ?object_map rr:language ?object_language . }
-            }
-            OPTIONAL { ?_predicate_object_map rr:graph ?predicate_object_graph_constant . }
-            OPTIONAL {
-                ?_predicate_object_map rr:graphMap ?_graph_structure .
-                ?_graph_structure rr:constant ?predicate_object_graph_constant .
-            }
-            OPTIONAL {
-                ?_predicate_object_map rr:graphMap ?_graph_structure .
-                ?_graph_structure rr:template ?predicate_object_graph_template .
-            }
-            OPTIONAL {
-                ?_predicate_object_map rr:graphMap ?_graph_structure .
-                ?_graph_structure rr:reference ?predicate_object_graph_reference .
-            }
-        }
-    }
-"""
-
-
-JOIN_CONDITION_PARSING_QUERY = """
-    prefix rr: <http://www.w3.org/ns/r2rml#>
-
-    SELECT DISTINCT ?object_map ?join_condition ?child_value ?parent_value
-    WHERE {
-        ?object_map rr:joinCondition ?join_condition .
-        ?join_condition rr:child ?child_value;
-                        rr:parent ?parent_value.
-    }
-"""
-
-
 class MappingParser:
-
-    def __init__(self):
-        self.mappings_df = pd.DataFrame(columns=constants.MAPPINGS_DATAFRAME_COLUMNS)
 
     def __init__(self, config):
         self.mappings_df = pd.DataFrame(columns=constants.MAPPINGS_DATAFRAME_COLUMNS)
@@ -180,7 +47,7 @@ class MappingParser:
         # common DataFrame for all data sources
         for config_section_name in self.config.sections():
             if config_section_name != 'CONFIGURATION':
-                data_source_mappings_df = self._parse_mapping_files(config_section_name)
+                data_source_mappings_df = self._parse_data_source_mapping_files(config_section_name)
                 self.mappings_df = pd.concat([self.mappings_df, data_source_mappings_df])
                 self.mappings_df = self.mappings_df.reset_index(drop=True)
 
@@ -201,18 +68,59 @@ class MappingParser:
 
         return self.mappings_df
 
+    def _parse_data_source_mapping_files(self, config_section_name):
+        """
+        Creates a Pandas DataFrame with the mapping rules for a data source. It loads the mapping files in a rdflib graph
+        and recognizes the mapping language used. Mapping files serialization is automatically guessed.
+        It performs queries MAPPING_PARSING_QUERY and JOIN_CONDITION_PARSING_QUERY and process the results to
+        build a DataFrame with the mapping rules. Also verifies that there are not repeated triples maps in the mappings.
+        """
+
+        mapping_graph = rdflib.Graph()
+        try:
+            # process all file/directories given for as mappings for the data source
+            for mapping_path in self.config.get(config_section_name, 'mappings').split(','):
+                # if it is a file load the mapping triples to the graph
+                if os.path.isfile(mapping_path):
+                    mapping_graph.load(mapping_path, format=rdflib.util.guess_format(mapping_path))
+                # if it is a directory process all the mapping files within the root of the directory
+                elif os.path.isdir(mapping_path):
+                    for mapping_file_name in os.listdir(mapping_path):
+                        mapping_file = os.path.join(mapping_path, mapping_file_name)
+                        if os.path.isfile(mapping_file):
+                            mapping_graph.load(mapping_file, format=rdflib.util.guess_format(mapping_file))
+        except Exception as n3_mapping_parse_exception:
+            raise Exception(n3_mapping_parse_exception)
+
+        # before further processing, convert R2RML rules to RML, so that we can assume RML for parsing
+        mapping_graph = self._mapping_to_rml(mapping_graph, config_section_name)
+
+        # parse the mappings with the parsing query
+        mapping_query_results = mapping_graph.query(constants.MAPPING_PARSING_QUERY)
+        join_query_results = mapping_graph.query(constants.JOIN_CONDITION_PARSING_QUERY)
+
+        # check triples maps are not repeated, which would lead to errors (because of repeated triples maps identifiers)
+        self._validate_no_repeated_triples_maps(mapping_graph, config_section_name)
+
+        # convert the SPARQL result set with the parsed mappings to DataFrame
+        return self._transform_mappings_into_dataframe(mapping_query_results, join_query_results, config_section_name)
+
     def _normalize_mappings(self):
-        # postprocessing of parsed mappings
+        # start by removing duplicated triples
         self.mappings_df = self.mappings_df.drop_duplicates()
+        # convert rr:class to new POMs
         self._rdf_class_to_pom()
+        # normalizes graphs terms in the mappings
         self._process_pom_graphs()
+        # if a term as no associated rr:termType, complete it as indicated in R2RML specification
         self._complete_termtypes()
 
-        # complete source types
+        # we want to track the type of data source (RDB, CSV, EXCEL, JSON, etc) in the parsed mapping rules
         for i, mapping_rule in self.mappings_df.iterrows():
             self.mappings_df.at[i, 'source_type'] = self.config.get(mapping_rule['source_name'], 'source_type')
 
-        self._remove_delimiters_from_identifiers()
+        # ignore the delimited identifiers (this is not conformant with R2MRL specification)
+        self._remove_delimiters_from_mappings()
 
         # create a unique id for each mapping rule
         self.mappings_df.insert(0, 'id', self.mappings_df.reset_index(drop=True).index)
@@ -222,27 +130,30 @@ class MappingParser:
         Replaces in a graph the predicates predicate_to_remove with the predicate predicate_to_add.
         """
 
+        # get the triples with the predicate to be replaced
         r2rml_sources_query = 'SELECT ?s ?o WHERE {?s <' + predicate_to_remove + '> ?o .}'
         logical_sources = graph.query(r2rml_sources_query)
 
+        # for each triple to be replaced a similar one (same subject and object) but with the new predicate
         for s, o in logical_sources:
             graph.add((s, rdflib.term.URIRef(predicate_to_add), o))
+
+        # remove all triples in the graph that have the old predicate
         graph.remove((None, rdflib.term.URIRef(predicate_to_remove), None))
 
         return graph
 
     def _mapping_to_rml(self, mapping_graph, config_section_name):
         """
-        Recognizes the mapping language of the rules in a graph. If it is R2RML, the mapping rules
-        are converted to RML.
+        Recognizes the mapping language of the rules in a graph. If it is R2RML, the mapping rules are converted to RML.
         """
 
-        # check if mapping language is R2RML
-        r2rml_query = 'SELECT ?s WHERE {?s <' + constants.R2RML['logical_table'] + '> ?o .} LIMIT 1 '
+        r2rml_query = 'SELECT ?s WHERE {?s <http://www.w3.org/ns/r2rml#logicalTable> ?o .} LIMIT 1 '
+        # if the query result set is not empty then the mapping language is R2RML
         if len(mapping_graph.query(r2rml_query)) > 0:
-            logging.debug("R2RML mapping language inferred for data source '"
-                          + config_section_name + "', converting rules to RML.")
+            logging.debug("Data source `" + config_section_name + "` has R2RML rules, converting them to RML.")
 
+            # replace R2RML predicates with the equivalent RML predicates
             mapping_graph = self._replace_predicates_in_graph(mapping_graph, constants.R2RML['logical_table'], constants.RML['logical_source'])
             mapping_graph = self._replace_predicates_in_graph(mapping_graph, constants.R2RML['sql_query'], constants.RML['query'])
             mapping_graph = self._replace_predicates_in_graph(mapping_graph, constants.R2RML['column'], constants.RML['reference'])
@@ -251,16 +162,19 @@ class MappingParser:
 
     def _get_join_object_maps_join_conditions(self, join_query_results):
         """
-        Creates a dictionary with the results of the JOIN_CONDITION_PARSING_QUERY. The values of the dictionary are in turn
+        Creates a dictionary with the results of the JOIN_CONDITION_PARSING_QUERY. The keys are the identifiers of the
+        child triples maps of the join condition. The values of the dictionary are in turn
         other dictionaries with two items with keys, child_value and parent_value, representing a join condition.
         """
 
         join_conditions_dict = {}
 
         for join_condition in join_query_results:
+            # add the child triples map identifier if it is not in the dictionary
             if join_condition.object_map not in join_conditions_dict:
                 join_conditions_dict[join_condition.object_map] = {}
 
+            # add the new join condition (note that several join conditions can apply in a join)
             join_conditions_dict[join_condition.object_map][str(join_condition.join_condition)] = \
                 {'child_value': str(join_condition.child_value), 'parent_value': str(join_condition.parent_value)}
 
@@ -268,7 +182,7 @@ class MappingParser:
 
     def _append_mapping_rule(self, data_source_mappings_df, mapping_rule):
         """
-        Builds a Pandas DataFrame from the results obtained from [R2]RML_MAPPING_PARSING_QUERY and
+        Builds a Pandas DataFrame from the results obtained from MAPPING_PARSING_QUERY and
         JOIN_CONDITION_PARSING_QUERY for one source.
         """
 
@@ -308,76 +222,56 @@ class MappingParser:
 
     def _validate_no_repeated_triples_maps(self, mapping_graph, source_name):
         """
-        Checks that there are no repeated triples maps in the mapping rules of a source.
+        Checks that there are no repeated triples maps in the mapping rules of a source. This is important because
+        if there are repeated triples maps (i.e. triples map with the same identifier), it is not possible to process
+        parent triples maps correctly.
         """
 
         query = """
             prefix rr: <http://www.w3.org/ns/r2rml#>
-            prefix rml: <http://semweb.mmlab.be/ns/rml#>
+            
+            SELECT ?triples_map_id WHERE { ?triples_map_id rr:subjectMap ?_subject_map . } """
 
-            SELECT ?triples_map_id
-            WHERE { ?triples_map_id rr:subjectMap ?_subject_map . } """
-
+        # get the identifiers of all the triples maps in the graph
         triples_map_ids = [str(result.triples_map_id) for result in list(mapping_graph.query(query))]
+
+        # get the identifiers that are repeated
         repeated_triples_map_ids = get_repeated_elements_in_list(triples_map_ids)
+
+        # if there are any repeated identifiers, then it will produce errors during materialization
         if len(repeated_triples_map_ids) > 0:
-            raise Exception("The following triples maps in data source '" + source_name + "' are repeated: " +
-                            str(repeated_triples_map_ids) + '".')
+            raise Exception("The following triples maps in data source `" + source_name + "` are repeated: " +
+                            str(repeated_triples_map_ids) + '.')
 
     def _transform_mappings_into_dataframe(self, mapping_query_results, join_query_results, config_section_name):
         """
-        Builds a Pandas DataFrame from the results obtained from [R2]RML_MAPPING_PARSING_QUERY and
+        Builds a Pandas DataFrame from the results obtained from MAPPING_PARSING_QUERY and
         JOIN_CONDITION_PARSING_QUERY for one source.
         """
 
+        # create empty DataFrame with relevant columns
         source_mappings_df = pd.DataFrame(columns=constants.MAPPINGS_DATAFRAME_COLUMNS)
+        # populate the DataFrame with parsed mappings from parsing SPARQL query
         for mapping_rule in mapping_query_results:
-            # append each mapping rule to the newly created DataFrame
             source_mappings_df = self._append_mapping_rule(source_mappings_df, mapping_rule)
 
         # process mapping rules with joins
+        # create dict with child triples maps in the keys and its join conditions in in the values
         join_conditions_dict = self._get_join_object_maps_join_conditions(join_query_results)
+        # map the dict with the join conditions to the mapping rules in the DataFrame
         source_mappings_df['join_conditions'] = source_mappings_df['object_map'].map(join_conditions_dict)
+        # needed for later hashing the dataframe
         source_mappings_df['join_conditions'] = source_mappings_df['join_conditions'].where(
-            pd.notnull(source_mappings_df['join_conditions']), '')  # needed for later hashing the dataframe
+            pd.notnull(source_mappings_df['join_conditions']), '')
+        # convert the join condition dictionaries to string (can later be converted back to dict)
         source_mappings_df['join_conditions'] = source_mappings_df['join_conditions'].astype(str)
-        source_mappings_df = source_mappings_df.drop('object_map', axis=1)  # object_map column no longer needed
+        # object_map column no longer needed, remove it
+        source_mappings_df = source_mappings_df.drop('object_map', axis=1)
 
-        # associate the source name to the mapping rules
+        # link the mapping rules to its data source name
         source_mappings_df['source_name'] = config_section_name
 
         return source_mappings_df
-
-    def _parse_mapping_files(self, config_section_name):
-        """
-        Creates a Pandas DataFrame with the mapping rules for a data source. It loads the mapping files in a rdflib graph
-        and recognizes the mapping language used. Mapping files serialization is automatically guessed.
-        It performs queries [R2]RML_MAPPING_PARSING_QUERY and JOIN_CONDITION_PARSING_QUERY and process the results to
-        build a DataFrame with the mapping rules. Also verifies that there are not repeated triples maps in the mappings.
-        """
-
-        mapping_graph = rdflib.Graph()
-        try:
-            for mapping_path in self.config.get(config_section_name, 'mappings').split(','):
-                if os.path.isfile(mapping_path):
-                    mapping_graph.load(mapping_path, format=rdflib.util.guess_format(mapping_path))
-                elif os.path.isdir(mapping_path):
-                    for mapping_file_name in os.listdir(mapping_path):
-                        mapping_file = os.path.join(mapping_path, mapping_file_name)
-                        if os.path.isfile(mapping_file):
-                            mapping_graph.load(mapping_file, format=rdflib.util.guess_format(mapping_file))
-        except Exception as n3_mapping_parse_exception:
-            raise Exception(n3_mapping_parse_exception)
-
-        mapping_graph = self._mapping_to_rml(mapping_graph, config_section_name)
-
-        mapping_query_results = mapping_graph.query(MAPPING_PARSING_QUERY)
-        join_query_results = mapping_graph.query(JOIN_CONDITION_PARSING_QUERY)
-
-        # check triples maps are not repeated
-        self._validate_no_repeated_triples_maps(mapping_graph, config_section_name)
-
-        return self._transform_mappings_into_dataframe(mapping_query_results, join_query_results, config_section_name)
 
     def _rdf_class_to_pom(self):
         """
@@ -385,16 +279,19 @@ class MappingParser:
         corresponding to rr:class properties are added to the input DataFrame and subject_rdf_class column is removed.
         """
 
+        # make a copy of the parsed mappings
         initial_mapping_df = self.mappings_df.copy()
 
+        # iterate over the mapping rules
         for i, row in initial_mapping_df.iterrows():
+            # if a mapping rules has rr:class, generate a new POM to generate triples for this graph
             if pd.notna(row['subject_rdf_class']):
-                # append a new mapping rule to mappings_df corresponding to rr:class properties
-
+                # get the position of the new POM in the DataFrame
                 j = len(self.mappings_df)
 
+                # build the new POM from the mapping rule
                 self.mappings_df.at[j, 'source_name'] = row['source_name']
-                # add rdf_class_ at the beginning to avoid problems in later processing
+                # add rdf_class_ at the beginning to avoid duplciating triples map identifiers
                 self.mappings_df.at[j, 'triples_map_id'] = 'rdf_class_' + str(row['triples_map_id'])
                 self.mappings_df.at[j, 'tablename'] = row['tablename']
                 self.mappings_df.at[j, 'query'] = row['query']
@@ -410,8 +307,10 @@ class MappingParser:
                 self.mappings_df.at[j, 'object_termtype'] = constants.R2RML['IRI']
                 self.mappings_df.at[j, 'join_conditions'] = ''
 
-        self.mappings_df = self.mappings_df.drop('subject_rdf_class', axis=1)  # subject_rdf_class column no longer needed
-        self.mappings_df = self.mappings_df.drop_duplicates()  # just to ensure there are no duplicates
+        # subject_rdf_class column no longer needed, remove it
+        self.mappings_df = self.mappings_df.drop('subject_rdf_class', axis=1)
+        # ensure that we do not generate duplicated mapping rules
+        self.mappings_df = self.mappings_df.drop_duplicates()
 
     def _process_pom_graphs(self):
         """
@@ -422,21 +321,26 @@ class MappingParser:
 
         # use rr:defaultGraph for those mapping rules that do not have any graph term
         for i, mapping_rule in self.mappings_df.iterrows():
+            # check the POM has no associated graph term
             if pd.isna(mapping_rule['graph_constant']) and pd.isna(mapping_rule['graph_reference']) and \
                     pd.isna(mapping_rule['graph_template']):
                 if pd.isna(mapping_rule['predicate_object_graph_constant']) and \
                         pd.isna(mapping_rule['predicate_object_graph_reference']) and \
                         pd.isna(mapping_rule['predicate_object_graph_template']):
+                    # no graph term for this POM, assign rr:defaultGraph
                     self.mappings_df.at[i, 'graph_constant'] = constants.R2RML['default_graph']
 
-        # instead of having two columns for each option of graph term (e.g. graph_constant and
-        # predicate_object_graph_constant) have only one to keep it simple. Do this by appending POM graph terms as new
-        # mapping rules in the DataFrame.
+        # instead of having two columns for graph terms (one for subject maps, i.e. graph_constant, and other for POMs,
+        # i.e. predicate_object_graph_constant), keep only one for simplicity. In order
+        # to have only one column, append POM graph terms as new mapping rules in the DataFrame.
         for i, mapping_rule in self.mappings_df.copy().iterrows():
 
             if pd.notna(mapping_rule['predicate_object_graph_constant']):
+                # position of the new rule in the DataFrame
                 j = len(self.mappings_df)
+                # copy (duplicate) the mapping rule
                 self.mappings_df.loc[j] = mapping_rule
+                # update the graph term (with the POM graph term) of the new mapping rule
                 self.mappings_df.at[j, 'graph_constant'] = mapping_rule['predicate_object_graph_constant']
 
             if pd.notna(mapping_rule['predicate_object_graph_template']):
@@ -449,13 +353,14 @@ class MappingParser:
                 self.mappings_df.loc[j] = mapping_rule
                 self.mappings_df.at[j, 'graph_reference'] = mapping_rule['predicate_object_graph_reference']
 
-        # POM graph columns are no longer needed
-        self.mappings_df = self.mappings_df.drop(columns=['predicate_object_graph_constant', 'predicate_object_graph_template',
-                                                'predicate_object_graph_reference'])
-        # Drop where graph_constant, graph_template and graph_reference are null. This is because original mapping rules
-        # could not have graph term for subject maps but had it for POM, and because the newly appended mapping rule, the
-        # old ones do no longer apply
+        # remove POM graph columns
+        self.mappings_df = self.mappings_df.drop(columns=['predicate_object_graph_constant', 'predicate_object_graph_template', 'predicate_object_graph_reference'])
+        # Drop where graph_constant, graph_template and graph_reference are null. This is because it can happen taht
+        # original mapping rules have graph term for subject maps but not for POM, and if this happens, the newly
+        # appended mapping rule applies, but the the old one (without graph term in the subject map) must not be
+        # considered.
         self.mappings_df = self.mappings_df.dropna(subset=['graph_constant', 'graph_template', 'graph_reference'], how='all')
+        # ensure that we do not introduce duplicate mapping rules
         self.mappings_df = self.mappings_df.drop_duplicates()
 
     def _complete_termtypes(self):
@@ -465,17 +370,19 @@ class MappingParser:
         """
 
         for i, mapping_rule in self.mappings_df.iterrows():
-
+            # if subject termtype is missing, then subject termtype is rr:IRI
             if pd.isna(mapping_rule['subject_termtype']):
                 self.mappings_df.at[i, 'subject_termtype'] = constants.R2RML['IRI']
 
             if pd.isna(mapping_rule['object_termtype']):
-
+                # if object termtype is missing and there is a language tag or datatype or object term is a
+                # reference, then termtype is rr:Literal
                 if pd.notna(mapping_rule['object_language']) or pd.notna(mapping_rule['object_datatype']) or \
                         pd.notna(mapping_rule['object_reference']):
                     self.mappings_df.at[i, 'object_termtype'] = constants.R2RML['literal']
 
                 else:
+                    # if previous conditions (language tag, datatype or reference) do not hold, then termtype is rr:IRI
                     self.mappings_df.at[i, 'object_termtype'] = constants.R2RML['IRI']
 
         # convert to str (instead of rdflib object) to avoid problems later
@@ -512,7 +419,7 @@ class MappingParser:
             return template.replace('{"', '{').replace('"}', '}')
         return template
 
-    def _remove_delimiters_from_identifiers(self):
+    def _remove_delimiters_from_mappings(self):
         """
         Removes demiliters from all identifiers in the mapping rules in the input DataFrame.
         """
@@ -561,10 +468,10 @@ class MappingParser:
 
                             self.mappings_df.at[i, 'object_datatype'] = data_type
                             if data_type:
-                                logging.debug("'" + data_type + "' datatype inferred for column '" +
-                                              mapping_rule['object_reference'] + "' of table '" +
-                                              mapping_rule['tablename'] + "' in data source '" +
-                                              mapping_rule['source_name'] + "'.")
+                                logging.debug("`" + data_type + "` datatype inferred for column `" +
+                                              mapping_rule['object_reference'] + "` of table `" +
+                                              mapping_rule['tablename'] + "` in data source `" +
+                                              mapping_rule['source_name'] + "`.")
 
                         elif pd.notna(mapping_rule['query']):
                             # if mapping rule has a query, get the table names
@@ -581,10 +488,10 @@ class MappingParser:
 
                                     self.mappings_df.at[i, 'object_datatype'] = data_type
                                     if data_type:
-                                        logging.debug("'" + data_type + "' datatype inferred for reference '" +
-                                                      mapping_rule['object_reference'] + "' in query (" +
-                                                      mapping_rule['query'] + ") in data source '" +
-                                                      mapping_rule['source_name'] + "'.")
+                                        logging.debug("`" + data_type + "` datatype inferred for reference `" +
+                                                      mapping_rule['object_reference'] + "` in query (" +
+                                                      mapping_rule['query'] + ") in data source `" +
+                                                      mapping_rule['source_name'] + "`.")
 
                                     # already found it, end looping
                                     break
@@ -601,8 +508,10 @@ class MappingParser:
         :param mappings_df: DataFrame populated with mapping rules
         :type mappings_df: DataFrame
         """
+        # TODO: I would do validation outside the mapping parser (maybe when validating mappings against ontology)
 
-        # check termtypes are correct, use subset operation
+        # check termtypes are correct (i.e. that they are rr:IRI, rr:BlankNode or rr:Literal and that subject map is
+        # not a rr:literal). Use subset operation
         if not (set(self.mappings_df['subject_termtype'].astype(str)) <= {constants.R2RML['IRI'], constants.R2RML['blank_node']}):
             raise ValueError('Found an invalid subject termtype. Found values ' + str(
                 set(self.mappings_df['subject_termtype'].astype(str))) + '. Subject maps must be rr:IRI or rr:BlankNode.')
@@ -622,15 +531,16 @@ class MappingParser:
                    self.mappings_df['object_language'].notnull() & self.mappings_df['object_datatype'].notnull()]) > 0:
             logging.warning('Found object maps with a language tag and a datatype. Both of them cannot be used simultaneously for the same object map, and the language tag has preference.')
 
-        # check constants are valid IRIs
+        # check constants are valid IRIs. Get all constants in predicate, graph, subject and object
         constants_terms = list(self.mappings_df['predicate_constant'].dropna())
         constants_terms.extend(list(self.mappings_df['graph_constant'].dropna()))
         constants_terms.extend(list(self.mappings_df.loc[(self.mappings_df['subject_termtype'] == constants.R2RML['IRI']) & self.mappings_df['subject_constant'].notnull()]['subject_constant']))
         constants_terms.extend(list(self.mappings_df.loc[(self.mappings_df['object_termtype'] == constants.R2RML['IRI']) & self.mappings_df['object_constant'].notnull()]['object_constant']))
+        # validate that each of the constants retrieved are valid URIs
         for constant in set(constants_terms):
             rfc3987.parse(constant, rule='IRI')
 
-        # check templates are valid IRIs
+        # check templates are valid IRIs. Get all templates in predicate, graph, subject and object
         templates = list(self.mappings_df['predicate_template'].dropna())
         templates.extend(list(self.mappings_df['graph_template'].dropna()))
         templates.extend(list(self.mappings_df.loc[
@@ -640,15 +550,16 @@ class MappingParser:
                                   (self.mappings_df['object_termtype'] == constants.R2RML['IRI']) & self.mappings_df[
                                       'object_template'].notnull()]['object_template']))
         for template in templates:
-            # validate that at least the invariable part of the template is a valid IRI
+            # validate that at least the INVARIABLE part of the template is a valid IRI
             rfc3987.parse(_get_invariable_part_of_template(str(template)), rule='IRI')
 
         # check that a triples map id is not repeated in different data sources
+        # Get unique source names and triples map identifiers
         aux_mappings_df = self.mappings_df[['source_name', 'triples_map_id']].drop_duplicates()
+        # get repeated triples map identifiers
         repeated_triples_map_ids = get_repeated_elements_in_list(list(aux_mappings_df['triples_map_id'].astype(str)))
+        # of those repeated identifiers, ignore those that come from rr:class (i.e. have the prefix rdf_class_)
         repeated_triples_map_ids = [tm_id for tm_id in repeated_triples_map_ids if not tm_id.startswith('rdf_class_')]
         if len(repeated_triples_map_ids) > 0:
             raise Exception('The following triples maps appear in more than one data source: ' +
-                            str(
-                                repeated_triples_map_ids) + '. Check the mapping files, one triple map cannot be repeated '
-                                                            'in different data sources.')
+                            str(repeated_triples_map_ids) + '. Check the mapping files, one triple map cannot be repeated in different data sources.')

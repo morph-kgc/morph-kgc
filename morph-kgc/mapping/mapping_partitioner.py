@@ -18,9 +18,6 @@ from utils import _get_invariable_part_of_template
 
 class MappingPartitioner:
 
-    def __init__(self):
-        self.mappings_df = pd.DataFrame(columns=constants.MAPPINGS_DATAFRAME_COLUMNS)
-
     def __init__(self, mappings_df, config):
         self.mappings_df = mappings_df
         self.config = config
@@ -250,8 +247,8 @@ class MappingPartitioner:
                 elif mapping_rule['subject_constant']:
                     self.mappings_df.at[i, 'subject_invariable_part'] = str(mapping_rule['subject_constant'])
                 else:
-                    logging.error("Could not get the invariable part of the subject for mapping rule '" +
-                                  str(mapping_rule['id']) + "'.")
+                    logging.error("Could not get the invariable part of the subject for mapping rule `" +
+                                  str(mapping_rule['id']) + "`.")
 
             if 'p' in self.config.get('CONFIGURATION', 'mapping_partitions'):
                 if mapping_rule['predicate_constant']:
@@ -260,8 +257,8 @@ class MappingPartitioner:
                     self.mappings_df.at[i, 'predicate_invariable_part'] = \
                         _get_invariable_part_of_template(str(mapping_rule['predicate_template']))
                 else:
-                    logging.error("Could not get the invariable part of the predicate for mapping rule '" +
-                                  str(mapping_rule['id']) + "'.")
+                    logging.error("Could not get the invariable part of the predicate for mapping rule `" +
+                                  str(mapping_rule['id']) + "`.")
 
             if 'o' in self.config.get('CONFIGURATION', 'mapping_partitions'):
                 if mapping_rule['object_constant']:
@@ -277,8 +274,8 @@ class MappingPartitioner:
                 elif mapping_rule['object_parent_triples_map']:
                     pass  # mapping partitions could be extended with uri invariable part of parent triples map
                 else:
-                    logging.error("Could not get the invariable part of the predicate for mapping rule '" +
-                                  str(mapping_rule['id']) + "'.")
+                    logging.error("Could not get the invariable part of the predicate for mapping rule `" +
+                                  str(mapping_rule['id']) + "`.")
 
             if 'g' in self.config.get('CONFIGURATION', 'mapping_partitions'):
                 if mapping_rule['graph_constant']:
@@ -287,5 +284,5 @@ class MappingPartitioner:
                     self.mappings_df.at[i, 'graph_invariable_part'] = \
                         _get_invariable_part_of_template(str(mapping_rule['graph_template']))
                 else:
-                    logging.error("Could not get the invariable part of the graph for mapping rule '" +
-                                  str(mapping_rule['id']) + "'.")
+                    logging.error("Could not get the invariable part of the graph for mapping rule `" +
+                                  str(mapping_rule['id']) + "`.")
