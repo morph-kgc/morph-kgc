@@ -52,17 +52,12 @@ class MappingParser:
                 self.mappings_df = self.mappings_df.reset_index(drop=True)
 
         self._normalize_mappings()
-
-        # if infer_datatypes is enabled, infer the RDF datatypes for mapping rules of relational data sources
-        if self.config.getboolean('CONFIGURATION', 'infer_datatypes'):
-            #TODO: review _infer_datatypes
-            raise
-            self._infer_datatypes()
-
+        self._infer_datatypes()
         self._validate_parsed_mappings()
 
         logging.info(str(len(self.mappings_df)) + ' mapping rules retrieved.')
 
+        # generate mapping partitions
         mapping_partitioner = MappingPartitioner(self.mappings_df, self.config)
         self.mappings_df = mapping_partitioner.partition_mappings()
 
@@ -451,6 +446,13 @@ class MappingParser:
         rules. The inferring of RDF datatypes is defined in R2RML specification
         (https://www.w3.org/2001/sw/rdb2rdf/r2rml/#natural-mapping).
         """
+
+        # return if datatype inferring is not enabled in the config
+        if not self.config.getboolean('CONFIGURATION', 'infer_datatypes'):
+            return
+
+        # TODO: review function
+        raise
 
         for i, mapping_rule in self.mappings_df.iterrows():
             # datatype inferring only applies to relational data sources
