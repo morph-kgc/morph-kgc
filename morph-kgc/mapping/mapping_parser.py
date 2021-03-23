@@ -185,7 +185,7 @@ class MappingParser:
 
         # if infer_datatypes is enabled, infer the RDF datatypes for mapping rules of relational data sources
         if self.config.getboolean('CONFIGURATION', 'infer_datatypes'):
-            #TODO: review this code
+            #TODO: review _infer_datatypes
             raise
             self._infer_datatypes()
 
