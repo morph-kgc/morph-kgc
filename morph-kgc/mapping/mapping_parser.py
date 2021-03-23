@@ -17,12 +17,10 @@ import rfc3987
 import pandas as pd
 import constants
 
-
 from mapping.mapping_partitioner import MappingPartitioner
 
 from data_source import relational_source
 from utils import get_repeated_elements_in_list, _get_invariable_part_of_template
-
 
 
 """This query has been reused from SDM-RDFizer (https://github.com/SDM-TIB/SDM-RDFizer). SDM-RDFizer has been developed
@@ -197,8 +195,6 @@ class MappingParser:
 
         mapping_partitioner = MappingPartitioner(self.mappings_df, self.config)
         self.mappings_df = mapping_partitioner.partition_mappings()
-
-        print()
 
         return self.mappings_df
 
