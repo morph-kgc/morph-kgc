@@ -20,18 +20,13 @@ from args_parser import parse_config
 from materializer import materialize
 
 
-if __name__ == "__main__":
-
-    start_time = time.time()
-
-    config = parse_config()
-
+def process_mappings(config):
     input_parsed_mappings_path = config.get('CONFIGURATION', 'input_parsed_mappings_path')
     if input_parsed_mappings_path:
         # retrieve parsed mapping from file and finish mapping processing
         mappings = pd.read_csv(input_parsed_mappings_path, keep_default_na=False)
         logging.info(str(len(mappings)) + ' mappings rules with ' + str(len(set(mappings[
-            'mapping_partition']))) + ' mapping partitions loaded from file.')
+                                                                                    'mapping_partition']))) + ' mapping partitions loaded from file.')
     else:
         mappings_parser = MappingParser(config)
         mappings = mappings_parser.parse_mappings()
@@ -42,6 +37,17 @@ if __name__ == "__main__":
             mappings.sort_values(by=['id'], axis=0).to_csv(output_parsed_mappings_path, index=False)
             logging.info('Parsed mapping rules saved to file.')
             sys.exit()
+
+    return mappings
+
+
+if __name__ == "__main__":
+
+    start_time = time.time()
+
+    config = parse_config()
+
+    mappings = process_mappings(config)
 
     materialize(mappings, config)
 
