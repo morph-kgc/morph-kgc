@@ -63,6 +63,8 @@ RML = {
     'reference': 'http://semweb.mmlab.be/ns/rml#reference'
 }
 
+AUXILIAR_UNIQUE_REPLACING_STRING = 'zzyy_xxww\u200B'
+
 MAPPINGS_DATAFRAME_COLUMNS = [
     'source_name',
     'triples_map_id', 'data_source', 'object_map', 'ref_form', 'iterator', 'tablename', 'query',

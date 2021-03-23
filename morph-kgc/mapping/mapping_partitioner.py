@@ -60,7 +60,7 @@ class MappingPartitioner:
             self.mappings_df.sort_values(by=['subject_invariable_part', 'subject_termtype'], inplace=True, ascending=True)
 
             num_partition = 0
-            root_last_partition = 'zzyy xxww\u200B'
+            root_last_partition = constants.AUXILIAR_UNIQUE_REPLACING_STRING
 
             # iterate over the mapping rules and check if the invariable part starts with the invariable part of the
             # previous rule
@@ -81,7 +81,7 @@ class MappingPartitioner:
         if 'p' in mapping_partitions:
             self.mappings_df.sort_values(by='predicate_invariable_part', inplace=True, ascending=True)
             num_partition = 0
-            root_last_partition = 'zzyy xxww\u200B'
+            root_last_partition = constants.AUXILIAR_UNIQUE_REPLACING_STRING
 
             use_equal = self.mappings_df['predicate_constant'].notna().all()
             if use_equal:
@@ -103,7 +103,7 @@ class MappingPartitioner:
             self.mappings_df.sort_values(by=['object_invariable_part', 'object_termtype'], inplace=True, ascending=True)
 
             num_partition = 0
-            root_last_partition = 'zzyy xxww\u200B'
+            root_last_partition = constants.AUXILIAR_UNIQUE_REPLACING_STRING
 
             for i, mapping_rule in self.mappings_df.iterrows():
                 if mapping_rule['object_termtype'] == constants.R2RML['blank_node']:
@@ -120,7 +120,7 @@ class MappingPartitioner:
         if 'g' in mapping_partitions:
             self.mappings_df.sort_values(by='graph_invariable_part', inplace=True, ascending=True)
             num_partition = 0
-            root_last_partition = 'zzyy xxww\u200B'
+            root_last_partition = constants.AUXILIAR_UNIQUE_REPLACING_STRING
 
             use_equal = self.mappings_df['graph_constant'].notna().all()
             if use_equal:
