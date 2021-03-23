@@ -163,10 +163,13 @@ class MappingParser:
         self.config = config
 
     def __str__(self):
-        str(self.mappings_df)
+        return str(self.mappings_df)
 
     def __repr__(self):
-        repr(self.mappings_df)
+        return repr(self.mappings_df)
+
+    def __len__(self):
+        return len(self.mappings_df)
 
     def parse_mappings(self):
         """
