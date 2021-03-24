@@ -26,7 +26,7 @@ def process_mappings(config):
         # retrieve parsed mapping from file and finish mapping processing
         mappings = pd.read_csv(input_parsed_mappings_path, keep_default_na=False)
         logging.info(str(len(mappings)) + ' mappings rules with ' + str(len(set(mappings[
-                                                                                    'mapping_partition']))) + ' mapping partitions loaded from file.')
+                     'mapping_partition']))) + ' mapping partitions loaded from file.')
     else:
         mappings_parser = MappingParser(config)
         mappings = mappings_parser.parse_mappings()

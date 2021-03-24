@@ -13,6 +13,8 @@ import re
 import os
 import shutil
 import logging
+import rdflib
+import constants
 
 
 def get_repeated_elements_in_list(input_list):
@@ -160,7 +162,7 @@ def dataframe_columns_to_str(df):
     return df
 
 
-def _get_invariable_part_of_template(template):
+def get_invariable_part_of_template(template):
     """
     Retrieves the part of the template before the first reference. This part of the template does not depend on
     reference and therefore is invariable. If the template has no references, it is an invalid template, and an
@@ -172,13 +174,32 @@ def _get_invariable_part_of_template(template):
     :rtype str
     """
 
-    zero_width_space = '\u200B'
-    template_for_splitting = template.replace('\\{', zero_width_space)
+    template_for_splitting = template.replace('\\{', constants.AUXILIAR_UNIQUE_REPLACING_STRING)
     if '{' in template_for_splitting:
         invariable_part_of_template = template_for_splitting.split('{')[0]
-        invariable_part_of_template = invariable_part_of_template.replace(zero_width_space, '\\{')
+        invariable_part_of_template = invariable_part_of_template.replace(constants.AUXILIAR_UNIQUE_REPLACING_STRING,
+                                                                          '\\{')
     else:
         # no references were found in the template, and therefore the template is invalid
-        raise Exception("Invalid template '" + template + "'. No pairs of unescaped curly braces were found.")
+        raise Exception("Invalid template `" + template + "`. No pairs of unescaped curly braces were found.")
 
     return invariable_part_of_template
+
+
+def replace_predicates_in_graph(graph, predicate_to_remove, predicate_to_add):
+    """
+    Replaces in a graph the predicates predicate_to_remove with the predicate predicate_to_add.
+    """
+
+    # get the triples with the predicate to be replaced
+    r2rml_sources_query = 'SELECT ?s ?o WHERE {?s <' + predicate_to_remove + '> ?o .}'
+    logical_sources = graph.query(r2rml_sources_query)
+
+    # for each triple to be replaced a similar one (same subject and object) but with the new predicate
+    for s, o in logical_sources:
+        graph.add((s, rdflib.term.URIRef(predicate_to_add), o))
+
+    # remove all triples in the graph that have the old predicate
+    graph.remove((None, rdflib.term.URIRef(predicate_to_remove), None))
+
+    return graph

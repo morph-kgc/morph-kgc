@@ -14,6 +14,28 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 import multiprocessing as mp
 
 
+R2RML = {
+    'logical_table': 'http://www.w3.org/ns/r2rml#logicalTable',
+    'sql_query': 'http://www.w3.org/ns/r2rml#sqlQuery',
+    'column': 'http://www.w3.org/ns/r2rml#column',
+    'default_graph': 'http://www.w3.org/ns/r2rml#defaultGraph',
+    'IRI': 'http://www.w3.org/ns/r2rml#IRI',
+    'literal': 'http://www.w3.org/ns/r2rml#Literal',
+    'blank_node': 'http://www.w3.org/ns/r2rml#BlankNode'
+}
+
+RML = {
+    'logical_source': 'http://semweb.mmlab.be/ns/rml#logicalSource',
+    'query': 'http://semweb.mmlab.be/ns/rml#query',
+    'reference': 'http://semweb.mmlab.be/ns/rml#reference'
+}
+
+
+RDF = {
+    'type': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'
+}
+
+
 ARGUMENTS_DEFAULT = {
     'output_dir': 'output',
     'output_file': 'result',
@@ -45,22 +67,6 @@ VALID_ARGUMENTS = {
     'file_source_type': RELATIONAL_SOURCE_TYPES + TABULAR_SOURCE_TYPES,
     'process_start_method': ['default', 'spawn', 'fork', 'forkserver'],
     'logging_level': ['notset', 'debug', 'info', 'warning', 'error', 'critical']
-}
-
-R2RML = {
-    'logical_table': 'http://www.w3.org/ns/r2rml#logicalTable',
-    'sql_query': 'http://www.w3.org/ns/r2rml#sqlQuery',
-    'column': 'http://www.w3.org/ns/r2rml#column',
-    'default_graph': 'http://www.w3.org/ns/r2rml#defaultGraph',
-    'IRI': 'http://www.w3.org/ns/r2rml#IRI',
-    'literal': 'http://www.w3.org/ns/r2rml#Literal',
-    'blank_node': 'http://www.w3.org/ns/r2rml#BlankNode'
-}
-
-RML = {
-    'logical_source': 'http://semweb.mmlab.be/ns/rml#logicalSource',
-    'query': 'http://semweb.mmlab.be/ns/rml#query',
-    'reference': 'http://semweb.mmlab.be/ns/rml#reference'
 }
 
 AUXILIAR_UNIQUE_REPLACING_STRING = 'zzyy_xxww\u200B'
