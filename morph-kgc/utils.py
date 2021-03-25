@@ -203,3 +203,24 @@ def replace_predicates_in_graph(graph, predicate_to_remove, predicate_to_add):
     graph.remove((None, rdflib.term.URIRef(predicate_to_remove), None))
 
     return graph
+
+
+def has_parent_triples_map(mapping_rule):
+    """
+    Checks if the mapping rule has a join condition
+    """
+
+    if mapping_rule['object_parent_triples_map']:
+        return True
+    else:
+        return False
+
+
+def get_mapping_rule_from_triples_map_id(mappings, parent_triples_map_id):
+    """
+    Get the parent triples map of mapping rule with the given id
+    """
+
+    parent_triples_map = mappings[mappings['triples_map_id'] == parent_triples_map_id]
+
+    return parent_triples_map.iloc[0]

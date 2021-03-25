@@ -178,12 +178,13 @@ def _validate_config_data_sources_sections(config):
             # if section is not CONFIGURATION then it is a data source
             # mind that DEFAULT section is not triggered with config.sections().
 
-            config.set(section, 'source_type', config.get(section, 'source_type').lower())
+            config.set(section, 'source_type', config.get(section, 'source_type').upper())
             if config.get(section, 'source_type') in constants.RELATIONAL_SOURCE_TYPES:
                 # to check that required parameters are provided and that the connection is ok
                 relational_source.relational_db_connection(config, section)
             elif config.get(section, 'source_type') not in constants.VALID_ARGUMENTS['file_source_type']:
-                raise ValueError("source_type value `" + config.get(section, 'source_type') + "` provided in section " + section + " is not valid.")
+                raise ValueError("source_type value `" + config.get(section, 'source_type') + "` provided in section "
+                                 + section + " is not valid.")
 
     return config
 
@@ -201,7 +202,8 @@ def _validate_config_configuration_section(config):
     output_format = config.get('CONFIGURATION', 'output_format')
     output_format = str(output_format).lower()
     if output_format not in constants.VALID_ARGUMENTS['output_format']:
-        raise ValueError("Value for option 'output_format' in config must be in: " + str(constants.VALID_ARGUMENTS['output_format']))
+        raise ValueError("Value for option 'output_format' in config must be in: " +
+                         str(constants.VALID_ARGUMENTS['output_format']))
     config.set('CONFIGURATION', 'output_format', output_format)
 
     config.set('CONFIGURATION', 'output_dir', _dir_path(config.get('CONFIGURATION', 'output_dir')))
@@ -209,7 +211,8 @@ def _validate_config_configuration_section(config):
 
     mapping_partitions = config.get('CONFIGURATION', 'mapping_partitions')
     mapping_partitions = str(mapping_partitions).lower()
-    if mapping_partitions != 'guess' and not (set(mapping_partitions) <= set(constants.VALID_ARGUMENTS['mapping_partitions'])):
+    if mapping_partitions != 'guess' and not (
+            set(mapping_partitions) <= set(constants.VALID_ARGUMENTS['mapping_partitions'])):
         raise ValueError('Option mapping_partitions must be `guess`, empty, or a subset of `' +
                          constants.VALID_ARGUMENTS['mapping_partitions'] + '`.')
     config.set('CONFIGURATION', 'mapping_partitions', mapping_partitions)
@@ -231,11 +234,13 @@ def _validate_config_configuration_section(config):
 
     config.set('CONFIGURATION', 'logging_level', config.get('CONFIGURATION', 'logging_level').lower())
     if config.get('CONFIGURATION', 'logging_level') not in constants.VALID_ARGUMENTS['logging_level']:
-        raise ValueError("Value for option 'logging_level' in config must be in: " + str(constants.VALID_ARGUMENTS['logging_level']))
+        raise ValueError("Value for option 'logging_level' in config must be in: " +
+                         str(constants.VALID_ARGUMENTS['logging_level']))
 
     config.set('CONFIGURATION', 'process_start_method', config.get('CONFIGURATION', 'process_start_method').lower())
     if config.get('CONFIGURATION', 'process_start_method') not in constants.VALID_ARGUMENTS['process_start_method']:
-        raise ValueError("Value for option 'process_start_method' in config must be in: " + str(constants.VALID_ARGUMENTS['process_start_method']))
+        raise ValueError("Value for option 'process_start_method' in config must be in: " +
+                         str(constants.VALID_ARGUMENTS['process_start_method']))
     return config
 
 
@@ -266,7 +271,8 @@ def _complete_config_file_with_defaults(config):
     if not config.has_option('CONFIGURATION', 'push_down_sql_distincts'):
         config.set('CONFIGURATION', 'push_down_sql_distincts', constants.ARGUMENTS_DEFAULT['push_down_sql_distincts'])
     elif config.get('CONFIGURATION', 'push_down_sql_distincts') == '':
-        config.set('CONFIGURATION', 'push_down_sql_distincts', str(constants.ARGUMENTS_DEFAULT['push_down_sql_distincts']))
+        config.set('CONFIGURATION', 'push_down_sql_distincts',
+                   str(constants.ARGUMENTS_DEFAULT['push_down_sql_distincts']))
     if not config.has_option('CONFIGURATION', 'push_down_sql_joins'):
         config.set('CONFIGURATION', 'push_down_sql_joins', constants.ARGUMENTS_DEFAULT['push_down_sql_joins'])
     elif config.get('CONFIGURATION', 'push_down_sql_joins') == '':
@@ -294,17 +300,21 @@ def _complete_config_file_with_defaults(config):
     elif config.get('CONFIGURATION', 'coerce_float') == '':
         config.set('CONFIGURATION', 'coerce_float', str(constants.ARGUMENTS_DEFAULT['coerce_float']))
     if not config.has_option('CONFIGURATION', 'only_printable_characters'):
-        config.set('CONFIGURATION', 'only_printable_characters', constants.ARGUMENTS_DEFAULT['only_printable_characters'])
+        config.set('CONFIGURATION', 'only_printable_characters',
+                   constants.ARGUMENTS_DEFAULT['only_printable_characters'])
     elif config.get('CONFIGURATION', 'only_printable_characters') == '':
-        config.set('CONFIGURATION', 'only_printable_characters', str(constants.ARGUMENTS_DEFAULT['only_printable_characters']))
+        config.set('CONFIGURATION', 'only_printable_characters',
+                   str(constants.ARGUMENTS_DEFAULT['only_printable_characters']))
     if not config.has_option('CONFIGURATION', 'infer_datatypes'):
         config.set('CONFIGURATION', 'infer_datatypes', constants.ARGUMENTS_DEFAULT['infer_datatypes'])
     elif config.get('CONFIGURATION', 'infer_datatypes') == '':
         config.set('CONFIGURATION', 'infer_datatypes', str(constants.ARGUMENTS_DEFAULT['infer_datatypes']))
     if not config.has_option('CONFIGURATION', 'input_parsed_mappings_path'):
-        config.set('CONFIGURATION', 'input_parsed_mappings_path', constants.ARGUMENTS_DEFAULT['input_parsed_mappings_path'])
+        config.set('CONFIGURATION', 'input_parsed_mappings_path',
+                   constants.ARGUMENTS_DEFAULT['input_parsed_mappings_path'])
     if not config.has_option('CONFIGURATION', 'output_parsed_mappings_path'):
-        config.set('CONFIGURATION', 'output_parsed_mappings_path', constants.ARGUMENTS_DEFAULT['output_parsed_mappings_path'])
+        config.set('CONFIGURATION', 'output_parsed_mappings_path',
+                   constants.ARGUMENTS_DEFAULT['output_parsed_mappings_path'])
     if not config.has_option('CONFIGURATION', 'logs_file'):
         config.set('CONFIGURATION', 'logs_file', constants.ARGUMENTS_DEFAULT['logs_file'])
     if not config.has_option('CONFIGURATION', 'logging_level'):
@@ -334,7 +344,8 @@ def _parse_arguments():
     )
 
     parser.add_argument('config', type=_existing_file_path, help='path to the configuration file')
-    parser.add_argument('-v', '--version', action='version', version='Morph-KGC ' + constants.__version__ + ' | ' + __copyright__)
+    parser.add_argument('-v', '--version', action='version',
+                        version='Morph-KGC ' + constants.__version__ + ' | ' + __copyright__)
 
     return parser.parse_args()
 
