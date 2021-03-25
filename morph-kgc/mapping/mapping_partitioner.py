@@ -9,7 +9,6 @@ __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"
 
 
-import pandas as pd
 import constants
 import logging
 
