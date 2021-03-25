@@ -12,6 +12,7 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 import logging
 import constants
 import sys
+import time
 import pandas as pd
 import multiprocessing as mp
 
@@ -207,14 +208,14 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
                 sql_query = relational_source.build_sql_query(config, mapping_rule, references)
                 db_connection = relational_source.relational_db_connection(config, mapping_rule['source_name'])
                 result_chunks = pd.read_sql(sql_query, con=db_connection, chunksize=int(config.get('CONFIGURATION', 'chunksize')), coerce_float=config.getboolean('CONFIGURATION', 'coerce_float'))
-            elif mapping_rule['source_type'] == 'csv':
+            elif mapping_rule['source_type'] == 'CSV':
                 result_chunks = pd.read_table(mapping_rule['data_source'], delimiter=',', usecols=references, engine='c', chunksize=int(config.get('CONFIGURATION', 'chunksize')))
             # ----------------------
             if parent_triples_map_rule['source_type'] == 'mysql':
                 parent_sql_query = relational_source.build_sql_query(config, parent_triples_map_rule, parent_references)
                 parent_db_connection = relational_source.relational_db_connection(config, parent_triples_map_rule['source_name'])
                 parent_result_chunks = pd.read_sql(parent_sql_query, con=parent_db_connection, chunksize=int(config.get('CONFIGURATION', 'chunksize')), coerce_float=config.getboolean('CONFIGURATION', 'coerce_float'))
-            elif parent_triples_map_rule['source_type'] == 'csv':
+            elif parent_triples_map_rule['source_type'] == 'CSV':
                 parent_result_chunks = pd.read_table(parent_triples_map_rule['data_source'], delimiter=',', usecols=parent_references, engine='c', chunksize=int(config.get('CONFIGURATION', 'chunksize')))
             # ----------------------
 
@@ -241,7 +242,7 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
             sql_query = relational_source.build_sql_query(config, mapping_rule, references)
             db_connection = relational_source.relational_db_connection(config, mapping_rule['source_name'])
             result_chunks = pd.read_sql(sql_query, con=db_connection, chunksize=int(config.get('CONFIGURATION', 'chunksize')), coerce_float=config.getboolean('CONFIGURATION', 'coerce_float'))
-        elif mapping_rule['source_type'] == 'csv':
+        elif mapping_rule['source_type'] == 'CSV':
             result_chunks = pd.read_table(mapping_rule['data_source'], delimiter=',', usecols=_get_references_in_mapping_rule(mapping_rule), engine='c', chunksize=int(config.get('CONFIGURATION', 'chunksize')))
 
         for query_results_chunk_df in result_chunks:
@@ -251,46 +252,71 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
         if mapping_rule['source_type'] == 'mysql':
             db_connection.close()
 
-    logging.info("Number of triples generated for mapping rule '" + str(mapping_rule['id']) + "': " + str(len(triples)) + ".")
-
     return triples
 
 
-def materialize_mapping_partition(mapping_partition, subject_maps_df, config):
+def _materialize_mapping_partition(mapping_partition, subject_maps_df, config):
     triples = set()
     for i, mapping_rule in mapping_partition.iterrows():
+        start_time = time.time()
         triples.update(set(_materialize_mapping_rule(mapping_rule, subject_maps_df, config)))
+
+        logging.debug(str(len(triples)) + ' triples generated for mapping rule `' + str(
+            mapping_rule['id']) + '` in ' + utils.get_delta_time(start_time) + ' seconds.')
 
     utils.triples_to_file(triples, config, mapping_partition.iloc[0]['mapping_partition'])
 
     return len(triples)
 
 
-def materialize(mappings_df, config):
-    subject_maps_df = utils.get_subject_maps(mappings_df)
-    mapping_partitions = [group for _, group in mappings_df.groupby(by='mapping_partition')]
+class Materializer:
 
-    utils.clean_output_dir(config)
+    def __init__(self, mappings_df, config):
+        self.mappings_df = mappings_df
+        self.config = config
 
-    if int(config.get('CONFIGURATION', 'number_of_processes')) == 1:
+        self.subject_maps_df = utils.get_subject_maps(mappings_df)
+        self.mapping_partitions = [group for _, group in mappings_df.groupby(by='mapping_partition')]
+
+        utils.clean_output_dir(config)
+
+    def __str__(self):
+        return str(self.mappings_df)
+
+    def __repr__(self):
+        return repr(self.mappings_df)
+
+    def __len__(self):
+        return len(self.mappings_df)
+
+    def materialize(self):
         num_triples = 0
-        for mapping_partition in mapping_partitions:
-            num_triples += materialize_mapping_partition(mapping_partition, subject_maps_df, config)
-    else:
-        if config.get('CONFIGURATION', 'process_start_method') != 'default':
-            mp.set_start_method(config.get('CONFIGURATION', 'process_start_method'))
-        logging.debug("Parallelizing with " + config.get('CONFIGURATION', 'number_of_processes') + " cores. Using '" + mp.get_start_method() + "' as process start method.")
-        pool = mp.Pool(int(config.get('CONFIGURATION', 'number_of_processes')))
-        if config.getboolean('CONFIGURATION', 'async'):
+        for mapping_partition in self.mapping_partitions:
+            num_triples += _materialize_mapping_partition(mapping_partition, self.subject_maps_df, self.config)
+
+        logging.info('Number of triples generated in total: ' + str(num_triples) + '.')
+
+    def materialize_concurrently(self):
+        if self.config.get('CONFIGURATION', 'process_start_method') != 'default':
+            mp.set_start_method(self.config.get('CONFIGURATION', 'process_start_method'))
+        logging.debug("Parallelizing with " + self.config.get('CONFIGURATION','number_of_processes') + " cores. Using `"
+                      + mp.get_start_method() + "` as process start method.")
+
+        pool = mp.Pool(int(self.config.get('CONFIGURATION', 'number_of_processes')))
+        if self.config.getboolean('CONFIGURATION', 'async'):
             logging.debug("Using 'async' for parallelization.")
-            triples_res = pool.starmap_async(materialize_mapping_partition, zip(mapping_partitions, repeat(subject_maps_df), repeat(config)))
+            triples_res = pool.starmap_async(_materialize_mapping_partition,
+                                             zip(self.mapping_partitions, repeat(self.subject_maps_df),
+                                                 repeat(self.config)))
             num_triples = sum(triples_res.get())
             if not triples_res.successful():
-                logging.critical("Aborting, 'async' multiprocessing resulted in error.")
+                logging.critical("Aborting, `async` multiprocessing resulted in error.")
                 sys.exit()
         else:
-            num_triples = sum(pool.starmap(materialize_mapping_partition, zip(mapping_partitions, repeat(subject_maps_df), repeat(config))))
+            num_triples = sum(pool.starmap(_materialize_mapping_partition,
+                                           zip(self.mapping_partitions, repeat(self.subject_maps_df),
+                                               repeat(self.config))))
         pool.close()
         pool.join()
 
-    logging.info('Number of triples generated in total: ' + str(num_triples) + '.')
+        logging.info('Number of triples generated in total: ' + str(num_triples) + '.')

@@ -369,27 +369,26 @@ class MappingParser:
 
     def _optimize_mappings(self):
         for i, mapping_rule in self.mappings_df.iterrows():
-            if utils.has_parent_triples_map(mapping_rule):
+            if mapping_rule['object_parent_triples_map']:
                 parent_triples_map_rule = utils.get_mapping_rule_from_triples_map_id(self.mappings_df, mapping_rule[
                     'object_parent_triples_map'])
 
                 # check that source_name, tablename, iterator, query are the same (can be empty)
                 if mapping_rule['source_name'] == parent_triples_map_rule['source_name'] and mapping_rule[
-                    'data_source'] == parent_triples_map_rule['data_source'] and mapping_rule['tablename'] == \
+                        'data_source'] == parent_triples_map_rule['data_source'] and mapping_rule['tablename'] == \
                         parent_triples_map_rule['tablename'] and mapping_rule['iterator'] == parent_triples_map_rule[
-                    'iterator'] and mapping_rule['query'] == parent_triples_map_rule['query']:
+                        'iterator'] and mapping_rule['query'] == parent_triples_map_rule['query']:
 
-                    optimize_mapping_rule = True
+                    remove_join = True
+
                     # check that all conditions in the join condition have the same references
                     join_conditions = eval(mapping_rule['join_conditions'])
                     for key, join_condition in join_conditions.items():
                         if join_condition['child_value'] != join_condition['parent_value']:
-                            optimize_mapping_rule = False
+                            remove_join = False
 
-                    #print(parent_triples_map_rule.at['subject_template'], parent_triples_map_rule['subject_template'])
-                    if optimize_mapping_rule:
-                        logging.debug('Optimizing mapping rule `' + str(mapping_rule['id']) + '`.')
-                        #print(parent_triples_map_rule.at['subject_template'])
+                    if remove_join:
+                        logging.debug('Removing join from mapping rule `' + str(mapping_rule['id']) + '`.')
 
                         self.mappings_df.at[i, 'object_parent_triples_map'] = ''
                         self.mappings_df.at[i, 'join_conditions'] = ''
@@ -397,16 +396,6 @@ class MappingParser:
                         self.mappings_df.at[i, 'object_template'] = parent_triples_map_rule.at['subject_template']
                         self.mappings_df.at[i, 'object_reference'] = parent_triples_map_rule.at['subject_reference']
                         self.mappings_df.at[i, 'object_termtype'] = parent_triples_map_rule.at['subject_termtype']
-
-
-
-
-
-
-
-
-
-
 
     def _rdf_class_to_pom(self):
         """

@@ -12,12 +12,12 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 import logging
 import time
 import sys
-
+import utils
 import pandas as pd
 
 from mapping.mapping_parser import MappingParser
 from args_parser import parse_config
-from materializer import materialize
+from materializer import Materializer
 
 
 def process_mappings(config):
@@ -29,7 +29,10 @@ def process_mappings(config):
                      'mapping_partition']))) + ' mapping partitions loaded from file.')
     else:
         mappings_parser = MappingParser(config)
+
+        start_time = time.time()
         mappings = mappings_parser.parse_mappings()
+        logging.info('Mappings processed in ' + utils.get_delta_time(start_time) + ' seconds.')
 
         output_parsed_mappings_path = config.get('CONFIGURATION', 'output_parsed_mappings_path')
         if output_parsed_mappings_path:
@@ -41,14 +44,19 @@ def process_mappings(config):
     return mappings
 
 
-if __name__ == "__main__":
+def process_materialization(mappings, config):
+    materializer = Materializer(mappings, config)
 
     start_time = time.time()
+    if int(config.get('CONFIGURATION', 'number_of_processes')) == 1:
+        materializer.materialize()
+    else:
+        materializer.materialize_concurrently()
+    logging.info('Materialization finished in ' + utils.get_delta_time(start_time) + ' seconds.')
+
+
+if __name__ == "__main__":
 
     config = parse_config()
-
     mappings = process_mappings(config)
-
-    materialize(mappings, config)
-
-    logging.info('Materialization finished in ' + "{:.3f}".format((time.time() - start_time)) + ' seconds.')
+    process_materialization(mappings, config)

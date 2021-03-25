@@ -15,6 +15,7 @@ import shutil
 import logging
 import rdflib
 import constants
+import time
 
 
 def get_repeated_elements_in_list(input_list):
@@ -205,17 +206,6 @@ def replace_predicates_in_graph(graph, predicate_to_remove, predicate_to_add):
     return graph
 
 
-def has_parent_triples_map(mapping_rule):
-    """
-    Checks if the mapping rule has a join condition
-    """
-
-    if mapping_rule['object_parent_triples_map']:
-        return True
-    else:
-        return False
-
-
 def get_mapping_rule_from_triples_map_id(mappings, parent_triples_map_id):
     """
     Get the parent triples map of mapping rule with the given id
@@ -224,3 +214,8 @@ def get_mapping_rule_from_triples_map_id(mappings, parent_triples_map_id):
     parent_triples_map = mappings[mappings['triples_map_id'] == parent_triples_map_id]
 
     return parent_triples_map.iloc[0]
+
+
+def get_delta_time(start_time):
+    return "{:.3f}".format((time.time() - start_time))
+
