@@ -84,9 +84,9 @@ def get_column_datatype(config, source_name, table_name, column_name):
         raise Exception("Query '" + query + "' has failed to execute.")
 
     data_type = ''
-    if 'data_type' in query_results_df.columns:
+    if 'data_type' in query_results_df.columns and len(query_results_df) == 1:
         data_type = query_results_df['data_type'][0]
-    elif 'DATA_TYPE' in query_results_df.columns:
+    elif 'DATA_TYPE' in query_results_df.columns and len(query_results_df) == 1:
         data_type = query_results_df['DATA_TYPE'][0]
 
     if data_type.upper() in SQL_RDF_DATATYPE:
