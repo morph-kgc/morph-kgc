@@ -38,9 +38,9 @@ SQL_RDF_DATATYPE = {
 
 
 def relational_db_connection(config, source_name):
-    source_type = config.get(source_name, 'source_type').lower()
+    source_type = config.get(source_name, 'source_type')
 
-    if source_type == 'mysql':
+    if source_type == 'MYSQL':
         try:
             db_connection = mysql.connector.connect(
                 host=config.get(source_name, 'host'),
@@ -50,22 +50,22 @@ def relational_db_connection(config, source_name):
                 database=config.get(source_name, 'db'),
             )
         except mysql.connector.Error as err:
-            raise Exception("Error while connecting to DB of data source '" + source_name + "': {}".format(err))
+            raise Exception("Error while connecting to DB of data source `" + source_name + "`: {}".format(err))
     else:
-        raise ValueError("source_type '" + str(source_type) + "' in configuration file is not valid.")
+        raise ValueError("source_type `" + str(source_type) + "` in configuration file is not valid.")
 
     return db_connection
 
 
 def execute_relational_query(query, config, source_name):
-    logging.debug("SQL query for data source '" + source_name + "': " + query)
+    logging.debug("SQL query for data source `" + source_name + "`: [" + query + ']')
 
     db_connection = relational_db_connection(config, source_name)
     try:
         query_results_df = pd.read_sql(query, con=db_connection,
                                        coerce_float=config.getboolean('CONFIGURATION', 'coerce_float'))
     except:
-        raise Exception("Query '" + query + "' has failed to execute.")
+        raise Exception("Query `" + query + "` has failed to execute.")
     db_connection.close()
 
     for col_name in list(query_results_df.columns):
@@ -76,12 +76,13 @@ def execute_relational_query(query, config, source_name):
 
 def get_column_datatype(config, source_name, table_name, column_name):
     db_connection = relational_db_connection(config, source_name)
-    query = "select data_type from information_schema.columns where table_name='" + table_name + "' and column_name='" + column_name + "' ;"
+    query = "SELECT data_type FROM information_schema.columns WHERE table_name='" + table_name + \
+            "' AND column_name='" + column_name + "' ;"
 
     try:
         query_results_df = pd.read_sql(query, con=db_connection)
     except:
-        raise Exception("Query '" + query + "' has failed to execute.")
+        raise Exception('Query [' + query + '] has failed to execute.')
 
     data_type = ''
     if 'data_type' in query_results_df.columns and len(query_results_df) == 1:
@@ -96,49 +97,49 @@ def get_column_datatype(config, source_name, table_name, column_name):
 
 
 def build_sql_join_query(config, mapping_rule, parent_triples_map_rule, references, parent_references):
-    query = 'SELECT '
-    if config.getboolean('CONFIGURATION', 'push_down_sql_distincts'):
-        query = query + 'DISTINCT '
+    if pd.notna(mapping_rule['query']) or pd.notna(parent_triples_map_rule['query']):
+        # This is because additional work is needed to use proper aliases within the rml:query provided
+        raise Exception(
+            'Pushing down SQL joins is not supported for mapping rules using rml:query instead of rr:tablename')
 
-    child_query = 'SELECT '
-    if len(references) > 0:
-        for reference in references:
-            child_query = child_query + reference + ' AS child_' + reference + ', '
-        child_query = child_query[:-2] + ' FROM ' + mapping_rule['tablename'] + ' WHERE '
-        for reference in references:
-            child_query = child_query + reference + ' IS NOT NULL AND '
-        child_query = child_query[:-5]
-    else:
-        child_query = None
+    child_query = build_sql_subquery(mapping_rule, references, 'child_')
+    parent_query = build_sql_subquery(parent_triples_map_rule, parent_references, 'parent_')
 
-    parent_query = 'SELECT '
-    if len(parent_references) > 0:
-        for reference in parent_references:
-            parent_query = parent_query + reference + ' AS parent_' + reference + ', '
-        parent_query = parent_query[:-2] + ' FROM ' + parent_triples_map_rule['tablename'] + ' WHERE '
-        for reference in parent_references:
-            parent_query = parent_query + reference + ' IS NOT NULL AND '
-        parent_query = parent_query[:-5]
-    else:
-        parent_query = None
-
-    query = query + '* FROM (' + child_query + ') AS child, (' + parent_query + ') AS parent WHERE '
+    query = 'SELECT * FROM (' + child_query + ') AS child, (' + parent_query + ') AS parent WHERE '
     for key, join_condition in eval(mapping_rule['join_conditions']).items():
         query = query + 'child.child_' + join_condition['child_value'] + \
                 '=parent.parent_' + join_condition['parent_value'] + ' AND '
     query = query[:-4] + ';'
 
-    logging.debug("SQL query for mapping rule '" + str(mapping_rule['id']) + "': " + query)
+    logging.debug('SQL query for mapping rule `' + str(mapping_rule['id']) + '`: [' + query + ']')
 
     return query
 
 
-def build_sql_query(config, mapping_rule, references):
-    query = 'SELECT '
-    if config.getboolean('CONFIGURATION', 'push_down_sql_distincts'):
-        query = query + 'DISTINCT '
+def build_sql_subquery(mapping_rule, references, alias):
+    if pd.notna(mapping_rule['query']):
+        query = mapping_rule['query']
+    elif len(references) > 0:
+        query = 'SELECT '
+        if len(references) > 0:
+            for reference in references:
+                query = query + reference + ' AS ' + alias + reference + ', '
+            query = query[:-2] + ' FROM ' + mapping_rule['tablename'] + ' WHERE '
+            for reference in references:
+                query = query + reference + ' IS NOT NULL AND '
+            query = query[:-5]
+    else:
+        query = None
 
-    if len(references) > 0:
+    return query
+
+def build_sql_query(config, mapping_rule, references):
+    if pd.notna(mapping_rule['query']):
+        query = mapping_rule['query']
+    elif len(references) > 0:
+        query = 'SELECT '
+        if config.getboolean('CONFIGURATION', 'push_down_sql_distincts'):
+            query = query + 'DISTINCT '
         for reference in references:
             query = query + reference + ', '
         query = query[:-2] + ' FROM ' + mapping_rule['tablename'] + ' WHERE '
@@ -148,6 +149,7 @@ def build_sql_query(config, mapping_rule, references):
     else:
         query = None
 
-    logging.debug("SQL query for mapping rule '" + str(mapping_rule['id']) + "': " + query)
+    if query:
+        logging.debug('SQL query for mapping rule `' + str(mapping_rule['id']) + '`: [' + query + ']')
 
     return query

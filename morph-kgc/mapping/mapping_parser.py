@@ -15,6 +15,7 @@ import os
 import sql_metadata
 import rfc3987
 import pandas as pd
+import numpy as np
 import constants
 import utils
 
@@ -308,6 +309,9 @@ class MappingParser:
         mapping_partitioner = MappingPartitioner(self.mappings_df, self.config)
         self.mappings_df = mapping_partitioner.partition_mappings()
 
+        # replace empty strings with NaN
+        self.mappings_df = self.mappings_df.replace(r'^\s*$', np.nan, regex=True)
+
         return self.mappings_df
 
     def _parse_data_source_mapping_files(self, config_section_name):
@@ -377,10 +381,11 @@ class MappingParser:
                     'object_parent_triples_map'])
 
                 # check that source_name, tablename, iterator, query are the same (can be empty)
-                if mapping_rule['source_name'] == parent_triples_map_rule['source_name'] and mapping_rule[
-                        'data_source'] == parent_triples_map_rule['data_source'] and mapping_rule['tablename'] == \
-                        parent_triples_map_rule['tablename'] and mapping_rule['iterator'] == parent_triples_map_rule[
-                        'iterator'] and mapping_rule['query'] == parent_triples_map_rule['query']:
+                if mapping_rule['source_name'] == parent_triples_map_rule['source_name'] and \
+                        mapping_rule['data_source'] == parent_triples_map_rule['data_source'] and \
+                        mapping_rule['tablename'] == parent_triples_map_rule['tablename'] and \
+                        mapping_rule['iterator'] == parent_triples_map_rule['iterator'] and \
+                        mapping_rule['query'] == parent_triples_map_rule['query']:
 
                     remove_join = True
 

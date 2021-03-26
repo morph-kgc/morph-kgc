@@ -25,23 +25,23 @@ import utils
 
 def _get_references_in_mapping_rule(mapping_rule, only_subject_map=False):
     references = []
-    if mapping_rule['subject_template']:
+    if pd.notna(mapping_rule['subject_template']):
         references.extend(utils.get_references_in_template(str(mapping_rule['subject_template'])))
-    elif mapping_rule['subject_reference']:
+    elif pd.notna(mapping_rule['subject_reference']):
         references.append(str(mapping_rule['subject_reference']))
 
     if not only_subject_map:
-        if mapping_rule['predicate_template']:
+        if pd.notna(mapping_rule['predicate_template']):
             references.extend(utils.get_references_in_template(str(mapping_rule['predicate_template'])))
-        elif mapping_rule['predicate_reference']:
+        elif pd.notna(mapping_rule['predicate_reference']):
             references.append(str(mapping_rule['predicate_reference']))
-        if mapping_rule['object_template']:
+        if pd.notna(mapping_rule['object_template']):
             references.extend(utils.get_references_in_template(str(mapping_rule['object_template'])))
-        elif mapping_rule['object_reference']:
+        elif pd.notna(mapping_rule['object_reference']):
             references.append(str(mapping_rule['object_reference']))
-        if mapping_rule['graph_template']:
+        if pd.notna(mapping_rule['graph_template']):
             references.extend(utils.get_references_in_template(str(mapping_rule['graph_template'])))
-        elif mapping_rule['graph_reference']:
+        elif pd.notna(mapping_rule['graph_reference']):
             references.append(str(mapping_rule['graph_reference']))
 
     return set(references)
@@ -67,9 +67,9 @@ def _materialize_template(results_df, template, columns_alias='', termtype='http
 
     if str(termtype).strip() == 'http://www.w3.org/ns/r2rml#Literal':
         results_df['triple'] = results_df['triple'] + '"'
-        if language_tag:
+        if pd.notna(language_tag):
             results_df['triple'] = results_df['triple'] + '@' + language_tag + ' '
-        elif datatype:
+        elif pd.notna(datatype):
             results_df['triple'] = results_df['triple'] + '^^<' + datatype + '> '
         else:
             results_df['triple'] = results_df['triple'] + ' '
@@ -87,9 +87,9 @@ def _materialize_reference(results_df, reference, columns_alias='', termtype='ht
         results_df['triple'] = results_df['triple'] + '<' + results_df['reference_results'] + '> '
     elif str(termtype).strip() == 'http://www.w3.org/ns/r2rml#Literal':
         results_df['triple'] = results_df['triple'] + '"' + results_df['reference_results'] + '"'
-        if language_tag:
+        if pd.notna(language_tag):
             results_df['triple'] = results_df['triple'] + '@' + language_tag + ' '
-        elif datatype:
+        elif pd.notna(datatype):
             results_df['triple'] = results_df['triple'] + '^^<' + datatype + '> '
         else:
             results_df['triple'] = results_df['triple'] + ' '
@@ -101,9 +101,9 @@ def _materialize_constant(results_df, constant, termtype='http://www.w3.org/ns/r
     if str(termtype).strip() == 'http://www.w3.org/ns/r2rml#Literal':
         complete_constant = '"' + constant + '"'
 
-        if language_tag:
+        if pd.notna(language_tag):
             complete_constant = complete_constant + '@' + language_tag + ' '
-        elif datatype:
+        elif pd.notna(datatype):
             complete_constant = complete_constant + '^^<' + datatype + '> '
         else:
             complete_constant = complete_constant + ' '
@@ -117,30 +117,30 @@ def _materialize_constant(results_df, constant, termtype='http://www.w3.org/ns/r
 
 def _materialize_join_mapping_rule_terms(results_df, mapping_rule, parent_triples_map_rule):
     results_df['triple'] = ''
-    if mapping_rule['subject_template']:
+    if pd.notna(mapping_rule['subject_template']):
         results_df = _materialize_template(results_df, mapping_rule['subject_template'], termtype=mapping_rule['subject_termtype'], columns_alias='child_')
-    elif mapping_rule['subject_constant']:
+    elif pd.notna(mapping_rule['subject_constant']):
         results_df = _materialize_constant(results_df, mapping_rule['subject_constant'], termtype=mapping_rule['subject_termtype'])
-    elif mapping_rule['subject_reference']:
+    elif pd.notna(mapping_rule['subject_reference']):
         results_df = _materialize_reference(results_df, mapping_rule['subject_reference'], termtype=mapping_rule['subject_termtype'], columns_alias='child_')
-    if mapping_rule['predicate_template']:
+    if pd.notna(mapping_rule['predicate_template']):
         results_df = _materialize_template(results_df, mapping_rule['predicate_template'], columns_alias='child_')
-    elif mapping_rule['predicate_constant']:
+    elif pd.notna(mapping_rule['predicate_constant']):
         results_df = _materialize_constant(results_df, mapping_rule['predicate_constant'])
-    elif mapping_rule['predicate_reference']:
+    elif pd.notna(mapping_rule['predicate_reference']):
         results_df = _materialize_reference(results_df, mapping_rule['predicate_reference'], termtype='http://www.w3.org/ns/r2rml#IRI', columns_alias='child_')
-    if parent_triples_map_rule['subject_template']:
+    if pd.notna(parent_triples_map_rule['subject_template']):
         results_df = _materialize_template(results_df, parent_triples_map_rule['subject_template'], termtype=parent_triples_map_rule['subject_termtype'], columns_alias='parent_')
-    elif parent_triples_map_rule['subject_constant']:
+    elif pd.notna(parent_triples_map_rule['subject_constant']):
         results_df = _materialize_constant(results_df, parent_triples_map_rule['subject_constant'], termtype=parent_triples_map_rule['subject_termtype'])
-    elif parent_triples_map_rule['subject_reference']:
+    elif pd.notna(parent_triples_map_rule['subject_reference']):
         results_df = _materialize_reference(results_df, parent_triples_map_rule['subject_reference'], termtype=parent_triples_map_rule['subject_termtype'], columns_alias='parent_')
-    if mapping_rule['graph_template']:
+    if pd.notna(mapping_rule['graph_template']):
         results_df = _materialize_template(results_df, mapping_rule['graph_template'], columns_alias='child_')
-    elif mapping_rule['graph_constant']:
-        if mapping_rule['graph_constant'] != 'http://www.w3.org/ns/r2rml#defaultGraph':
+    elif pd.notna(mapping_rule['graph_constant']):
+        if pd.notna(mapping_rule['graph_constant'] != 'http://www.w3.org/ns/r2rml#defaultGraph'):
             results_df = _materialize_constant(results_df, mapping_rule['graph_constant'])
-    elif mapping_rule['graph_reference']:
+    elif pd.notna(mapping_rule['graph_reference']):
         results_df = _materialize_reference(results_df, mapping_rule['graph_reference'], termtype='http://www.w3.org/ns/r2rml#IRI', columns_alias='child_')
 
     return set(results_df['triple'])
@@ -148,33 +148,50 @@ def _materialize_join_mapping_rule_terms(results_df, mapping_rule, parent_triple
 
 def _materialize_mapping_rule_terms(results_df, mapping_rule):
     results_df['triple'] = ''
-    if mapping_rule['subject_template']:
+    if pd.notna(mapping_rule['subject_template']):
         results_df = _materialize_template(results_df, mapping_rule['subject_template'], termtype=mapping_rule['subject_termtype'])
-    elif mapping_rule['subject_constant']:
+    elif pd.notna(mapping_rule['subject_constant']):
         results_df = _materialize_constant(results_df, mapping_rule['subject_constant'], termtype=mapping_rule['subject_termtype'])
-    elif mapping_rule['subject_reference']:
+    elif pd.notna(mapping_rule['subject_reference']):
         results_df = _materialize_reference(results_df, mapping_rule['subject_reference'], termtype=mapping_rule['subject_termtype'])
-    if mapping_rule['predicate_template']:
+    if pd.notna(mapping_rule['predicate_template']):
         results_df = _materialize_template(results_df, mapping_rule['predicate_template'])
-    elif mapping_rule['predicate_constant']:
+    elif pd.notna(mapping_rule['predicate_constant']):
         results_df = _materialize_constant(results_df, mapping_rule['predicate_constant'])
-    elif mapping_rule['predicate_reference']:
+    elif pd.notna(mapping_rule['predicate_reference']):
         results_df = _materialize_reference(results_df, mapping_rule['predicate_reference'], termtype='http://www.w3.org/ns/r2rml#IRI')
-    if mapping_rule['object_template']:
+    if pd.notna(mapping_rule['object_template']):
         results_df = _materialize_template(results_df, mapping_rule['object_template'], termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
-    elif mapping_rule['object_constant']:
+    elif pd.notna(mapping_rule['object_constant']):
         results_df = _materialize_constant(results_df, mapping_rule['object_constant'], termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
-    elif mapping_rule['object_reference']:
+    elif pd.notna(mapping_rule['object_reference']):
         results_df = _materialize_reference(results_df, mapping_rule['object_reference'], termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
-    if mapping_rule['graph_template']:
+    if pd.notna(mapping_rule['graph_template']):
         results_df = _materialize_template(results_df, mapping_rule['graph_template'])
-    elif mapping_rule['graph_constant']:
-        if mapping_rule['graph_constant'] != 'http://www.w3.org/ns/r2rml#defaultGraph':
+    elif pd.notna(mapping_rule['graph_constant']):
+        if pd.notna(mapping_rule['graph_constant'] != 'http://www.w3.org/ns/r2rml#defaultGraph'):
             results_df = _materialize_constant(results_df, mapping_rule['graph_constant'])
-    elif mapping_rule['graph_reference']:
+    elif pd.notna(mapping_rule['graph_reference']):
         results_df = _materialize_reference(results_df, mapping_rule['graph_reference'], termtype='http://www.w3.org/ns/r2rml#IRI')
 
     return set(results_df['triple'])
+
+
+def _materalize_push_down_sql_join(mapping_rule, parent_triples_map_rule, references, parent_references, config):
+    for key, join_condition in eval(mapping_rule['join_conditions']).items():
+        parent_references.add(join_condition['parent_value'])
+        references.add(join_condition['child_value'])
+
+    sql_query = relational_source.build_sql_join_query(config, mapping_rule, parent_triples_map_rule,
+                                                       references, parent_references)
+    db_connection = relational_source.relational_db_connection(config, mapping_rule['source_name'])
+    for query_results_chunk_df in pd.read_sql(sql_query, con=db_connection,
+                                              chunksize=int(config.get('CONFIGURATION', 'chunksize')),
+                                              coerce_float=config.getboolean('CONFIGURATION', 'coerce_float')):
+        query_results_chunk_df = utils.dataframe_columns_to_str(query_results_chunk_df)
+        db_connection.close()
+
+        return _materialize_join_mapping_rule_terms(query_results_chunk_df, mapping_rule, parent_triples_map_rule)
 
 
 def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
@@ -182,24 +199,17 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
 
     references = _get_references_in_mapping_rule(mapping_rule)
 
-    if mapping_rule['object_parent_triples_map']:
+    if pd.notna(mapping_rule['object_parent_triples_map']):
         parent_triples_map_rule = \
             subject_maps_df[subject_maps_df.triples_map_id == mapping_rule['object_parent_triples_map']].iloc[0]
         parent_references = _get_references_in_mapping_rule(parent_triples_map_rule, only_subject_map=True)
 
-        if config.getboolean('CONFIGURATION', 'push_down_sql_joins') and mapping_rule['source_type'] in constants.RELATIONAL_SOURCE_TYPES and mapping_rule['source_name'] == parent_triples_map_rule['source_name']:
-            for key, join_condition in eval(mapping_rule['join_conditions']).items():
-                parent_references.add(join_condition['parent_value'])
-                references.add(join_condition['child_value'])
-
-            sql_query = relational_source.build_sql_join_query(config, mapping_rule, parent_triples_map_rule,
-                                                                     references, parent_references)
-            db_connection = relational_source.relational_db_connection(config, mapping_rule['source_name'])
-            for query_results_chunk_df in pd.read_sql(sql_query, con=db_connection, chunksize=int(config.get('CONFIGURATION', 'chunksize')), coerce_float=config.getboolean('CONFIGURATION', 'coerce_float')):
-                query_results_chunk_df = utils.dataframe_columns_to_str(query_results_chunk_df)
-                triples.update(_materialize_join_mapping_rule_terms(query_results_chunk_df, mapping_rule, parent_triples_map_rule))
-            db_connection.close()
-
+        if config.getboolean('CONFIGURATION', 'push_down_sql_joins') and \
+                mapping_rule['source_type'] in constants.RELATIONAL_SOURCE_TYPES and \
+                mapping_rule['source_name'] == parent_triples_map_rule['source_name']:
+            triples.update(_materalize_push_down_sql_join(mapping_rule, parent_triples_map_rule, references,
+                                                          parent_references, config))
+        """
         else:
             references.add(list(eval(mapping_rule['join_conditions']).values())[0]['child_value'])
             parent_references.add(list(eval(mapping_rule['join_conditions']).values())[0]['parent_value'])
@@ -237,8 +247,9 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
                 db_connection.close()
             if parent_triples_map_rule['source_type'] == 'mysql':
                 db_connection.close()
+        """
     else:
-        if mapping_rule['source_type'] == 'mysql':
+        if mapping_rule['source_type'] == 'MYSQL':
             sql_query = relational_source.build_sql_query(config, mapping_rule, references)
             db_connection = relational_source.relational_db_connection(config, mapping_rule['source_name'])
             result_chunks = pd.read_sql(sql_query, con=db_connection, chunksize=int(config.get('CONFIGURATION', 'chunksize')), coerce_float=config.getboolean('CONFIGURATION', 'coerce_float'))
@@ -249,7 +260,7 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
             query_results_chunk_df = utils.dataframe_columns_to_str(query_results_chunk_df)
             triples.update(_materialize_mapping_rule_terms(query_results_chunk_df, mapping_rule))
 
-        if mapping_rule['source_type'] == 'mysql':
+        if mapping_rule['source_type'] in constants.RELATIONAL_SOURCE_TYPES:
             db_connection.close()
 
     return triples
