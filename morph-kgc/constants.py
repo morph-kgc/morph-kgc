@@ -27,11 +27,12 @@ ARGUMENTS_DEFAULT = {
     'logging_level': 'info',
     'push_down_sql_distincts': 'no',
     'push_down_sql_joins': 'yes',
+    'infer_sql_datatypes': 'yes',
     'number_of_processes': mp.cpu_count(),
     'process_start_method': 'default',
     'async': 'no',
     'chunksize': 100000,
-    'infer_datatypes': 'yes',
+    'remove_self_joins': 'yes',
     'coerce_float': 'no',
     'only_printable_characters': 'no'
 }

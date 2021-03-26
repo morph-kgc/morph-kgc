@@ -222,7 +222,8 @@ def _validate_config_configuration_section(config):
     config.set('CONFIGURATION', 'chunksize', str(_natural_number(config.get('CONFIGURATION', 'chunksize'))))
     config.getboolean('CONFIGURATION', 'coerce_float')
     config.getboolean('CONFIGURATION', 'only_printable_characters')
-    config.getboolean('CONFIGURATION', 'infer_datatypes')
+    config.getboolean('CONFIGURATION', 'infer_sql_datatypes')
+    config.getboolean('CONFIGURATION', 'remove_self_joins')
     config.getboolean('CONFIGURATION', 'push_down_sql_distincts')
     config.getboolean('CONFIGURATION', 'push_down_sql_joins')
     config.getboolean('CONFIGURATION', 'clean_output_dir')
@@ -305,10 +306,14 @@ def _complete_config_file_with_defaults(config):
     elif config.get('CONFIGURATION', 'only_printable_characters') == '':
         config.set('CONFIGURATION', 'only_printable_characters',
                    str(constants.ARGUMENTS_DEFAULT['only_printable_characters']))
-    if not config.has_option('CONFIGURATION', 'infer_datatypes'):
-        config.set('CONFIGURATION', 'infer_datatypes', constants.ARGUMENTS_DEFAULT['infer_datatypes'])
-    elif config.get('CONFIGURATION', 'infer_datatypes') == '':
-        config.set('CONFIGURATION', 'infer_datatypes', str(constants.ARGUMENTS_DEFAULT['infer_datatypes']))
+    if not config.has_option('CONFIGURATION', 'infer_sql_datatypes'):
+        config.set('CONFIGURATION', 'infer_sql_datatypes', constants.ARGUMENTS_DEFAULT['infer_sql_datatypes'])
+    elif config.get('CONFIGURATION', 'infer_sql_datatypes') == '':
+        config.set('CONFIGURATION', 'infer_sql_datatypes', str(constants.ARGUMENTS_DEFAULT['infer_sql_datatypes']))
+    if not config.has_option('CONFIGURATION', 'remove_self_joins'):
+        config.set('CONFIGURATION', 'remove_self_joins', constants.ARGUMENTS_DEFAULT['remove_self_joins'])
+    elif config.get('CONFIGURATION', 'remove_self_joins') == '':
+        config.set('CONFIGURATION', 'remove_self_joins', str(constants.ARGUMENTS_DEFAULT['remove_self_joins']))
     if not config.has_option('CONFIGURATION', 'input_parsed_mappings_path'):
         config.set('CONFIGURATION', 'input_parsed_mappings_path',
                    constants.ARGUMENTS_DEFAULT['input_parsed_mappings_path'])

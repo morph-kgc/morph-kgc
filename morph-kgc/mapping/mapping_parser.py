@@ -368,6 +368,9 @@ class MappingParser:
         self.mappings_df.insert(0, 'id', self.mappings_df.reset_index(drop=True).index)
 
     def _remove_self_joins_from_mappings(self):
+        if not self.config.getboolean('CONFIGURATION', 'remove_self_joins'):
+            return
+
         for i, mapping_rule in self.mappings_df.iterrows():
             if pd.notna(mapping_rule['object_parent_triples_map']):
                 parent_triples_map_rule = utils.get_mapping_rule_from_triples_map_id(self.mappings_df, mapping_rule[
@@ -556,7 +559,7 @@ class MappingParser:
         """
 
         # return if datatype inferring is not enabled in the config
-        if not self.config.getboolean('CONFIGURATION', 'infer_datatypes'):
+        if not self.config.getboolean('CONFIGURATION', 'infer_sql_datatypes'):
             return
 
         for i, mapping_rule in self.mappings_df.iterrows():

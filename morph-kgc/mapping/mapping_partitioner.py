@@ -88,7 +88,8 @@ class MappingPartitioner:
             # if all predicates are constant terms we can use full string comparison instead of startswith
             use_equal = self.mappings_df['predicate_constant'].notna().all()
             if use_equal:
-                logging.debug('All predicate maps are constants, using strict criteria to generate mapping partitions.')
+                logging.debug('All predicate maps are constant-valued, '
+                              'using strict criteria to generate mapping partitions.')
 
             for i, mapping_rule in self.mappings_df.iterrows():
                 if not mapping_rule['predicate_invariable_part']:
@@ -128,7 +129,8 @@ class MappingPartitioner:
             # if all graph are constant terms we can use full string comparison instead of startswith
             use_equal = self.mappings_df['graph_constant'].notna().all()
             if use_equal:
-                logging.debug('All graph maps are constants, using strict criteria to generate mapping partitions.')
+                logging.debug('All graph maps are constant-valued, '
+                              'using strict criteria to generate mapping partitions.')
 
             for i, mapping_rule in self.mappings_df.iterrows():
                 if use_equal and mapping_rule['graph_invariable_part'] == root_last_partition:
