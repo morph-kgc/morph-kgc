@@ -47,10 +47,10 @@ def _get_references_in_mapping_rule(mapping_rule, only_subject_map=False):
     return set(references)
 
 
-def _materialize_template(results_df, template, columns_alias='', termtype='http://www.w3.org/ns/r2rml#IRI', language_tag='', datatype=''):
+def _materialize_template(results_df, template, columns_alias='', termtype=constants.R2RML['IRI'], language_tag='', datatype=''):
     references = utils.get_references_in_template(str(template))
 
-    if str(termtype).strip() == 'http://www.w3.org/ns/r2rml#Literal':
+    if str(termtype).strip() == constants.R2RML['literal']:
         results_df['triple'] = results_df['triple'] + '"'
     else:
         results_df['triple'] = results_df['triple'] + '<'
@@ -58,14 +58,14 @@ def _materialize_template(results_df, template, columns_alias='', termtype='http
     for reference in references:
         results_df['reference_results'] = results_df[columns_alias + reference]
 
-        if str(termtype).strip() == 'http://www.w3.org/ns/r2rml#IRI':
+        if str(termtype).strip() == constants.R2RML['IRI']:
             results_df['reference_results'] = results_df['reference_results'].apply(lambda x: quote(x))
 
         splitted_template = template.split('{' + reference + '}')
         results_df['triple'] = results_df['triple'] + splitted_template[0] + results_df['reference_results']
         template = str('{' + reference + '}').join(splitted_template[1:])
 
-    if str(termtype).strip() == 'http://www.w3.org/ns/r2rml#Literal':
+    if str(termtype).strip() == constants.R2RML['literal']:
         results_df['triple'] = results_df['triple'] + '"'
         if pd.notna(language_tag):
             results_df['triple'] = results_df['triple'] + '@' + language_tag + ' '
@@ -79,13 +79,13 @@ def _materialize_template(results_df, template, columns_alias='', termtype='http
     return results_df
 
 
-def _materialize_reference(results_df, reference, columns_alias='', termtype='http://www.w3.org/ns/r2rml#Literal', language_tag='', datatype=''):
+def _materialize_reference(results_df, reference, columns_alias='', termtype=constants.R2RML['literal'], language_tag='', datatype=''):
     results_df['reference_results'] = results_df[columns_alias + str(reference)]
 
-    if str(termtype).strip() == 'http://www.w3.org/ns/r2rml#IRI':
+    if str(termtype).strip() == constants.R2RML['IRI']:
         results_df['reference_results'] = results_df['reference_results'].apply(lambda x: quote(x, safe='://'))
         results_df['triple'] = results_df['triple'] + '<' + results_df['reference_results'] + '> '
-    elif str(termtype).strip() == 'http://www.w3.org/ns/r2rml#Literal':
+    elif str(termtype).strip() == constants.R2RML['literal']:
         results_df['triple'] = results_df['triple'] + '"' + results_df['reference_results'] + '"'
         if pd.notna(language_tag):
             results_df['triple'] = results_df['triple'] + '@' + language_tag + ' '
@@ -97,8 +97,8 @@ def _materialize_reference(results_df, reference, columns_alias='', termtype='ht
     return results_df
 
 
-def _materialize_constant(results_df, constant, termtype='http://www.w3.org/ns/r2rml#IRI', language_tag='', datatype=''):
-    if str(termtype).strip() == 'http://www.w3.org/ns/r2rml#Literal':
+def _materialize_constant(results_df, constant, termtype=constants.R2RML['IRI'], language_tag='', datatype=''):
+    if str(termtype).strip() == constants.R2RML['literal']:
         complete_constant = '"' + constant + '"'
 
         if pd.notna(language_tag):
@@ -128,7 +128,7 @@ def _materialize_join_mapping_rule_terms(results_df, mapping_rule, parent_triple
     elif pd.notna(mapping_rule['predicate_constant']):
         results_df = _materialize_constant(results_df, mapping_rule['predicate_constant'])
     elif pd.notna(mapping_rule['predicate_reference']):
-        results_df = _materialize_reference(results_df, mapping_rule['predicate_reference'], termtype='http://www.w3.org/ns/r2rml#IRI', columns_alias='child_')
+        results_df = _materialize_reference(results_df, mapping_rule['predicate_reference'], termtype=constants.R2RML['IRI'], columns_alias='child_')
     if pd.notna(parent_triples_map_rule['subject_template']):
         results_df = _materialize_template(results_df, parent_triples_map_rule['subject_template'], termtype=parent_triples_map_rule['subject_termtype'], columns_alias='parent_')
     elif pd.notna(parent_triples_map_rule['subject_constant']):
@@ -138,10 +138,10 @@ def _materialize_join_mapping_rule_terms(results_df, mapping_rule, parent_triple
     if pd.notna(mapping_rule['graph_template']):
         results_df = _materialize_template(results_df, mapping_rule['graph_template'], columns_alias='child_')
     elif pd.notna(mapping_rule['graph_constant']):
-        if pd.notna(mapping_rule['graph_constant'] != 'http://www.w3.org/ns/r2rml#defaultGraph'):
+        if pd.notna(mapping_rule['graph_constant'] != constants.R2RML['default_graph']):
             results_df = _materialize_constant(results_df, mapping_rule['graph_constant'])
     elif pd.notna(mapping_rule['graph_reference']):
-        results_df = _materialize_reference(results_df, mapping_rule['graph_reference'], termtype='http://www.w3.org/ns/r2rml#IRI', columns_alias='child_')
+        results_df = _materialize_reference(results_df, mapping_rule['graph_reference'], termtype=constants.R2RML['IRI'], columns_alias='child_')
 
     return set(results_df['triple'])
 
@@ -159,7 +159,7 @@ def _materialize_mapping_rule_terms(results_df, mapping_rule):
     elif pd.notna(mapping_rule['predicate_constant']):
         results_df = _materialize_constant(results_df, mapping_rule['predicate_constant'])
     elif pd.notna(mapping_rule['predicate_reference']):
-        results_df = _materialize_reference(results_df, mapping_rule['predicate_reference'], termtype='http://www.w3.org/ns/r2rml#IRI')
+        results_df = _materialize_reference(results_df, mapping_rule['predicate_reference'], termtype=constants.R2RML['IRI'])
     if pd.notna(mapping_rule['object_template']):
         results_df = _materialize_template(results_df, mapping_rule['object_template'], termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
     elif pd.notna(mapping_rule['object_constant']):
@@ -169,29 +169,35 @@ def _materialize_mapping_rule_terms(results_df, mapping_rule):
     if pd.notna(mapping_rule['graph_template']):
         results_df = _materialize_template(results_df, mapping_rule['graph_template'])
     elif pd.notna(mapping_rule['graph_constant']):
-        if pd.notna(mapping_rule['graph_constant'] != 'http://www.w3.org/ns/r2rml#defaultGraph'):
+        if pd.notna(mapping_rule['graph_constant'] != constants.R2RML['default_graph']):
             results_df = _materialize_constant(results_df, mapping_rule['graph_constant'])
     elif pd.notna(mapping_rule['graph_reference']):
-        results_df = _materialize_reference(results_df, mapping_rule['graph_reference'], termtype='http://www.w3.org/ns/r2rml#IRI')
+        results_df = _materialize_reference(results_df, mapping_rule['graph_reference'], termtype=constants.R2RML['IRI'])
 
     return set(results_df['triple'])
 
 
 def _materalize_push_down_sql_join(mapping_rule, parent_triples_map_rule, references, parent_references, config):
+
     for key, join_condition in eval(mapping_rule['join_conditions']).items():
         parent_references.add(join_condition['parent_value'])
         references.add(join_condition['child_value'])
 
     sql_query = relational_source.build_sql_join_query(config, mapping_rule, parent_triples_map_rule,
                                                        references, parent_references)
+
+    triples_rule = set()
     db_connection = relational_source.relational_db_connection(config, mapping_rule['source_name'])
     for query_results_chunk_df in pd.read_sql(sql_query, con=db_connection,
                                               chunksize=int(config.get('CONFIGURATION', 'chunksize')),
                                               coerce_float=config.getboolean('CONFIGURATION', 'coerce_float')):
         query_results_chunk_df = utils.dataframe_columns_to_str(query_results_chunk_df)
-        db_connection.close()
+        triples_rule.update(
+            _materialize_join_mapping_rule_terms(query_results_chunk_df, mapping_rule, parent_triples_map_rule))
 
-        return _materialize_join_mapping_rule_terms(query_results_chunk_df, mapping_rule, parent_triples_map_rule)
+    db_connection.close()
+
+    return triples_rule
 
 
 def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):

@@ -61,7 +61,7 @@ def get_subject_maps(mappings_df):
     subject_maps_df = subject_maps_df.drop_duplicates()
 
     if len(list(subject_maps_df['triples_map_id'])) > len(set(subject_maps_df['triples_map_id'])):
-        logging.critical('One or more triples maps have incongruencies in subject maps.')
+        logging.critical('One or more triples maps have incongruities in subject maps.')
 
     return subject_maps_df
 

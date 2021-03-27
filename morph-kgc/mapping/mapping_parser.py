@@ -262,7 +262,7 @@ def _validate_parsed_mappings(mappings_df):
     repeated_triples_map_ids = utils.get_repeated_elements_in_list(
         list(aux_mappings_df['triples_map_id'].astype(str)))
     # of those repeated identifiers, ignore those that come from rr:class (i.e. have the prefix rdf_class_)
-    repeated_triples_map_ids = [tm_id for tm_id in repeated_triples_map_ids if not tm_id.startswith('rdf_class_')]
+    repeated_triples_map_ids = [tm_id for tm_id in repeated_triples_map_ids]
     if len(repeated_triples_map_ids) > 0:
         raise Exception('The following triples maps appear in more than one data source: ' +
                         str(repeated_triples_map_ids) +
@@ -368,6 +368,11 @@ class MappingParser:
         # ignore the delimited identifiers (this is not conformant with R2MRL specification)
         self._remove_delimiters_from_mappings()
 
+        # remove mapping rules with no predicate or object (subject map is conserved because rdf class was added as POM)
+        self.mappings_df = self.mappings_df.dropna(subset=['predicate_constant', 'predicate_template',
+                                                           'predicate_reference', 'object_constant', 'object_template',
+                                                           'object_reference'], how='all')
+
         # create a unique id for each mapping rule
         self.mappings_df.insert(0, 'id', self.mappings_df.reset_index(drop=True).index)
 
@@ -424,8 +429,7 @@ class MappingParser:
 
                 # build the new POM from the mapping rule
                 self.mappings_df.at[j, 'source_name'] = row['source_name']
-                # add rdf_class_ at the beginning to avoid duplciating triples map identifiers
-                self.mappings_df.at[j, 'triples_map_id'] = 'rdf_class_' + str(row['triples_map_id'])
+                self.mappings_df.at[j, 'triples_map_id'] = row['triples_map_id']
                 self.mappings_df.at[j, 'tablename'] = row['tablename']
                 self.mappings_df.at[j, 'query'] = row['query']
                 self.mappings_df.at[j, 'subject_template'] = row['subject_template']
