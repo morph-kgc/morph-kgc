@@ -54,8 +54,8 @@ def get_subject_maps(mappings_df):
     """
 
     subject_maps_df = mappings_df[[
-        'triples_map_id', 'source_name', 'source_type', 'data_source', 'ref_form', 'iterator', 'tablename', 'query',
-        'subject_template', 'subject_reference', 'subject_constant', 'subject_termtype']
+        'id', 'triples_map_id', 'source_name', 'source_type', 'data_source', 'ref_form', 'iterator', 'tablename',
+        'query', 'subject_template', 'subject_reference', 'subject_constant', 'subject_termtype']
     ]
 
     subject_maps_df = subject_maps_df.drop_duplicates()
@@ -218,4 +218,25 @@ def get_mapping_rule_from_triples_map_id(mappings, parent_triples_map_id):
 
 def get_delta_time(start_time):
     return "{:.3f}".format((time.time() - start_time))
+
+
+def add_references_in_join_condition(mapping_rule, references, parent_references):
+    references_join, parent_references_join = get_references_in_join_condition(mapping_rule)
+
+    references.update(set(references_join))
+    parent_references.update(set(parent_references_join))
+
+    return references, parent_references
+
+
+def get_references_in_join_condition(mapping_rule):
+    references = list()
+    parent_references = list()
+
+    join_conditions = eval(mapping_rule['join_conditions'])
+    for join_condition in join_conditions.values():
+        references.append(join_condition['child_value'])
+        parent_references.append(join_condition['parent_value'])
+
+    return references, parent_references
 

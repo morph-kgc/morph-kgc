@@ -133,6 +133,7 @@ def build_sql_subquery(mapping_rule, references, alias):
 
     return query
 
+
 def build_sql_query(config, mapping_rule, references):
     if pd.notna(mapping_rule['query']):
         query = mapping_rule['query']
@@ -149,7 +150,22 @@ def build_sql_query(config, mapping_rule, references):
     else:
         query = None
 
-    if query:
+    if query is not None:
         logging.debug('SQL query for mapping rule `' + str(mapping_rule['id']) + '`: [' + query + ']')
 
     return query
+
+
+def get_sql_data(config, mapping_rule, references, parent_triples_map_rule=None, parent_references=None):
+    if parent_triples_map_rule is not None:
+        sql_query = build_sql_join_query(config, mapping_rule, parent_triples_map_rule, references, parent_references)
+    else:
+        sql_query = build_sql_query(config, mapping_rule, references)
+    db_connection = relational_db_connection(config, mapping_rule['source_name'])
+    result_chunks = pd.read_sql(sql_query,
+                                con=db_connection,
+                                chunksize=int(config.get('CONFIGURATION', 'chunksize')),
+                                coerce_float=config.getboolean('CONFIGURATION', 'coerce_float'))
+
+    return result_chunks, db_connection
+

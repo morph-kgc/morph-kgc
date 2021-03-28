@@ -19,7 +19,7 @@ import multiprocessing as mp
 from itertools import repeat
 from urllib.parse import quote
 
-from data_source import relational_source
+from data_source import relational_source, tabular_source
 import utils
 
 
@@ -47,7 +47,8 @@ def _get_references_in_mapping_rule(mapping_rule, only_subject_map=False):
     return set(references)
 
 
-def _materialize_template(results_df, template, columns_alias='', termtype=constants.R2RML['IRI'], language_tag='', datatype=''):
+def _materialize_template(results_df, template, columns_alias='', termtype=constants.R2RML['IRI'], language_tag='',
+                          datatype=''):
     references = utils.get_references_in_template(str(template))
 
     if str(termtype).strip() == constants.R2RML['literal']:
@@ -79,7 +80,8 @@ def _materialize_template(results_df, template, columns_alias='', termtype=const
     return results_df
 
 
-def _materialize_reference(results_df, reference, columns_alias='', termtype=constants.R2RML['literal'], language_tag='', datatype=''):
+def _materialize_reference(results_df, reference, columns_alias='', termtype=constants.R2RML['literal'],
+                           language_tag='', datatype=''):
     results_df['reference_results'] = results_df[columns_alias + str(reference)]
 
     if str(termtype).strip() == constants.R2RML['IRI']:
@@ -178,19 +180,14 @@ def _materialize_mapping_rule_terms(results_df, mapping_rule):
 
 
 def _materalize_push_down_sql_join(mapping_rule, parent_triples_map_rule, references, parent_references, config):
-
     for key, join_condition in eval(mapping_rule['join_conditions']).items():
         parent_references.add(join_condition['parent_value'])
         references.add(join_condition['child_value'])
 
-    sql_query = relational_source.build_sql_join_query(config, mapping_rule, parent_triples_map_rule,
-                                                       references, parent_references)
-
     triples_rule = set()
-    db_connection = relational_source.relational_db_connection(config, mapping_rule['source_name'])
-    for query_results_chunk_df in pd.read_sql(sql_query, con=db_connection,
-                                              chunksize=int(config.get('CONFIGURATION', 'chunksize')),
-                                              coerce_float=config.getboolean('CONFIGURATION', 'coerce_float')):
+    result_chunks, db_connection = relational_source.get_sql_data(config, mapping_rule, references,
+                                                                  parent_triples_map_rule, parent_references)
+    for query_results_chunk_df in result_chunks:
         query_results_chunk_df = utils.dataframe_columns_to_str(query_results_chunk_df)
         triples_rule.update(
             _materialize_join_mapping_rule_terms(query_results_chunk_df, mapping_rule, parent_triples_map_rule))
@@ -200,8 +197,25 @@ def _materalize_push_down_sql_join(mapping_rule, parent_triples_map_rule, refere
     return triples_rule
 
 
+def _merge_results_chunks(query_results_chunk_df, parent_query_results_chunk_df, mapping_rule):
+    child_join_references, parent_join_references = utils.get_references_in_join_condition(mapping_rule)
+
+    child_join_references = ['child_' + reference for reference in child_join_references]
+    parent_join_references = ['parent_' + reference for reference in parent_join_references]
+
+    return query_results_chunk_df.merge(parent_query_results_chunk_df,
+                                        how='inner',
+                                        left_on=child_join_references,
+                                        right_on=parent_join_references)
+
+
 def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
     triples = set()
+
+    db_connection = None
+    parent_db_connection = None
+    result_chunks = None
+    parent_result_chunks = None
 
     references = _get_references_in_mapping_rule(mapping_rule)
 
@@ -215,59 +229,57 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
                 mapping_rule['source_name'] == parent_triples_map_rule['source_name']:
             triples.update(_materalize_push_down_sql_join(mapping_rule, parent_triples_map_rule, references,
                                                           parent_references, config))
-        """
-        else:
-            references.add(list(eval(mapping_rule['join_conditions']).values())[0]['child_value'])
-            parent_references.add(list(eval(mapping_rule['join_conditions']).values())[0]['parent_value'])
 
-            if mapping_rule['source_type'] == 'mysql':
-                sql_query = relational_source.build_sql_query(config, mapping_rule, references)
-                db_connection = relational_source.relational_db_connection(config, mapping_rule['source_name'])
-                result_chunks = pd.read_sql(sql_query, con=db_connection, chunksize=int(config.get('CONFIGURATION', 'chunksize')), coerce_float=config.getboolean('CONFIGURATION', 'coerce_float'))
-            elif mapping_rule['source_type'] == 'CSV':
-                result_chunks = pd.read_table(mapping_rule['data_source'], delimiter=',', usecols=references, engine='c', chunksize=int(config.get('CONFIGURATION', 'chunksize')))
-            # ----------------------
-            if parent_triples_map_rule['source_type'] == 'mysql':
-                parent_sql_query = relational_source.build_sql_query(config, parent_triples_map_rule, parent_references)
-                parent_db_connection = relational_source.relational_db_connection(config, parent_triples_map_rule['source_name'])
-                parent_result_chunks = pd.read_sql(parent_sql_query, con=parent_db_connection, chunksize=int(config.get('CONFIGURATION', 'chunksize')), coerce_float=config.getboolean('CONFIGURATION', 'coerce_float'))
-            elif parent_triples_map_rule['source_type'] == 'CSV':
-                parent_result_chunks = pd.read_table(parent_triples_map_rule['data_source'], delimiter=',', usecols=parent_references, engine='c', chunksize=int(config.get('CONFIGURATION', 'chunksize')))
-            # ----------------------
+        else:
+            # add references used in the join condition (not needed when pushing down join to SQL)
+            references, parent_references = utils.add_references_in_join_condition(mapping_rule, references,
+                                                                                   parent_references)
+
+            if mapping_rule['source_type'] in constants.RELATIONAL_SOURCE_TYPES:
+                result_chunks, db_connection = relational_source.get_sql_data(config, mapping_rule, references)
+            elif mapping_rule['source_type'] in constants.TABULAR_SOURCE_TYPES:
+                result_chunks = tabular_source.get_table_data(config, mapping_rule, references)
 
             for query_results_chunk_df in result_chunks:
                 query_results_chunk_df = utils.dataframe_columns_to_str(query_results_chunk_df)
                 query_results_chunk_df = query_results_chunk_df.add_prefix('child_')
-                for parent_query_results_chunk_df in pd.read_table(parent_triples_map_rule['data_source'], delimiter=',', usecols=parent_references, engine='c', chunksize=int(config.get('CONFIGURATION', 'chunksize'))):
-                    # TODO: when using chunks the number of result obtained is not correct
-                    # read_table should directly be in this inner for
+
+                if parent_triples_map_rule['source_type'] in constants.RELATIONAL_SOURCE_TYPES:
+                    parent_result_chunks, parent_db_connection = relational_source.get_sql_data(config, parent_triples_map_rule, parent_references)
+                elif parent_triples_map_rule['source_type'] in constants.TABULAR_SOURCE_TYPES:
+                    parent_result_chunks = tabular_source.get_table_data(config, parent_triples_map_rule, parent_references)
+
+                for parent_query_results_chunk_df in parent_result_chunks:
 
                     parent_query_results_chunk_df = utils.dataframe_columns_to_str(parent_query_results_chunk_df)
                     parent_query_results_chunk_df = parent_query_results_chunk_df.add_prefix('parent_')
-                    # TODO: study merge options
-                    merged_query_results_chunk_df = query_results_chunk_df.merge(parent_query_results_chunk_df, how='inner', left_on='child_'+list(eval(mapping_rule['join_conditions']).values())[0]['child_value'], right_on='parent_'+list(eval(mapping_rule['join_conditions']).values())[0]['parent_value'])
+                    merged_query_results_chunk_df = _merge_results_chunks(query_results_chunk_df,
+                                                                          parent_query_results_chunk_df, mapping_rule)
 
-                    triples.update(_materialize_join_mapping_rule_terms(merged_query_results_chunk_df, mapping_rule, parent_triples_map_rule))
+                    triples.update(
+                        _materialize_join_mapping_rule_terms(merged_query_results_chunk_df, mapping_rule,
+                                                             parent_triples_map_rule))
 
-            if mapping_rule['source_type'] == 'mysql':
+            if mapping_rule['source_type'] in constants.RELATIONAL_SOURCE_TYPES:
                 db_connection.close()
-            if parent_triples_map_rule['source_type'] == 'mysql':
+            if parent_triples_map_rule['source_type'] in constants.RELATIONAL_SOURCE_TYPES:
                 db_connection.close()
-        """
+
     else:
-        if mapping_rule['source_type'] == 'MYSQL':
-            sql_query = relational_source.build_sql_query(config, mapping_rule, references)
-            db_connection = relational_source.relational_db_connection(config, mapping_rule['source_name'])
-            result_chunks = pd.read_sql(sql_query, con=db_connection, chunksize=int(config.get('CONFIGURATION', 'chunksize')), coerce_float=config.getboolean('CONFIGURATION', 'coerce_float'))
-        elif mapping_rule['source_type'] == 'CSV':
-            result_chunks = pd.read_table(mapping_rule['data_source'], delimiter=',', usecols=_get_references_in_mapping_rule(mapping_rule), engine='c', chunksize=int(config.get('CONFIGURATION', 'chunksize')))
+
+        if mapping_rule['source_type'] in constants.RELATIONAL_SOURCE_TYPES:
+            result_chunks, db_connection = relational_source.get_sql_data(config, mapping_rule, references)
+        elif mapping_rule['source_type'] in constants.TABULAR_SOURCE_TYPES:
+            result_chunks = tabular_source.get_table_data(config, mapping_rule, references)
 
         for query_results_chunk_df in result_chunks:
             query_results_chunk_df = utils.dataframe_columns_to_str(query_results_chunk_df)
             triples.update(_materialize_mapping_rule_terms(query_results_chunk_df, mapping_rule))
 
-        if mapping_rule['source_type'] in constants.RELATIONAL_SOURCE_TYPES:
-            db_connection.close()
+    if db_connection:
+        db_connection.close()
+    if parent_db_connection:
+        parent_db_connection.close()
 
     return triples
 

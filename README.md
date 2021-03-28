@@ -12,4 +12,4 @@ optional arguments:
 
 ## Author
 
-Julián Arenas-Guerrero (julian.arenas.guerrero@upm.es)
+Julián Arenas-Guerrero - julian.arenas.guerrero@upm.es (Ontology Engineering Group - UPM)
