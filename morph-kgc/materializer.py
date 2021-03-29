@@ -15,7 +15,6 @@ import sys
 import time
 import pandas as pd
 import multiprocessing as mp
-import numpy as np
 
 from itertools import repeat
 from urllib.parse import quote
@@ -252,7 +251,6 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
                     parent_result_chunks = tabular_source.get_table_data(config, parent_triples_map_rule, parent_references)
 
                 for parent_query_results_chunk_df in parent_result_chunks:
-
                     parent_query_results_chunk_df = utils.dataframe_columns_to_str(parent_query_results_chunk_df)
                     parent_query_results_chunk_df = parent_query_results_chunk_df.add_prefix('parent_')
                     merged_query_results_chunk_df = _merge_results_chunks(query_results_chunk_df,

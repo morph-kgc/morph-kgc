@@ -11,7 +11,6 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 import rdflib
 import logging
-import os
 import sql_metadata
 import rfc3987
 import pandas as pd
@@ -65,48 +64,6 @@ def _get_join_object_maps_join_conditions(join_query_results):
     return join_conditions_dict
 
 
-def _append_mapping_rule(data_source_mappings_df, mapping_rule):
-    """
-    Builds a Pandas DataFrame from the results obtained from MAPPING_PARSING_QUERY and
-    JOIN_CONDITION_PARSING_QUERY for one source.
-    """
-
-    # get position for the new mapping rule in the DataFrame
-    i = len(data_source_mappings_df)
-
-    data_source_mappings_df.at[i, 'triples_map_id'] = mapping_rule.triples_map_id
-    data_source_mappings_df.at[i, 'data_source'] = mapping_rule.data_source
-    data_source_mappings_df.at[i, 'object_map'] = mapping_rule.object_map
-    data_source_mappings_df.at[i, 'ref_form'] = mapping_rule.ref_form
-    data_source_mappings_df.at[i, 'iterator'] = mapping_rule.iterator
-    data_source_mappings_df.at[i, 'tablename'] = mapping_rule.tablename
-    data_source_mappings_df.at[i, 'query'] = mapping_rule.query
-    data_source_mappings_df.at[i, 'subject_template'] = mapping_rule.subject_template
-    data_source_mappings_df.at[i, 'subject_reference'] = mapping_rule.subject_reference
-    data_source_mappings_df.at[i, 'subject_constant'] = mapping_rule.subject_constant
-    data_source_mappings_df.at[i, 'subject_rdf_class'] = mapping_rule.subject_rdf_class
-    data_source_mappings_df.at[i, 'subject_termtype'] = mapping_rule.subject_termtype
-    data_source_mappings_df.at[i, 'graph_constant'] = mapping_rule.graph_constant
-    data_source_mappings_df.at[i, 'graph_template'] = mapping_rule.graph_template
-    data_source_mappings_df.at[i, 'graph_reference'] = mapping_rule.graph_reference
-    data_source_mappings_df.at[i, 'predicate_constant'] = mapping_rule.predicate_constant
-    data_source_mappings_df.at[i, 'predicate_template'] = mapping_rule.predicate_template
-    data_source_mappings_df.at[i, 'predicate_reference'] = mapping_rule.predicate_reference
-    data_source_mappings_df.at[i, 'object_constant'] = mapping_rule.object_constant
-    data_source_mappings_df.at[i, 'object_template'] = mapping_rule.object_template
-    data_source_mappings_df.at[i, 'object_reference'] = mapping_rule.object_reference
-    data_source_mappings_df.at[i, 'object_termtype'] = mapping_rule.object_termtype
-    data_source_mappings_df.at[i, 'object_datatype'] = mapping_rule.object_datatype
-    data_source_mappings_df.at[i, 'object_language'] = mapping_rule.object_language
-    data_source_mappings_df.at[i, 'object_parent_triples_map'] = mapping_rule.object_parent_triples_map
-    data_source_mappings_df.at[i, 'predicate_object_graph_constant'] = mapping_rule.predicate_object_graph_constant
-    data_source_mappings_df.at[
-        i, 'predicate_object_graph_reference'] = mapping_rule.predicate_object_graph_reference
-    data_source_mappings_df.at[i, 'predicate_object_graph_template'] = mapping_rule.predicate_object_graph_template
-
-    return data_source_mappings_df
-
-
 def _validate_no_repeated_triples_maps(mapping_graph, source_name):
     """
     Checks that there are no repeated triples maps in the mapping rules of a source. This is important because
@@ -114,9 +71,7 @@ def _validate_no_repeated_triples_maps(mapping_graph, source_name):
     parent triples maps correctly.
     """
 
-    query = """
-        prefix rr: <http://www.w3.org/ns/r2rml#>
-        SELECT ?triples_map_id WHERE { ?triples_map_id rr:subjectMap ?_subject_map . } """
+    query = 'SELECT ?triples_map_id WHERE { ?triples_map_id <http://www.w3.org/ns/r2rml#subjectMap> ?_subject_map . }'
 
     # get the identifiers of all the triples maps in the graph
     triples_map_ids = [str(result.triples_map_id) for result in list(mapping_graph.query(query))]
@@ -136,11 +91,9 @@ def _transform_mappings_into_dataframe(mapping_query_results, join_query_results
     JOIN_CONDITION_PARSING_QUERY for one source.
     """
 
-    # create empty DataFrame with relevant columns
-    source_mappings_df = pd.DataFrame(columns=constants.MAPPINGS_DATAFRAME_COLUMNS)
-    # populate the DataFrame with parsed mappings from parsing SPARQL query
-    for mapping_rule in mapping_query_results:
-        source_mappings_df = _append_mapping_rule(source_mappings_df, mapping_rule)
+    # graph mapping rules to DataFrame
+    source_mappings_df = pd.DataFrame(mapping_query_results.bindings)
+    source_mappings_df.columns = source_mappings_df.columns.map(str)
 
     # process mapping rules with joins
     # create dict with child triples maps in the keys and its join conditions in in the values
@@ -155,7 +108,7 @@ def _transform_mappings_into_dataframe(mapping_query_results, join_query_results
     # object_map column no longer needed, remove it
     source_mappings_df = source_mappings_df.drop('object_map', axis=1)
 
-    # link the mapping rules to its data source name
+    # link the mapping rules to their data source name
     source_mappings_df['source_name'] = config_section_name
 
     return source_mappings_df
@@ -292,6 +245,7 @@ class MappingParser:
 
         # parse mapping files for each data source in the config file and add the parsed mappings rules to a
         # common DataFrame for all data sources
+
         for config_section_name in self.config.sections():
             if config_section_name != 'CONFIGURATION':
                 data_source_mappings_df = self._parse_data_source_mapping_files(config_section_name)
@@ -323,18 +277,11 @@ class MappingParser:
         """
 
         mapping_graph = rdflib.Graph()
+
+        mapping_file_paths = utils.get_mapping_file_paths(self.config, config_section_name)
         try:
-            # process all file/directories given for as mappings for the data source
-            for mapping_path in self.config.get(config_section_name, 'mappings').split(','):
-                # if it is a file load the mapping triples to the graph
-                if os.path.isfile(mapping_path):
-                    mapping_graph.load(mapping_path, format=rdflib.util.guess_format(mapping_path))
-                # if it is a directory process all the mapping files within the root of the directory
-                elif os.path.isdir(mapping_path):
-                    for mapping_file_name in os.listdir(mapping_path):
-                        mapping_file = os.path.join(mapping_path, mapping_file_name)
-                        if os.path.isfile(mapping_file):
-                            mapping_graph.load(mapping_file, format=rdflib.util.guess_format(mapping_file))
+            # load mapping rules to graph
+            [mapping_graph.load(f, format=rdflib.util.guess_format(f)) for f in mapping_file_paths]
         except Exception as n3_mapping_parse_exception:
             raise Exception(n3_mapping_parse_exception)
 

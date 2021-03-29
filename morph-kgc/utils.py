@@ -240,3 +240,19 @@ def get_references_in_join_condition(mapping_rule):
 
     return references, parent_references
 
+
+def get_mapping_file_paths(config, config_section_name):
+    mapping_file_paths = []
+
+    for mapping_path in config.get(config_section_name, 'mappings').split(','):
+        # if it is a file load the mapping triples to the graph
+        if os.path.isfile(mapping_path):
+            mapping_file_paths.append(mapping_path)
+        # if it is a directory process all the mapping files within the root of the directory
+        elif os.path.isdir(mapping_path):
+            for mapping_file_name in os.listdir(mapping_path):
+                mapping_file = os.path.join(mapping_path, mapping_file_name)
+                if os.path.isfile(mapping_file):
+                    mapping_file_paths.append(mapping_file)
+
+    return mapping_file_paths

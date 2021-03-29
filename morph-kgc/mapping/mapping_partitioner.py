@@ -11,6 +11,7 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 import constants
 import logging
+import pandas as pd
 
 from utils import get_invariable_part_of_template
 
@@ -273,19 +274,19 @@ class MappingPartitioner:
                                   str(mapping_rule['id']) + "`.")
 
             if 'o' in self.config.get('CONFIGURATION', 'mapping_partitions'):
-                if mapping_rule['object_constant']:
+                if pd.notna(mapping_rule['object_constant']):
                     self.mappings_df.at[i, 'object_invariable_part'] = str(mapping_rule['object_constant'])
-                elif mapping_rule['object_template']:
+                elif pd.notna(mapping_rule['object_template']):
                     self.mappings_df.at[i, 'object_invariable_part'] = \
                         get_invariable_part_of_template(str(mapping_rule['object_template']))
-                elif mapping_rule['object_reference']:
-                    if mapping_rule['object_language']:
+                elif pd.notna(mapping_rule['object_reference']):
+                    if pd.notna(mapping_rule['object_language']):
                         self.mappings_df.at[i, 'object_invariable_part'] = '""@' + str(mapping_rule['object_language'])
-                    elif mapping_rule['object_datatype']:
+                    elif pd.notna(mapping_rule['object_datatype']):
                         self.mappings_df.at[i, 'object_invariable_part'] = '""^^' + str(mapping_rule['object_datatype'])
                     else:
                         pass    # no invariable part
-                elif mapping_rule['object_parent_triples_map']:
+                elif pd.notna(mapping_rule['object_parent_triples_map']):
                     pass    # no invariable part
                     # mapping partitions could be extended with URI invariable part of parent triples map
                 else:
