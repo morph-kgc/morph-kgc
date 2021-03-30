@@ -15,7 +15,8 @@ import re
 import logging
 import constants
 
-from configparser import ConfigParser, ExtendedInterpolation
+from config import Config
+from configparser import ExtendedInterpolation
 
 from data_source import relational_source
 
@@ -367,7 +368,7 @@ def parse_config():
 
     args = _parse_arguments()
 
-    config = ConfigParser(interpolation=ExtendedInterpolation())
+    config = Config(interpolation=ExtendedInterpolation())
     config.read(args.config)
     config = _complete_config_file_with_defaults(config)
 

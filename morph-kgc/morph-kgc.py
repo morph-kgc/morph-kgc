@@ -58,5 +58,6 @@ def process_materialization(mappings, config):
 if __name__ == "__main__":
 
     config = parse_config()
+    config.is_parallelization_enabled()
     mappings = retrieve_mappings(config)
     process_materialization(mappings, config)
