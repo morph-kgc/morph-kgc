@@ -102,7 +102,7 @@ def _transform_mappings_into_dataframe(mapping_query_results, join_query_results
     source_mappings_df['join_conditions'] = source_mappings_df['object_map'].map(join_conditions_dict)
     # needed for later hashing the dataframe
     source_mappings_df['join_conditions'] = source_mappings_df['join_conditions'].where(
-        pd.notnull(source_mappings_df['join_conditions']), '')
+        pd.notna(source_mappings_df['join_conditions']), '')
     # convert the join condition dictionaries to string (can later be converted back to dict)
     source_mappings_df['join_conditions'] = source_mappings_df['join_conditions'].astype(str)
     # object_map column no longer needed, remove it
@@ -171,14 +171,14 @@ def _validate_parsed_mappings(mappings_df):
 
     # if there is a datatype or language tag then the object map termtype must be a rr:Literal
     if len(mappings_df.loc[
-               (mappings_df['object_termtype'] != constants.R2RML['literal']) & mappings_df[
-                'object_datatype'].notnull() & mappings_df['object_language'].notnull()]) > 0:
+               (mappings_df['object_termtype'] != constants.R2RML['literal']) & pd.notna(mappings_df[
+                'object_datatype']) & pd.notna(mappings_df['object_language'])]) > 0:
         raise Exception('Found object maps with a language tag or a datatype, '
                         'but that do not have termtype rr:Literal.')
 
     # language tags and datatypes cannot be used simultaneously, language tags are used if both are given
     if len(mappings_df.loc[
-               mappings_df['object_language'].notnull() & mappings_df['object_datatype'].notnull()]) > 0:
+               pd.notna(mappings_df['object_language']) & pd.notna(mappings_df['object_datatype'])]) > 0:
         logging.warning('Found object maps with a language tag and a datatype. Both of them cannot be used '
                         'simultaneously for the same object map, and the language tag has preference.')
 
@@ -187,10 +187,10 @@ def _validate_parsed_mappings(mappings_df):
     constants_terms.extend(list(mappings_df['graph_constant'].dropna()))
     constants_terms.extend(list(mappings_df.loc[
                                     (mappings_df['subject_termtype'] == constants.R2RML['IRI']) &
-                                    mappings_df['subject_constant'].notnull()]['subject_constant']))
+                                    pd.notna(mappings_df['subject_constant'])]['subject_constant']))
     constants_terms.extend(list(mappings_df.loc[
                                     (mappings_df['object_termtype'] == constants.R2RML['IRI']) &
-                                    mappings_df['object_constant'].notnull()]['object_constant']))
+                                    pd.notna(mappings_df['object_constant'])]['object_constant']))
     # validate that each of the constants retrieved are valid URIs
     for constant in set(constants_terms):
         rfc3987.parse(constant, rule='IRI')
@@ -199,11 +199,11 @@ def _validate_parsed_mappings(mappings_df):
     templates = list(mappings_df['predicate_template'].dropna())
     templates.extend(list(mappings_df['graph_template'].dropna()))
     templates.extend(list(mappings_df.loc[
-                              (mappings_df['subject_termtype'] == constants.R2RML['IRI']) & mappings_df[
-                                  'subject_template'].notnull()]['subject_template']))
+                              (mappings_df['subject_termtype'] == constants.R2RML['IRI']) & pd.notna(mappings_df[
+                                  'subject_template'])]['subject_template']))
     templates.extend(list(mappings_df.loc[
-                              (mappings_df['object_termtype'] == constants.R2RML['IRI']) & mappings_df[
-                                  'object_template'].notnull()]['object_template']))
+                              (mappings_df['object_termtype'] == constants.R2RML['IRI']) & pd.notna(mappings_df[
+                                  'object_template'])]['object_template']))
     for template in templates:
         # validate that at least the INVARIABLE part of the template is a valid IRI
         rfc3987.parse(utils.get_invariable_part_of_template(str(template)), rule='IRI')
@@ -332,12 +332,12 @@ class MappingParser:
                 parent_triples_map_rule = utils.get_mapping_rule_from_triples_map_id(self.mappings_df, mapping_rule[
                     'object_parent_triples_map'])
 
-                # check that source_name, tablename, iterator, query are the same (can be empty)
-                if mapping_rule['source_name'] == parent_triples_map_rule['source_name'] and \
-                        mapping_rule['data_source'] == parent_triples_map_rule['data_source'] and \
-                        mapping_rule['tablename'] == parent_triples_map_rule['tablename'] and \
-                        mapping_rule['iterator'] == parent_triples_map_rule['iterator'] and \
-                        mapping_rule['query'] == parent_triples_map_rule['query']:
+                # str() is to be able to compare np.nan
+                if str(mapping_rule['source_name']) == str(parent_triples_map_rule['source_name']) and \
+                        str(mapping_rule['data_source']) == str(parent_triples_map_rule['data_source']) and \
+                        str(mapping_rule['tablename']) == str(parent_triples_map_rule['tablename']) and \
+                        str(mapping_rule['iterator']) == str(parent_triples_map_rule['iterator']) and \
+                        str(mapping_rule['query']) == str(parent_triples_map_rule['query']):
 
                     remove_join = True
 
@@ -498,7 +498,8 @@ class MappingParser:
             self.mappings_df.at[i, 'object_reference'] = _get_undelimited_identifier(
                 mapping_rule['object_reference'])
 
-            if mapping_rule['join_conditions']:
+            # if join_confition is not null and is not empty (so we can evaluate the dictZ)
+            if pd.notna(mapping_rule['join_conditions']) and mapping_rule['join_conditions']:
                 join_conditions = eval(mapping_rule['join_conditions'])
                 for key, value in join_conditions.items():
                     join_conditions[key]['child_value'] = _get_undelimited_identifier(

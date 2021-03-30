@@ -54,14 +54,11 @@ def get_subject_maps(mappings_df):
     """
 
     subject_maps_df = mappings_df[[
-        'triples_map_id', 'source_name', 'source_type', 'data_source', 'ref_form', 'iterator', 'tablename',
+        'id', 'triples_map_id', 'source_name', 'source_type', 'data_source', 'ref_form', 'iterator', 'tablename',
         'query', 'subject_template', 'subject_reference', 'subject_constant', 'subject_termtype']
     ]
 
     subject_maps_df = subject_maps_df.drop_duplicates()
-
-    if len(list(subject_maps_df['triples_map_id'])) > len(set(subject_maps_df['triples_map_id'])):
-        logging.critical('One or more triples maps have incongruities in subject maps.')
 
     return subject_maps_df
 

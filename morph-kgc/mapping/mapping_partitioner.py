@@ -159,9 +159,13 @@ class MappingPartitioner:
         if 'g' in mapping_partitions:
             self.mappings_df['mapping_partition'] = self.mappings_df['mapping_partition'] + self.mappings_df[
                 'graph_partition'] + '_'
-        # remove the last underscore
+
         if len(mapping_partitions) > 0:
+            # remove the last underscore
             self.mappings_df['mapping_partition'] = self.mappings_df['mapping_partition'].astype(str).str[:-1]
+        else:
+            # no mapping partitions generated, assign unique mapping partition
+            self.mappings_df['mapping_partition'] = '1'
 
         # drop the auxiliary columns that were created just to generate the mapping partitions
         self.mappings_df.drop([
@@ -254,19 +258,19 @@ class MappingPartitioner:
 
         for i, mapping_rule in self.mappings_df.iterrows():
             if 's' in self.config.get('CONFIGURATION', 'mapping_partitions'):
-                if mapping_rule['subject_template']:
+                if pd.notna(mapping_rule['subject_template']):
                     self.mappings_df.at[i, 'subject_invariable_part'] = \
                         get_invariable_part_of_template(str(mapping_rule['subject_template']))
-                elif mapping_rule['subject_constant']:
+                elif pd.notna(mapping_rule['subject_constant']):
                     self.mappings_df.at[i, 'subject_invariable_part'] = str(mapping_rule['subject_constant'])
                 else:
                     logging.error("Could not get the invariable part of the subject for mapping rule `" +
                                   str(mapping_rule['id']) + "`.")
 
             if 'p' in self.config.get('CONFIGURATION', 'mapping_partitions'):
-                if mapping_rule['predicate_constant']:
+                if pd.notna(mapping_rule['predicate_constant']):
                     self.mappings_df.at[i, 'predicate_invariable_part'] = str(mapping_rule['predicate_constant'])
-                elif mapping_rule['predicate_template']:
+                elif pd.notna(mapping_rule['predicate_template']):
                     self.mappings_df.at[i, 'predicate_invariable_part'] = \
                         get_invariable_part_of_template(str(mapping_rule['predicate_template']))
                 else:
@@ -294,9 +298,9 @@ class MappingPartitioner:
                                   str(mapping_rule['id']) + "`.")
 
             if 'g' in self.config.get('CONFIGURATION', 'mapping_partitions'):
-                if mapping_rule['graph_constant']:
+                if pd.notna(mapping_rule['graph_constant']):
                     self.mappings_df.at[i, 'graph_invariable_part'] = str(mapping_rule['graph_constant'])
-                elif mapping_rule['graph_template']:
+                elif pd.notna(mapping_rule['graph_template']):
                     self.mappings_df.at[i, 'graph_invariable_part'] = \
                         get_invariable_part_of_template(str(mapping_rule['graph_template']))
                 else:

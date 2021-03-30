@@ -61,7 +61,6 @@ def _materialize_template(results_df, template, columns_alias='', termtype=const
 
         if str(termtype).strip() == constants.R2RML['IRI']:
             results_df['reference_results'] = results_df['reference_results'].apply(lambda x: quote(x))
-            #results_df['reference_results'] = list(map(quote, results_df['reference_results']))
 
         splitted_template = template.split('{' + reference + '}')
         results_df['triple'] = results_df['triple'] + splitted_template[0] + results_df['reference_results']
