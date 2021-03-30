@@ -224,7 +224,7 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
             subject_maps_df[subject_maps_df.triples_map_id == mapping_rule['object_parent_triples_map']].iloc[0]
         parent_references = _get_references_in_mapping_rule(parent_triples_map_rule, only_subject_map=True)
 
-        if config.getboolean('CONFIGURATION', 'push_down_sql_joins') and \
+        if config.getboolean(constants.CONFIG_SECTION, 'push_down_sql_joins') and \
                 mapping_rule['source_type'] in constants.RELATIONAL_SOURCE_TYPES and \
                 mapping_rule['source_name'] == parent_triples_map_rule['source_name']:
             triples.update(_materalize_push_down_sql_join(mapping_rule, parent_triples_map_rule, references,
@@ -325,13 +325,13 @@ class Materializer:
         logging.info('Number of triples generated in total: ' + str(num_triples) + '.')
 
     def materialize_concurrently(self):
-        if self.config.get('CONFIGURATION', 'process_start_method') != 'default':
-            mp.set_start_method(self.config.get('CONFIGURATION', 'process_start_method'))
-        logging.debug("Parallelizing with " + self.config.get('CONFIGURATION','number_of_processes') + " cores. Using `"
-                      + mp.get_start_method() + "` as process start method.")
+        if self.config.get(constants.CONFIG_SECTION, 'process_start_method') != 'default':
+            mp.set_start_method(self.config.get(constants.CONFIG_SECTION, 'process_start_method'))
+        logging.debug("Parallelizing with " + self.config.get(constants.CONFIG_SECTION, 'number_of_processes') +
+                      " cores. Using `" + mp.get_start_method() + "` as process start method.")
 
-        pool = mp.Pool(int(self.config.get('CONFIGURATION', 'number_of_processes')))
-        if self.config.getboolean('CONFIGURATION', 'async'):
+        pool = mp.Pool(self.config.getint(constants.CONFIG_SECTION, 'number_of_processes'))
+        if self.config.getboolean(constants.CONFIG_SECTION, 'async'):
             logging.debug("Using 'async' for parallelization.")
             triples_res = pool.starmap_async(_materialize_mapping_partition,
                                              zip(self.mapping_partitions, repeat(self.subject_maps_df),

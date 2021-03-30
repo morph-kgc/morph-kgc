@@ -14,14 +14,15 @@ import time
 import sys
 import utils
 import pandas as pd
+import constants
 
 from mapping.mapping_parser import MappingParser
 from args_parser import parse_config
 from materializer import Materializer
 
 
-def process_mappings(config):
-    input_parsed_mappings_path = config.get('CONFIGURATION', 'input_parsed_mappings_path')
+def retrieve_mappings(config):
+    input_parsed_mappings_path = config.get(constants.CONFIG_SECTION, 'input_parsed_mappings_path')
     if input_parsed_mappings_path:
         # retrieve parsed mapping from file and finish mapping processing
         mappings = pd.read_csv(input_parsed_mappings_path, keep_default_na=False)
@@ -34,9 +35,8 @@ def process_mappings(config):
         mappings = mappings_parser.parse_mappings()
         logging.info('Mappings processed in ' + utils.get_delta_time(start_time) + ' seconds.')
 
-        output_parsed_mappings_path = config.get('CONFIGURATION', 'output_parsed_mappings_path')
+        output_parsed_mappings_path = config.get(constants.CONFIG_SECTION, 'output_parsed_mappings_path')
         if output_parsed_mappings_path:
-            # the parsed mappings are to be saved to a file, and the execution of the engine terminates
             mappings.sort_values(by=['id'], axis=0).to_csv(output_parsed_mappings_path, index=False)
             logging.info('Parsed mapping rules saved to file.')
             sys.exit()
@@ -48,7 +48,7 @@ def process_materialization(mappings, config):
     materializer = Materializer(mappings, config)
 
     start_time = time.time()
-    if int(config.get('CONFIGURATION', 'number_of_processes')) == 1:
+    if config.getint(constants.CONFIG_SECTION, 'number_of_processes') == 1:
         materializer.materialize()
     else:
         materializer.materialize_concurrently()
@@ -58,5 +58,5 @@ def process_materialization(mappings, config):
 if __name__ == "__main__":
 
     config = parse_config()
-    mappings = process_mappings(config)
+    mappings = retrieve_mappings(config)
     process_materialization(mappings, config)

@@ -45,7 +45,7 @@ class MappingPartitioner:
         return self.mappings_df
 
     def generate_mapping_partitions(self):
-        mapping_partitions = self.config.get('CONFIGURATION', 'mapping_partitions')
+        mapping_partitions = self.config.get(constants.CONFIG_SECTION, 'mapping_partitions')
 
         # initialize empty mapping partitions
         self.mappings_df['subject_partition'] = ''
@@ -190,7 +190,7 @@ class MappingPartitioner:
         mapping partitioning criteria, then all valid criteria for the mapping rules in the input DataFrame is returned.
         """
 
-        mapping_partition_criteria = self.config.get('CONFIGURATION', 'mapping_partitions')
+        mapping_partition_criteria = self.config.get(constants.CONFIG_SECTION, 'mapping_partitions')
         valid_mapping_partition_criteria = ''
 
         if 'guess' in mapping_partition_criteria:
@@ -241,7 +241,7 @@ class MappingPartitioner:
         else:
             logging.info('Not using mapping partitioning.')
 
-        self.config.set('CONFIGURATION', 'mapping_partitions', valid_mapping_partition_criteria)
+        self.config.set(constants.CONFIG_SECTION, 'mapping_partitions', valid_mapping_partition_criteria)
 
     def _get_mapping_partitions_invariable_parts(self):
         """
@@ -257,7 +257,7 @@ class MappingPartitioner:
         self.mappings_df['graph_invariable_part'] = ''
 
         for i, mapping_rule in self.mappings_df.iterrows():
-            if 's' in self.config.get('CONFIGURATION', 'mapping_partitions'):
+            if 's' in self.config.get(constants.CONFIG_SECTION, 'mapping_partitions'):
                 if pd.notna(mapping_rule['subject_template']):
                     self.mappings_df.at[i, 'subject_invariable_part'] = \
                         get_invariable_part_of_template(str(mapping_rule['subject_template']))
@@ -267,7 +267,7 @@ class MappingPartitioner:
                     logging.error("Could not get the invariable part of the subject for mapping rule `" +
                                   str(mapping_rule['id']) + "`.")
 
-            if 'p' in self.config.get('CONFIGURATION', 'mapping_partitions'):
+            if 'p' in self.config.get(constants.CONFIG_SECTION, 'mapping_partitions'):
                 if pd.notna(mapping_rule['predicate_constant']):
                     self.mappings_df.at[i, 'predicate_invariable_part'] = str(mapping_rule['predicate_constant'])
                 elif pd.notna(mapping_rule['predicate_template']):
@@ -277,7 +277,7 @@ class MappingPartitioner:
                     logging.error("Could not get the invariable part of the predicate for mapping rule `" +
                                   str(mapping_rule['id']) + "`.")
 
-            if 'o' in self.config.get('CONFIGURATION', 'mapping_partitions'):
+            if 'o' in self.config.get(constants.CONFIG_SECTION, 'mapping_partitions'):
                 if pd.notna(mapping_rule['object_constant']):
                     self.mappings_df.at[i, 'object_invariable_part'] = str(mapping_rule['object_constant'])
                 elif pd.notna(mapping_rule['object_template']):
@@ -294,10 +294,10 @@ class MappingPartitioner:
                     pass    # no invariable part
                     # mapping partitions could be extended with URI invariable part of parent triples map
                 else:
-                    logging.error("Could not get the invariable part of the predicate for mapping rule `" +
+                    logging.error("Could not get the invariable part of the object for mapping rule `" +
                                   str(mapping_rule['id']) + "`.")
 
-            if 'g' in self.config.get('CONFIGURATION', 'mapping_partitions'):
+            if 'g' in self.config.get(constants.CONFIG_SECTION, 'mapping_partitions'):
                 if pd.notna(mapping_rule['graph_constant']):
                     self.mappings_df.at[i, 'graph_invariable_part'] = str(mapping_rule['graph_constant'])
                 elif pd.notna(mapping_rule['graph_template']):

@@ -29,7 +29,7 @@ def _configure_logger(config):
     """
 
     # get the logging level numeric value
-    logging_level = config.get('CONFIGURATION', 'logging_level')
+    logging_level = config.get(constants.CONFIG_SECTION, 'logging_level')
     if logging_level == 'critical':
         logging_level = logging.CRITICAL
     elif logging_level == 'error':
@@ -43,10 +43,10 @@ def _configure_logger(config):
     elif logging_level == 'notset':
         logging_level = logging.NOTSET
 
-    if config.get('CONFIGURATION', 'logs_file') == '':
+    if config.get(constants.CONFIG_SECTION, 'logs_file') == '':
         logging.basicConfig(format='%(levelname)s | %(asctime)s | %(message)s', level=logging_level)
     else:
-        logging.basicConfig(filename=config.get('CONFIGURATION', 'logs_file'),
+        logging.basicConfig(filename=config.get(constants.CONFIG_SECTION, 'logs_file'),
                             format='%(levelname)s | %(asctime)s | %(message)s', filemode='w',
                             level=logging_level)
 
@@ -59,11 +59,11 @@ def _log_parsed_configuration_and_data_sources(config):
     :type config: ConfigParser
     """
 
-    logging.debug('CONFIGURATION: ' + str(dict(config.items('CONFIGURATION'))))
+    logging.debug('CONFIGURATION: ' + str(dict(config.items(constants.CONFIG_SECTION))))
 
     data_sources = {}
     for section in config.sections():
-        if section != 'CONFIGURATION':
+        if section != constants.CONFIG_SECTION:
             ''' if section is not configuration then it is a data source.
                 Mind that DEFAULT section is not triggered with config.sections(). '''
             data_sources[section] = dict(config.items(section))
@@ -174,7 +174,7 @@ def _validate_config_data_sources_sections(config):
     :rtype configparser
     """
     for section in config.sections():
-        if section != 'CONFIGURATION':
+        if section != constants.CONFIG_SECTION:
             # if section is not CONFIGURATION then it is a data source
             # mind that DEFAULT section is not triggered with config.sections().
 
@@ -199,47 +199,47 @@ def _validate_config_configuration_section(config):
     :rtype configparser
     """
 
-    output_format = config.get('CONFIGURATION', 'output_format')
+    output_format = config.get(constants.CONFIG_SECTION, 'output_format')
     output_format = str(output_format).lower()
     if output_format not in constants.VALID_ARGUMENTS['output_format']:
         raise ValueError("Value for option 'output_format' in config must be in: " +
                          str(constants.VALID_ARGUMENTS['output_format']))
-    config.set('CONFIGURATION', 'output_format', output_format)
+    config.set(constants.CONFIG_SECTION, 'output_format', output_format)
 
-    config.set('CONFIGURATION', 'output_dir', _dir_path(config.get('CONFIGURATION', 'output_dir')))
-    config.set('CONFIGURATION', 'output_file', _file_name(config.get('CONFIGURATION', 'output_file')))
+    config.set(constants.CONFIG_SECTION, 'output_dir', _dir_path(config.get(constants.CONFIG_SECTION, 'output_dir')))
+    config.set(constants.CONFIG_SECTION, 'output_file', _file_name(config.get(constants.CONFIG_SECTION, 'output_file')))
 
-    mapping_partitions = config.get('CONFIGURATION', 'mapping_partitions')
+    mapping_partitions = config.get(constants.CONFIG_SECTION, 'mapping_partitions')
     mapping_partitions = str(mapping_partitions).lower()
     if mapping_partitions != 'guess' and not (
             set(mapping_partitions) <= set(constants.VALID_ARGUMENTS['mapping_partitions'])):
         raise ValueError('Option mapping_partitions must be `guess`, empty, or a subset of `' +
                          constants.VALID_ARGUMENTS['mapping_partitions'] + '`.')
-    config.set('CONFIGURATION', 'mapping_partitions', mapping_partitions)
+    config.set(constants.CONFIG_SECTION, 'mapping_partitions', mapping_partitions)
 
-    config.set('CONFIGURATION', 'number_of_processes',
-               str(_natural_number(config.get('CONFIGURATION', 'number_of_processes'))))
-    config.set('CONFIGURATION', 'chunksize', str(_natural_number(config.get('CONFIGURATION', 'chunksize'))))
-    config.getboolean('CONFIGURATION', 'coerce_float')
-    config.getboolean('CONFIGURATION', 'only_printable_characters')
-    config.getboolean('CONFIGURATION', 'infer_sql_datatypes')
-    config.getboolean('CONFIGURATION', 'remove_self_joins')
-    config.getboolean('CONFIGURATION', 'push_down_sql_distincts')
-    config.getboolean('CONFIGURATION', 'push_down_sql_joins')
-    config.getboolean('CONFIGURATION', 'clean_output_dir')
-    config.getboolean('CONFIGURATION', 'async')
+    config.set(constants.CONFIG_SECTION, 'number_of_processes',
+               str(_natural_number(config.get(constants.CONFIG_SECTION, 'number_of_processes'))))
+    config.set(constants.CONFIG_SECTION, 'chunksize', str(_natural_number(config.get(constants.CONFIG_SECTION, 'chunksize'))))
+    config.getboolean(constants.CONFIG_SECTION, 'coerce_float')
+    config.getboolean(constants.CONFIG_SECTION, 'only_printable_characters')
+    config.getboolean(constants.CONFIG_SECTION, 'infer_sql_datatypes')
+    config.getboolean(constants.CONFIG_SECTION, 'remove_self_joins')
+    config.getboolean(constants.CONFIG_SECTION, 'push_down_sql_distincts')
+    config.getboolean(constants.CONFIG_SECTION, 'push_down_sql_joins')
+    config.getboolean(constants.CONFIG_SECTION, 'clean_output_dir')
+    config.getboolean(constants.CONFIG_SECTION, 'async')
 
-    config.set('CONFIGURATION', 'output_parsed_mappings_path',
-               _file_path(config.get('CONFIGURATION', 'output_parsed_mappings_path')))
-    config.set('CONFIGURATION', 'logs_file', _file_path(config.get('CONFIGURATION', 'logs_file')))
+    config.set(constants.CONFIG_SECTION, 'output_parsed_mappings_path',
+               _file_path(config.get(constants.CONFIG_SECTION, 'output_parsed_mappings_path')))
+    config.set(constants.CONFIG_SECTION, 'logs_file', _file_path(config.get(constants.CONFIG_SECTION, 'logs_file')))
 
-    config.set('CONFIGURATION', 'logging_level', config.get('CONFIGURATION', 'logging_level').lower())
-    if config.get('CONFIGURATION', 'logging_level') not in constants.VALID_ARGUMENTS['logging_level']:
+    config.set(constants.CONFIG_SECTION, 'logging_level', config.get(constants.CONFIG_SECTION, 'logging_level').lower())
+    if config.get(constants.CONFIG_SECTION, 'logging_level') not in constants.VALID_ARGUMENTS['logging_level']:
         raise ValueError("Value for option 'logging_level' in config must be in: " +
                          str(constants.VALID_ARGUMENTS['logging_level']))
 
-    config.set('CONFIGURATION', 'process_start_method', config.get('CONFIGURATION', 'process_start_method').lower())
-    if config.get('CONFIGURATION', 'process_start_method') not in constants.VALID_ARGUMENTS['process_start_method']:
+    config.set(constants.CONFIG_SECTION, 'process_start_method', config.get(constants.CONFIG_SECTION, 'process_start_method').lower())
+    if config.get(constants.CONFIG_SECTION, 'process_start_method') not in constants.VALID_ARGUMENTS['process_start_method']:
         raise ValueError("Value for option 'process_start_method' in config must be in: " +
                          str(constants.VALID_ARGUMENTS['process_start_method']))
     return config
@@ -256,80 +256,80 @@ def _complete_config_file_with_defaults(config):
     """
 
     # create section CONFIGURATION if it does not exist in the config file
-    if not config.has_section('CONFIGURATION'):
-        config.add_section('CONFIGURATION')
+    if not config.has_section(constants.CONFIG_SECTION):
+        config.add_section(constants.CONFIG_SECTION)
 
     # if parameters are not provided in the config file, take them from arguments
     # mind that ConfigParser store options as strings
-    if not config.has_option('CONFIGURATION', 'output_dir'):
-        config.set('CONFIGURATION', 'output_dir', constants.ARGUMENTS_DEFAULT['output_dir'])
-    if not config.has_option('CONFIGURATION', 'output_file'):
-        config.set('CONFIGURATION', 'output_file', constants.ARGUMENTS_DEFAULT['output_file'])
-    if not config.has_option('CONFIGURATION', 'output_format'):
-        config.set('CONFIGURATION', 'output_format', constants.ARGUMENTS_DEFAULT['output_format'])
-    elif config.get('CONFIGURATION', 'output_format') == '':
-        config.set('CONFIGURATION', 'output_format', str(constants.ARGUMENTS_DEFAULT['output_format']))
-    if not config.has_option('CONFIGURATION', 'push_down_sql_distincts'):
-        config.set('CONFIGURATION', 'push_down_sql_distincts', constants.ARGUMENTS_DEFAULT['push_down_sql_distincts'])
-    elif config.get('CONFIGURATION', 'push_down_sql_distincts') == '':
-        config.set('CONFIGURATION', 'push_down_sql_distincts',
+    if not config.has_option(constants.CONFIG_SECTION, 'output_dir'):
+        config.set(constants.CONFIG_SECTION, 'output_dir', constants.ARGUMENTS_DEFAULT['output_dir'])
+    if not config.has_option(constants.CONFIG_SECTION, 'output_file'):
+        config.set(constants.CONFIG_SECTION, 'output_file', constants.ARGUMENTS_DEFAULT['output_file'])
+    if not config.has_option(constants.CONFIG_SECTION, 'output_format'):
+        config.set(constants.CONFIG_SECTION, 'output_format', constants.ARGUMENTS_DEFAULT['output_format'])
+    elif config.get(constants.CONFIG_SECTION, 'output_format') == '':
+        config.set(constants.CONFIG_SECTION, 'output_format', str(constants.ARGUMENTS_DEFAULT['output_format']))
+    if not config.has_option(constants.CONFIG_SECTION, 'push_down_sql_distincts'):
+        config.set(constants.CONFIG_SECTION, 'push_down_sql_distincts', constants.ARGUMENTS_DEFAULT['push_down_sql_distincts'])
+    elif config.get(constants.CONFIG_SECTION, 'push_down_sql_distincts') == '':
+        config.set(constants.CONFIG_SECTION, 'push_down_sql_distincts',
                    str(constants.ARGUMENTS_DEFAULT['push_down_sql_distincts']))
-    if not config.has_option('CONFIGURATION', 'push_down_sql_joins'):
-        config.set('CONFIGURATION', 'push_down_sql_joins', constants.ARGUMENTS_DEFAULT['push_down_sql_joins'])
-    elif config.get('CONFIGURATION', 'push_down_sql_joins') == '':
-        config.set('CONFIGURATION', 'push_down_sql_joins', str(constants.ARGUMENTS_DEFAULT['push_down_sql_joins']))
-    if not config.has_option('CONFIGURATION', 'mapping_partitions'):
-        config.set('CONFIGURATION', 'mapping_partitions', constants.ARGUMENTS_DEFAULT['mapping_partitions'])
-    if not config.has_option('CONFIGURATION', 'number_of_processes'):
-        config.set('CONFIGURATION', 'number_of_processes', str(constants.ARGUMENTS_DEFAULT['number_of_processes']))
-    elif config.get('CONFIGURATION', 'number_of_processes') == '':
-        config.set('CONFIGURATION', 'number_of_processes', str(constants.ARGUMENTS_DEFAULT['number_of_processes']))
-    if not config.has_option('CONFIGURATION', 'async'):
-        config.set('CONFIGURATION', 'async', str(constants.ARGUMENTS_DEFAULT['async']))
-    elif config.get('CONFIGURATION', 'async') == '':
-        config.set('CONFIGURATION', 'async', str(constants.ARGUMENTS_DEFAULT['async']))
-    if not config.has_option('CONFIGURATION', 'clean_output_dir'):
-        config.set('CONFIGURATION', 'clean_output_dir', str(constants.ARGUMENTS_DEFAULT['clean_output_dir']))
-    elif config.get('CONFIGURATION', 'clean_output_dir') == '':
-        config.set('CONFIGURATION', 'clean_output_dir', str(constants.ARGUMENTS_DEFAULT['clean_output_dir']))
-    if not config.has_option('CONFIGURATION', 'chunksize'):
-        config.set('CONFIGURATION', 'chunksize', str(constants.ARGUMENTS_DEFAULT['chunksize']))
-    elif config.get('CONFIGURATION', 'chunksize') == '':
-        config.set('CONFIGURATION', 'chunksize', str(constants.ARGUMENTS_DEFAULT['chunksize']))
-    if not config.has_option('CONFIGURATION', 'coerce_float'):
-        config.set('CONFIGURATION', 'coerce_float', constants.ARGUMENTS_DEFAULT['coerce_float'])
-    elif config.get('CONFIGURATION', 'coerce_float') == '':
-        config.set('CONFIGURATION', 'coerce_float', str(constants.ARGUMENTS_DEFAULT['coerce_float']))
-    if not config.has_option('CONFIGURATION', 'only_printable_characters'):
-        config.set('CONFIGURATION', 'only_printable_characters',
+    if not config.has_option(constants.CONFIG_SECTION, 'push_down_sql_joins'):
+        config.set(constants.CONFIG_SECTION, 'push_down_sql_joins', constants.ARGUMENTS_DEFAULT['push_down_sql_joins'])
+    elif config.get(constants.CONFIG_SECTION, 'push_down_sql_joins') == '':
+        config.set(constants.CONFIG_SECTION, 'push_down_sql_joins', str(constants.ARGUMENTS_DEFAULT['push_down_sql_joins']))
+    if not config.has_option(constants.CONFIG_SECTION, 'mapping_partitions'):
+        config.set(constants.CONFIG_SECTION, 'mapping_partitions', constants.ARGUMENTS_DEFAULT['mapping_partitions'])
+    if not config.has_option(constants.CONFIG_SECTION, 'number_of_processes'):
+        config.set(constants.CONFIG_SECTION, 'number_of_processes', str(constants.ARGUMENTS_DEFAULT['number_of_processes']))
+    elif config.get(constants.CONFIG_SECTION, 'number_of_processes') == '':
+        config.set(constants.CONFIG_SECTION, 'number_of_processes', str(constants.ARGUMENTS_DEFAULT['number_of_processes']))
+    if not config.has_option(constants.CONFIG_SECTION, 'async'):
+        config.set(constants.CONFIG_SECTION, 'async', str(constants.ARGUMENTS_DEFAULT['async']))
+    elif config.get(constants.CONFIG_SECTION, 'async') == '':
+        config.set(constants.CONFIG_SECTION, 'async', str(constants.ARGUMENTS_DEFAULT['async']))
+    if not config.has_option(constants.CONFIG_SECTION, 'clean_output_dir'):
+        config.set(constants.CONFIG_SECTION, 'clean_output_dir', str(constants.ARGUMENTS_DEFAULT['clean_output_dir']))
+    elif config.get(constants.CONFIG_SECTION, 'clean_output_dir') == '':
+        config.set(constants.CONFIG_SECTION, 'clean_output_dir', str(constants.ARGUMENTS_DEFAULT['clean_output_dir']))
+    if not config.has_option(constants.CONFIG_SECTION, 'chunksize'):
+        config.set(constants.CONFIG_SECTION, 'chunksize', str(constants.ARGUMENTS_DEFAULT['chunksize']))
+    elif config.get(constants.CONFIG_SECTION, 'chunksize') == '':
+        config.set(constants.CONFIG_SECTION, 'chunksize', str(constants.ARGUMENTS_DEFAULT['chunksize']))
+    if not config.has_option(constants.CONFIG_SECTION, 'coerce_float'):
+        config.set(constants.CONFIG_SECTION, 'coerce_float', constants.ARGUMENTS_DEFAULT['coerce_float'])
+    elif config.get(constants.CONFIG_SECTION, 'coerce_float') == '':
+        config.set(constants.CONFIG_SECTION, 'coerce_float', str(constants.ARGUMENTS_DEFAULT['coerce_float']))
+    if not config.has_option(constants.CONFIG_SECTION, 'only_printable_characters'):
+        config.set(constants.CONFIG_SECTION, 'only_printable_characters',
                    constants.ARGUMENTS_DEFAULT['only_printable_characters'])
-    elif config.get('CONFIGURATION', 'only_printable_characters') == '':
-        config.set('CONFIGURATION', 'only_printable_characters',
+    elif config.get(constants.CONFIG_SECTION, 'only_printable_characters') == '':
+        config.set(constants.CONFIG_SECTION, 'only_printable_characters',
                    str(constants.ARGUMENTS_DEFAULT['only_printable_characters']))
-    if not config.has_option('CONFIGURATION', 'infer_sql_datatypes'):
-        config.set('CONFIGURATION', 'infer_sql_datatypes', constants.ARGUMENTS_DEFAULT['infer_sql_datatypes'])
-    elif config.get('CONFIGURATION', 'infer_sql_datatypes') == '':
-        config.set('CONFIGURATION', 'infer_sql_datatypes', str(constants.ARGUMENTS_DEFAULT['infer_sql_datatypes']))
-    if not config.has_option('CONFIGURATION', 'remove_self_joins'):
-        config.set('CONFIGURATION', 'remove_self_joins', constants.ARGUMENTS_DEFAULT['remove_self_joins'])
-    elif config.get('CONFIGURATION', 'remove_self_joins') == '':
-        config.set('CONFIGURATION', 'remove_self_joins', str(constants.ARGUMENTS_DEFAULT['remove_self_joins']))
-    if not config.has_option('CONFIGURATION', 'input_parsed_mappings_path'):
-        config.set('CONFIGURATION', 'input_parsed_mappings_path',
+    if not config.has_option(constants.CONFIG_SECTION, 'infer_sql_datatypes'):
+        config.set(constants.CONFIG_SECTION, 'infer_sql_datatypes', constants.ARGUMENTS_DEFAULT['infer_sql_datatypes'])
+    elif config.get(constants.CONFIG_SECTION, 'infer_sql_datatypes') == '':
+        config.set(constants.CONFIG_SECTION, 'infer_sql_datatypes', str(constants.ARGUMENTS_DEFAULT['infer_sql_datatypes']))
+    if not config.has_option(constants.CONFIG_SECTION, 'remove_self_joins'):
+        config.set(constants.CONFIG_SECTION, 'remove_self_joins', constants.ARGUMENTS_DEFAULT['remove_self_joins'])
+    elif config.get(constants.CONFIG_SECTION, 'remove_self_joins') == '':
+        config.set(constants.CONFIG_SECTION, 'remove_self_joins', str(constants.ARGUMENTS_DEFAULT['remove_self_joins']))
+    if not config.has_option(constants.CONFIG_SECTION, 'input_parsed_mappings_path'):
+        config.set(constants.CONFIG_SECTION, 'input_parsed_mappings_path',
                    constants.ARGUMENTS_DEFAULT['input_parsed_mappings_path'])
-    if not config.has_option('CONFIGURATION', 'output_parsed_mappings_path'):
-        config.set('CONFIGURATION', 'output_parsed_mappings_path',
+    if not config.has_option(constants.CONFIG_SECTION, 'output_parsed_mappings_path'):
+        config.set(constants.CONFIG_SECTION, 'output_parsed_mappings_path',
                    constants.ARGUMENTS_DEFAULT['output_parsed_mappings_path'])
-    if not config.has_option('CONFIGURATION', 'logs_file'):
-        config.set('CONFIGURATION', 'logs_file', constants.ARGUMENTS_DEFAULT['logs_file'])
-    if not config.has_option('CONFIGURATION', 'logging_level'):
-        config.set('CONFIGURATION', 'logging_level', constants.ARGUMENTS_DEFAULT['logging_level'])
-    elif config.get('CONFIGURATION', 'logging_level') == '':
-        config.set('CONFIGURATION', 'logging_level', str(constants.ARGUMENTS_DEFAULT['logging_level']))
-    if not config.has_option('CONFIGURATION', 'process_start_method'):
-        config.set('CONFIGURATION', 'process_start_method', str(constants.ARGUMENTS_DEFAULT['process_start_method']))
-    elif config.get('CONFIGURATION', 'process_start_method') == '':
-        config.set('CONFIGURATION', 'process_start_method', str(constants.ARGUMENTS_DEFAULT['process_start_method']))
+    if not config.has_option(constants.CONFIG_SECTION, 'logs_file'):
+        config.set(constants.CONFIG_SECTION, 'logs_file', constants.ARGUMENTS_DEFAULT['logs_file'])
+    if not config.has_option(constants.CONFIG_SECTION, 'logging_level'):
+        config.set(constants.CONFIG_SECTION, 'logging_level', constants.ARGUMENTS_DEFAULT['logging_level'])
+    elif config.get(constants.CONFIG_SECTION, 'logging_level') == '':
+        config.set(constants.CONFIG_SECTION, 'logging_level', str(constants.ARGUMENTS_DEFAULT['logging_level']))
+    if not config.has_option(constants.CONFIG_SECTION, 'process_start_method'):
+        config.set(constants.CONFIG_SECTION, 'process_start_method', str(constants.ARGUMENTS_DEFAULT['process_start_method']))
+    elif config.get(constants.CONFIG_SECTION, 'process_start_method') == '':
+        config.set(constants.CONFIG_SECTION, 'process_start_method', str(constants.ARGUMENTS_DEFAULT['process_start_method']))
 
     return config
 

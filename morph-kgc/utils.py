@@ -91,23 +91,23 @@ def triples_to_file(triples, config, mapping_partition=''):
     :type mapping_partition: str
     """
 
-    if config.get('CONFIGURATION', 'output_file'):
-        file_path = os.path.join(config.get('CONFIGURATION', 'output_dir'), config.get('CONFIGURATION', 'output_file'))
+    if config.get(constants.CONFIG_SECTION, 'output_file'):
+        file_path = os.path.join(config.get(constants.CONFIG_SECTION, 'output_dir'), config.get(constants.CONFIG_SECTION, 'output_file'))
         # remove file extension, we will set it based on the output format
         if file_path.endswith('.nt') or file_path.endswith('.nq'):
             file_path = file_path[:-3]
     elif mapping_partition:
-        file_path = os.path.join(config.get('CONFIGURATION', 'output_dir'), mapping_partition)
+        file_path = os.path.join(config.get(constants.CONFIG_SECTION, 'output_dir'), mapping_partition)
     else:
-        file_path = os.path.join(config.get('CONFIGURATION', 'output_dir'), 'result')
+        file_path = os.path.join(config.get(constants.CONFIG_SECTION, 'output_dir'), 'result')
 
-    if config.get('CONFIGURATION', 'output_format') == 'ntriples':
+    if config.get(constants.CONFIG_SECTION, 'output_format') == 'ntriples':
         file_path += '.nt'
-    elif config.get('CONFIGURATION', 'output_format') == 'nquads':
+    elif config.get(constants.CONFIG_SECTION, 'output_format') == 'nquads':
         file_path += '.nq'
 
     f = open(file_path, 'a')
-    if config.getboolean('CONFIGURATION', 'only_printable_characters'):
+    if config.getboolean(constants.CONFIG_SECTION, 'only_printable_characters'):
         for triple in triples:
             # REMOVING NON PRINTABLE CHARACTERS THIS WAY IS VERY SLOW!
             f.write(''.join(c for c in triple if c.isprintable()) + '.\n')
@@ -126,14 +126,14 @@ def clean_output_dir(config):
     :type config: ConfigParser
     """
 
-    output_dir = config.get('CONFIGURATION', 'output_dir')
-    output_file = config.get('CONFIGURATION', 'output_file')
+    output_dir = config.get(constants.CONFIG_SECTION, 'output_dir')
+    output_file = config.get(constants.CONFIG_SECTION, 'output_file')
     if output_file:
         if os.path.exists(os.path.join(output_dir, output_file)):
             # always delete output file, so that generated triples are not appended to it
             os.remove(os.path.join(output_dir, output_file))
 
-    if config.getboolean('CONFIGURATION', 'clean_output_dir'):
+    if config.getboolean(constants.CONFIG_SECTION, 'clean_output_dir'):
         for obj in os.listdir(output_dir):
             obj_path = os.path.join(output_dir, obj)
             if os.path.isdir(obj_path):
@@ -253,3 +253,9 @@ def get_mapping_file_paths(config, config_section_name):
                     mapping_file_paths.append(mapping_file)
 
     return mapping_file_paths
+
+
+def get_data_source_sections(config):
+    data_source_sections = set(config.sections()) - {constants.CONFIG_SECTION}
+
+    return list(data_source_sections)

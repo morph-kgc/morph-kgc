@@ -17,12 +17,14 @@ import pandas as pd
 import numpy as np
 import constants
 import utils
+import time
+import multiprocessing as mp
 
 from mapping.mapping_partitioner import MappingPartitioner
 from data_source import relational_source
 
 
-def _mapping_to_rml(mapping_graph, config_section_name):
+def _mapping_to_rml(mapping_graph, section_name):
     """
     Recognizes the mapping language of the rules in a graph. If it is R2RML, the mapping rules are converted to RML.
     """
@@ -30,7 +32,7 @@ def _mapping_to_rml(mapping_graph, config_section_name):
     r2rml_query = 'SELECT ?s WHERE {?s <http://www.w3.org/ns/r2rml#logicalTable> ?o .} LIMIT 1 '
     # if the query result set is not empty then the mapping language is R2RML
     if len(mapping_graph.query(r2rml_query)) > 0:
-        logging.debug("Data source `" + config_section_name + "` has R2RML rules, converting them to RML.")
+        logging.debug("Data source `" + section_name + "` has R2RML rules, converting them to RML.")
 
         # replace R2RML predicates with the equivalent RML predicates
         mapping_graph = utils.replace_predicates_in_graph(mapping_graph, constants.R2RML['logical_table'],
@@ -85,7 +87,7 @@ def _validate_no_repeated_triples_maps(mapping_graph, source_name):
                         str(repeated_triples_map_ids) + '.')
 
 
-def _transform_mappings_into_dataframe(mapping_query_results, join_query_results, config_section_name):
+def _transform_mappings_into_dataframe(mapping_query_results, join_query_results, section_name):
     """
     Builds a Pandas DataFrame from the results obtained from MAPPING_PARSING_QUERY and
     JOIN_CONDITION_PARSING_QUERY for one source.
@@ -109,7 +111,7 @@ def _transform_mappings_into_dataframe(mapping_query_results, join_query_results
     source_mappings_df = source_mappings_df.drop('object_map', axis=1)
 
     # link the mapping rules to their data source name
-    source_mappings_df['source_name'] = config_section_name
+    source_mappings_df['source_name'] = section_name
 
     return source_mappings_df
 
@@ -154,7 +156,6 @@ def _validate_parsed_mappings(mappings_df):
     IRIs and that language tags and datatypes are used properly. Also checks that different data sources do not
     have triples map with the same id.
     """
-    # TODO: I would do validation outside the mapping parser (maybe when validating mappings against ontology)
 
     # check termtypes are correct (i.e. that they are rr:IRI, rr:BlankNode or rr:Literal and that subject map is
     # not a rr:literal). Use subset operation
@@ -238,23 +239,11 @@ class MappingParser:
         return len(self.mappings_df)
 
     def parse_mappings(self):
-        """
-        Parses the mapping files in each source of the input config file. It also checks that the parsed mappings are
-        valid.
-        """
-
-        # parse mapping files for each data source in the config file and add the parsed mappings rules to a
-        # common DataFrame for all data sources
-
-        for config_section_name in self.config.sections():
-            if config_section_name != 'CONFIGURATION':
-                data_source_mappings_df = self._parse_data_source_mapping_files(config_section_name)
-                self.mappings_df = pd.concat([self.mappings_df, data_source_mappings_df])
-                self.mappings_df = self.mappings_df.reset_index(drop=True)
-
+        self._get_from_r2_rml()
         self._normalize_mappings()
         self._remove_self_joins_from_mappings()
         self._infer_datatypes()
+
         _validate_parsed_mappings(self.mappings_df)
 
         logging.info(str(len(self.mappings_df)) + ' mapping rules retrieved.')
@@ -268,7 +257,24 @@ class MappingParser:
 
         return self.mappings_df
 
-    def _parse_data_source_mapping_files(self, config_section_name):
+    def _get_from_r2_rml(self):
+        # parse mapping files for each data source in the config file and add the parsed mappings rules to a
+        # common DataFrame for all data sources
+
+        data_source_sections = utils.get_data_source_sections(self.config)
+
+        if self.config.getint(constants.CONFIG_SECTION, 'number_of_processes') > 1 and len(data_source_sections) > 1:
+            pool = mp.Pool(self.config.getint(constants.CONFIG_SECTION, 'number_of_processes'))
+            mappings_dfs = pool.map(self._parse_data_source_mapping_files, data_source_sections)
+            self.mappings_df = pd.concat([self.mappings_df, pd.concat(mappings_dfs)])
+        else:
+            for section_name in data_source_sections:
+                data_source_mappings_df = self._parse_data_source_mapping_files(section_name)
+                self.mappings_df = pd.concat([self.mappings_df, data_source_mappings_df])
+
+        self.mappings_df = self.mappings_df.reset_index(drop=True)
+
+    def _parse_data_source_mapping_files(self, section_name):
         """
         Creates a Pandas DataFrame with the mapping rules for a data source. It loads the mapping files in a rdflib
         graph and recognizes the mapping language used. Mapping files serialization is automatically guessed.
@@ -278,7 +284,7 @@ class MappingParser:
 
         mapping_graph = rdflib.Graph()
 
-        mapping_file_paths = utils.get_mapping_file_paths(self.config, config_section_name)
+        mapping_file_paths = utils.get_mapping_file_paths(self.config, section_name)
         try:
             # load mapping rules to graph
             [mapping_graph.load(f, format=rdflib.util.guess_format(f)) for f in mapping_file_paths]
@@ -286,17 +292,17 @@ class MappingParser:
             raise Exception(n3_mapping_parse_exception)
 
         # before further processing, convert R2RML rules to RML, so that we can assume RML for parsing
-        mapping_graph = _mapping_to_rml(mapping_graph, config_section_name)
+        mapping_graph = _mapping_to_rml(mapping_graph, section_name)
 
         # parse the mappings with the parsing query
         mapping_query_results = mapping_graph.query(constants.MAPPING_PARSING_QUERY)
         join_query_results = mapping_graph.query(constants.JOIN_CONDITION_PARSING_QUERY)
 
         # check triples maps are not repeated, which would lead to errors (because of repeated triples maps identifiers)
-        _validate_no_repeated_triples_maps(mapping_graph, config_section_name)
+        _validate_no_repeated_triples_maps(mapping_graph, section_name)
 
         # convert the SPARQL result set with the parsed mappings to DataFrame
-        return _transform_mappings_into_dataframe(mapping_query_results, join_query_results, config_section_name)
+        return _transform_mappings_into_dataframe(mapping_query_results, join_query_results, section_name)
 
     def _normalize_mappings(self):
         # start by removing duplicated triples
@@ -324,7 +330,7 @@ class MappingParser:
         self.mappings_df.insert(0, 'id', self.mappings_df.reset_index(drop=True).index)
 
     def _remove_self_joins_from_mappings(self):
-        if not self.config.getboolean('CONFIGURATION', 'remove_self_joins'):
+        if not self.config.getboolean(constants.CONFIG_SECTION, 'remove_self_joins'):
             return
 
         for i, mapping_rule in self.mappings_df.iterrows():
@@ -516,7 +522,7 @@ class MappingParser:
         """
 
         # return if datatype inferring is not enabled in the config
-        if not self.config.getboolean('CONFIGURATION', 'infer_sql_datatypes'):
+        if not self.config.getboolean(constants.CONFIG_SECTION, 'infer_sql_datatypes'):
             return
 
         for i, mapping_rule in self.mappings_df.iterrows():

@@ -12,6 +12,7 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 import logging
 import mysql.connector
 import pandas as pd
+import constants
 
 
 SQL_RDF_DATATYPE = {
@@ -63,7 +64,7 @@ def execute_relational_query(query, config, source_name):
     db_connection = relational_db_connection(config, source_name)
     try:
         query_results_df = pd.read_sql(query, con=db_connection,
-                                       coerce_float=config.getboolean('CONFIGURATION', 'coerce_float'))
+                                       coerce_float=config.getboolean(constants.CONFIG_SECTION, 'coerce_float'))
     except:
         raise Exception("Query `" + query + "` has failed to execute.")
     db_connection.close()
@@ -139,7 +140,7 @@ def build_sql_query(config, mapping_rule, references):
         query = mapping_rule['query']
     elif len(references) > 0:
         query = 'SELECT '
-        if config.getboolean('CONFIGURATION', 'push_down_sql_distincts'):
+        if config.getboolean(constants.CONFIG_SECTION, 'push_down_sql_distincts'):
             query = query + 'DISTINCT '
         for reference in references:
             query = query + reference + ', '
@@ -164,8 +165,8 @@ def get_sql_data(config, mapping_rule, references, parent_triples_map_rule=None,
     db_connection = relational_db_connection(config, mapping_rule['source_name'])
     result_chunks = pd.read_sql(sql_query,
                                 con=db_connection,
-                                chunksize=int(config.get('CONFIGURATION', 'chunksize')),
-                                coerce_float=config.getboolean('CONFIGURATION', 'coerce_float'))
+                                chunksize=config.getint(constants.CONFIG_SECTION, 'chunksize'),
+                                coerce_float=config.getboolean(constants.CONFIG_SECTION, 'coerce_float'))
 
     return result_chunks, db_connection
 

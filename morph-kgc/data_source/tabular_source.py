@@ -10,6 +10,7 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 
 import pandas as pd
+import constants
 
 
 def get_table_data(config, mapping_rule, references):
@@ -17,4 +18,4 @@ def get_table_data(config, mapping_rule, references):
                          delimiter=',',
                          usecols=references,
                          engine='c',
-                         chunksize=int(config.get('CONFIGURATION', 'chunksize')))
+                         chunksize=config.getint(constants.CONFIG_SECTION, 'chunksize'))

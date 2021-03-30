@@ -14,6 +14,8 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 import multiprocessing as mp
 
 
+CONFIG_SECTION = 'CONFIGURATION'
+
 ARGUMENTS_DEFAULT = {
     'output_dir': 'output',
     'output_file': 'result',
