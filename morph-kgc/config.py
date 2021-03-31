@@ -51,6 +51,7 @@ PORT = 'port'
 DB = 'db'
 
 
+# input parameters that do not allow empty values
 CONFIGURATION_OPTIONS_EMPTY_VALID = {
             OUTPUT_DIR: constants.DEFAULT_OUTPUT_DIR,
             OUTPUT_FILE: constants.DEFAULT_OUTPUT_FILE,
@@ -60,6 +61,8 @@ CONFIGURATION_OPTIONS_EMPTY_VALID = {
             LOGGING_FILE: constants.DEFAULT_LOGS_FILE
         }
 
+
+# input parameters whose value can be empty
 CONFIGURATION_OPTIONS_EMPTY_NON_VALID = {
             OUTPUT_FORMAT: constants.DEFAULT_OUTPUT_FORMAT,
             CLEAN_OUTPUT_DIR: constants.DEFAULT_CLEAN_OUTPUT_DIR,
@@ -115,7 +118,7 @@ class Config(ConfigParser):
         output_format = str(self.get_output_format()).upper()
         self.set_output_format(output_format)
         if output_format not in constants.VALID_OUTPUT_FORMATS:
-            raise ValueError('output_format value `' + self.get_output_format() +
+            raise ValueError(OUTPUT_FORMAT + ' value `' + self.get_output_format() +
                              '` is not valid. Must be in: ' + str(constants.VALID_OUTPUT_FORMATS) + '.')
 
         # MAPPING PARTITIONS
@@ -123,7 +126,7 @@ class Config(ConfigParser):
         self.set_mapping_partitions(mapping_partitions)
         if mapping_partitions != 'GUESS' and not (
                 set(mapping_partitions) <= set(constants.VALID_MAPPING_PARTITIONS)):
-            raise ValueError('mapping_partitions value `' + self.get_mapping_partitions() +
+            raise ValueError(MAPPING_PARTITIONS + ' value `' + self.get_mapping_partitions() +
                              '` is not valid. Must be `GUESS`, empty, or a subset of ' +
                              str(constants.VALID_MAPPING_PARTITIONS) + '.')
 
@@ -131,22 +134,22 @@ class Config(ConfigParser):
         logging_level = str(self.get_logging_level()).lower()
         self.set_logging_level(logging_level)
         if logging_level not in constants.VALID_LOGGING_LEVEL:
-            raise ValueError('logging_level value `' + self.get_logging_level() +
+            raise ValueError(LOGGING_LEVEL + ' value `' + self.get_logging_level() +
                              '` is not valid. Must be in: ' + str(constants.VALID_LOGGING_LEVEL) + '.')
 
         # PROCESS START METHOD
         process_start_method = str(self.get_process_start_method()).lower()
         self.set_process_start_method(process_start_method)
         if process_start_method not in constants.VALID_PROCESS_START_METHOD:
-            raise ValueError('process_start_method value `' + self.get_process_start_method() +
+            raise ValueError(PROCESS_START_METHOD + ' value `' + self.get_process_start_method() +
                              '` is not valid. Must be in: ' + str(constants.VALID_PROCESS_START_METHOD) + '.')
 
     def validate_data_source_sections(self):
         # SOURCE TYPE
         for section in self.get_data_sources_sections():
-            self.set(section, 'source_type', self.get(section, 'source_type').upper())
-            if self.get(section, 'source_type') not in constants.VALID_DATA_SOURCE_TYPES:
-                raise ValueError('source_type value `' + self.get(section, 'source_type') + ' is not valid. '
+            self.set(section, SOURCE_TYPE, self.get_source_type(section).upper())
+            if self.get_source_type(section) not in constants.VALID_DATA_SOURCE_TYPES:
+                raise ValueError(SOURCE_TYPE + ' value `' + self.get_source_type(section) + ' is not valid. '
                                  'Must be in: ' + str(constants.VALID_DATA_SOURCE_TYPES) + '.')
 
     def log_info(self):
@@ -162,12 +165,6 @@ class Config(ConfigParser):
     def has_configuration_option(self, option):
         return self.has_option(self.configuration_section, option)
 
-    def get_configuration_option(self, option):
-        return self.get(self.configuration_section, option)
-
-    def get_data_sources_sections(self):
-        return list(set(self.sections()) - {self.configuration_section})
-
     def has_multiple_data_sources(self):
         return len(self.get_data_sources_sections()) > 1
 
@@ -179,6 +176,24 @@ class Config(ConfigParser):
 
     def is_process_start_method_default(self):
         return self.get(self.configuration_section, PROCESS_START_METHOD) == 'default'
+
+    def infer_sql_datatypes(self):
+        return self.getboolean(self.configuration_section, INFER_SQL_DATATYPES)
+
+    def push_down_sql_joins(self):
+        return self.getboolean(self.configuration_section, PUSH_DOWN_SQL_JOINS)
+
+    def remove_self_joins(self):
+        return self.getboolean(self.configuration_section, REMOVE_SELF_JOINS)
+
+    def clean_output_dir(self):
+        return self.getboolean(self.configuration_section, CLEAN_OUTPUT_DIR)
+
+    def only_write_printable_characters(self):
+        return self.getboolean(self.configuration_section, ONLY_PRINTABLE_CHARACTERS)
+
+    def get_configuration_option(self, option):
+        return self.get(self.configuration_section, option)
 
     def get_process_start_method(self):
         return self.get(self.configuration_section, PROCESS_START_METHOD)
@@ -192,15 +207,6 @@ class Config(ConfigParser):
     def get_logging_file(self):
         return self.get(self.configuration_section, LOGGING_FILE)
 
-    def infer_sql_datatypes(self):
-        return self.getboolean(self.configuration_section, INFER_SQL_DATATYPES)
-
-    def push_down_sql_joins(self):
-        return self.getboolean(self.configuration_section, PUSH_DOWN_SQL_JOINS)
-
-    def remove_self_joins(self):
-        return self.getboolean(self.configuration_section, REMOVE_SELF_JOINS)
-
     def get_parsed_mappings_read_path(self):
         return self.get(self.configuration_section, READ_PARSED_MAPPINGS_PATH)
 
@@ -209,6 +215,33 @@ class Config(ConfigParser):
 
     def get_mapping_partitions(self):
         return self.get(self.configuration_section, MAPPING_PARTITIONS)
+
+    def get_output_dir(self):
+        return self.get(self.configuration_section, OUTPUT_DIR)
+
+    def get_output_file(self):
+        return self.get(self.configuration_section, OUTPUT_FILE)
+
+    def get_output_format(self):
+        return self.get(self.configuration_section, OUTPUT_FORMAT)
+
+    def get_chunksize(self):
+        return self.getint(self.configuration_section, CHUNKSIZE)
+
+    def get_output_file_path(self, mapping_partition=None):
+        if self.get_output_file():
+            file_path = os.path.join(self.get_output_dir(), self.get_output_file())
+            # remove file extension, we will set it based on the output format
+            file_path = utils.remove_file_extension(file_path)
+        elif mapping_partition:
+            file_path = os.path.join(self.getoutput_dir(), mapping_partition)
+        else:
+            file_path = os.path.join(self.getoutput_dir(), OUTPUT_FILE)
+
+        # add file extension
+        file_path += constants.OUTPUT_FORMAT_FILE_EXTENSION[self.get_output_format()]
+
+        return file_path
 
     def set_mapping_partitions(self, mapping_partitions_criteria):
         self.set(self.configuration_section, MAPPING_PARTITIONS, mapping_partitions_criteria)
@@ -234,45 +267,12 @@ class Config(ConfigParser):
     def set_process_start_method(self, process_start_method):
         self.set(self.configuration_section, PROCESS_START_METHOD, process_start_method)
 
-    def get_output_dir(self):
-        return self.get(self.configuration_section, OUTPUT_DIR)
-
-    def clean_output_dir(self):
-        return self.getboolean(self.configuration_section, CLEAN_OUTPUT_DIR)
-
-    def get_output_file(self):
-        return self.get(self.configuration_section, OUTPUT_FILE)
-
-    def get_output_format(self):
-        return self.get(self.configuration_section, OUTPUT_FORMAT)
-
-    def get_output_file_path(self, mapping_partition=None):
-        if self.get_output_file():
-            file_path = os.path.join(self.get_output_dir(), self.get_output_file())
-            # remove file extension, we will set it based on the output format
-            if file_path.endswith('.nt') or file_path.endswith('.nq'):
-                file_path = file_path[:-3]
-        elif mapping_partition:
-            file_path = os.path.join(self.getoutput_dir(), mapping_partition)
-        else:
-            file_path = os.path.join(self.getoutput_dir(), OUTPUT_FILE)
-
-        if self.get(self.configuration_section, 'output_format') == 'ntriples':
-            file_path += '.nt'
-        elif self.get(self.configuration_section, 'output_format') == 'nquads':
-            file_path += '.nq'
-
-        return file_path
-
-    def only_write_printable_characters(self):
-        return self.getboolean(self.configuration_section, ONLY_PRINTABLE_CHARACTERS)
-
-    def get_chunksize(self):
-        return self.getint(self.configuration_section, CHUNKSIZE)
-
     ################################################################################
     #######################   DATA SOURCE SECTIONS METHODS   #######################
     ################################################################################
+
+    def get_data_sources_sections(self):
+        return list(set(self.sections()) - {self.configuration_section})
 
     def get_source_type(self, source_section):
         return self.get(source_section, SOURCE_TYPE)

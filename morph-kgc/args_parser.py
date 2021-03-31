@@ -19,7 +19,7 @@ from configparser import ExtendedInterpolation
 
 def _existing_file_path(file_path):
     """
-    Checks if a file exists.
+    Checks whether a file exists.
     """
 
     file_path = str(file_path).strip()

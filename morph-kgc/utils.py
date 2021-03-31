@@ -295,3 +295,11 @@ def get_references_in_join_condition(mapping_rule):
         parent_references.append(join_condition['parent_value'])
 
     return references, parent_references
+
+
+def remove_file_extension(file_path):
+    # only removes the last file extension (if there are multiple dots in file_path)
+    if len(os.path.splitext(file_path)) > 1:
+        return os.path.splitext(file_path)[0]
+
+    return file_path
