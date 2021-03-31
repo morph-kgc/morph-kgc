@@ -20,6 +20,6 @@ optional arguments:
 
 ## Authors
 
-Julián Arenas-Guerrero - julian.arenas.guerrero@upm.es (Ontology Engineering Group - UPM)
-David Chaves-Fraga - david.chaves@upm.es (Ontology Engineering Group - UPM)
-Jhon Toledo - ja.toledo@upm.es (Ontology Engineering Group - UPM)
+- Julián Arenas-Guerrero (corresponding author) - julian.arenas.guerrero@upm.es (Ontology Engineering Group - UPM)
+- David Chaves-Fraga - david.chaves@upm.es (Ontology Engineering Group - UPM)
+- Jhon Toledo - ja.toledo@upm.es (Ontology Engineering Group - UPM)
