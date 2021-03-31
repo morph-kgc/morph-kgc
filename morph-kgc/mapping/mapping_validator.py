@@ -1,7 +1,6 @@
 """ Morph-KGC """
 
 __author__ = "Julián Arenas-Guerrero"
-__copyright__ = "Copyright (C) 2020-2021 Julián Arenas-Guerrero"
 __credits__ = ["Julián Arenas-Guerrero"]
 
 __license__ = "Apache-2.0"
@@ -41,21 +40,21 @@ class MappingValidator:
 
         # check termtypes are correct (i.e. that they are rr:IRI, rr:BlankNode or rr:Literal and that subject map is
         # not a rr:literal). Use subset operation
-        if not (set(self.mappings_df['subject_termtype'].astype(str)) <= {constants.R2RML['IRI'],
-                                                                          constants.R2RML['blank_node']}):
+        if not (set(self.mappings_df['subject_termtype'].astype(str)) <= {constants.R2RML_IRI,
+                                                                          constants.R2RML_BLANK_NODE}):
             raise ValueError('Found an invalid subject termtype. Found values ' +
                              str(set(self.mappings_df['subject_termtype'].astype(str))) +
                              '. Subject maps must be rr:IRI or rr:BlankNode.')
 
-        if not (set(self.mappings_df['object_termtype'].astype(str)) <= {constants.R2RML['IRI'],
-                                                                         constants.R2RML['blank_node'],
-                                                                         constants.R2RML['literal']}):
+        if not (set(self.mappings_df['object_termtype'].astype(str)) <= {constants.R2RML_IRI,
+                                                                         constants.R2RML_BLANK_NODE,
+                                                                         constants.R2RML_LITERAL}):
             raise ValueError('Found an invalid object termtype. Found values ' +
                              str(set(self.mappings_df['subject_termtype'].astype(str))) +
                              '. Object maps must be rr:IRI, rr:BlankNode or rr:Literal.')
 
         # if there is a datatype or language tag then the object map termtype must be a rr:Literal
-        if len(self.mappings_df.loc[(self.mappings_df['object_termtype'] != constants.R2RML['literal']) &
+        if len(self.mappings_df.loc[(self.mappings_df['object_termtype'] != constants.R2RML_LITERAL) &
                                     pd.notna(self.mappings_df['object_datatype']) &
                                     pd.notna(self.mappings_df['object_language'])]) > 0:
             raise Exception('Found object maps with a language tag or a datatype, '
@@ -71,10 +70,10 @@ class MappingValidator:
         constants_terms = list(self.mappings_df['predicate_constant'].dropna())
         constants_terms.extend(list(self.mappings_df['graph_constant'].dropna()))
         constants_terms.extend(list(self.mappings_df.loc[
-                                        (self.mappings_df['subject_termtype'] == constants.R2RML['IRI']) &
+                                        (self.mappings_df['subject_termtype'] == constants.R2RML_IRI) &
                                         pd.notna(self.mappings_df['subject_constant'])]['subject_constant']))
         constants_terms.extend(list(self.mappings_df.loc[
-                                        (self.mappings_df['object_termtype'] == constants.R2RML['IRI']) &
+                                        (self.mappings_df['object_termtype'] == constants.R2RML_IRI) &
                                         pd.notna(self.mappings_df['object_constant'])]['object_constant']))
         # validate that each of the constants retrieved are valid URIs
         for constant in set(constants_terms):
@@ -83,9 +82,9 @@ class MappingValidator:
         # check templates are valid IRIs. Get all templates in predicate, graph, subject and object
         templates = list(self.mappings_df['predicate_template'].dropna())
         templates.extend(list(self.mappings_df['graph_template'].dropna()))
-        templates.extend(list(self.mappings_df.loc[(self.mappings_df['subject_termtype'] == constants.R2RML['IRI']) &
+        templates.extend(list(self.mappings_df.loc[(self.mappings_df['subject_termtype'] == constants.R2RML_IRI) &
                                                    pd.notna(self.mappings_df['subject_template'])]['subject_template']))
-        templates.extend(list(self.mappings_df.loc[(self.mappings_df['object_termtype'] == constants.R2RML['IRI']) &
+        templates.extend(list(self.mappings_df.loc[(self.mappings_df['object_termtype'] == constants.R2RML_IRI) &
                                                    pd.notna(self.mappings_df['object_template'])]['object_template']))
         for template in templates:
             # validate that at least the INVARIABLE part of the template is a valid IRI

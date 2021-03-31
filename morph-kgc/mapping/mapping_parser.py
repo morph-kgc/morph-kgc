@@ -1,7 +1,6 @@
 """ Morph-KGC """
 
 __author__ = "Julián Arenas-Guerrero"
-__copyright__ = "Copyright (C) 2020-2021 Julián Arenas-Guerrero"
 __credits__ = ["Julián Arenas-Guerrero"]
 
 __license__ = "Apache-2.0"
@@ -34,12 +33,12 @@ def _mapping_to_rml(mapping_graph, section_name):
         logging.debug("Data source `" + section_name + "` has R2RML rules, converting them to RML.")
 
         # replace R2RML predicates with the equivalent RML predicates
-        mapping_graph = utils.replace_predicates_in_graph(mapping_graph, constants.R2RML['logical_table'],
-                                                          constants.RML['logical_source'])
-        mapping_graph = utils.replace_predicates_in_graph(mapping_graph, constants.R2RML['sql_query'],
-                                                          constants.RML['query'])
-        mapping_graph = utils.replace_predicates_in_graph(mapping_graph, constants.R2RML['column'],
-                                                          constants.RML['reference'])
+        mapping_graph = utils.replace_predicates_in_graph(mapping_graph, constants.R2RML_LOGICAL_TABLE,
+                                                          constants.RML_LOGICAL_SOURCE)
+        mapping_graph = utils.replace_predicates_in_graph(mapping_graph, constants.R2RML_SQL_QUERY,
+                                                          constants.RML_QUERY)
+        mapping_graph = utils.replace_predicates_in_graph(mapping_graph, constants.R2RML_COLUMN,
+                                                          constants.RML_REFERENCE)
 
     return mapping_graph
 
@@ -187,10 +186,10 @@ class MappingParser:
         # parse mapping files for each data source in the config file and add the parsed mappings rules to a
         # common DataFrame for all data sources
 
-        data_source_sections = utils.get_data_source_sections(self.config)
+        data_source_sections = self.config.get_data_sources_sections()
 
-        if self.config.getint(constants.CONFIG_SECTION, 'number_of_processes') > 1 and len(data_source_sections) > 1:
-            pool = mp.Pool(self.config.getint(constants.CONFIG_SECTION, 'number_of_processes'))
+        if self.config.is_multiprocessing_enabled() and self.config.has_multiple_data_sources():
+            pool = mp.Pool(self.config.get_number_of_processes())
             mappings_dfs = pool.map(self._parse_data_source_mapping_files, data_source_sections)
             self.mappings_df = pd.concat([self.mappings_df, pd.concat(mappings_dfs)])
         else:
@@ -210,7 +209,7 @@ class MappingParser:
 
         mapping_graph = rdflib.Graph()
 
-        mapping_file_paths = utils.get_mapping_file_paths(self.config, section_name)
+        mapping_file_paths = self.config.get_mappings_files(section_name)
         try:
             # load mapping rules to graph
             [mapping_graph.load(f, format=rdflib.util.guess_format(f)) for f in mapping_file_paths]
@@ -242,7 +241,7 @@ class MappingParser:
 
         # we want to track the type of data source (RDB, CSV, EXCEL, JSON, etc) in the parsed mapping rules
         for i, mapping_rule in self.mappings_df.iterrows():
-            self.mappings_df.at[i, 'source_type'] = self.config.get(mapping_rule['source_name'], 'source_type')
+            self.mappings_df.at[i, 'source_type'] = self.config.get_source_type(mapping_rule['source_name'])
 
         # ignore the delimited identifiers (this is not conformant with R2MRL specification)
         self._remove_delimiters_from_mappings()
@@ -256,7 +255,7 @@ class MappingParser:
         self.mappings_df.insert(0, 'id', self.mappings_df.reset_index(drop=True).index)
 
     def _remove_self_joins_from_mappings(self):
-        if not self.config.getboolean(constants.CONFIG_SECTION, 'remove_self_joins'):
+        if not self.config.remove_self_joins():
             return
 
         for i, mapping_rule in self.mappings_df.iterrows():
@@ -320,7 +319,7 @@ class MappingParser:
                 self.mappings_df.at[j, 'subject_termtype'] = row['subject_termtype']
                 self.mappings_df.at[j, 'predicate_constant'] = constants.RDF['type']
                 self.mappings_df.at[j, 'object_constant'] = row['subject_rdf_class']
-                self.mappings_df.at[j, 'object_termtype'] = constants.R2RML['IRI']
+                self.mappings_df.at[j, 'object_termtype'] = constants.R2RML_IRI
                 self.mappings_df.at[j, 'join_conditions'] = ''
 
         # subject_rdf_class column no longer needed, remove it
@@ -345,7 +344,7 @@ class MappingParser:
                         pd.isna(mapping_rule['predicate_object_graph_reference']) and \
                         pd.isna(mapping_rule['predicate_object_graph_template']):
                     # no graph term for this POM, assign rr:defaultGraph
-                    self.mappings_df.at[i, 'graph_constant'] = constants.R2RML['default_graph']
+                    self.mappings_df.at[i, 'graph_constant'] = constants.R2RML_DEFAULT_GRAPH
 
         # instead of having two columns for graph terms (one for subject maps, i.e. graph_constant, and other for POMs,
         # i.e. predicate_object_graph_constant), keep only one for simplicity. In order
@@ -389,18 +388,18 @@ class MappingParser:
         for i, mapping_rule in self.mappings_df.iterrows():
             # if subject termtype is missing, then subject termtype is rr:IRI
             if pd.isna(mapping_rule['subject_termtype']):
-                self.mappings_df.at[i, 'subject_termtype'] = constants.R2RML['IRI']
+                self.mappings_df.at[i, 'subject_termtype'] = constants.R2RML_IRI
 
             if pd.isna(mapping_rule['object_termtype']):
                 # if object termtype is missing and there is a language tag or datatype or object term is a
                 # reference, then termtype is rr:Literal
                 if pd.notna(mapping_rule['object_language']) or pd.notna(mapping_rule['object_datatype']) or \
                         pd.notna(mapping_rule['object_reference']):
-                    self.mappings_df.at[i, 'object_termtype'] = constants.R2RML['literal']
+                    self.mappings_df.at[i, 'object_termtype'] = constants.R2RML_LITERAL
 
                 else:
                     # if previous conditions (language tag, datatype or reference) do not hold, then termtype is rr:IRI
-                    self.mappings_df.at[i, 'object_termtype'] = constants.R2RML['IRI']
+                    self.mappings_df.at[i, 'object_termtype'] = constants.R2RML_IRI
 
         # convert to str (instead of rdflib object) to avoid problems later
         self.mappings_df['subject_termtype'] = self.mappings_df['subject_termtype'].astype(str)
@@ -448,14 +447,14 @@ class MappingParser:
         """
 
         # return if datatype inferring is not enabled in the config
-        if not self.config.getboolean(constants.CONFIG_SECTION, 'infer_sql_datatypes'):
+        if not self.config.infer_sql_datatypes():
             return
 
         for i, mapping_rule in self.mappings_df.iterrows():
             # datatype inferring only applies to relational data sources
-            if (mapping_rule['source_type'] in constants.RELATIONAL_SOURCE_TYPES) and (
+            if (mapping_rule['source_type'] in constants.VALID_RELATIONAL_SOURCE_TYPES) and (
                     # datatype inferring only applies to literals
-                    mapping_rule['object_termtype'] == constants.R2RML['literal']) and (
+                    mapping_rule['object_termtype'] == constants.R2RML_LITERAL) and (
                     # if the literal has a language tag or an overridden datatype, datatype inference does not apply
                     pd.isna(mapping_rule['object_datatype']) and pd.isna(mapping_rule['object_language'])):
 

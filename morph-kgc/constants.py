@@ -14,67 +14,73 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 import multiprocessing as mp
 
 
-CONFIG_SECTION = 'CONFIGURATION'
+##############################################################################
+########################   ARGUMENTS DEFAULT VALUES   ########################
+##############################################################################
 
-ARGUMENTS_DEFAULT = {
-    'output_dir': 'output',
-    'output_file': 'result',
-    'output_format': 'nquads',
-    'remove_duplicates': 'yes',
-    'clean_output_dir': 'yes',
-    'mapping_partitions': 'guess',
-    'input_parsed_mappings_path': '',
-    'output_parsed_mappings_path': '',
-    'logs_file': '',
-    'logging_level': 'info',
-    'push_down_sql_distincts': 'no',
-    'push_down_sql_joins': 'yes',
-    'infer_sql_datatypes': 'yes',
-    'number_of_processes': 2 * mp.cpu_count(),
-    'process_start_method': 'default',
-    'async': 'no',
-    'chunksize': 100000,
-    'remove_self_joins': 'yes',
-    'coerce_float': 'no',
-    'only_printable_characters': 'no'
-}
+DEFAULT_OUTPUT_DIR = 'output'
+DEFAULT_OUTPUT_FILE = 'result'
+DEFAULT_OUTPUT_FORMAT = 'NQUADS'
+DEFAULT_REMOVE_DUPLICATES = 'yes'
+DEFAULT_CLEAN_OUTPUT_DIR = 'yes'
+DEFAULT_MAPPING_PARTITIONS = 'GUESS'
+DEFAULT_READ_PARSED_MAPPINGS_PATH = ''
+DEFAULT_WRITE_PARSED_MAPPINGS_PATH = ''
+DEFAULT_LOGS_FILE = ''
+DEFAULT_LOGGING_LEVEL = 'INFO'
+DEFAULT_PUSH_DOWN_SQL_DISTINCTS = 'no'
+DEFAULT_PUSH_DOWN_SQL_JOINS = 'yes'
+DEFAULT_INFER_SQL_DATATYPES = 'yes'
+DEFAULT_NUMBER_OF_PROCESSES = 2 * mp.cpu_count()
+DEFAULT_PROCESS_START_METHOD = 'default'
+DEFAULT_ASYNC_MULTIPROCESSING = 'no'
+DEFAULT_CHUNKSIZE = 100000
+DEFAULT_REMOVE_SELF_JOINS = 'yes'
+DEFAULT_COERCE_FLOAT = 'no'
+DEFAULT_ONLY_PRINTABLE_CHARACTERS = 'no'
 
-RELATIONAL_SOURCE_TYPES = ['MYSQL']
-TABULAR_SOURCE_TYPES = ['CSV']
 
-VALID_ARGUMENTS = {
-    'output_format': ['ntriples', 'nquads'],
-    'mapping_partitions': 'spog',
-    'file_source_type': RELATIONAL_SOURCE_TYPES + TABULAR_SOURCE_TYPES,
-    'process_start_method': ['default', 'spawn', 'fork', 'forkserver'],
-    'logging_level': ['notset', 'debug', 'info', 'warning', 'error', 'critical']
-}
+##############################################################################
+#########################   VALID ARGUMENTS VALUES   #########################
+##############################################################################
 
-R2RML = {
-    'logical_table': 'http://www.w3.org/ns/r2rml#logicalTable',
-    'sql_query': 'http://www.w3.org/ns/r2rml#sqlQuery',
-    'column': 'http://www.w3.org/ns/r2rml#column',
-    'default_graph': 'http://www.w3.org/ns/r2rml#defaultGraph',
-    'IRI': 'http://www.w3.org/ns/r2rml#IRI',
-    'literal': 'http://www.w3.org/ns/r2rml#Literal',
-    'blank_node': 'http://www.w3.org/ns/r2rml#BlankNode'
-}
+VALID_RELATIONAL_SOURCE_TYPES = ['MYSQL']
+VALID_TABULAR_SOURCE_TYPES = ['CSV']
+VALID_DATA_SOURCE_TYPES = VALID_RELATIONAL_SOURCE_TYPES + VALID_TABULAR_SOURCE_TYPES
+VALID_OUTPUT_FORMATS = ['NTRIPLES', 'NQUADS']
+VALID_MAPPING_PARTITIONS = 'SPOG'
+VALID_PROCESS_START_METHOD = ['default', 'spawn', 'fork', 'forkserver']
+VALID_LOGGING_LEVEL = ['notset', 'debug', 'info', 'warning', 'error', 'critical']
 
-RML = {
-    'logical_source': 'http://semweb.mmlab.be/ns/rml#logicalSource',
-    'query': 'http://semweb.mmlab.be/ns/rml#query',
-    'reference': 'http://semweb.mmlab.be/ns/rml#reference'
-}
 
-RDF = {
-    'type': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'
-}
+##############################################################################
+######################   [R2]RML & RDF SPECIFICATIONS   ######################
+##############################################################################
+
+R2RML_LOGICAL_TABLE = 'http://www.w3.org/ns/r2rml#logicalTable'
+R2RML_SQL_QUERY = 'http://www.w3.org/ns/r2rml#sqlQuery'
+R2RML_COLUMN = 'http://www.w3.org/ns/r2rml#column'
+R2RML_DEFAULT_GRAPH = 'http://www.w3.org/ns/r2rml#defaultGraph'
+R2RML_IRI = 'http://www.w3.org/ns/r2rml#IRI'
+R2RML_LITERAL = 'http://www.w3.org/ns/r2rml#Literal'
+R2RML_BLANK_NODE = 'http://www.w3.org/ns/r2rml#BlankNode'
+
+RML_LOGICAL_SOURCE = 'http://semweb.mmlab.be/ns/rml#logicalSource'
+RML_QUERY = 'http://semweb.mmlab.be/ns/rml#query'
+RML_REFERENCE = 'http://semweb.mmlab.be/ns/rml#reference'
+
+RDF_TYPE = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'
+
 
 AUXILIAR_UNIQUE_REPLACING_STRING = 'zzyy_xxww\u200B'
 
+
+##############################################################################
+#######################   MAPPING DATAFRAME COLUMNS   ########################
+##############################################################################
+
 MAPPINGS_DATAFRAME_COLUMNS = [
-    'source_name',
-    'triples_map_id', 'data_source', 'object_map', 'ref_form', 'iterator', 'tablename', 'query',
+    'source_name', 'triples_map_id', 'data_source', 'object_map', 'ref_form', 'iterator', 'tablename', 'query',
     'subject_template', 'subject_reference', 'subject_constant', 'subject_rdf_class', 'subject_termtype',
     'graph_constant', 'graph_reference', 'graph_template',
     'predicate_constant', 'predicate_template', 'predicate_reference',
@@ -83,11 +89,16 @@ MAPPINGS_DATAFRAME_COLUMNS = [
     'predicate_object_graph_constant', 'predicate_object_graph_reference', 'predicate_object_graph_template'
 ]
 
+
+##############################################################################
+########################   MAPPING PARSING QUERIES   #########################
+##############################################################################
+
 MAPPING_PARSING_QUERY = """
-    # This query has been reused from SDM-RDFizer (https://github.com/SDM-TIB/SDM-RDFizer). SDM-RDFizer has been developed
-    # by members of the Scientific Data Management Group at TIB. Its development has been coordinated and supervised by
-    # Maria-Esther Vidal. The implementation has been done by Enrique Iglesias and Guillermo Betancourt under the
-    # supervision of David Chaves-Fraga, Samaneh Jozashoori, and Kemele Endris.
+    # This query has been reused from SDM-RDFizer (https://github.com/SDM-TIB/SDM-RDFizer). SDM-RDFizer has been
+    # developed by members of the Scientific Data Management Group at TIB. Its development has been coordinated and
+    # supervised by Maria-Esther Vidal. The implementation has been done by Enrique Iglesias and Guillermo Betancourt
+    # under the supervision of David Chaves-Fraga, Samaneh Jozashoori, and Kemele Endris.
     # It has been partially modified by Julián Arenas-Guerrero, PhD student at the Ontology Engineering Group (OEG)
     # in Universidad Politécnica de Madrid (UPM).
     

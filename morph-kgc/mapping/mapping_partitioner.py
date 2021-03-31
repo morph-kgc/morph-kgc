@@ -1,7 +1,6 @@
 """ Morph-KGC """
 
 __author__ = "Julián Arenas-Guerrero"
-__copyright__ = "Copyright (C) 2020-2021 Julián Arenas-Guerrero"
 __credits__ = ["Julián Arenas-Guerrero"]
 
 __license__ = "Apache-2.0"
@@ -45,7 +44,7 @@ class MappingPartitioner:
         return self.mappings_df
 
     def generate_mapping_partitions(self):
-        mapping_partitions = self.config.get(constants.CONFIG_SECTION, 'mapping_partitions')
+        mapping_partitions = self.config.get_mapping_partitions()
 
         # initialize empty mapping partitions
         self.mappings_df['subject_partition'] = ''
@@ -54,7 +53,7 @@ class MappingPartitioner:
         self.mappings_df['graph_partition'] = ''
 
         # generate independent mapping partitions for subjects, predicates objects and graphs
-        if 's' in mapping_partitions:
+        if 'S' in mapping_partitions:
             # sort the mapping rules based on the subject invariable part an invariable part that starts with another
             # invariable part is placed behind in the ordering e.g. http://example.org/term/something and
             # http://example.org/term: http://example.org/term is placed first
@@ -69,7 +68,7 @@ class MappingPartitioner:
             # if it does, then it is in the same mapping partition than the previous mapping rule
             # if it does not, then the mapping rule is in a new mapping partition
             for i, mapping_rule in self.mappings_df.iterrows():
-                if mapping_rule['subject_termtype'] == constants.R2RML['blank_node']:
+                if mapping_rule['subject_termtype'] == constants.R2RML_BLANK_NODE:
                     pass  # assign the partition `no partition`
                 elif not mapping_rule['subject_invariable_part']:
                     # this case is to handle templates without invariable part (no mapping partitions will be generated)
@@ -81,7 +80,7 @@ class MappingPartitioner:
                     root_last_partition = mapping_rule['subject_invariable_part']
                     self.mappings_df.at[i, 'subject_partition'] = str(num_partition)
 
-        if 'p' in mapping_partitions:
+        if 'P' in mapping_partitions:
             self.mappings_df.sort_values(by='predicate_invariable_part', inplace=True, ascending=True)
             num_partition = 0
             root_last_partition = constants.AUXILIAR_UNIQUE_REPLACING_STRING
@@ -104,14 +103,14 @@ class MappingPartitioner:
                     root_last_partition = mapping_rule['predicate_invariable_part']
                     self.mappings_df.at[i, 'predicate_partition'] = str(num_partition)
 
-        if 'o' in mapping_partitions:
+        if 'O' in mapping_partitions:
             self.mappings_df.sort_values(by=['object_invariable_part', 'object_termtype'], inplace=True, ascending=True)
 
             num_partition = 0
             root_last_partition = constants.AUXILIAR_UNIQUE_REPLACING_STRING
 
             for i, mapping_rule in self.mappings_df.iterrows():
-                if mapping_rule['object_termtype'] == constants.R2RML['blank_node']:
+                if mapping_rule['object_termtype'] == constants.R2RML_BLANK_NODE:
                     pass  # assign the partition `no partition`
                 elif not mapping_rule['object_invariable_part']:
                     self.mappings_df.at[i, 'object_partition'] = '0'
@@ -122,7 +121,7 @@ class MappingPartitioner:
                     root_last_partition = mapping_rule['object_invariable_part']
                     self.mappings_df.at[i, 'object_partition'] = str(num_partition)
 
-        if 'g' in mapping_partitions:
+        if 'G' in mapping_partitions:
             self.mappings_df.sort_values(by='graph_invariable_part', inplace=True, ascending=True)
             num_partition = 0
             root_last_partition = constants.AUXILIAR_UNIQUE_REPLACING_STRING
@@ -148,15 +147,15 @@ class MappingPartitioner:
         # aggregate the independent mapping partitions generated for subjects, predicates and graphs to generate the
         # final mapping partitions
         self.mappings_df['mapping_partition'] = ''
-        if 's' in mapping_partitions:
+        if 'S' in mapping_partitions:
             self.mappings_df['mapping_partition'] = self.mappings_df['subject_partition'] + '_'
-        if 'p' in mapping_partitions:
+        if 'P' in mapping_partitions:
             self.mappings_df['mapping_partition'] = self.mappings_df['mapping_partition'] + self.mappings_df[
                 'predicate_partition'] + '_'
-        if 'o' in mapping_partitions:
+        if 'O' in mapping_partitions:
             self.mappings_df['mapping_partition'] = self.mappings_df['mapping_partition'] + self.mappings_df[
                 'object_partition'] + '_'
-        if 'g' in mapping_partitions:
+        if 'G' in mapping_partitions:
             self.mappings_df['mapping_partition'] = self.mappings_df['mapping_partition'] + self.mappings_df[
                 'graph_partition'] + '_'
 
@@ -186,27 +185,27 @@ class MappingPartitioner:
         """
         Checks that the mapping partitioning criteria is valid. A criteria (subject (s), predicate(p), or graph(g)) is
         not valid if there is a mapping rule that uses reference terms to generate terms for that criteria ((s), (p),
-        (g)). Any invalid criteria is omitted and a valid partitioning criteria is returned. If `guess` is selected as
+        (g)). Any invalid criteria is omitted and a valid partitioning criteria is returned. If `GUESS` is selected as
         mapping partitioning criteria, then all valid criteria for the mapping rules in the input DataFrame is returned.
         """
 
-        mapping_partition_criteria = self.config.get(constants.CONFIG_SECTION, 'mapping_partitions')
+        mapping_partition_criteria = self.config.get_mapping_partitions()
         valid_mapping_partition_criteria = ''
 
-        if 'guess' in mapping_partition_criteria:
+        if 'GUESS' in mapping_partition_criteria:
             # add as mapping partitioning criteria all criteria that is valid for the mapping rules in the DataFrame
             # a criteria is not valid if there is a reference term
             if not self.mappings_df['subject_reference'].notna().any():
-                valid_mapping_partition_criteria += 's'
+                valid_mapping_partition_criteria += 'S'
             if not self.mappings_df['predicate_reference'].notna().any():
-                valid_mapping_partition_criteria += 'p'
+                valid_mapping_partition_criteria += 'P'
             # object is always a valid criteria
-            valid_mapping_partition_criteria += 'o'
+            valid_mapping_partition_criteria += 'O'
             if not self.mappings_df['graph_reference'].notna().any():
-                valid_mapping_partition_criteria += 'g'
+                valid_mapping_partition_criteria += 'G'
 
         else:
-            if 's' in mapping_partition_criteria:
+            if 'S' in mapping_partition_criteria:
                 # subject is used as partitioning criteria.
                 # if there is any subject that is a reference that means it is not a template nor a constant, and it
                 # cannot be used as partitioning criteria. The same for predicate and graph.
@@ -215,33 +214,33 @@ class MappingPartitioner:
                                     '`: mappings cannot be partitioned by subject because mappings contain subject '
                                     'terms that are rr:column or rml:reference.')
                 else:
-                    valid_mapping_partition_criteria += 's'
+                    valid_mapping_partition_criteria += 'S'
 
-            if 'p' in mapping_partition_criteria:
+            if 'P' in mapping_partition_criteria:
                 if self.mappings_df['predicate_reference'].notna().any():
                     logging.warning('Invalid mapping partition criteria `' + mapping_partition_criteria +
                                     '`: mappings cannot be partitioned by predicate because mappings contain'
                                     ' predicate terms that are rr:column or rml:reference.')
                 else:
-                    valid_mapping_partition_criteria += 'p'
+                    valid_mapping_partition_criteria += 'P'
 
-            if 'o' in mapping_partition_criteria:
-                valid_mapping_partition_criteria += 'o'
+            if 'O' in mapping_partition_criteria:
+                valid_mapping_partition_criteria += 'O'
 
-            if 'g' in mapping_partition_criteria:
+            if 'G' in mapping_partition_criteria:
                 if self.mappings_df['graph_reference'].notna().any():
                     logging.warning('Invalid mapping partition criteria `' + mapping_partition_criteria +
                                     '`: mappings cannot be partitioned by graph because mappings '
                                     'contain graph terms that are rr:column or rml:reference.')
                 else:
-                    valid_mapping_partition_criteria += 'g'
+                    valid_mapping_partition_criteria += 'G'
 
         if valid_mapping_partition_criteria:
             logging.info('Using `' + valid_mapping_partition_criteria + '` as mapping partition criteria.')
         else:
             logging.info('Not using mapping partitioning.')
 
-        self.config.set(constants.CONFIG_SECTION, 'mapping_partitions', valid_mapping_partition_criteria)
+        self.config.set_mapping_partitions(valid_mapping_partition_criteria)
 
     def _get_mapping_partitions_invariable_parts(self):
         """
@@ -257,7 +256,7 @@ class MappingPartitioner:
         self.mappings_df['graph_invariable_part'] = ''
 
         for i, mapping_rule in self.mappings_df.iterrows():
-            if 's' in self.config.get(constants.CONFIG_SECTION, 'mapping_partitions'):
+            if 'S' in self.config.get_mapping_partitions():
                 if pd.notna(mapping_rule['subject_template']):
                     self.mappings_df.at[i, 'subject_invariable_part'] = \
                         get_invariable_part_of_template(str(mapping_rule['subject_template']))
@@ -267,7 +266,7 @@ class MappingPartitioner:
                     logging.error("Could not get the invariable part of the subject for mapping rule `" +
                                   str(mapping_rule['id']) + "`.")
 
-            if 'p' in self.config.get(constants.CONFIG_SECTION, 'mapping_partitions'):
+            if 'P' in self.config.get_mapping_partitions():
                 if pd.notna(mapping_rule['predicate_constant']):
                     self.mappings_df.at[i, 'predicate_invariable_part'] = str(mapping_rule['predicate_constant'])
                 elif pd.notna(mapping_rule['predicate_template']):
@@ -277,7 +276,7 @@ class MappingPartitioner:
                     logging.error("Could not get the invariable part of the predicate for mapping rule `" +
                                   str(mapping_rule['id']) + "`.")
 
-            if 'o' in self.config.get(constants.CONFIG_SECTION, 'mapping_partitions'):
+            if 'O' in self.config.get_mapping_partitions():
                 if pd.notna(mapping_rule['object_constant']):
                     self.mappings_df.at[i, 'object_invariable_part'] = str(mapping_rule['object_constant'])
                 elif pd.notna(mapping_rule['object_template']):
@@ -297,7 +296,7 @@ class MappingPartitioner:
                     logging.error("Could not get the invariable part of the object for mapping rule `" +
                                   str(mapping_rule['id']) + "`.")
 
-            if 'g' in self.config.get(constants.CONFIG_SECTION, 'mapping_partitions'):
+            if 'G' in self.config.get_mapping_partitions():
                 if pd.notna(mapping_rule['graph_constant']):
                     self.mappings_df.at[i, 'graph_invariable_part'] = str(mapping_rule['graph_constant'])
                 elif pd.notna(mapping_rule['graph_template']):

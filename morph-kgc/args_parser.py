@@ -1,7 +1,6 @@
 """ Morph-KGC """
 
 __author__ = "Julián Arenas-Guerrero"
-__copyright__ = "Copyright (C) 2020-2021 Julián Arenas-Guerrero"
 __credits__ = ["Julián Arenas-Guerrero"]
 
 __license__ = "Apache-2.0"
@@ -10,131 +9,37 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 
 import argparse
-import os
-import re
 import logging
 import constants
+import os
 
 from config import Config
 from configparser import ExtendedInterpolation
 
-from data_source import relational_source
 
+def configure_logger(logging_level, logs_file):
+    logging_level_string_to_numeric = {
+        'critical': logging.CRITICAL,
+        'error': logging.ERROR,
+        'warning': logging.WARNING,
+        'info': logging.INFO,
+        'debug': logging.DEBUG,
+        'notset': logging.NOTSET,
+    }
 
-def _configure_logger(config):
-    """
-    Configures the logger based on input arguments. If no logging argument is provided, log level is set to WARNING.
-
-    :param config: the ConfigParser object
-    :type config: ConfigParser
-    """
-
-    # get the logging level numeric value
-    logging_level = config.get(constants.CONFIG_SECTION, 'logging_level')
-    if logging_level == 'critical':
-        logging_level = logging.CRITICAL
-    elif logging_level == 'error':
-        logging_level = logging.ERROR
-    elif logging_level == 'warning':
-        logging_level = logging.WARNING
-    elif logging_level == 'info':
-        logging_level = logging.INFO
-    elif logging_level == 'debug':
-        logging_level = logging.DEBUG
-    elif logging_level == 'notset':
-        logging_level = logging.NOTSET
-
-    if config.get(constants.CONFIG_SECTION, 'logs_file') == '':
-        logging.basicConfig(format='%(levelname)s | %(asctime)s | %(message)s', level=logging_level)
+    if logs_file:
+        logging.basicConfig(filename=logs_file,
+                            format='%(levelname)s | %(asctime)s | %(message)s',
+                            filemode='w',
+                            level=logging_level_string_to_numeric[logging_level])
     else:
-        logging.basicConfig(filename=config.get(constants.CONFIG_SECTION, 'logs_file'),
-                            format='%(levelname)s | %(asctime)s | %(message)s', filemode='w',
-                            level=logging_level)
-
-
-def _log_parsed_configuration_and_data_sources(config):
-    """
-    Logs configuration and data sources parsed from the command line arguments and the config file.
-
-    :param config: ConfigParser object
-    :type config: ConfigParser
-    """
-
-    logging.debug('CONFIGURATION: ' + str(dict(config.items(constants.CONFIG_SECTION))))
-
-    data_sources = {}
-    for section in config.sections():
-        if section != constants.CONFIG_SECTION:
-            ''' if section is not configuration then it is a data source.
-                Mind that DEFAULT section is not triggered with config.sections(). '''
-            data_sources[section] = dict(config.items(section))
-
-    logging.debug('DATA SOURCES: ' + str(data_sources))
-
-
-def _dir_path(dir_path):
-    """
-    Checks that a directory exists. If the directory does not exist, it creates the directories in the path.
-
-    :param dir_path: the path to the directory
-    :type dir_path: str
-    :return valid path to the directory
-    :rtype str
-    """
-
-    dir_path = str(dir_path).strip()
-    if not os.path.exists(dir_path):
-        os.makedirs(dir_path)
-
-    return dir_path
-
-
-def _file_path(file_path):
-    """
-    Checks that directories in a file path exist. If they do not exist, it creates the directories. Also generates
-    a valid file name.
-
-    :param file_path: the path to the file
-    :type file_path: str
-    :return the path to the file
-    :rtype str
-    """
-
-    file_path = str(file_path).strip()
-    if not os.path.exists(os.path.dirname(file_path)):
-        if os.path.dirname(file_path):
-            os.makedirs(os.path.dirname(file_path))
-
-    file_path = os.path.join(os.path.dirname(file_path), _file_name(os.path.basename(file_path)))
-
-    return file_path
-
-
-def _file_name(file_name):
-    """
-    Generates a valid file name from an input file name.
-
-    :param file_name: the original file name
-    :type file_name: str
-    :return the valid file name
-    :rtype str
-    """
-
-    file_name = str(file_name).strip()
-    file_name.replace(' ', '_')
-    file_name = re.sub(r'(?u)[^-\w.]', '', file_name)
-
-    return file_name
+        logging.basicConfig(format='%(levelname)s | %(asctime)s | %(message)s',
+                            level=logging_level_string_to_numeric[logging_level])
 
 
 def _existing_file_path(file_path):
     """
     Checks if a file exists.
-
-    :param file_path: the file path
-    :type file_path: str
-    :return the file path
-    :rtype str
     """
 
     file_path = str(file_path).strip()
@@ -144,214 +49,21 @@ def _existing_file_path(file_path):
     return file_path
 
 
-def _natural_number(number, including_zero=False):
-    """
-    Generates a natural number from a given number.
-
-    :param number: number
-    :type number: str
-    :param including_zero: whether to consider zero a valid natural number.
-    :type including_zero: bool
-    :return natural number
-    :rtype int
-    """
-
-    whole_number = int(number)
-    if including_zero and whole_number < 0:
-        raise ValueError("value must be '0' or greater.")
-    elif not including_zero and whole_number <= 0:
-        raise ValueError("Value must be greater than '0'.")
-
-    return whole_number
-
-
-def _validate_config_data_sources_sections(config):
-    """
-    Validates that the data sources section in the config file are correct.
-
-    :param config: config object
-    :type config: ConfigParser
-    :return config object with validated data sources sections
-    :rtype configparser
-    """
-    for section in config.sections():
-        if section != constants.CONFIG_SECTION:
-            # if section is not CONFIGURATION then it is a data source
-            # mind that DEFAULT section is not triggered with config.sections().
-
-            config.set(section, 'source_type', config.get(section, 'source_type').upper())
-            if config.get(section, 'source_type') in constants.RELATIONAL_SOURCE_TYPES:
-                # to check that required parameters are provided and that the connection is ok
-                relational_source.relational_db_connection(config, section)
-            elif config.get(section, 'source_type') not in constants.VALID_ARGUMENTS['file_source_type']:
-                raise ValueError("source_type value `" + config.get(section, 'source_type') + "` provided in section "
-                                 + section + " is not valid.")
-
-    return config
-
-
-def _validate_config_configuration_section(config):
-    """
-    Validates that the configuration section in the config file is correct.
-
-    :param config: config object
-    :type config: ConfigParser
-    :return config object with validated configuration section
-    :rtype configparser
-    """
-
-    output_format = config.get(constants.CONFIG_SECTION, 'output_format')
-    output_format = str(output_format).lower()
-    if output_format not in constants.VALID_ARGUMENTS['output_format']:
-        raise ValueError("Value for option 'output_format' in config must be in: " +
-                         str(constants.VALID_ARGUMENTS['output_format']))
-    config.set(constants.CONFIG_SECTION, 'output_format', output_format)
-
-    config.set(constants.CONFIG_SECTION, 'output_dir', _dir_path(config.get(constants.CONFIG_SECTION, 'output_dir')))
-    config.set(constants.CONFIG_SECTION, 'output_file', _file_name(config.get(constants.CONFIG_SECTION, 'output_file')))
-
-    mapping_partitions = config.get(constants.CONFIG_SECTION, 'mapping_partitions')
-    mapping_partitions = str(mapping_partitions).lower()
-    if mapping_partitions != 'guess' and not (
-            set(mapping_partitions) <= set(constants.VALID_ARGUMENTS['mapping_partitions'])):
-        raise ValueError('Option mapping_partitions must be `guess`, empty, or a subset of `' +
-                         constants.VALID_ARGUMENTS['mapping_partitions'] + '`.')
-    config.set(constants.CONFIG_SECTION, 'mapping_partitions', mapping_partitions)
-
-    config.set(constants.CONFIG_SECTION, 'number_of_processes',
-               str(_natural_number(config.get(constants.CONFIG_SECTION, 'number_of_processes'))))
-    config.set(constants.CONFIG_SECTION, 'chunksize', str(_natural_number(config.get(constants.CONFIG_SECTION, 'chunksize'))))
-    config.getboolean(constants.CONFIG_SECTION, 'coerce_float')
-    config.getboolean(constants.CONFIG_SECTION, 'only_printable_characters')
-    config.getboolean(constants.CONFIG_SECTION, 'infer_sql_datatypes')
-    config.getboolean(constants.CONFIG_SECTION, 'remove_self_joins')
-    config.getboolean(constants.CONFIG_SECTION, 'push_down_sql_distincts')
-    config.getboolean(constants.CONFIG_SECTION, 'push_down_sql_joins')
-    config.getboolean(constants.CONFIG_SECTION, 'clean_output_dir')
-    config.getboolean(constants.CONFIG_SECTION, 'async')
-
-    config.set(constants.CONFIG_SECTION, 'output_parsed_mappings_path',
-               _file_path(config.get(constants.CONFIG_SECTION, 'output_parsed_mappings_path')))
-    config.set(constants.CONFIG_SECTION, 'logs_file', _file_path(config.get(constants.CONFIG_SECTION, 'logs_file')))
-
-    config.set(constants.CONFIG_SECTION, 'logging_level', config.get(constants.CONFIG_SECTION, 'logging_level').lower())
-    if config.get(constants.CONFIG_SECTION, 'logging_level') not in constants.VALID_ARGUMENTS['logging_level']:
-        raise ValueError("Value for option 'logging_level' in config must be in: " +
-                         str(constants.VALID_ARGUMENTS['logging_level']))
-
-    config.set(constants.CONFIG_SECTION, 'process_start_method', config.get(constants.CONFIG_SECTION, 'process_start_method').lower())
-    if config.get(constants.CONFIG_SECTION, 'process_start_method') not in constants.VALID_ARGUMENTS['process_start_method']:
-        raise ValueError("Value for option 'process_start_method' in config must be in: " +
-                         str(constants.VALID_ARGUMENTS['process_start_method']))
-    return config
-
-
-def _complete_config_file_with_defaults(config):
-    """
-    Completes missing options in the config file with default options.
-
-    :param config: the ConfigParser object
-    :type config: ConfigParser
-    :return ConfigParser object extended with default options
-    :rtype configparser
-    """
-
-    # create section CONFIGURATION if it does not exist in the config file
-    if not config.has_section(constants.CONFIG_SECTION):
-        config.add_section(constants.CONFIG_SECTION)
-
-    # if parameters are not provided in the config file, take them from arguments
-    # mind that ConfigParser store options as strings
-    if not config.has_option(constants.CONFIG_SECTION, 'output_dir'):
-        config.set(constants.CONFIG_SECTION, 'output_dir', constants.ARGUMENTS_DEFAULT['output_dir'])
-    if not config.has_option(constants.CONFIG_SECTION, 'output_file'):
-        config.set(constants.CONFIG_SECTION, 'output_file', constants.ARGUMENTS_DEFAULT['output_file'])
-    if not config.has_option(constants.CONFIG_SECTION, 'output_format'):
-        config.set(constants.CONFIG_SECTION, 'output_format', constants.ARGUMENTS_DEFAULT['output_format'])
-    elif config.get(constants.CONFIG_SECTION, 'output_format') == '':
-        config.set(constants.CONFIG_SECTION, 'output_format', str(constants.ARGUMENTS_DEFAULT['output_format']))
-    if not config.has_option(constants.CONFIG_SECTION, 'push_down_sql_distincts'):
-        config.set(constants.CONFIG_SECTION, 'push_down_sql_distincts', constants.ARGUMENTS_DEFAULT['push_down_sql_distincts'])
-    elif config.get(constants.CONFIG_SECTION, 'push_down_sql_distincts') == '':
-        config.set(constants.CONFIG_SECTION, 'push_down_sql_distincts',
-                   str(constants.ARGUMENTS_DEFAULT['push_down_sql_distincts']))
-    if not config.has_option(constants.CONFIG_SECTION, 'push_down_sql_joins'):
-        config.set(constants.CONFIG_SECTION, 'push_down_sql_joins', constants.ARGUMENTS_DEFAULT['push_down_sql_joins'])
-    elif config.get(constants.CONFIG_SECTION, 'push_down_sql_joins') == '':
-        config.set(constants.CONFIG_SECTION, 'push_down_sql_joins', str(constants.ARGUMENTS_DEFAULT['push_down_sql_joins']))
-    if not config.has_option(constants.CONFIG_SECTION, 'mapping_partitions'):
-        config.set(constants.CONFIG_SECTION, 'mapping_partitions', constants.ARGUMENTS_DEFAULT['mapping_partitions'])
-    if not config.has_option(constants.CONFIG_SECTION, 'number_of_processes'):
-        config.set(constants.CONFIG_SECTION, 'number_of_processes', str(constants.ARGUMENTS_DEFAULT['number_of_processes']))
-    elif config.get(constants.CONFIG_SECTION, 'number_of_processes') == '':
-        config.set(constants.CONFIG_SECTION, 'number_of_processes', str(constants.ARGUMENTS_DEFAULT['number_of_processes']))
-    if not config.has_option(constants.CONFIG_SECTION, 'async'):
-        config.set(constants.CONFIG_SECTION, 'async', str(constants.ARGUMENTS_DEFAULT['async']))
-    elif config.get(constants.CONFIG_SECTION, 'async') == '':
-        config.set(constants.CONFIG_SECTION, 'async', str(constants.ARGUMENTS_DEFAULT['async']))
-    if not config.has_option(constants.CONFIG_SECTION, 'clean_output_dir'):
-        config.set(constants.CONFIG_SECTION, 'clean_output_dir', str(constants.ARGUMENTS_DEFAULT['clean_output_dir']))
-    elif config.get(constants.CONFIG_SECTION, 'clean_output_dir') == '':
-        config.set(constants.CONFIG_SECTION, 'clean_output_dir', str(constants.ARGUMENTS_DEFAULT['clean_output_dir']))
-    if not config.has_option(constants.CONFIG_SECTION, 'chunksize'):
-        config.set(constants.CONFIG_SECTION, 'chunksize', str(constants.ARGUMENTS_DEFAULT['chunksize']))
-    elif config.get(constants.CONFIG_SECTION, 'chunksize') == '':
-        config.set(constants.CONFIG_SECTION, 'chunksize', str(constants.ARGUMENTS_DEFAULT['chunksize']))
-    if not config.has_option(constants.CONFIG_SECTION, 'coerce_float'):
-        config.set(constants.CONFIG_SECTION, 'coerce_float', constants.ARGUMENTS_DEFAULT['coerce_float'])
-    elif config.get(constants.CONFIG_SECTION, 'coerce_float') == '':
-        config.set(constants.CONFIG_SECTION, 'coerce_float', str(constants.ARGUMENTS_DEFAULT['coerce_float']))
-    if not config.has_option(constants.CONFIG_SECTION, 'only_printable_characters'):
-        config.set(constants.CONFIG_SECTION, 'only_printable_characters',
-                   constants.ARGUMENTS_DEFAULT['only_printable_characters'])
-    elif config.get(constants.CONFIG_SECTION, 'only_printable_characters') == '':
-        config.set(constants.CONFIG_SECTION, 'only_printable_characters',
-                   str(constants.ARGUMENTS_DEFAULT['only_printable_characters']))
-    if not config.has_option(constants.CONFIG_SECTION, 'infer_sql_datatypes'):
-        config.set(constants.CONFIG_SECTION, 'infer_sql_datatypes', constants.ARGUMENTS_DEFAULT['infer_sql_datatypes'])
-    elif config.get(constants.CONFIG_SECTION, 'infer_sql_datatypes') == '':
-        config.set(constants.CONFIG_SECTION, 'infer_sql_datatypes', str(constants.ARGUMENTS_DEFAULT['infer_sql_datatypes']))
-    if not config.has_option(constants.CONFIG_SECTION, 'remove_self_joins'):
-        config.set(constants.CONFIG_SECTION, 'remove_self_joins', constants.ARGUMENTS_DEFAULT['remove_self_joins'])
-    elif config.get(constants.CONFIG_SECTION, 'remove_self_joins') == '':
-        config.set(constants.CONFIG_SECTION, 'remove_self_joins', str(constants.ARGUMENTS_DEFAULT['remove_self_joins']))
-    if not config.has_option(constants.CONFIG_SECTION, 'input_parsed_mappings_path'):
-        config.set(constants.CONFIG_SECTION, 'input_parsed_mappings_path',
-                   constants.ARGUMENTS_DEFAULT['input_parsed_mappings_path'])
-    if not config.has_option(constants.CONFIG_SECTION, 'output_parsed_mappings_path'):
-        config.set(constants.CONFIG_SECTION, 'output_parsed_mappings_path',
-                   constants.ARGUMENTS_DEFAULT['output_parsed_mappings_path'])
-    if not config.has_option(constants.CONFIG_SECTION, 'logs_file'):
-        config.set(constants.CONFIG_SECTION, 'logs_file', constants.ARGUMENTS_DEFAULT['logs_file'])
-    if not config.has_option(constants.CONFIG_SECTION, 'logging_level'):
-        config.set(constants.CONFIG_SECTION, 'logging_level', constants.ARGUMENTS_DEFAULT['logging_level'])
-    elif config.get(constants.CONFIG_SECTION, 'logging_level') == '':
-        config.set(constants.CONFIG_SECTION, 'logging_level', str(constants.ARGUMENTS_DEFAULT['logging_level']))
-    if not config.has_option(constants.CONFIG_SECTION, 'process_start_method'):
-        config.set(constants.CONFIG_SECTION, 'process_start_method', str(constants.ARGUMENTS_DEFAULT['process_start_method']))
-    elif config.get(constants.CONFIG_SECTION, 'process_start_method') == '':
-        config.set(constants.CONFIG_SECTION, 'process_start_method', str(constants.ARGUMENTS_DEFAULT['process_start_method']))
-
-    return config
-
-
 def _parse_arguments():
     """
     Parses command line arguments of the engine.
-
-    :return parsed arguments
     """
 
     parser = argparse.ArgumentParser(
-        description='Generate knowledge graphs from heterogeneous data sources.',
-        epilog=__copyright__,
+        description='Generate Knowledge Graphs from Heterogeneous Data Sources.',
+        epilog=constants.__copyright__,
         allow_abbrev=False,
         argument_default=argparse.SUPPRESS
     )
 
     parser.add_argument('config', type=_existing_file_path, help='path to the configuration file')
     parser.add_argument('-v', '--version', action='version',
-                        version='Morph-KGC ' + constants.__version__ + ' | ' + __copyright__)
+                        version='Morph-KGC ' + constants.__version__ + ' | ' + constants.__copyright__)
 
     return parser.parse_args()
 
@@ -361,21 +73,19 @@ def parse_config():
     Parses command line arguments and the config file. It also validates that provided values are correct.
     Arguments in the config file have more priority than command line arguments, if specified, command line
     arguments will overwrite config file ones. Logger is configured.
-
-    :return config object populated with command line arguments and config file arguments,
-    :rtype configparser
     """
 
     args = _parse_arguments()
 
     config = Config(interpolation=ExtendedInterpolation())
     config.read(args.config)
-    config = _complete_config_file_with_defaults(config)
 
-    config = _validate_config_configuration_section(config)
-    _configure_logger(config)
-    config = _validate_config_data_sources_sections(config)
+    config.complete_configuration_with_defaults()
+    config.validate_configuration_section()
+    config.validate_data_source_sections()
 
-    _log_parsed_configuration_and_data_sources(config)
+    configure_logger(config.get_configuration_option('logging_level'), config.get_configuration_option('logs_file'))
+
+    config.log_info()
 
     return config

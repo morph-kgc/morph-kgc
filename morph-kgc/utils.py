@@ -1,7 +1,6 @@
 """ Morph-KGC """
 
 __author__ = "Julián Arenas-Guerrero"
-__copyright__ = "Copyright (C) 2020-2021 Julián Arenas-Guerrero"
 __credits__ = ["Julián Arenas-Guerrero"]
 
 __license__ = "Apache-2.0"
@@ -16,6 +15,61 @@ import logging
 import rdflib
 import constants
 import time
+
+
+def get_valid_dir_path(dir_path):
+    """
+    Checks that a directory exists. If the directory does not exist, it creates the directories in the path.
+
+    :param dir_path: the path to the directory
+    :type dir_path: str
+    :return valid path to the directory
+    :rtype str
+    """
+
+    dir_path = str(dir_path).strip()
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
+
+    return dir_path
+
+
+def get_valid_file_path(file_path):
+    """
+    Checks that directories in a file path exist. If they do not exist, it creates the directories. Also generates
+    a valid file name.
+
+    :param file_path: the path to the file
+    :type file_path: str
+    :return the path to the file
+    :rtype str
+    """
+
+    file_path = str(file_path).strip()
+    if not os.path.exists(os.path.dirname(file_path)):
+        if os.path.dirname(file_path):
+            os.makedirs(os.path.dirname(file_path))
+
+    file_path = os.path.join(os.path.dirname(file_path), get_valid_file_name(os.path.basename(file_path)))
+
+    return file_path
+
+
+def get_valid_file_name(file_name):
+    """
+    Generates a valid file name from an input file name.
+
+    :param file_name: the original file name
+    :type file_name: str
+    :return the valid file name
+    :rtype str
+    """
+
+    file_name = str(file_name).strip()
+    file_name.replace(' ', '_')
+    file_name = re.sub(r'(?u)[^-\w.]', '', file_name)
+
+    return file_name
 
 
 def get_repeated_elements_in_list(input_list):
@@ -91,23 +145,8 @@ def triples_to_file(triples, config, mapping_partition=''):
     :type mapping_partition: str
     """
 
-    if config.get(constants.CONFIG_SECTION, 'output_file'):
-        file_path = os.path.join(config.get(constants.CONFIG_SECTION, 'output_dir'), config.get(constants.CONFIG_SECTION, 'output_file'))
-        # remove file extension, we will set it based on the output format
-        if file_path.endswith('.nt') or file_path.endswith('.nq'):
-            file_path = file_path[:-3]
-    elif mapping_partition:
-        file_path = os.path.join(config.get(constants.CONFIG_SECTION, 'output_dir'), mapping_partition)
-    else:
-        file_path = os.path.join(config.get(constants.CONFIG_SECTION, 'output_dir'), 'result')
-
-    if config.get(constants.CONFIG_SECTION, 'output_format') == 'ntriples':
-        file_path += '.nt'
-    elif config.get(constants.CONFIG_SECTION, 'output_format') == 'nquads':
-        file_path += '.nq'
-
-    f = open(file_path, 'a')
-    if config.getboolean(constants.CONFIG_SECTION, 'only_printable_characters'):
+    f = open(config.get_output_file_path(mapping_partition), 'a')
+    if config.only_write_printable_characters():
         for triple in triples:
             # REMOVING NON PRINTABLE CHARACTERS THIS WAY IS VERY SLOW!
             f.write(''.join(c for c in triple if c.isprintable()) + '.\n')
@@ -126,14 +165,14 @@ def clean_output_dir(config):
     :type config: ConfigParser
     """
 
-    output_dir = config.get(constants.CONFIG_SECTION, 'output_dir')
-    output_file = config.get(constants.CONFIG_SECTION, 'output_file')
+    output_dir = config.get_output_dir()
+    output_file = config.get_output_file()
     if output_file:
         if os.path.exists(os.path.join(output_dir, output_file)):
             # always delete output file, so that generated triples are not appended to it
             os.remove(os.path.join(output_dir, output_file))
 
-    if config.getboolean(constants.CONFIG_SECTION, 'clean_output_dir'):
+    if config.clean_output_dir():
         for obj in os.listdir(output_dir):
             obj_path = os.path.join(output_dir, obj)
             if os.path.isdir(obj_path):
@@ -236,26 +275,3 @@ def get_references_in_join_condition(mapping_rule):
         parent_references.append(join_condition['parent_value'])
 
     return references, parent_references
-
-
-def get_mapping_file_paths(config, config_section_name):
-    mapping_file_paths = []
-
-    for mapping_path in config.get(config_section_name, 'mappings').split(','):
-        # if it is a file load the mapping triples to the graph
-        if os.path.isfile(mapping_path):
-            mapping_file_paths.append(mapping_path)
-        # if it is a directory process all the mapping files within the root of the directory
-        elif os.path.isdir(mapping_path):
-            for mapping_file_name in os.listdir(mapping_path):
-                mapping_file = os.path.join(mapping_path, mapping_file_name)
-                if os.path.isfile(mapping_file):
-                    mapping_file_paths.append(mapping_file)
-
-    return mapping_file_paths
-
-
-def get_data_source_sections(config):
-    data_source_sections = set(config.sections()) - {constants.CONFIG_SECTION}
-
-    return list(data_source_sections)
