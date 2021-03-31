@@ -1,6 +1,11 @@
 # Morph-KGC
 
-## Use
+ToDo: Add description of the engine and figure of the architecture
+
+
+## Projects where Morph-KGC has been used
+
+## Installing and Running Morph-KGC
 ```
 positional arguments:
   config         path to the configuration file
@@ -10,6 +15,13 @@ optional arguments:
   -v, --version  show program's version number and exit
 ```
 
-## Author
+## Experimental Evaluations and [R2]RML Test-Cases
 
-Julián Arenas-Guerrero (julian.arenas.guerrero@upm.es) - Ontology Engineering Group (UPM)
+
+## Authors
+
+- Julián Arenas-Guerrero - julian.arenas.guerrero@upm.es (Ontology Engineering Group - UPM)
+- David Chaves-Fraga
+- Jhon Toledo
+
+Ontology Engineering Group, Universidad Politécnica de Madrid | 2020 - Present
