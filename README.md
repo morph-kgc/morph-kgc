@@ -20,7 +20,7 @@ optional arguments:
 
 ## Authors
 
-- Julián Arenas-Guerrero - julian.arenas.guerrero@upm.es (Ontology Engineering Group - UPM)
+- Julián Arenas-Guerrero (julian.arenas.guerrero@upm.es)
 - David Chaves-Fraga
 - Jhon Toledo
 
