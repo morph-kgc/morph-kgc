@@ -40,7 +40,7 @@ PROCESS_START_METHOD = 'process_start_method'
 ASYNC_MULTIPROCESSING = 'async_multiprocessing'
 
 LOGGING_LEVEL = 'logging_level'
-LOGS_FILE = 'logs_file'
+LOGGING_FILE = 'logs_file'
 
 SOURCE_TYPE = 'source_type'
 MAPPINGS = 'mappings'
@@ -57,7 +57,7 @@ CONFIGURATION_OPTIONS_EMPTY_VALID = {
             READ_PARSED_MAPPINGS_PATH: constants.DEFAULT_READ_PARSED_MAPPINGS_PATH,
             WRITE_PARSED_MAPPINGS_PATH: constants.DEFAULT_WRITE_PARSED_MAPPINGS_PATH,
             MAPPING_PARTITIONS: constants.DEFAULT_MAPPING_PARTITIONS,
-            LOGS_FILE: constants.DEFAULT_LOGS_FILE
+            LOGGING_FILE: constants.DEFAULT_LOGS_FILE
         }
 
 CONFIGURATION_OPTIONS_EMPTY_NON_VALID = {
@@ -195,6 +195,12 @@ class Config(ConfigParser):
 
     def get_number_of_processes(self):
         return self.getint(self.configuration_section, NUMBER_OF_PROCESSES)
+
+    def get_logging_level(self):
+        return self.get(self.configuration_section, LOGGING_LEVEL)
+
+    def get_logging_file(self):
+        return self.get(self.configuration_section, LOGGING_FILE)
 
     def infer_sql_datatypes(self):
         return self.getboolean(self.configuration_section, INFER_SQL_DATATYPES)

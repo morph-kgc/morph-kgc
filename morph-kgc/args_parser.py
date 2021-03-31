@@ -9,32 +9,12 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 
 import argparse
-import logging
+import utils
 import constants
 import os
 
 from config import Config
 from configparser import ExtendedInterpolation
-
-
-def configure_logger(logging_level, logs_file):
-    logging_level_string_to_numeric = {
-        'critical': logging.CRITICAL,
-        'error': logging.ERROR,
-        'warning': logging.WARNING,
-        'info': logging.INFO,
-        'debug': logging.DEBUG,
-        'notset': logging.NOTSET,
-    }
-
-    if logs_file:
-        logging.basicConfig(filename=logs_file,
-                            format='%(levelname)s | %(asctime)s | %(message)s',
-                            filemode='w',
-                            level=logging_level_string_to_numeric[logging_level])
-    else:
-        logging.basicConfig(format='%(levelname)s | %(asctime)s | %(message)s',
-                            level=logging_level_string_to_numeric[logging_level])
 
 
 def _existing_file_path(file_path):
@@ -81,10 +61,11 @@ def parse_config():
     config.read(args.config)
 
     config.complete_configuration_with_defaults()
+
+    utils.configure_logger(config.get_logging_level(), config.get_logging_file())
+
     config.validate_configuration_section()
     config.validate_data_source_sections()
-
-    configure_logger(config.get_configuration_option('logging_level'), config.get_configuration_option('logs_file'))
 
     config.log_info()
 

@@ -17,6 +17,26 @@ import constants
 import time
 
 
+def configure_logger(logging_level, logs_file):
+    logging_level_string_to_numeric = {
+        'critical': logging.CRITICAL,
+        'error': logging.ERROR,
+        'warning': logging.WARNING,
+        'info': logging.INFO,
+        'debug': logging.DEBUG,
+        'notset': logging.NOTSET,
+    }
+
+    if logs_file:
+        logging.basicConfig(filename=logs_file,
+                            format='%(levelname)s | %(asctime)s | %(message)s',
+                            filemode='w',
+                            level=logging_level_string_to_numeric[logging_level])
+    else:
+        logging.basicConfig(format='%(levelname)s | %(asctime)s | %(message)s',
+                            level=logging_level_string_to_numeric[logging_level])
+
+
 def get_valid_dir_path(dir_path):
     """
     Checks that a directory exists. If the directory does not exist, it creates the directories in the path.
