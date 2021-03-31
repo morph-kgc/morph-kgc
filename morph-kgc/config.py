@@ -106,47 +106,40 @@ class Config(ConfigParser):
 
     def validate_configuration_section(self):
         # OUTPUT DIR & FILE, WRITE PARSED MAPPINGS FILE, LOGS FILE
-        self.set_configuration_option('output_dir',
-                                      utils.get_valid_dir_path(self.get_configuration_option('output_dir')))
-        self.set_configuration_option('output_file',
-                                      utils.get_valid_file_name(self.get_configuration_option('output_file')))
-        self.set_configuration_option('write_parsed_mappings_path', utils.get_valid_file_path(
-            self.get_configuration_option('write_parsed_mappings_path')))
-        self.set_configuration_option('logs_file',
-                                      utils.get_valid_file_path(self.get_configuration_option('logs_file')))
-
+        self.set_output_dir(utils.get_valid_dir_path(self.get_output_dir()))
+        self.set_output_file(utils.get_valid_file_name(self.get_output_file()))
+        self.set_parsed_mappings_write_path(utils.get_valid_file_path(self.get_parsed_mappings_write_path()))
+        self.set_logging_file(utils.get_valid_file_path(self.get_logging_file()))
 
         # OUTPUT FORMAT
-        output_format = str(self.get_configuration_option('output_format')).upper()
-        self.set_configuration_option('output_format', output_format)
+        output_format = str(self.get_output_format()).upper()
+        self.set_output_format(output_format)
         if output_format not in constants.VALID_OUTPUT_FORMATS:
-            raise ValueError('output_format value `' + self.get_configuration_option('output_format') +
+            raise ValueError('output_format value `' + self.get_output_format() +
                              '` is not valid. Must be in: ' + str(constants.VALID_OUTPUT_FORMATS) + '.')
 
         # MAPPING PARTITIONS
-        mapping_partitions = str(self.get_configuration_option('mapping_partitions')).upper()
-        self.set_configuration_option('mapping_partitions', mapping_partitions)
+        mapping_partitions = str(self.get_mapping_partitions()).upper()
+        self.set_mapping_partitions(mapping_partitions)
         if mapping_partitions != 'GUESS' and not (
                 set(mapping_partitions) <= set(constants.VALID_MAPPING_PARTITIONS)):
-            raise ValueError('mapping_partitions value `' + self.get_configuration_option('mapping_partitions') +
+            raise ValueError('mapping_partitions value `' + self.get_mapping_partitions() +
                              '` is not valid. Must be `GUESS`, empty, or a subset of ' +
                              str(constants.VALID_MAPPING_PARTITIONS) + '.')
 
         # LOGGING LEVEL
-        logging_level = str(self.get_configuration_option('logging_level')).lower()
-        self.set_configuration_option('logging_level', logging_level)
+        logging_level = str(self.get_logging_level()).lower()
+        self.set_logging_level(logging_level)
         if logging_level not in constants.VALID_LOGGING_LEVEL:
-            raise ValueError('logging_level value `' + self.get_configuration_option('logging_level') +
+            raise ValueError('logging_level value `' + self.get_logging_level() +
                              '` is not valid. Must be in: ' + str(constants.VALID_LOGGING_LEVEL) + '.')
 
         # PROCESS START METHOD
-        process_start_method = str(self.get_configuration_option('process_start_method')).lower()
-        self.set_configuration_option('process_start_method', process_start_method)
+        process_start_method = str(self.get_process_start_method()).lower()
+        self.set_process_start_method(process_start_method)
         if process_start_method not in constants.VALID_PROCESS_START_METHOD:
-            raise ValueError('process_start_method value `' + self.get_configuration_option('process_start_method') +
+            raise ValueError('process_start_method value `' + self.get_process_start_method() +
                              '` is not valid. Must be in: ' + str(constants.VALID_PROCESS_START_METHOD) + '.')
-
-
 
     def validate_data_source_sections(self):
         # SOURCE TYPE
@@ -171,9 +164,6 @@ class Config(ConfigParser):
 
     def get_configuration_option(self, option):
         return self.get(self.configuration_section, option)
-
-    def set_configuration_option(self, option, value):
-        return self.set(self.configuration_section, option, value)
 
     def get_data_sources_sections(self):
         return list(set(self.sections()) - {self.configuration_section})
@@ -223,6 +213,27 @@ class Config(ConfigParser):
     def set_mapping_partitions(self, mapping_partitions_criteria):
         self.set(self.configuration_section, MAPPING_PARTITIONS, mapping_partitions_criteria)
 
+    def set_output_dir(self, output_dir):
+        self.set(self.configuration_section, OUTPUT_DIR, output_dir)
+
+    def set_output_file(self, output_file):
+        self.set(self.configuration_section, OUTPUT_FILE, output_file)
+
+    def set_parsed_mappings_write_path(self, parsed_mappings_write_path):
+        self.set(self.configuration_section, WRITE_PARSED_MAPPINGS_PATH, parsed_mappings_write_path)
+
+    def set_logging_file(self, logging_file):
+        self.set(self.configuration_section, LOGGING_FILE, logging_file)
+
+    def set_logging_level(self, logging_level):
+        self.set(self.configuration_section, LOGGING_LEVEL, logging_level)
+
+    def set_output_format(self, output_format):
+        self.set(self.configuration_section, OUTPUT_FORMAT, output_format)
+
+    def set_process_start_method(self, process_start_method):
+        self.set(self.configuration_section, PROCESS_START_METHOD, process_start_method)
+
     def get_output_dir(self):
         return self.get(self.configuration_section, OUTPUT_DIR)
 
@@ -231,6 +242,9 @@ class Config(ConfigParser):
 
     def get_output_file(self):
         return self.get(self.configuration_section, OUTPUT_FILE)
+
+    def get_output_format(self):
+        return self.get(self.configuration_section, OUTPUT_FORMAT)
 
     def get_output_file_path(self, mapping_partition=None):
         if self.get_output_file():
@@ -241,7 +255,7 @@ class Config(ConfigParser):
         elif mapping_partition:
             file_path = os.path.join(self.getoutput_dir(), mapping_partition)
         else:
-            file_path = os.path.join(self.getoutput_dir, constants.OUTPUT_FILE)
+            file_path = os.path.join(self.getoutput_dir(), OUTPUT_FILE)
 
         if self.get(self.configuration_section, 'output_format') == 'ntriples':
             file_path += '.nt'
