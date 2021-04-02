@@ -18,6 +18,8 @@ from configparser import ConfigParser
 
 CONFIGURATION_SECTION = 'CONFIGURATION'
 
+NA_VALUES = 'na_values'
+
 OUTPUT_DIR = 'output_dir'
 OUTPUT_FILE = 'output_file'
 OUTPUT_FORMAT = 'output_format'
@@ -234,6 +236,15 @@ class Config(ConfigParser):
 
     def get_chunksize(self):
         return self.getint(self.configuration_section, CHUNKSIZE)
+
+    def has_na_values(self):
+        return self.has_option(self.configuration_section, NA_VALUES)
+
+    def get_na_values(self):
+        if self.has_na_values():
+            return list(set(self.get(self.configuration_section, NA_VALUES).split(',')))
+        else:
+            return []
 
     def get_output_file_path(self, mapping_partition=None):
         if self.get_output_file():
