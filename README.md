@@ -18,18 +18,9 @@ Morph-KGC is runned using a configuration file. Examples of `config` files can b
 ### Docker
 
 
-```
-positional arguments:
-  config         path to the configuration file
+## Projects using Morph-KGC
 
-optional arguments:
-  -h, --help     show this help message and exit
-  -v, --version  show program's version number and exit
-```
-
-## Projects where Morph-KGC has been used
-
-## Experimental evaluations and [R2]RML test-cases
+## [R2]RML conformance
 
 ## Authors
 
