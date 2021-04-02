@@ -11,7 +11,6 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 import logging
 import mysql.connector
 import pandas as pd
-import constants
 
 
 SQL_RDF_DATATYPE = {
@@ -38,16 +37,16 @@ SQL_RDF_DATATYPE = {
 
 
 def relational_db_connection(config, source_name):
-    source_type = config.get(source_name, 'source_type')
+    source_type = config.get_source_type(source_name)
 
     if source_type == 'MYSQL':
         try:
             db_connection = mysql.connector.connect(
-                host=config.get(source_name, 'host'),
-                port=config.get(source_name, 'port'),
-                user=config.get(source_name, 'user'),
-                passwd=config.get(source_name, 'password'),
-                database=config.get(source_name, 'db'),
+                host=config.get_host(source_name),
+                port=config.get_port(source_name),
+                user=config.get_user(source_name),
+                passwd=config.get_password(source_name),
+                database=config.get_db(source_name),
             )
         except mysql.connector.Error as err:
             raise Exception("Error while connecting to DB of data source `" + source_name + "`: {}".format(err))
@@ -63,7 +62,7 @@ def execute_relational_query(query, config, source_name):
     db_connection = relational_db_connection(config, source_name)
     try:
         query_results_df = pd.read_sql(query, con=db_connection,
-                                       coerce_float=config.getboolean(constants.CONFIG_SECTION, 'coerce_float'))
+                                       coerce_float=config.coerce_float())
     except:
         raise Exception("Query `" + query + "` has failed to execute.")
     db_connection.close()
@@ -96,7 +95,7 @@ def get_column_datatype(config, source_name, table_name, column_name):
         return ''
 
 
-def build_sql_join_query(config, mapping_rule, parent_triples_map_rule, references, parent_references):
+def build_sql_join_query(mapping_rule, parent_triples_map_rule, references, parent_references):
     if pd.notna(mapping_rule['query']) or pd.notna(parent_triples_map_rule['query']):
         # This is because additional work is needed to use proper aliases within the rml:query provided
         raise Exception(
@@ -139,7 +138,7 @@ def build_sql_query(config, mapping_rule, references):
         query = mapping_rule['query']
     elif len(references) > 0:
         query = 'SELECT '
-        if config.getboolean(constants.CONFIG_SECTION, 'push_down_sql_distincts'):
+        if config.push_down_sql_distincts():
             query = query + 'DISTINCT '
         for reference in references:
             query = query + reference + ', '
@@ -158,14 +157,14 @@ def build_sql_query(config, mapping_rule, references):
 
 def get_sql_data(config, mapping_rule, references, parent_triples_map_rule=None, parent_references=None):
     if parent_triples_map_rule is not None:
-        sql_query = build_sql_join_query(config, mapping_rule, parent_triples_map_rule, references, parent_references)
+        sql_query = build_sql_join_query(mapping_rule, parent_triples_map_rule, references, parent_references)
     else:
         sql_query = build_sql_query(config, mapping_rule, references)
     db_connection = relational_db_connection(config, mapping_rule['source_name'])
     result_chunks = pd.read_sql(sql_query,
                                 con=db_connection,
-                                chunksize=config.getint(constants.CONFIG_SECTION, 'chunksize'),
-                                coerce_float=config.getboolean(constants.CONFIG_SECTION, 'coerce_float'))
+                                chunksize=config.get_chunksize(),
+                                coerce_float=config.coerce_float())
 
     return result_chunks, db_connection
 

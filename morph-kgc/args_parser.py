@@ -67,6 +67,6 @@ def parse_config():
     config.validate_configuration_section()
     config.validate_data_source_sections()
 
-    config.log_info()
+    config.log_config_info()
 
     return config

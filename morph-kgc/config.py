@@ -152,7 +152,7 @@ class Config(ConfigParser):
                 raise ValueError(SOURCE_TYPE + ' value `' + self.get_source_type(section) + ' is not valid. '
                                  'Must be in: ' + str(constants.VALID_DATA_SOURCE_TYPES) + '.')
 
-    def log_info(self):
+    def log_config_info(self):
         logging.debug('CONFIGURATION: ' + str(dict(self.items(self.configuration_section))))
 
         for data_source_section in self.get_data_sources_sections():
@@ -182,6 +182,12 @@ class Config(ConfigParser):
 
     def push_down_sql_joins(self):
         return self.getboolean(self.configuration_section, PUSH_DOWN_SQL_JOINS)
+
+    def push_down_sql_distincts(self):
+        return self.getboolean(self.configuration_section, PUSH_DOWN_SQL_DISTINCTS)
+
+    def coerce_float(self):
+        return self.getboolean(self.configuration_section, COERCE_FLOAT)
 
     def remove_self_joins(self):
         return self.getboolean(self.configuration_section, REMOVE_SELF_JOINS)
@@ -292,3 +298,18 @@ class Config(ConfigParser):
                         mapping_file_paths.append(mapping_file)
 
         return mapping_file_paths
+
+    def get_host(self, source_section):
+        return self.get(source_section, HOST)
+
+    def get_port(self, source_section):
+        return self.get(source_section, PORT)
+
+    def get_user(self, source_section):
+        return self.get(source_section, USER)
+
+    def get_password(self, source_section):
+        return self.get(source_section, PASSWORD)
+
+    def get_db(self, source_section):
+        return self.get(source_section, DB)
