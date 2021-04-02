@@ -328,7 +328,7 @@ class Materializer:
             mp.set_start_method(self.config.get_process_start_method())
 
         logging.debug("Parallelizing with " + str(self.config.get_number_of_processes()) +
-                      " cores. Using `" + mp.get_start_method() + "` as process start method.")
+                      " cores. Using `" + str(mp.get_start_method()).upper() + "` as process start method.")
 
         pool = mp.Pool(self.config.get_number_of_processes())
         if self.config.is_async_multiprocessing_enabled():
