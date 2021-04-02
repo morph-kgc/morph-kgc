@@ -3,9 +3,17 @@
 ToDo: Add description of the engine and figure of the architecture
 
 
-## Projects where Morph-KGC has been used
+## Getting started
 
-## Installing and Running Morph-KGC
+Morph-KGC is runned using a configuration file. Examples of `config` files can be found [here](https://github.com/oeg-upm/Morph-KGC/tree/main/examples). 
+
+### From source
+
+### PyPi
+
+### Docker
+
+
 ```
 positional arguments:
   config         path to the configuration file
@@ -15,8 +23,9 @@ optional arguments:
   -v, --version  show program's version number and exit
 ```
 
-## Experimental Evaluations and [R2]RML Test-Cases
+## Projects where Morph-KGC has been used
 
+## Experimental evaluations and [R2]RML test-cases
 
 ## Authors
 

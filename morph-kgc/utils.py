@@ -19,22 +19,22 @@ import time
 
 def configure_logger(logging_level, logs_file):
     logging_level_string_to_numeric = {
-        'critical': logging.CRITICAL,
-        'error': logging.ERROR,
-        'warning': logging.WARNING,
-        'info': logging.INFO,
-        'debug': logging.DEBUG,
-        'notset': logging.NOTSET,
+        'CRITICAL': logging.CRITICAL,
+        'ERROR': logging.ERROR,
+        'WARNING': logging.WARNING,
+        'INFO': logging.INFO,
+        'DEBUG': logging.DEBUG,
+        'NOTSET': logging.NOTSET,
     }
 
     if logs_file:
         logging.basicConfig(filename=logs_file,
                             format='%(levelname)s | %(asctime)s | %(message)s',
                             filemode='w',
-                            level=logging_level_string_to_numeric[logging_level])
+                            level=logging_level_string_to_numeric[logging_level.upper()])
     else:
         logging.basicConfig(format='%(levelname)s | %(asctime)s | %(message)s',
-                            level=logging_level_string_to_numeric[logging_level])
+                            level=logging_level_string_to_numeric[logging_level.upper()])
 
 
 def get_valid_dir_path(dir_path):
