@@ -1,3 +1,7 @@
+<p align="center">
+<img src="https://github.com/oeg-upm/morph-website/blob/master/morph-group/public/logo512.png" height="100" alt="morph">
+</p>
+
 # Morph-KGC
 
 ToDo: Add description of the engine and figure of the architecture
@@ -5,7 +9,7 @@ ToDo: Add description of the engine and figure of the architecture
 
 ## Getting started
 
-Morph-KGC is runned using a configuration file. Examples of `config` files can be found [here](https://github.com/oeg-upm/Morph-KGC/tree/main/examples). 
+Morph-KGC is runned using a configuration file. Examples of `config` files can be found [here](https://github.com/oeg-upm/Morph-KGC/tree/main/examples).
 
 ### From source
 
