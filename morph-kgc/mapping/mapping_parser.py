@@ -232,16 +232,14 @@ class MappingParser:
     def _normalize_mappings(self):
         # start by removing duplicated triples
         self.mappings_df = self.mappings_df.drop_duplicates()
+        # complete source type with reference formulation
+        self._complete_source_types()
         # convert rr:class to new POMs
         self._rdf_class_to_pom()
         # normalizes graphs terms in the mappings
         self._process_pom_graphs()
         # if a term as no associated rr:termType, complete it as indicated in R2RML specification
         self._complete_termtypes()
-
-        # we want to track the type of data source (RDB, CSV, EXCEL, JSON, etc) in the parsed mapping rules
-        for i, mapping_rule in self.mappings_df.iterrows():
-            self.mappings_df.at[i, 'source_type'] = self.config.get_source_type(mapping_rule['source_name'])
 
         # ignore the delimited identifiers (this is not conformant with R2MRL specification)
         self._remove_delimiters_from_mappings()
@@ -405,9 +403,22 @@ class MappingParser:
         self.mappings_df['subject_termtype'] = self.mappings_df['subject_termtype'].astype(str)
         self.mappings_df['object_termtype'] = self.mappings_df['object_termtype'].astype(str)
 
+    def _complete_source_types(self):
+        # we want to track the type of data source (RDB, CSV, EXCEL, JSON, etc) in the parsed mapping rules
+        for i, mapping_rule in self.mappings_df.iterrows():
+            if self.config.has_source_type(mapping_rule['source_name']):
+                self.mappings_df.at[i, 'source_type'] = self.config.get_source_type(mapping_rule['source_name'])
+            elif pd.notna(mapping_rule['ref_form']):
+                self.mappings_df.at[i, 'source_type'] = str(mapping_rule['ref_form']).split('#')[1]
+            else:
+                logging.error('No source type could be retrieved for mapping rule `' + mapping_rule['id'] + '`.')
+
+        # ref form is no longer needed, remove it
+        self.mappings_df = self.mappings_df.drop('ref_form', axis=1)
+
     def _remove_delimiters_from_mappings(self):
         """
-        Removes demiliters from all identifiers in the mapping rules in the input DataFrame.
+        Removes delimiters from all identifiers in the mapping rules in the input DataFrame.
         """
 
         for i, mapping_rule in self.mappings_df.iterrows():

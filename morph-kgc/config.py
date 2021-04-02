@@ -147,10 +147,11 @@ class Config(ConfigParser):
     def validate_data_source_sections(self):
         # SOURCE TYPE
         for section in self.get_data_sources_sections():
-            self.set(section, SOURCE_TYPE, self.get_source_type(section).upper())
-            if self.get_source_type(section) not in constants.VALID_DATA_SOURCE_TYPES:
-                raise ValueError(SOURCE_TYPE + ' value `' + self.get_source_type(section) + ' is not valid. '
-                                 'Must be in: ' + str(constants.VALID_DATA_SOURCE_TYPES) + '.')
+            if self.has_source_type(section):
+                self.set(section, SOURCE_TYPE, self.get_source_type(section).upper())
+                if self.get_source_type(section) not in constants.VALID_DATA_SOURCE_TYPES:
+                    raise ValueError(SOURCE_TYPE + ' value `' + self.get_source_type(section) + ' is not valid. '
+                                     'Must be in: ' + str(constants.VALID_DATA_SOURCE_TYPES) + '.')
 
     def log_config_info(self):
         logging.debug('CONFIGURATION: ' + str(dict(self.items(self.configuration_section))))
@@ -282,6 +283,9 @@ class Config(ConfigParser):
 
     def get_source_type(self, source_section):
         return self.get(source_section, SOURCE_TYPE)
+
+    def has_source_type(self, source_section):
+        return self.has_option(source_section, SOURCE_TYPE)
 
     def get_mappings_files(self, source_section):
         mapping_file_paths = []
