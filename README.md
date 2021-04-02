@@ -4,9 +4,6 @@
 
 # Morph-KGC
 
-![Licence](https://img.shields.io/github/license/oeg-upm/Morph-KGC)
-
-
 ToDo: Add description of the engine and figure of the architecture
 
 
