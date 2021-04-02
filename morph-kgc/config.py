@@ -53,7 +53,7 @@ PORT = 'port'
 DB = 'db'
 
 
-# input parameters that do not allow empty values
+# input parameters that are not to be completed with default value if they are empty
 CONFIGURATION_OPTIONS_EMPTY_VALID = {
             OUTPUT_DIR: constants.DEFAULT_OUTPUT_DIR,
             OUTPUT_FILE: constants.DEFAULT_OUTPUT_FILE,
@@ -61,11 +61,11 @@ CONFIGURATION_OPTIONS_EMPTY_VALID = {
             WRITE_PARSED_MAPPINGS_PATH: constants.DEFAULT_WRITE_PARSED_MAPPINGS_PATH,
             MAPPING_PARTITIONS: constants.DEFAULT_MAPPING_PARTITIONS,
             LOGGING_FILE: constants.DEFAULT_LOGS_FILE,
-            NA_VALUES: constants.DEFAULT_NA_VALUES
+            NUMBER_OF_PROCESSES: constants.DEFAULT_NUMBER_OF_PROCESSES
         }
 
 
-# input parameters whose value can be empty
+# input parameters that are to be replaces with the default vale if they are empty
 CONFIGURATION_OPTIONS_EMPTY_NON_VALID = {
             OUTPUT_FORMAT: constants.DEFAULT_OUTPUT_FORMAT,
             CLEAN_OUTPUT_DIR: constants.DEFAULT_CLEAN_OUTPUT_DIR,
@@ -74,12 +74,12 @@ CONFIGURATION_OPTIONS_EMPTY_NON_VALID = {
             PUSH_DOWN_SQL_JOINS: constants.DEFAULT_PUSH_DOWN_SQL_JOINS,
             INFER_SQL_DATATYPES: constants.DEFAULT_INFER_SQL_DATATYPES,
             REMOVE_SELF_JOINS: constants.DEFAULT_REMOVE_SELF_JOINS,
-            NUMBER_OF_PROCESSES: constants.DEFAULT_NUMBER_OF_PROCESSES,
             ASYNC_MULTIPROCESSING: constants.DEFAULT_ASYNC_MULTIPROCESSING,
             PROCESS_START_METHOD: constants.DEFAULT_PROCESS_START_METHOD,
             CHUNKSIZE: constants.DEFAULT_CHUNKSIZE,
             COERCE_FLOAT: constants.DEFAULT_COERCE_FLOAT,
             LOGGING_LEVEL: constants.DEFAULT_LOGGING_LEVEL,
+            NA_VALUES: constants.DEFAULT_NA_VALUES
         }
 
 
