@@ -1,0 +1,1 @@
+Here you can find some example `config` files to run Morph-KGC. [default-config](https://github.com/oeg-upm/Morph-KGC/blob/main/examples/default_config.ini) lists all available configuration options with their default values. If the options in the `CONFIGURATION` section are not provided the default values will be used.
