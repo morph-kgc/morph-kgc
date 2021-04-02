@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://github.com/oeg-upm/morph-website/blob/master/morph-group/public/logo512.png" height="100" alt="morph">
+<img src="https://github.com/oeg-upm/morph-website/blob/master/morph-group/src/assets/logo.png" height="100" alt="morph">
 </p>
 
 # Morph-KGC
