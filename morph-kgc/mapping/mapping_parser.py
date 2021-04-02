@@ -165,7 +165,7 @@ class MappingParser:
     def parse_mappings(self):
         self._get_from_r2_rml()
         self._normalize_mappings()
-        self._remove_self_joins_from_mappings()
+        # self._remove_self_joins_from_mappings()
         self._infer_datatypes()
 
         mapping_validator = MappingValidator(self.mappings_df, self.config)
