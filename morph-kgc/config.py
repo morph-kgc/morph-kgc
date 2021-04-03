@@ -56,6 +56,7 @@ DB = 'db'
 # input parameters that are not to be completed with default value if they are empty
 CONFIGURATION_OPTIONS_EMPTY_VALID = {
             OUTPUT_FILE: constants.DEFAULT_OUTPUT_FILE,
+            NA_VALUES: constants.DEFAULT_NA_VALUES,
             READ_PARSED_MAPPINGS_PATH: constants.DEFAULT_READ_PARSED_MAPPINGS_PATH,
             WRITE_PARSED_MAPPINGS_PATH: constants.DEFAULT_WRITE_PARSED_MAPPINGS_PATH,
             MAPPING_PARTITIONS: constants.DEFAULT_MAPPING_PARTITIONS,
@@ -78,7 +79,6 @@ CONFIGURATION_OPTIONS_EMPTY_NON_VALID = {
             CHUNKSIZE: constants.DEFAULT_CHUNKSIZE,
             COERCE_FLOAT: constants.DEFAULT_COERCE_FLOAT,
             LOGGING_LEVEL: constants.DEFAULT_LOGGING_LEVEL,
-            NA_VALUES: constants.DEFAULT_NA_VALUES,
             NUMBER_OF_PROCESSES: constants.DEFAULT_NUMBER_OF_PROCESSES
         }
 
