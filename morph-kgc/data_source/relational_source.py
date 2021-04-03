@@ -67,8 +67,7 @@ def execute_relational_query(query, config, source_name):
         raise Exception("Query `" + query + "` has failed to execute.")
     db_connection.close()
 
-    for col_name in list(query_results_df.columns):
-        query_results_df[col_name] = query_results_df[col_name].astype(str)
+    query_results_df = query_results_df.astype(str)
 
     return query_results_df
 
