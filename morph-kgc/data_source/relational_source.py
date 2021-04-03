@@ -56,22 +56,6 @@ def relational_db_connection(config, source_name):
     return db_connection
 
 
-def execute_relational_query(query, config, source_name):
-    logging.debug("SQL query for data source `" + source_name + "`: [" + query + ']')
-
-    db_connection = relational_db_connection(config, source_name)
-    try:
-        query_results_df = pd.read_sql(query, con=db_connection,
-                                       coerce_float=config.coerce_float())
-    except:
-        raise Exception("Query `" + query + "` has failed to execute.")
-    db_connection.close()
-
-    query_results_df = query_results_df.astype(str)
-
-    return query_results_df
-
-
 def get_column_datatype(config, source_name, table_name, column_name):
     db_connection = relational_db_connection(config, source_name)
     query = "SELECT data_type FROM information_schema.columns WHERE table_name='" + table_name + \
