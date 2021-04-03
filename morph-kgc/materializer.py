@@ -329,9 +329,6 @@ class Materializer:
 
         pool = mp.Pool(self.config.get_number_of_processes())
         if self.config.is_async_multiprocessing_enabled():
-
-            logging.debug("Using 'async' for parallelization.")
-
             triples_res = pool.starmap_async(_materialize_mapping_partition,
                                              zip(self.mapping_partitions, repeat(self.subject_maps_df),
                                                  repeat(self.config)))
