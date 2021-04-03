@@ -70,8 +70,4 @@ def parse_config():
 
     config.log_config_info()
 
-    if not config.is_process_start_method_default():
-        # This is to be called just once in the program
-        mp.set_start_method(config.get_process_start_method())
-
     return config

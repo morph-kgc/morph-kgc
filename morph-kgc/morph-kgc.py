@@ -13,6 +13,7 @@ import time
 import sys
 import utils
 import pandas as pd
+import multiprocessing as mp
 
 from mapping.mapping_parser import MappingParser
 from args_parser import parse_config
@@ -57,5 +58,9 @@ def process_materialization(mappings, config):
 if __name__ == "__main__":
 
     config = parse_config()
+
+    if config.is_multiprocessing_enabled() and not config.is_process_start_method_default():
+        mp.set_start_method(config.get_process_start_method())
+
     mappings = retrieve_mappings(config)
     process_materialization(mappings, config)

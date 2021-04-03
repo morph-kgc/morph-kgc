@@ -17,6 +17,7 @@ import constants
 import utils
 import multiprocessing as mp
 
+from mapping.mapping_constants import MAPPINGS_DATAFRAME_COLUMNS, MAPPING_PARSING_QUERY, JOIN_CONDITION_PARSING_QUERY
 from mapping.mapping_partitioner import MappingPartitioner
 from mapping.mapping_validator import MappingValidator
 from data_source import relational_source
@@ -150,7 +151,7 @@ def _get_valid_template_identifiers(template):
 class MappingParser:
 
     def __init__(self, config):
-        self.mappings_df = pd.DataFrame(columns=constants.MAPPINGS_DATAFRAME_COLUMNS)
+        self.mappings_df = pd.DataFrame(columns=MAPPINGS_DATAFRAME_COLUMNS)
         self.config = config
 
     def __str__(self):
@@ -220,8 +221,8 @@ class MappingParser:
         mapping_graph = _mapping_to_rml(mapping_graph, section_name)
 
         # parse the mappings with the parsing query
-        mapping_query_results = mapping_graph.query(constants.MAPPING_PARSING_QUERY)
-        join_query_results = mapping_graph.query(constants.JOIN_CONDITION_PARSING_QUERY)
+        mapping_query_results = mapping_graph.query(MAPPING_PARSING_QUERY)
+        join_query_results = mapping_graph.query(JOIN_CONDITION_PARSING_QUERY)
 
         # check triples maps are not repeated, which would lead to errors (because of repeated triples maps identifiers)
         _validate_no_repeated_triples_maps(mapping_graph, section_name)
