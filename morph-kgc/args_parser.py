@@ -12,6 +12,7 @@ import argparse
 import utils
 import constants
 import os
+import multiprocessing as mp
 
 from config import Config
 from configparser import ExtendedInterpolation
@@ -68,5 +69,9 @@ def parse_config():
     config.validate_data_source_sections()
 
     config.log_config_info()
+
+    if not config.is_process_start_method_default():
+        # This is to be called just once in the program
+        mp.set_start_method(config.get_process_start_method())
 
     return config

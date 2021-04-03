@@ -55,18 +55,17 @@ DB = 'db'
 
 # input parameters that are not to be completed with default value if they are empty
 CONFIGURATION_OPTIONS_EMPTY_VALID = {
-            OUTPUT_DIR: constants.DEFAULT_OUTPUT_DIR,
             OUTPUT_FILE: constants.DEFAULT_OUTPUT_FILE,
             READ_PARSED_MAPPINGS_PATH: constants.DEFAULT_READ_PARSED_MAPPINGS_PATH,
             WRITE_PARSED_MAPPINGS_PATH: constants.DEFAULT_WRITE_PARSED_MAPPINGS_PATH,
             MAPPING_PARTITIONS: constants.DEFAULT_MAPPING_PARTITIONS,
             LOGGING_FILE: constants.DEFAULT_LOGS_FILE,
-            NUMBER_OF_PROCESSES: constants.DEFAULT_NUMBER_OF_PROCESSES
         }
 
 
 # input parameters that are to be replaces with the default vale if they are empty
 CONFIGURATION_OPTIONS_EMPTY_NON_VALID = {
+            OUTPUT_DIR: constants.DEFAULT_OUTPUT_DIR,
             OUTPUT_FORMAT: constants.DEFAULT_OUTPUT_FORMAT,
             CLEAN_OUTPUT_DIR: constants.DEFAULT_CLEAN_OUTPUT_DIR,
             ONLY_PRINTABLE_CHARACTERS: constants.DEFAULT_ONLY_PRINTABLE_CHARACTERS,
@@ -79,7 +78,8 @@ CONFIGURATION_OPTIONS_EMPTY_NON_VALID = {
             CHUNKSIZE: constants.DEFAULT_CHUNKSIZE,
             COERCE_FLOAT: constants.DEFAULT_COERCE_FLOAT,
             LOGGING_LEVEL: constants.DEFAULT_LOGGING_LEVEL,
-            NA_VALUES: constants.DEFAULT_NA_VALUES
+            NA_VALUES: constants.DEFAULT_NA_VALUES,
+            NUMBER_OF_PROCESSES: constants.DEFAULT_NUMBER_OF_PROCESSES
         }
 
 
@@ -104,10 +104,10 @@ class Config(ConfigParser):
             self.add_section(self.configuration_section)
 
         for configuration_option, configuration_option_default in CONFIGURATION_OPTIONS_EMPTY_VALID.items():
-            if not _is_option_provided(self, configuration_option):
+            if not _is_option_provided(self, configuration_option, empty_value_is_valid=True):
                 self.set(self.configuration_section, configuration_option, str(configuration_option_default))
         for configuration_option, configuration_option_default in CONFIGURATION_OPTIONS_EMPTY_NON_VALID.items():
-            if not _is_option_provided(self, configuration_option, empty_value_is_valid=True):
+            if not _is_option_provided(self, configuration_option):
                 self.set(self.configuration_section, configuration_option, str(configuration_option_default))
 
     def validate_configuration_section(self):
@@ -253,9 +253,9 @@ class Config(ConfigParser):
             # remove file extension, we will set it based on the output format
             file_path = utils.remove_file_extension(file_path)
         elif mapping_partition:
-            file_path = os.path.join(self.getoutput_dir(), mapping_partition)
+            file_path = os.path.join(self.get_output_dir(), mapping_partition)
         else:
-            file_path = os.path.join(self.getoutput_dir(), OUTPUT_FILE)
+            file_path = os.path.join(self.get_output_dir(), OUTPUT_FILE)
 
         # add file extension
         file_path += constants.OUTPUT_FORMAT_FILE_EXTENSION[self.get_output_format()]

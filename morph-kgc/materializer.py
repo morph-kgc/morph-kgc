@@ -324,9 +324,6 @@ class Materializer:
         logging.info('Number of triples generated in total: ' + str(num_triples) + '.')
 
     def materialize_concurrently(self):
-        if not self.config.is_process_start_method_default():
-            mp.set_start_method(self.config.get_process_start_method())
-
         logging.debug("Parallelizing with " + str(self.config.get_number_of_processes()) +
                       " cores. Using `" + str(mp.get_start_method()).upper() + "` as process start method.")
 
