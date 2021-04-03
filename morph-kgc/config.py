@@ -255,6 +255,7 @@ class Config(ConfigParser):
         elif mapping_partition:
             file_path = os.path.join(self.get_output_dir(), mapping_partition)
         else:
+            # neither output_file was specified nor mapping partitions are used. Use default output_file.
             file_path = os.path.join(self.get_output_dir(), OUTPUT_FILE)
 
         # add file extension
