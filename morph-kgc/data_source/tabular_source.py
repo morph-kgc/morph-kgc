@@ -20,4 +20,4 @@ def get_table_data(config, mapping_rule, references):
                          dtype=str,
                          keep_default_na=False,
                          na_values=config.get_na_values(),
-                         na_filter=config.has_na_values())
+                         na_filter=config.apply_na_filter())

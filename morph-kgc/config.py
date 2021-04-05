@@ -18,6 +18,7 @@ from configparser import ConfigParser
 
 CONFIGURATION_SECTION = 'CONFIGURATION'
 
+NA_FILTER = 'na_filter'
 NA_VALUES = 'na_values'
 
 OUTPUT_DIR = 'output_dir'
@@ -79,6 +80,7 @@ CONFIGURATION_OPTIONS_EMPTY_NON_VALID = {
             CHUNKSIZE: constants.DEFAULT_CHUNKSIZE,
             COERCE_FLOAT: constants.DEFAULT_COERCE_FLOAT,
             LOGGING_LEVEL: constants.DEFAULT_LOGGING_LEVEL,
+            NA_FILTER: constants.DEFAULT_NA_FILTER,
             NUMBER_OF_PROCESSES: constants.DEFAULT_NUMBER_OF_PROCESSES
         }
 
@@ -238,11 +240,11 @@ class Config(ConfigParser):
     def get_chunksize(self):
         return self.getint(self.configuration_section, CHUNKSIZE)
 
-    def has_na_values(self):
-        return self.has_option(self.configuration_section, NA_VALUES)
+    def apply_na_filter(self):
+        return self.getboolean(self.configuration_section, NA_FILTER)
 
     def get_na_values(self):
-        if self.has_na_values():
+        if self.apply_na_filter():
             return list(set(self.get(self.configuration_section, NA_VALUES).split(',')))
         else:
             return []
