@@ -213,10 +213,7 @@ def dataframe_columns_to_str(df):
     :rtype DataFrame
     """
 
-    for col_name in list(df.columns):
-        df[col_name] = df[col_name].astype(str)
-
-    return df
+    return df.astype(str)
 
 
 def get_invariable_part_of_template(template):
