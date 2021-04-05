@@ -470,7 +470,7 @@ class MappingParser:
                     # if the literal has a language tag or an overridden datatype, datatype inference does not apply
                     pd.isna(mapping_rule['object_datatype']) and pd.isna(mapping_rule['object_language'])):
 
-                if pd.notna(mapping_rule['tablename']):
+                if pd.notna(mapping_rule['tablename']) and pd.notna(mapping_rule['object_reference']):
                     inferred_data_type = relational_source.get_column_datatype(
                         self.config, mapping_rule['source_name'], mapping_rule['tablename'],
                         mapping_rule['object_reference']
