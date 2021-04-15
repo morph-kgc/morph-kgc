@@ -187,7 +187,7 @@ class MappingPartitioner:
 
         if mapping_partitions:
             logging.info(str(len(set(self.mappings_df['mapping_partition']))) + ' mapping partitions generated.')
-            logging.info('Maximum number of mapping rules within group: ' + str(self.mappings_df['mapping_partition'].value_counts()[0]) + '.')
+            logging.info('Maximum number of rules within mapping group: ' + str(self.mappings_df['mapping_partition'].value_counts()[0]) + '.')
 
     def _validate_mapping_partition_criteria(self):
         """
