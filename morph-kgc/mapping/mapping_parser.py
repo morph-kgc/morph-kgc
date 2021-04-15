@@ -316,7 +316,7 @@ class MappingParser:
                 self.mappings_df.at[j, 'graph_reference'] = row['graph_reference']
                 self.mappings_df.at[j, 'graph_template'] = row['graph_template']
                 self.mappings_df.at[j, 'subject_termtype'] = row['subject_termtype']
-                self.mappings_df.at[j, 'predicate_constant'] = constants.RDF['type']
+                self.mappings_df.at[j, 'predicate_constant'] = constants.RDF_TYPE
                 self.mappings_df.at[j, 'object_constant'] = row['subject_rdf_class']
                 self.mappings_df.at[j, 'object_termtype'] = constants.R2RML_IRI
                 self.mappings_df.at[j, 'join_conditions'] = ''
