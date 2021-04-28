@@ -1,3 +1,0 @@
-[submodule "test-cases"]
-	path = test-cases
-	url = https://github.com/kg-construct/r2rml-test-cases-support
