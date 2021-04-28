@@ -10,7 +10,7 @@ ToDo: Add description of the engine
 
 ```bib
 @inproceedings{arenas2021Morph,
-  title={Morph-KGC: Scalable Knowledge Graph Construction with Mapping Partitions},
+  title={{Morph-KGC: Scalable Knowledge Graph Construction with Mapping Partitions}},
   author={Arenas-Guerrero, Julián and Chaves-Fraga, David and Corcho, Oscar},
   booktitle={International Semantic Web Conference},
   pages={94--102},
