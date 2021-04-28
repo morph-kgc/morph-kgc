@@ -12,7 +12,6 @@ import argparse
 import utils
 import constants
 import os
-import multiprocessing as mp
 
 from config import Config
 from configparser import ExtendedInterpolation

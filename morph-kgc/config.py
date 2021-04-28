@@ -26,6 +26,7 @@ OUTPUT_FILE = 'output_file'
 OUTPUT_FORMAT = 'output_format'
 CLEAN_OUTPUT_DIR = 'clean_output_dir'
 ONLY_PRINTABLE_CHARACTERS = 'only_printable_characters'
+MATERIALIZE_DEFAULT_GRAPH = 'materialize_default_graph'
 
 MAPPING_PARTITIONS = 'mapping_partitions'
 INFER_SQL_DATATYPES = 'infer_sql_datatypes'
@@ -65,12 +66,13 @@ CONFIGURATION_OPTIONS_EMPTY_VALID = {
         }
 
 
-# input parameters that are to be replaces with the default vale if they are empty
+# input parameters that are to be replaced with the default vale if they are empty
 CONFIGURATION_OPTIONS_EMPTY_NON_VALID = {
             OUTPUT_DIR: constants.DEFAULT_OUTPUT_DIR,
             OUTPUT_FORMAT: constants.DEFAULT_OUTPUT_FORMAT,
             CLEAN_OUTPUT_DIR: constants.DEFAULT_CLEAN_OUTPUT_DIR,
             ONLY_PRINTABLE_CHARACTERS: constants.DEFAULT_ONLY_PRINTABLE_CHARACTERS,
+            MATERIALIZE_DEFAULT_GRAPH: constants.DEFAULT_MATERIALIZE_DEFAULT_GRAPH,
             PUSH_DOWN_SQL_DISTINCTS: constants.DEFAULT_PUSH_DOWN_SQL_DISTINCTS,
             PUSH_DOWN_SQL_JOINS: constants.DEFAULT_PUSH_DOWN_SQL_JOINS,
             INFER_SQL_DATATYPES: constants.DEFAULT_INFER_SQL_DATATYPES,
@@ -236,6 +238,9 @@ class Config(ConfigParser):
 
     def get_output_format(self):
         return self.get(self.configuration_section, OUTPUT_FORMAT)
+
+    def materialize_default_graph(self):
+        return self.getboolean(self.configuration_section, MATERIALIZE_DEFAULT_GRAPH)
 
     def get_chunksize(self):
         return self.getint(self.configuration_section, CHUNKSIZE)

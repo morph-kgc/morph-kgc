@@ -40,6 +40,7 @@ DEFAULT_COERCE_FLOAT = 'no'
 DEFAULT_NA_FILTER = 'yes'
 DEFAULT_NA_VALUES = ',#N/A,N/A,#N/A N/A,n/a,NA,<NA>,#NA,NULL,null,NaN,nan'
 DEFAULT_ONLY_PRINTABLE_CHARACTERS = 'no'
+DEFAULT_MATERIALIZE_DEFAULT_GRAPH = 'no'
 
 
 ##############################################################################

@@ -148,7 +148,7 @@ def _materialize_join_mapping_rule_terms(results_df, mapping_rule, parent_triple
     return set(results_df['triple'])
 
 
-def _materialize_mapping_rule_terms(results_df, mapping_rule):
+def _materialize_mapping_rule_terms(results_df, mapping_rule, config):
     results_df['triple'] = ''
     if pd.notna(mapping_rule['subject_template']):
         results_df = _materialize_template(results_df, mapping_rule['subject_template'], termtype=mapping_rule['subject_termtype'])
@@ -168,13 +168,14 @@ def _materialize_mapping_rule_terms(results_df, mapping_rule):
         results_df = _materialize_constant(results_df, mapping_rule['object_constant'], termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
     elif pd.notna(mapping_rule['object_reference']):
         results_df = _materialize_reference(results_df, mapping_rule['object_reference'], termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
-    if pd.notna(mapping_rule['graph_template']):
-        results_df = _materialize_template(results_df, mapping_rule['graph_template'])
-    elif pd.notna(mapping_rule['graph_constant']):
-        if pd.notna(mapping_rule['graph_constant'] != constants.R2RML_DEFAULT_GRAPH):
-            results_df = _materialize_constant(results_df, mapping_rule['graph_constant'])
-    elif pd.notna(mapping_rule['graph_reference']):
-        results_df = _materialize_reference(results_df, mapping_rule['graph_reference'], termtype=constants.R2RML_IRI)
+    if config.get_output_format() == 'NQUADS':
+        if pd.notna(mapping_rule['graph_template']):
+            results_df = _materialize_template(results_df, mapping_rule['graph_template'])
+        elif pd.notna(mapping_rule['graph_constant']):
+            if config.materialize_default_graph() or mapping_rule['graph_constant'] != constants.R2RML_DEFAULT_GRAPH:
+                results_df = _materialize_constant(results_df, mapping_rule['graph_constant'])
+        elif pd.notna(mapping_rule['graph_reference']):
+            results_df = _materialize_reference(results_df, mapping_rule['graph_reference'], termtype=constants.R2RML_IRI)
 
     return set(results_df['triple'])
 
@@ -280,7 +281,7 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
             #query_results_chunk_df.replace(config.get_na_values(), np.NaN)
             query_results_chunk_df.dropna(axis=0, how='any', inplace=True)
             query_results_chunk_df = utils.dataframe_columns_to_str(query_results_chunk_df)
-            triples.update(_materialize_mapping_rule_terms(query_results_chunk_df, mapping_rule))
+            triples.update(_materialize_mapping_rule_terms(query_results_chunk_df, mapping_rule, config))
 
     if db_connection:
         db_connection.close()
