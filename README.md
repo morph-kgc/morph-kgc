@@ -6,6 +6,20 @@
 
 ToDo: Add description of the engine and figure of the architecture
 
+**Citing Morph-KGC**: If you used Morph-KGC in your work, please cite the (ISWC 2021)[paperhttps://iswc2017.semanticweb.org/paper-138]
+
+```bib
+@inproceedings{garijo2017widoco,
+  title={Morph-KGC: Scalable Knowledge Graph Construction with Mapping Partitions},
+  author={Arenas-Guerrero, Julián and Chaves-Fraga, David and Corcho, Oscar},
+  booktitle={International Semantic Web Conference},
+  pages={94--102},
+  year={2017},
+  organization={Springer, Cham},
+  doi = {},
+}
+```
+
 
 ## Getting started
 
