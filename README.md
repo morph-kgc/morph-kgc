@@ -4,7 +4,7 @@
 
 # Morph-KGC
 
-ToDo: Add description of the engine and figure of the architecture
+ToDo: Add description of the engine
 
 **Citing Morph-KGC**: If you used Morph-KGC in your work, please cite the [ISWC 2021](paperhttps://iswc2017.semanticweb.org/paper-138)
 
@@ -30,11 +30,6 @@ Morph-KGC is runned using a configuration file. Examples of `config` files can b
 ### PyPi
 
 ### Docker
-
-
-## Projects using Morph-KGC
-
-## [R2]RML conformance
 
 ## Authors
 
