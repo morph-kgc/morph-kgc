@@ -6,7 +6,7 @@
 
 ToDo: Add description of the engine and figure of the architecture
 
-**Citing Morph-KGC**: If you used Morph-KGC in your work, please cite the (ISWC 2021)[paperhttps://iswc2017.semanticweb.org/paper-138]
+**Citing Morph-KGC**: If you used Morph-KGC in your work, please cite the [ISWC 2021](paperhttps://iswc2017.semanticweb.org/paper-138)
 
 ```bib
 @inproceedings{garijo2017widoco,
