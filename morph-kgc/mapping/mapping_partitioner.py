@@ -104,7 +104,7 @@ class MappingPartitioner:
                     self.mappings_df.at[i, 'predicate_partition'] = str(num_partition)
 
         if 'O' in mapping_partitions:
-            self.mappings_df.sort_values(by=['object_invariable_part', 'object_termtype'], inplace=True, ascending=True)
+            self.mappings_df.sort_values(by=['object_termtype', 'object_datatype', 'object_language', 'object_invariable_part'], inplace=True, ascending=True)
 
             num_partition = 0
             root_last_partition = constants.AUXILIAR_UNIQUE_REPLACING_STRING
@@ -112,6 +112,13 @@ class MappingPartitioner:
             for i, mapping_rule in self.mappings_df.iterrows():
                 if mapping_rule['object_termtype'] == constants.R2RML_BLANK_NODE:
                     pass  # assign the partition `no partition`
+                elif mapping_rule['object_termtype'] == constants.R2RML_LITERAL:
+                    literal_partition = ''
+                    if pd.notna(mapping_rule['object_language']):
+                        literal_partition = str(mapping_rule['object_language'])
+                    elif pd.notna(mapping_rule['object_datatype']):
+                        literal_partition = str(mapping_rule['object_datatype'])
+                    self.mappings_df.at[i, 'object_partition'] = literal_partition
                 elif not mapping_rule['object_invariable_part']:
                     self.mappings_df.at[i, 'object_partition'] = '0'
                 elif mapping_rule['object_invariable_part'].startswith(root_last_partition):
@@ -180,6 +187,7 @@ class MappingPartitioner:
 
         if mapping_partitions:
             logging.info(str(len(set(self.mappings_df['mapping_partition']))) + ' mapping partitions generated.')
+            logging.info('Maximum number of rules within mapping group: ' + str(self.mappings_df['mapping_partition'].value_counts()[0]) + '.')
 
     def _validate_mapping_partition_criteria(self):
         """
