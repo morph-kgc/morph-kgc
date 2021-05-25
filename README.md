@@ -4,7 +4,7 @@
 
 # Morph-KGC
 
-Morph-KGC is an engine that constructs [RDF](https://www.w3.org/TR/rdf11-concepts/) knowledge graphs from heterogeneous data sources with [R2RML](https://www.w3.org/TR/r2rml/) and [RML](https://rml.io/specs/rml/). It is built on top of [pandas](https://pandas.pydata.org/) and leverages __mapping partitions__ to achieve efficient execution times and memory consumption. Morph-KGC currently supports as input data sources relational databases (MySQL and PostgreSQL) and tabular files (CSV, TSV, Excel, Parquet).
+Morph-KGC is an engine that constructs [RDF](https://www.w3.org/TR/rdf11-concepts/) knowledge graphs from heterogeneous data sources with [R2RML](https://www.w3.org/TR/r2rml/) and [RML](https://rml.io/specs/rml/) mapping languages. It is built on top of [pandas](https://pandas.pydata.org/) and leverages *mapping partitions* to achieve efficient execution times and memory consumption.
 
 **Citing Morph-KGC**: If you used Morph-KGC in your work, please cite the [ISWC 2021 paper](paperhttps://iswc2017.semanticweb.org/paper-138)
 
@@ -20,16 +20,18 @@ Morph-KGC is an engine that constructs [RDF](https://www.w3.org/TR/rdf11-concept
 }
 ```
 
+## Main Features
 
-## Getting started
+- Input data formats:
+  - Relational databases: MySQL, PostgreSQL.
+  - Tabular files: CSV, TSV, Excel, Parquet.
+- Output RDF serializations: [N-Triples](https://www.w3.org/TR/n-triples/), [N-Quads](https://www.w3.org/TR/n-quads/).
+
+## Getting Started
 
 Morph-KGC is runned using a configuration file. Examples of `config` files can be found [here](https://github.com/oeg-upm/Morph-KGC/tree/main/examples).
 
-### From source
-
-### PyPi
-
-### Docker
+## WIKI
 
 ## Authors
 
