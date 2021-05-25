@@ -4,23 +4,23 @@
 
 # Morph-KGC
 
-Morph-KGC is an engine that constructs [RDF](https://www.w3.org/TR/rdf11-concepts/) knowledge graphs from heterogeneous data sources with [R2RML](https://www.w3.org/TR/r2rml/) and [RML](https://rml.io/specs/rml/) mapping languages. It is built on top of [pandas](https://pandas.pydata.org/) and leverages *mapping partitions* to achieve efficient execution times and memory consumption.
+Morph-KGC is an engine that constructs [RDF](https://www.w3.org/TR/rdf11-concepts/) knowledge graphs from heterogeneous data sources with [R2RML](https://www.w3.org/TR/r2rml/) and [RML](https://rml.io/specs/rml/) mapping languages. Morph-KGC is built on top of [pandas](https://pandas.pydata.org/) and leverages *mapping partitions* to achieve efficient execution times and memory consumption.
 
-**Citing Morph-KGC**: If you used Morph-KGC in your work, please cite the [ISWC 2021 paper](paperhttps://iswc2017.semanticweb.org/paper-138)
+**Citing Morph-KGC**: If you used Morph-KGC in your work, please cite the [ISWC 2021 paper]():
 
 ```bib
 @inproceedings{arenas2021Morph,
-  title={{Morph-KGC: Scalable Knowledge Graph Construction with Mapping Partitions}},
-  author={Arenas-Guerrero, Julián and Chaves-Fraga, David and Corcho, Oscar},
-  booktitle={International Semantic Web Conference},
-  pages={94--102},
-  year={2017},
-  organization={Springer, Cham},
+  title = {{Morph-KGC: Scalable Knowledge Graph Construction with Mapping Partitions}},
+  author = {Arenas-Guerrero, Julián and Chaves-Fraga, David and Corcho, Oscar},
+  booktitle = {International Semantic Web Conference},
+  pages = {94--102},
+  year = {2017},
+  organization = {Springer, Cham},
   doi = {},
 }
 ```
 
-## Main Features
+## Supported Data Formats
 
 - Input data formats:
   - Relational databases: MySQL, PostgreSQL.
