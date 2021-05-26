@@ -19,12 +19,10 @@ from materializer import Materializer
 
 
 def retrieve_mappings(config):
-    input_parsed_mappings_path = config.get_parsed_mappings_read_path()
-    if input_parsed_mappings_path:
+    if config.is_read_parsed_mappings_file_provided():
         # retrieve parsed mapping from file and finish mapping processing
-        mappings = pd.read_csv(input_parsed_mappings_path, keep_default_na=False)
-        logging.info(str(len(mappings)) + ' mappings rules with ' + str(len(set(mappings[
-                     'mapping_partition']))) + ' mapping partitions loaded from file.')
+        mappings = pd.read_csv(config.get_parsed_mappings_read_path(), keep_default_na=False)
+        logging.info(str(len(mappings)) + ' mappings rules loaded from file.')
     else:
         mappings_parser = MappingParser(config)
 
@@ -32,9 +30,8 @@ def retrieve_mappings(config):
         mappings = mappings_parser.parse_mappings()
         logging.info('Mappings processed in ' + utils.get_delta_time(start_time) + ' seconds.')
 
-        output_parsed_mappings_path = config.get_parsed_mappings_write_path()
-        if output_parsed_mappings_path:
-            mappings.sort_values(by=['id'], axis=0).to_csv(output_parsed_mappings_path, index=False)
+        if config.is_write_parsed_mappings_file_provided():
+            mappings.sort_values(by=['id'], axis=0).to_csv(config.get_parsed_mappings_write_path(), index=False)
             logging.info('Parsed mapping rules saved to file.')
             sys.exit()
 

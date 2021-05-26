@@ -210,7 +210,19 @@ class Config(ConfigParser):
         return self.getboolean(self.configuration_section, ASYNC_MULTIPROCESSING)
 
     def is_process_start_method_default(self):
-        return self.get(self.configuration_section, PROCESS_START_METHOD) == 'default'
+        return self.get(self.configuration_section, PROCESS_START_METHOD) == 'DEFAULT'
+
+    def is_read_parsed_mappings_file_provided(self):
+        if self.get(self.configuration_section, READ_PARSED_MAPPINGS_PATH):
+            return True
+        else:
+            return False
+
+    def is_write_parsed_mappings_file_provided(self):
+        if self.get(self.configuration_section, WRITE_PARSED_MAPPINGS_PATH):
+            return True
+        else:
+            return False
 
     def infer_sql_datatypes(self):
         return self.getboolean(self.configuration_section, INFER_SQL_DATATYPES)
