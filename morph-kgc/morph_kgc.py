@@ -1,5 +1,3 @@
-""" Morph-KGC """
-
 __author__ = "Julián Arenas-Guerrero"
 __credits__ = ["Julián Arenas-Guerrero"]
 
@@ -60,7 +58,7 @@ if __name__ == "__main__":
     config = parse_config()
 
     if config.is_multiprocessing_enabled() and not config.is_process_start_method_default():
-        mp.set_start_method(config.get_process_start_method())
+        mp.set_start_method(config.get_process_start_method().lower())
 
     mappings = retrieve_mappings(config)
     process_materialization(mappings, config)

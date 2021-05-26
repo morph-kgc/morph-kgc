@@ -1,5 +1,3 @@
-""" Morph-KGC """
-
 __author__ = "Julián Arenas-Guerrero"
 __credits__ = ["Julián Arenas-Guerrero"]
 

@@ -1,5 +1,3 @@
-""" Morph-KGC """
-
 __author__ = "Julián Arenas-Guerrero"
 __credits__ = ["Julián Arenas-Guerrero"]
 
@@ -31,7 +29,7 @@ def _existing_file_path(file_path):
 
 def _parse_arguments():
     """
-    Parses command line arguments of the engine.
+    Parses command line arguments.
     """
 
     parser = argparse.ArgumentParser(
@@ -50,9 +48,7 @@ def _parse_arguments():
 
 def parse_config():
     """
-    Parses command line arguments and the config file. It also validates that provided values are correct.
-    Arguments in the config file have more priority than command line arguments, if specified, command line
-    arguments will overwrite config file ones. Logger is configured.
+    Parses command line arguments and the config file. Logger is configured.
     """
 
     args = _parse_arguments()
@@ -62,11 +58,10 @@ def parse_config():
 
     config.complete_configuration_with_defaults()
 
-    utils.configure_logger(config.get_logging_level(), config.get_logging_file())
-
     config.validate_configuration_section()
     config.validate_data_source_sections()
 
+    utils.configure_logger(config.get_logging_level(), config.get_logging_file())
     config.log_config_info()
 
     return config

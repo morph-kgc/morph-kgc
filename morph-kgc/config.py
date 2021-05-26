@@ -1,5 +1,3 @@
-""" Morph-KGC """
-
 __author__ = "Julián Arenas-Guerrero"
 __credits__ = ["Julián Arenas-Guerrero"]
 
@@ -17,6 +15,11 @@ from configparser import ConfigParser
 
 
 CONFIGURATION_SECTION = 'CONFIGURATION'
+
+
+##############################################################################
+########################   CONFIGURATION PARAMETERS   ########################
+##############################################################################
 
 NA_FILTER = 'na_filter'
 NA_VALUES = 'na_values'
@@ -46,6 +49,11 @@ ASYNC_MULTIPROCESSING = 'async_multiprocessing'
 LOGGING_LEVEL = 'logging_level'
 LOGGING_FILE = 'logs_file'
 
+
+##############################################################################
+#########################   DATA SOURCE PARAMETERS   #########################
+##############################################################################
+
 SOURCE_TYPE = 'source_type'
 MAPPINGS = 'mappings'
 USER = 'user'
@@ -54,6 +62,10 @@ HOST = 'host'
 PORT = 'port'
 DB = 'db'
 
+
+##############################################################################
+########################   PARAMETERS DEFAULT VALUES   #######################
+##############################################################################
 
 # input parameters that are not to be completed with default value if they are empty
 CONFIGURATION_OPTIONS_EMPTY_VALID = {
@@ -88,6 +100,11 @@ CONFIGURATION_OPTIONS_EMPTY_NON_VALID = {
 
 
 def _is_option_provided(config, option, empty_value_is_valid=False):
+    """
+    Checks whether a parameter is provided in the config. If empty value is not valid then the option will be considered
+    as not provided if no value is provided for the option.
+    """
+
     if not config.has_configuration_option(option):
         return False
     elif (config.get_configuration_option(option) == '') and (empty_value_is_valid is False):
@@ -103,13 +120,23 @@ class Config(ConfigParser):
         self.configuration_section = CONFIGURATION_SECTION
 
     def complete_configuration_with_defaults(self):
+        """
+        Sets the parameters that are not specified in the config file to their corresponding default values.
+        If there is no CONFIGURATION section in the config file it is also added.
+        """
+
         # add configuration section if its does not exist
         if not self.has_section(self.configuration_section):
             self.add_section(self.configuration_section)
 
+        # set default values for parameters that accept empty values, i.e. if the parameter is provided but no value
+        # is provided the default value is not set, if the parameter itself is not provided the default parameter is set
         for configuration_option, configuration_option_default in CONFIGURATION_OPTIONS_EMPTY_VALID.items():
             if not _is_option_provided(self, configuration_option, empty_value_is_valid=True):
                 self.set(self.configuration_section, configuration_option, str(configuration_option_default))
+        # set default values for parameters that do not accept empty values, i.e. if the parameter is provided but no
+        # value is provided the default value is set, if the parameter itself is not provided the default parameter is
+        # also set
         for configuration_option, configuration_option_default in CONFIGURATION_OPTIONS_EMPTY_NON_VALID.items():
             if not _is_option_provided(self, configuration_option):
                 self.set(self.configuration_section, configuration_option, str(configuration_option_default))
@@ -126,7 +153,7 @@ class Config(ConfigParser):
         self.set_output_format(output_format)
         if output_format not in constants.VALID_OUTPUT_FORMATS:
             raise ValueError(OUTPUT_FORMAT + ' value `' + self.get_output_format() +
-                             '` is not valid. Must be in: ' + str(constants.VALID_OUTPUT_FORMATS) + '.')
+                             '` is not valid. It must be in: ' + str(constants.VALID_OUTPUT_FORMATS) + '.')
 
         # MAPPING PARTITIONS
         mapping_partitions = str(self.get_mapping_partitions()).upper()
@@ -134,22 +161,22 @@ class Config(ConfigParser):
         if mapping_partitions != 'GUESS' and not (
                 set(mapping_partitions) <= set(constants.VALID_MAPPING_PARTITIONS)):
             raise ValueError(MAPPING_PARTITIONS + ' value `' + self.get_mapping_partitions() +
-                             '` is not valid. Must be `GUESS`, empty, or a subset of ' +
+                             '` is not valid. It must be `GUESS`, empty, or a subset of ' +
                              str(constants.VALID_MAPPING_PARTITIONS) + '.')
 
         # LOGGING LEVEL
-        logging_level = str(self.get_logging_level()).lower()
+        logging_level = str(self.get_logging_level()).upper()
         self.set_logging_level(logging_level)
         if logging_level not in constants.VALID_LOGGING_LEVEL:
             raise ValueError(LOGGING_LEVEL + ' value `' + self.get_logging_level() +
-                             '` is not valid. Must be in: ' + str(constants.VALID_LOGGING_LEVEL) + '.')
+                             '` is not valid. It must be in: ' + str(constants.VALID_LOGGING_LEVEL) + '.')
 
         # PROCESS START METHOD
-        process_start_method = str(self.get_process_start_method()).lower()
+        process_start_method = str(self.get_process_start_method()).upper()
         self.set_process_start_method(process_start_method)
         if process_start_method not in constants.VALID_PROCESS_START_METHOD:
             raise ValueError(PROCESS_START_METHOD + ' value `' + self.get_process_start_method() +
-                             '` is not valid. Must be in: ' + str(constants.VALID_PROCESS_START_METHOD) + '.')
+                             '` is not valid. It must be in: ' + str(constants.VALID_PROCESS_START_METHOD) + '.')
 
     def validate_data_source_sections(self):
         # SOURCE TYPE
@@ -158,7 +185,7 @@ class Config(ConfigParser):
                 self.set(section, SOURCE_TYPE, self.get_source_type(section).upper())
                 if self.get_source_type(section) not in constants.VALID_DATA_SOURCE_TYPES:
                     raise ValueError(SOURCE_TYPE + ' value `' + self.get_source_type(section) + ' is not valid. '
-                                     'Must be in: ' + str(constants.VALID_DATA_SOURCE_TYPES) + '.')
+                                     'It must be in: ' + str(constants.VALID_DATA_SOURCE_TYPES) + '.')
 
     def log_config_info(self):
         logging.debug('CONFIGURATION: ' + str(dict(self.items(self.configuration_section))))

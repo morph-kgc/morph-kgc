@@ -1,5 +1,3 @@
-""" Morph-KGC """
-
 __version__ = "v1.0.0"
 
 __author__ = "Julián Arenas-Guerrero"
@@ -50,10 +48,10 @@ DEFAULT_MATERIALIZE_DEFAULT_GRAPH = 'no'
 VALID_RELATIONAL_SOURCE_TYPES = ['MYSQL']
 VALID_TABULAR_SOURCE_TYPES = ['CSV']
 VALID_DATA_SOURCE_TYPES = VALID_RELATIONAL_SOURCE_TYPES + VALID_TABULAR_SOURCE_TYPES
-VALID_OUTPUT_FORMATS = ['NTRIPLES', 'NQUADS']
+VALID_OUTPUT_FORMATS = ['N-TRIPLES', 'N-QUADS']
 VALID_MAPPING_PARTITIONS = 'SPOG'
-VALID_PROCESS_START_METHOD = ['default', 'spawn', 'fork', 'forkserver']
-VALID_LOGGING_LEVEL = ['notset', 'debug', 'info', 'warning', 'error', 'critical']
+VALID_PROCESS_START_METHOD = ['DEFAULT', 'SPAWN', 'FORK', 'FORKSERVER']
+VALID_LOGGING_LEVEL = ['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 
 
 ##############################################################################

@@ -1,5 +1,3 @@
-""" Morph-KGC """
-
 __author__ = "Julián Arenas-Guerrero"
 __credits__ = ["Julián Arenas-Guerrero"]
 
@@ -18,6 +16,11 @@ import time
 
 
 def configure_logger(logging_level, logs_file):
+    """
+    Configures the logger. If a logging file is provided, the logs messages are redirected to it, if not they are
+    redirected to stdout. Messages are logged according to the provided logging level.
+    """
+
     logging_level_string_to_numeric = {
         'CRITICAL': logging.CRITICAL,
         'ERROR': logging.ERROR,
@@ -40,11 +43,6 @@ def configure_logger(logging_level, logs_file):
 def get_valid_dir_path(dir_path):
     """
     Checks that a directory exists. If the directory does not exist, it creates the directories in the path.
-
-    :param dir_path: the path to the directory
-    :type dir_path: str
-    :return valid path to the directory
-    :rtype str
     """
 
     dir_path = str(dir_path).strip()
@@ -58,11 +56,6 @@ def get_valid_file_path(file_path):
     """
     Checks that directories in a file path exist. If they do not exist, it creates the directories. Also generates
     a valid file name.
-
-    :param file_path: the path to the file
-    :type file_path: str
-    :return the path to the file
-    :rtype str
     """
 
     file_path = str(file_path).strip()
@@ -78,11 +71,6 @@ def get_valid_file_path(file_path):
 def get_valid_file_name(file_name):
     """
     Generates a valid file name from an input file name.
-
-    :param file_name: the original file name
-    :type file_name: str
-    :return the valid file name
-    :rtype str
     """
 
     file_name = str(file_name).strip()
@@ -95,11 +83,6 @@ def get_valid_file_name(file_name):
 def get_repeated_elements_in_list(input_list):
     """
     Finds repeated elements in a list.
-
-    :param input_list: list of elements
-    :type input_list: list
-    :return list with the repeated elements in input_list
-    :rtype list
     """
 
     elem_count = {}
@@ -120,11 +103,6 @@ def get_repeated_elements_in_list(input_list):
 def get_subject_maps(mappings_df):
     """
     Retrieves subject maps from mapping rules in the input DataFrame. No repeated subject maps are returned.
-
-    :param mappings_df: DataFrame populated with mapping rules
-    :type mappings_df: DataFrame
-    :return DataFrame with subject maps in mappings_df
-    :rtype DataFrame
     """
 
     subject_maps_df = mappings_df[[
@@ -140,12 +118,6 @@ def get_subject_maps(mappings_df):
 def get_references_in_template(template):
     """
     Retrieves all reference identifiers in a template-valued term map. References are returned in order of appearance
-    in the template.
-
-    :param template: template-valued term map
-    :type template: str
-    :return list of references in template
-    :rtype list
     """
 
     return re.findall('\\{([^}]+)', template)
@@ -156,13 +128,6 @@ def triples_to_file(triples, config, mapping_partition=''):
     Write triples to file. If mapping_partition is provided it is used as file name. File extension is inferred from
     output_format in config. If mapping_partition is provided and final results will be in a unique file, the triples
     are written to a temporary directory.
-
-    :param triples: set of triples to write to file
-    :type triples: set
-    :param config: config object
-    :type config: ConfigParser
-    :param mapping_partition: name of the mapping partition associated to the triples
-    :type mapping_partition: str
     """
 
     f = open(config.get_output_file_path(mapping_partition), 'a')
@@ -180,9 +145,6 @@ def clean_output_dir(config):
     """
     Removes all files and directories within output_dir in config depending on clean_output_dir parameter. The output
     file, if provided in config, is always deleted.
-
-    :param config: config object
-    :type config: ConfigParser
     """
 
     output_dir = config.get_output_dir()
@@ -206,11 +168,6 @@ def clean_output_dir(config):
 def dataframe_columns_to_str(df):
     """
     Converts all the columns in the input dataframe to str.
-
-    :param df: dataframe that might have non str columns
-    :type df: DataFrame
-    :return dataframe with all columns converted to str
-    :rtype DataFrame
     """
 
     return df.astype(str)
@@ -221,11 +178,6 @@ def get_invariable_part_of_template(template):
     Retrieves the part of the template before the first reference. This part of the template does not depend on
     reference and therefore is invariable. If the template has no references, it is an invalid template, and an
     exception is thrown.
-
-    :param template: template
-    :type template: str
-    :return invariable part of the template
-    :rtype str
     """
 
     template_for_splitting = template.replace('\\{', constants.AUXILIAR_UNIQUE_REPLACING_STRING)
