@@ -21,8 +21,8 @@ Morph-KGC is an engine that constructs [RDF](https://www.w3.org/TR/rdf11-concept
 ## Supported Data Formats
 
 - Input data formats:
-  - Relational databases: MySQL, PostgreSQL.
-  - Tabular files: CSV, TSV, Excel, Parquet.
+  - Relational databases: [MySQL](https://www.mysql.com/), [PostgreSQL](https://www.postgresql.org/).
+  - Tabular files: CSV, TSV, Excel, [Parquet](https://parquet.apache.org/documentation/latest/).
 - Output RDF serializations: [N-Triples](https://www.w3.org/TR/n-triples/), [N-Quads](https://www.w3.org/TR/n-quads/).
 
 ## Getting Started
