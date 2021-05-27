@@ -82,7 +82,7 @@ def get_valid_file_name(file_name):
 
 def get_repeated_elements_in_list(input_list):
     """
-    Finds repeated elements in a list.
+    Finds repeated elements in a list. Returns a list with the repeated elements.
     """
 
     elem_count = {}

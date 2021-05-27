@@ -30,10 +30,10 @@ def retrieve_mappings(config):
         mappings = mappings_parser.parse_mappings()
         logging.info('Mappings processed in ' + utils.get_delta_time(start_time) + ' seconds.')
 
-        if config.is_write_parsed_mappings_file_provided():
-            mappings.sort_values(by=['id'], axis=0).to_csv(config.get_parsed_mappings_write_path(), index=False)
-            logging.info('Parsed mapping rules saved to file.')
-            sys.exit()
+    if config.is_write_parsed_mappings_file_provided():
+        mappings.sort_values(by=['id'], axis=0).to_csv(config.get_parsed_mappings_write_path(), index=False)
+        logging.info('Parsed mapping rules saved to file.')
+        sys.exit()
 
     return mappings
 
