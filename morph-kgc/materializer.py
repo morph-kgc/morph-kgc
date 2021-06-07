@@ -191,8 +191,6 @@ def _materalize_push_down_sql_join(mapping_rule, parent_triples_map_rule, refere
         triples_rule.update(
             _materialize_join_mapping_rule_terms(query_results_chunk_df, mapping_rule, parent_triples_map_rule))
 
-    db_connection.close()
-
     return triples_rule
 
 
@@ -262,11 +260,6 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
                         _materialize_join_mapping_rule_terms(merged_query_results_chunk_df, mapping_rule,
                                                              parent_triples_map_rule))
 
-            if mapping_rule['source_type'] in constants.VALID_RELATIONAL_SOURCE_TYPES:
-                db_connection.close()
-            if parent_triples_map_rule['source_type'] in constants.VALID_RELATIONAL_SOURCE_TYPES:
-                db_connection.close()
-
     else:
 
         if mapping_rule['source_type'] in constants.VALID_RELATIONAL_SOURCE_TYPES:
@@ -279,11 +272,6 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
             query_results_chunk_df.dropna(axis=0, how='any', inplace=True)
             query_results_chunk_df = utils.dataframe_columns_to_str(query_results_chunk_df)
             triples.update(_materialize_mapping_rule_terms(query_results_chunk_df, mapping_rule, config))
-
-    if db_connection:
-        db_connection.close()
-    if parent_db_connection:
-        parent_db_connection.close()
 
     return triples
 

@@ -7,8 +7,9 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 
 import logging
-import mysql.connector
 import pandas as pd
+from sqlalchemy import create_engine
+from sqlalchemy.pool import NullPool
 
 
 SQL_RDF_DATATYPE = {
@@ -35,23 +36,8 @@ SQL_RDF_DATATYPE = {
 
 
 def relational_db_connection(config, source_name):
-    source_type = config.get_source_type(source_name)
 
-    if source_type == 'MYSQL':
-        try:
-            db_connection = mysql.connector.connect(
-                host=config.get_host(source_name),
-                port=config.get_port(source_name),
-                user=config.get_user(source_name),
-                passwd=config.get_password(source_name),
-                database=config.get_db(source_name),
-            )
-        except mysql.connector.Error as err:
-            raise Exception("Error while connecting to DB of data source `" + source_name + "`: {}".format(err))
-    else:
-        raise ValueError("source_type `" + str(source_type) + "` in configuration file is not valid.")
-
-    return db_connection
+    return create_engine(config.get_database_url(source_name), poolclass=NullPool)
 
 
 def get_column_datatype(config, source_name, table_name, column_name):

@@ -7,7 +7,6 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 
 import logging
-import rfc3987
 import constants
 import utils
 import pandas as pd
@@ -31,9 +30,8 @@ class MappingValidator:
     def validate_mappings(self):
         """
         Checks that the mapping rules in the input DataFrame are valid. If something is wrong in the mappings the
-        execution is stopped. Specifically it is checked that termtypes are correct, constants and templates are valid
-        IRIs and that language tags and datatypes are used properly. Also checks that different data sources do not
-        have triples map with the same id.
+        execution is stopped. Specifically it is checked that termtypes are correct, and that language tags and
+        datatypes are used properly. Also checks that different data sources do not have triples map with the same id.
         """
 
         # check termtypes are correct (i.e. that they are rr:IRI, rr:BlankNode or rr:Literal and that subject map is
@@ -63,30 +61,6 @@ class MappingValidator:
                                     pd.notna(self.mappings_df['object_datatype'])]) > 0:
             logging.warning('Found object maps with a language tag and a datatype. Both of them cannot be used '
                             'simultaneously for the same object map, and the language tag has preference.')
-
-        # check constants are valid IRIs. Get all constants in predicate, graph, subject and object
-        constants_terms = list(self.mappings_df['predicate_constant'].dropna())
-        constants_terms.extend(list(self.mappings_df['graph_constant'].dropna()))
-        constants_terms.extend(list(self.mappings_df.loc[
-                                        (self.mappings_df['subject_termtype'] == constants.R2RML_IRI) &
-                                        pd.notna(self.mappings_df['subject_constant'])]['subject_constant']))
-        constants_terms.extend(list(self.mappings_df.loc[
-                                        (self.mappings_df['object_termtype'] == constants.R2RML_IRI) &
-                                        pd.notna(self.mappings_df['object_constant'])]['object_constant']))
-        # validate that each of the constants retrieved are valid URIs
-        for constant in set(constants_terms):
-            rfc3987.parse(constant, rule='IRI')
-
-        # check templates are valid IRIs. Get all templates in predicate, graph, subject and object
-        templates = list(self.mappings_df['predicate_template'].dropna())
-        templates.extend(list(self.mappings_df['graph_template'].dropna()))
-        templates.extend(list(self.mappings_df.loc[(self.mappings_df['subject_termtype'] == constants.R2RML_IRI) &
-                                                   pd.notna(self.mappings_df['subject_template'])]['subject_template']))
-        templates.extend(list(self.mappings_df.loc[(self.mappings_df['object_termtype'] == constants.R2RML_IRI) &
-                                                   pd.notna(self.mappings_df['object_template'])]['object_template']))
-        for template in templates:
-            # validate that at least the INVARIABLE part of the template is a valid IRI
-            rfc3987.parse(utils.get_invariable_part_of_template(str(template)), rule='IRI')
 
         # check that a triples map id is not repeated in different data sources
         # Get unique source names and triples map identifiers

@@ -56,11 +56,7 @@ LOGGING_FILE = 'logs_file'
 
 SOURCE_TYPE = 'source_type'
 MAPPINGS = 'mappings'
-USER = 'user'
-PASSWORD = 'password'
-HOST = 'host'
-PORT = 'port'
-DB = 'db'
+DATABASE_URL = 'db_url'
 
 
 ##############################################################################
@@ -362,17 +358,5 @@ class Config(ConfigParser):
 
         return mapping_file_paths
 
-    def get_host(self, source_section):
-        return self.get(source_section, HOST)
-
-    def get_port(self, source_section):
-        return self.get(source_section, PORT)
-
-    def get_user(self, source_section):
-        return self.get(source_section, USER)
-
-    def get_password(self, source_section):
-        return self.get(source_section, PASSWORD)
-
-    def get_db(self, source_section):
-        return self.get(source_section, DB)
+    def get_database_url(self, source_section):
+        return self.get(source_section, DATABASE_URL)

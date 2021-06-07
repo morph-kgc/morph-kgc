@@ -18,7 +18,7 @@ import multiprocessing as mp
 
 DEFAULT_OUTPUT_DIR = 'output'
 DEFAULT_OUTPUT_FILE = 'result'
-DEFAULT_OUTPUT_FORMAT = 'NQUADS'
+DEFAULT_OUTPUT_FORMAT = 'N-QUADS'
 DEFAULT_REMOVE_DUPLICATES = 'yes'
 DEFAULT_CLEAN_OUTPUT_DIR = 'yes'
 DEFAULT_MAPPING_PARTITIONS = 'GUESS'
@@ -45,7 +45,7 @@ DEFAULT_MATERIALIZE_DEFAULT_GRAPH = 'no'
 #########################   VALID ARGUMENTS VALUES   #########################
 ##############################################################################
 
-VALID_RELATIONAL_SOURCE_TYPES = ['MYSQL']
+VALID_RELATIONAL_SOURCE_TYPES = ['RDB']
 VALID_TABULAR_SOURCE_TYPES = ['CSV']
 VALID_DATA_SOURCE_TYPES = VALID_RELATIONAL_SOURCE_TYPES + VALID_TABULAR_SOURCE_TYPES
 VALID_OUTPUT_FORMATS = ['N-TRIPLES', 'N-QUADS']
@@ -59,8 +59,8 @@ VALID_LOGGING_LEVEL = ['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'
 ##############################################################################
 
 OUTPUT_FORMAT_FILE_EXTENSION = {
-    'NTRIPLES': '.nt',
-    'NQUADS': '.nq'
+    'N-TRIPLES': '.nt',
+    'N-QUADS': '.nq'
 }
 
 
