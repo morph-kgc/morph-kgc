@@ -31,7 +31,7 @@ CLEAN_OUTPUT_DIR = 'clean_output_dir'
 ONLY_PRINTABLE_CHARACTERS = 'only_printable_characters'
 MATERIALIZE_DEFAULT_GRAPH = 'materialize_default_graph'
 
-MAPPING_PARTITIONS = 'mapping_partitions'
+MAPPING_PARTITION = 'mapping_partition'
 INFER_SQL_DATATYPES = 'infer_sql_datatypes'
 REMOVE_SELF_JOINS = 'remove_self_joins'
 READ_PARSED_MAPPINGS_PATH = 'read_parsed_mappings_path'
@@ -69,7 +69,7 @@ CONFIGURATION_OPTIONS_EMPTY_VALID = {
             NA_VALUES: constants.DEFAULT_NA_VALUES,
             READ_PARSED_MAPPINGS_PATH: constants.DEFAULT_READ_PARSED_MAPPINGS_PATH,
             WRITE_PARSED_MAPPINGS_PATH: constants.DEFAULT_WRITE_PARSED_MAPPINGS_PATH,
-            MAPPING_PARTITIONS: constants.DEFAULT_MAPPING_PARTITIONS,
+            MAPPING_PARTITION: constants.DEFAULT_MAPPING_PARTITION,
             LOGGING_FILE: constants.DEFAULT_LOGS_FILE,
         }
 
@@ -150,15 +150,6 @@ class Config(ConfigParser):
         if output_format not in constants.VALID_OUTPUT_FORMATS:
             raise ValueError(OUTPUT_FORMAT + ' value `' + self.get_output_format() +
                              '` is not valid. It must be in: ' + str(constants.VALID_OUTPUT_FORMATS) + '.')
-
-        # MAPPING PARTITIONS
-        mapping_partitions = str(self.get_mapping_partitions()).upper()
-        self.set_mapping_partitions(mapping_partitions)
-        if mapping_partitions != 'GUESS' and not (
-                set(mapping_partitions) <= set(constants.VALID_MAPPING_PARTITIONS)):
-            raise ValueError(MAPPING_PARTITIONS + ' value `' + self.get_mapping_partitions() +
-                             '` is not valid. It must be `GUESS`, empty, or a subset of ' +
-                             str(constants.VALID_MAPPING_PARTITIONS) + '.')
 
         # LOGGING LEVEL
         logging_level = str(self.get_logging_level()).upper()
@@ -262,8 +253,8 @@ class Config(ConfigParser):
     def get_parsed_mappings_write_path(self):
         return self.get(self.configuration_section, WRITE_PARSED_MAPPINGS_PATH)
 
-    def get_mapping_partitions(self):
-        return self.get(self.configuration_section, MAPPING_PARTITIONS)
+    def get_mapping_partition(self):
+        return self.get(self.configuration_section, MAPPING_PARTITION)
 
     def get_output_dir(self):
         return self.get(self.configuration_section, OUTPUT_DIR)
@@ -297,7 +288,7 @@ class Config(ConfigParser):
         elif mapping_partition:
             file_path = os.path.join(self.get_output_dir(), mapping_partition)
         else:
-            # neither output_file was specified nor mapping partitions are used. Use default output_file.
+            # neither output_file was specified nor mapping partition are used. Use default output_file.
             file_path = os.path.join(self.get_output_dir(), OUTPUT_FILE)
 
         # add file extension
@@ -305,8 +296,8 @@ class Config(ConfigParser):
 
         return file_path
 
-    def set_mapping_partitions(self, mapping_partitions_criteria):
-        self.set(self.configuration_section, MAPPING_PARTITIONS, mapping_partitions_criteria)
+    def set_mapping_partition(self, mapping_partition_criteria):
+        self.set(self.configuration_section, MAPPING_PARTITION, mapping_partition_criteria)
 
     def set_output_dir(self, output_dir):
         self.set(self.configuration_section, OUTPUT_DIR, output_dir)
