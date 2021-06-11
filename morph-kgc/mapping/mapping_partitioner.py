@@ -10,6 +10,8 @@ import constants
 import logging
 import pandas as pd
 
+import utils
+
 
 def get_invariant_of_template(template):
     """
@@ -224,8 +226,14 @@ class MappingPartitioner:
                 self.mappings_df.at[i, 'object_invariant'] = \
                     get_invariant_of_template(str(mapping_rule['object_template']))
             elif pd.notna(mapping_rule['object_parent_triples_map']):
-                pass    # no invariant
-                # mapping partition could be extended with URI invariant of parent triples map
+                # get the invariant for referencing object maps
+                parent_mapping_rule = utils.get_mapping_rule_from_triples_map_id(self.mappings_df, mapping_rule[
+                    'object_parent_triples_map'])
+                if pd.notna(parent_mapping_rule['subject_constant']):
+                    self.mappings_df.at[i, 'object_invariant'] = str(parent_mapping_rule['subject_constant'])
+                elif pd.notna(parent_mapping_rule['subject_template']):
+                    self.mappings_df.at[i, 'object_invariant'] = \
+                        get_invariant_of_template(str(parent_mapping_rule['subject_template']))
 
             # GRAPH
             if pd.notna(mapping_rule['graph_constant']):
