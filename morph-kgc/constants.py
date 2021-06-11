@@ -21,7 +21,6 @@ DEFAULT_OUTPUT_FILE = 'result'
 DEFAULT_OUTPUT_FORMAT = 'N-QUADS'
 DEFAULT_REMOVE_DUPLICATES = 'yes'
 DEFAULT_CLEAN_OUTPUT_DIR = 'yes'
-DEFAULT_MAPPING_PARTITION = 'PARTIAL-AGGREGATIONS'
 DEFAULT_READ_PARSED_MAPPINGS_PATH = ''
 DEFAULT_WRITE_PARSED_MAPPINGS_PATH = ''
 DEFAULT_LOGS_FILE = ''
@@ -39,6 +38,13 @@ DEFAULT_NA_FILTER = 'yes'
 DEFAULT_NA_VALUES = ',#N/A,N/A,#N/A N/A,n/a,NA,<NA>,#NA,NULL,null,NaN,nan'
 DEFAULT_ONLY_PRINTABLE_CHARACTERS = 'no'
 DEFAULT_MATERIALIZE_DEFAULT_GRAPH = 'no'
+
+
+##############################################################################
+########################   MAPPING PARTITION OPTIONS   #######################
+##############################################################################
+PARTIAL_AGGREGATION_PARTITION = 'PARTIAL-AGGREGATIONS'
+NO_PARTITIONING = 'NO-PARTITIONING'
 
 
 ##############################################################################

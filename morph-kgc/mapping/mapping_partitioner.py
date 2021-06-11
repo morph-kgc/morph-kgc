@@ -52,8 +52,11 @@ class MappingPartitioner:
         mapping rule.
         """
 
-        self._get_term_invariants()
-        self._generate_partial_aggregations_partition()
+        if self.config.get_mapping_partition() == constants.PARTIAL_AGGREGATION_PARTITION:
+            self._get_term_invariants()
+            self._generate_partial_aggregations_partition()
+        elif self.config.get_mapping_partition() == constants.NO_PARTITIONING:
+            self.mappings_df['mapping_partition'] = ''
 
         return self.mappings_df
 
@@ -165,7 +168,6 @@ class MappingPartitioner:
 
         # aggregate the independent mapping partition generated for subjects, predicates and graphs to generate the
         # final mapping partition
-
         self.mappings_df['mapping_partition'] = self.mappings_df['subject_partition'].astype(str) + '-' + \
             self.mappings_df['predicate_partition'].astype(str) + '-' + \
             self.mappings_df['object_partition'].astype(str) + '-' + self.mappings_df['graph_partition'].astype(str)
