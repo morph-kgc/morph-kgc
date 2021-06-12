@@ -180,7 +180,7 @@ class MappingPartitioner:
         elif self.config.get_mapping_partition() == constants.MAXIMAL_PARTITIONING:
             self._get_term_invariants()
             self._generate_maximal_partition()
-        elif self.config.get_mapping_partition() == constants.NO_PARTITIONING:
+        elif self.config.get_mapping_partition() in constants.NO_PARTITIONING:
             self.mappings_df['mapping_partition'] = ''
 
         return self.mappings_df
