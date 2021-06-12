@@ -43,8 +43,9 @@ DEFAULT_MATERIALIZE_DEFAULT_GRAPH = 'no'
 ##############################################################################
 ########################   MAPPING PARTITION OPTIONS   #######################
 ##############################################################################
-PARTIAL_AGGREGATION_PARTITION = 'PARTIAL-AGGREGATIONS'
-NO_PARTITIONING = 'NO-PARTITIONING'
+PARTIAL_AGGREGATIONS_PARTITIONING = 'PARTIAL-AGGREGATIONS'
+MAXIMAL_PARTITIONING = 'MAXIMAL'
+NO_PARTITIONING = ['NO', 'FALSE', 'OFF', '0']
 
 
 ##############################################################################

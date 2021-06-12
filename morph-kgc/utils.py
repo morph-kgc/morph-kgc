@@ -11,7 +11,6 @@ import os
 import shutil
 import logging
 import rdflib
-import constants
 import time
 
 

@@ -69,7 +69,7 @@ CONFIGURATION_OPTIONS_EMPTY_VALID = {
             NA_VALUES: constants.DEFAULT_NA_VALUES,
             READ_PARSED_MAPPINGS_PATH: constants.DEFAULT_READ_PARSED_MAPPINGS_PATH,
             WRITE_PARSED_MAPPINGS_PATH: constants.DEFAULT_WRITE_PARSED_MAPPINGS_PATH,
-            MAPPING_PARTITION: constants.PARTIAL_AGGREGATION_PARTITION,
+            MAPPING_PARTITION: constants.PARTIAL_AGGREGATIONS_PARTITIONING,
             LOGGING_FILE: constants.DEFAULT_LOGS_FILE,
         }
 
@@ -157,6 +157,16 @@ class Config(ConfigParser):
         if logging_level not in constants.VALID_LOGGING_LEVEL:
             raise ValueError(LOGGING_LEVEL + ' value `' + self.get_logging_level() +
                              '` is not valid. It must be in: ' + str(constants.VALID_LOGGING_LEVEL) + '.')
+
+        # MAPPING PARTITIONING
+        mapping_partitioning = str(self.get_mapping_partition()).upper()
+        self.set_mapping_partition(mapping_partitioning)
+        if mapping_partitioning not in constants.NO_PARTITIONING + [constants.PARTIAL_AGGREGATIONS_PARTITIONING] + [
+                constants.MAXIMAL_PARTITIONING]:
+            raise ValueError(
+                MAPPING_PARTITION + ' value `' + self.get_mapping_partition() + '` is not valid. It must be in: ' + str(
+                    [constants.MAXIMAL_PARTITIONING] + [
+                        constants.PARTIAL_AGGREGATIONS_PARTITIONING] + constants.NO_PARTITIONING) + '.')
 
         # PROCESS START METHOD
         process_start_method = str(self.get_process_start_method()).upper()
@@ -296,8 +306,8 @@ class Config(ConfigParser):
 
         return file_path
 
-    def set_mapping_partition(self, mapping_partition_criteria):
-        self.set(self.configuration_section, MAPPING_PARTITION, mapping_partition_criteria)
+    def set_mapping_partition(self, mapping_partitioning):
+        self.set(self.configuration_section, MAPPING_PARTITION, mapping_partitioning.upper())
 
     def set_output_dir(self, output_dir):
         self.set(self.configuration_section, OUTPUT_DIR, output_dir)
