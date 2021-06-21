@@ -87,7 +87,7 @@ def get_repeated_elements_in_list(input_list):
     elem_count = {}
     for elem in input_list:
         if elem in elem_count:
-            elem_count[elem] = elem_count[elem] + 1
+            elem_count[elem] += 1
         else:
             elem_count[elem] = 1
 

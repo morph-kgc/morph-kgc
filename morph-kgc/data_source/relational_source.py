@@ -48,7 +48,7 @@ def _replace_query_enclosing_characters(sql_query, db_dialect):
         for char in sql_query:
             if char == '`':
                 dialect_sql_query = dialect_sql_query + square_brackets[num_enclosing_char % 2]
-                num_enclosing_char = num_enclosing_char + 1
+                num_enclosing_char += 1
             else:
                 dialect_sql_query = dialect_sql_query + char
     else:

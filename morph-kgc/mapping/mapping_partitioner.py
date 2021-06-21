@@ -62,7 +62,7 @@ def _generate_maximal_partition_for_a_position_ordering(mappings_df, position_or
                     mappings_df.at[i, 'mapping_partition'] = mappings_df.at[i, 'mapping_partition'] + '-' + str(
                         current_group)
                 else:
-                    current_group = current_group + 1
+                    current_group += 1
                     current_invariant = mapping_rule['subject_invariant']
                     mappings_df.at[i, 'mapping_partition'] = mappings_df.at[i, 'mapping_partition'] + '-' + str(
                         current_group)
@@ -89,7 +89,7 @@ def _generate_maximal_partition_for_a_position_ordering(mappings_df, position_or
                     mappings_df.at[i, 'mapping_partition'] = mappings_df.at[i, 'mapping_partition'] + '-' + str(
                         current_group)
                 else:
-                    current_group = current_group + 1
+                    current_group += 1
                     current_invariant = mapping_rule['predicate_invariant']
                     mappings_df.at[i, 'mapping_partition'] = mappings_df.at[i, 'mapping_partition'] + '-' + str(
                         current_group)
@@ -110,7 +110,7 @@ def _generate_maximal_partition_for_a_position_ordering(mappings_df, position_or
                     mappings_df.at[i, 'mapping_partition'] = mappings_df.at[i, 'mapping_partition'] + '-0'
                 elif mapping_rule['object_termtype'] == constants.R2RML_LITERAL:
                     if mapping_rule['literal_type'] != current_literal_type:
-                        current_group = current_group + 1
+                        current_group += 1
                         current_literal_type = mapping_rule['literal_type']
                     mappings_df.at[i, 'mapping_partition'] = mappings_df.at[i, 'mapping_partition'] + '-' + str(
                         current_group)
@@ -118,7 +118,7 @@ def _generate_maximal_partition_for_a_position_ordering(mappings_df, position_or
                     mappings_df.at[i, 'mapping_partition'] = mappings_df.at[i, 'mapping_partition'] + '-' + str(
                         current_group)
                 else:
-                    current_group = current_group + 1
+                    current_group += 1
                     current_invariant = mapping_rule['object_invariant']
                     mappings_df.at[i, 'mapping_partition'] = mappings_df.at[i, 'mapping_partition'] + '-' + str(
                         current_group)
@@ -144,7 +144,7 @@ def _generate_maximal_partition_for_a_position_ordering(mappings_df, position_or
                     mappings_df.at[i, 'mapping_partition'] = mappings_df.at[i, 'mapping_partition'] + '-' + str(
                         current_group)
                 else:
-                    current_group = current_group + 1
+                    current_group += 1
                     current_invariant = mapping_rule['graph_invariant']
                     mappings_df.at[i, 'mapping_partition'] = mappings_df.at[i, 'mapping_partition'] + '-' + str(
                         current_group)
@@ -270,7 +270,7 @@ class MappingPartitioner:
             elif mapping_rule['subject_invariant'].startswith(current_invariant):
                 self.mappings_df.at[i, 'subject_partition'] = str(current_group)
             else:
-                current_group = current_group + 1
+                current_group += 1
                 current_invariant = mapping_rule['subject_invariant']
                 self.mappings_df.at[i, 'subject_partition'] = str(current_group)
 
@@ -292,7 +292,7 @@ class MappingPartitioner:
             elif not enforce_invariant_non_subset and mapping_rule['predicate_invariant'].startswith(current_invariant):
                 self.mappings_df.at[i, 'predicate_partition'] = str(current_group)
             else:
-                current_group = current_group + 1
+                current_group += 1
                 current_invariant = mapping_rule['predicate_invariant']
                 self.mappings_df.at[i, 'predicate_partition'] = str(current_group)
 
@@ -310,13 +310,13 @@ class MappingPartitioner:
                 self.mappings_df.at[i, 'object_partition'] = '0'
             elif mapping_rule['object_termtype'] == constants.R2RML_LITERAL:
                 if mapping_rule['literal_type'] != current_literal_type:
-                    current_group = current_group + 1
+                    current_group += 1
                     current_literal_type = mapping_rule['literal_type']
                 self.mappings_df.at[i, 'object_partition'] = str(current_group)
             elif mapping_rule['object_invariant'].startswith(current_invariant):
                 self.mappings_df.at[i, 'object_partition'] = str(current_group)
             else:
-                current_group = current_group + 1
+                current_group += 1
                 current_invariant = mapping_rule['object_invariant']
                 self.mappings_df.at[i, 'object_partition'] = str(current_group)
 
@@ -338,7 +338,7 @@ class MappingPartitioner:
             elif not enforce_invariant_non_subset and mapping_rule['graph_invariant'].startswith(current_invariant):
                 self.mappings_df.at[i, 'graph_partition'] = str(current_group)
             else:
-                current_group = current_group + 1
+                current_group += 1
                 current_invariant = mapping_rule['graph_invariant']
                 self.mappings_df.at[i, 'graph_partition'] = str(current_group)
 
