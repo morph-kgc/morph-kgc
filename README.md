@@ -21,17 +21,13 @@ Morph-KGC is an engine that constructs [RDF](https://www.w3.org/TR/rdf11-concept
 ## Main Features
 
 - Supports [R2RML](https://www.w3.org/TR/r2rml/) and [RML](https://rml.io/specs/rml/) mapping languages.
+- [PyPi]() package and [Docker container image]() provided.
 - Input data formats:
   - Relational databases: [MySQL](https://www.mysql.com/), [PostgreSQL](https://www.postgresql.org/), [Oracle](https://www.oracle.com/database/), [Microsoft SQL Server](https://www.microsoft.com/sql-server), [MariaDB](https://mariadb.org/), [SQLite](https://www.sqlite.org/index.html).
   - Tabular files: [CSV](https://en.wikipedia.org/wiki/Comma-separated_values), [TSV](https://en.wikipedia.org/wiki/Tab-separated_values), [DSV](https://en.wikipedia.org/wiki/Delimiter-separated_values), [Excel](https://en.wikipedia.org/wiki/Microsoft_Excel), [Parquet](https://parquet.apache.org/documentation/latest/).
 - Output RDF serializations: [N-Triples](https://www.w3.org/TR/n-triples/), [N-Quads](https://www.w3.org/TR/n-quads/).
-- [PyPi]() package and [Docker container image]() provided.
-- Optimized to materialize large Knowledge Graphs.
+- Optimized to materialize large knowledge graphs.
 - Available under the [Apache License 2.0](https://github.com/oeg-upm/Morph-KGC/blob/main/LICENSE).
-
-## Getting Started
-
-Morph-KGC is runned using a configuration file. Examples of `config` files can be found [here](https://github.com/oeg-upm/Morph-KGC/tree/main/examples).
 
 ## Wiki
 
