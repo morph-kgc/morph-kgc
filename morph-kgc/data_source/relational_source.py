@@ -39,8 +39,8 @@ def _replace_query_enclosing_characters(sql_query, db_dialect):
     db_dialect = db_dialect.upper()
     dialect_sql_query = ''
 
-    if db_dialect == 'MYSQL' or db_dialect == 'MARIADB':
-        dialect_sql_query = sql_query   # the query already uses backtics as enclosed characters
+    if db_dialect in ['MYSQL', 'MARIADB']:
+        dialect_sql_query = sql_query   # the query already uses backticks as enclosed characters
     elif db_dialect == 'MSSQL':
         # replace backticks with square brackets
         square_brackets = ['[', ']']
@@ -58,7 +58,6 @@ def _replace_query_enclosing_characters(sql_query, db_dialect):
     return dialect_sql_query
 
 
-
 def relational_db_connection(config, source_name):
     db_connection = create_engine(config.get_database_url(source_name), poolclass=NullPool)
     db_dialect = db_connection.dialect.name.upper()
@@ -70,7 +69,7 @@ def get_column_datatype(config, source_name, table_name, column_name):
     db_connection, db_dialect = relational_db_connection(config, source_name)
 
     sql_query = "SELECT `data_type` FROM `information_schema`.`columns` WHERE `table_name`='" + table_name + \
-            "' AND `column_name`='" + column_name + "'"
+                "' AND `column_name`='" + column_name + "'"
 
     sql_query = _replace_query_enclosing_characters(sql_query, db_dialect)
 
@@ -172,4 +171,3 @@ def get_sql_data(config, mapping_rule, references, parent_triples_map_rule=None,
                                 coerce_float=config.coerce_float())
 
     return result_chunks, db_connection
-
