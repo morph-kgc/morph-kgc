@@ -44,10 +44,9 @@ COERCE_FLOAT = 'coerce_float'
 
 NUMBER_OF_PROCESSES = 'number_of_processes'
 PROCESS_START_METHOD = 'process_start_method'
-ASYNC_MULTIPROCESSING = 'async_multiprocessing'
 
 LOGGING_LEVEL = 'logging_level'
-LOGGING_FILE = 'logs_file'
+LOGGING_FILE = 'logging_file'
 
 
 ##############################################################################
@@ -70,7 +69,7 @@ CONFIGURATION_OPTIONS_EMPTY_VALID = {
             READ_PARSED_MAPPINGS_PATH: constants.DEFAULT_READ_PARSED_MAPPINGS_PATH,
             WRITE_PARSED_MAPPINGS_PATH: constants.DEFAULT_WRITE_PARSED_MAPPINGS_PATH,
             MAPPING_PARTITION: constants.PARTIAL_AGGREGATIONS_PARTITIONING,
-            LOGGING_FILE: constants.DEFAULT_LOGS_FILE,
+            LOGGING_FILE: constants.DEFAULT_LOGGING_FILE,
         }
 
 
@@ -85,7 +84,6 @@ CONFIGURATION_OPTIONS_EMPTY_NON_VALID = {
             PUSH_DOWN_SQL_JOINS: constants.DEFAULT_PUSH_DOWN_SQL_JOINS,
             INFER_SQL_DATATYPES: constants.DEFAULT_INFER_SQL_DATATYPES,
             REMOVE_SELF_JOINS: constants.DEFAULT_REMOVE_SELF_JOINS,
-            ASYNC_MULTIPROCESSING: constants.DEFAULT_ASYNC_MULTIPROCESSING,
             PROCESS_START_METHOD: constants.DEFAULT_PROCESS_START_METHOD,
             CHUNKSIZE: constants.DEFAULT_CHUNKSIZE,
             COERCE_FLOAT: constants.DEFAULT_COERCE_FLOAT,
@@ -180,9 +178,12 @@ class Config(ConfigParser):
         for section in self.get_data_sources_sections():
             if self.has_source_type(section):
                 self.set(section, SOURCE_TYPE, self.get_source_type(section).upper())
-                if self.get_source_type(section) not in constants.VALID_DATA_SOURCE_TYPES:
+                if self.get_source_type(section) not in constants.DATA_SOURCE_TYPES:
                     raise ValueError(SOURCE_TYPE + ' value `' + self.get_source_type(section) + ' is not valid. '
-                                     'It must be in: ' + str(constants.VALID_DATA_SOURCE_TYPES) + '.')
+                                     'It must be in: ' + str(constants.DATA_SOURCE_TYPES) + '.')
+            else:
+                if self.has_database_url(section):
+                    self.set(section, SOURCE_TYPE, constants.RDB_SOURCE_TYPE)
 
     def log_config_info(self):
         logging.debug('CONFIGURATION: ' + str(dict(self.items(self.configuration_section))))
@@ -202,9 +203,6 @@ class Config(ConfigParser):
 
     def is_multiprocessing_enabled(self):
         return self.getint(self.configuration_section, NUMBER_OF_PROCESSES) > 1
-
-    def is_async_multiprocessing_enabled(self):
-        return self.getboolean(self.configuration_section, ASYNC_MULTIPROCESSING)
 
     def is_process_start_method_default(self):
         return self.get(self.configuration_section, PROCESS_START_METHOD) == 'DEFAULT'
@@ -361,3 +359,6 @@ class Config(ConfigParser):
 
     def get_database_url(self, source_section):
         return self.get(source_section, DATABASE_URL)
+
+    def has_database_url(self, source_section):
+        return self.has_option(source_section, DATABASE_URL)

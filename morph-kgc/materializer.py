@@ -183,7 +183,7 @@ def _materalize_push_down_sql_join(mapping_rule, parent_triples_map_rule, refere
         references.add(join_condition['child_value'])
 
     triples_rule = set()
-    result_chunks, db_connection = relational_source.get_sql_data(config, mapping_rule, references,
+    result_chunks = relational_source.get_sql_data(config, mapping_rule, references,
                                                                   parent_triples_map_rule, parent_references)
     for query_results_chunk_df in result_chunks:
         query_results_chunk_df = utils.dataframe_columns_to_str(query_results_chunk_df)
@@ -209,8 +209,6 @@ def _merge_results_chunks(query_results_chunk_df, parent_query_results_chunk_df,
 def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
     triples = set()
 
-    db_connection = None
-    parent_db_connection = None
     result_chunks = None
     parent_result_chunks = None
 
@@ -222,7 +220,7 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
         parent_references = _get_references_in_mapping_rule(parent_triples_map_rule, only_subject_map=True)
 
         if config.push_down_sql_joins() and \
-                mapping_rule['source_type'] in constants.VALID_RELATIONAL_SOURCE_TYPES and \
+                mapping_rule['source_type'] == constants.RDB_SOURCE_TYPE and \
                 mapping_rule['source_name'] == parent_triples_map_rule['source_name']:
             triples.update(_materalize_push_down_sql_join(mapping_rule, parent_triples_map_rule, references,
                                                           parent_references, config))
@@ -232,9 +230,9 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
             references, parent_references = utils.add_references_in_join_condition(mapping_rule, references,
                                                                                    parent_references)
 
-            if mapping_rule['source_type'] in constants.VALID_RELATIONAL_SOURCE_TYPES:
-                result_chunks, db_connection = relational_source.get_sql_data(config, mapping_rule, references)
-            elif mapping_rule['source_type'] in constants.VALID_TABULAR_SOURCE_TYPES:
+            if mapping_rule['source_type'] == constants.RDB_SOURCE_TYPE:
+                result_chunks = relational_source.get_sql_data(config, mapping_rule, references)
+            elif mapping_rule['source_type'] in constants.TABULAR_SOURCE_TYPES:
                 result_chunks = tabular_source.get_table_data(config, mapping_rule, references)
 
             for query_results_chunk_df in result_chunks:
@@ -243,9 +241,9 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
                 query_results_chunk_df.dropna(axis=0, how='any', inplace=True)
                 query_results_chunk_df = query_results_chunk_df.add_prefix('child_')
 
-                if parent_triples_map_rule['source_type'] in constants.VALID_RELATIONAL_SOURCE_TYPES:
-                    parent_result_chunks, parent_db_connection = relational_source.get_sql_data(config, parent_triples_map_rule, parent_references)
-                elif parent_triples_map_rule['source_type'] in constants.VALID_TABULAR_SOURCE_TYPES:
+                if parent_triples_map_rule['source_type'] == constants.RDB_SOURCE_TYPE:
+                    parent_result_chunks = relational_source.get_sql_data(config, parent_triples_map_rule, parent_references)
+                elif parent_triples_map_rule['source_type'] in constants.TABULAR_SOURCE_TYPES:
                     parent_result_chunks = tabular_source.get_table_data(config, parent_triples_map_rule, parent_references)
 
                 for parent_query_results_chunk_df in parent_result_chunks:
@@ -261,10 +259,9 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
                                                              parent_triples_map_rule))
 
     else:
-
-        if mapping_rule['source_type'] in constants.VALID_RELATIONAL_SOURCE_TYPES:
-            result_chunks, db_connection = relational_source.get_sql_data(config, mapping_rule, references)
-        elif mapping_rule['source_type'] in constants.VALID_TABULAR_SOURCE_TYPES:
+        if mapping_rule['source_type'] in constants.RDB_SOURCE_TYPE:
+            result_chunks = relational_source.get_sql_data(config, mapping_rule, references)
+        elif mapping_rule['source_type'] in constants.TABULAR_SOURCE_TYPES:
             result_chunks = tabular_source.get_table_data(config, mapping_rule, references)
 
         for query_results_chunk_df in result_chunks:
@@ -322,19 +319,8 @@ class Materializer:
                       " cores. Using `" + str(mp.get_start_method()).upper() + "` as process start method.")
 
         pool = mp.Pool(self.config.get_number_of_processes())
-        if self.config.is_async_multiprocessing_enabled():
-            triples_res = pool.starmap_async(_materialize_mapping_partition,
-                                             zip(self.mapping_partitions, repeat(self.subject_maps_df),
-                                                 repeat(self.config)))
-
-            num_triples = sum(triples_res.get())
-            if not triples_res.successful():
-                logging.critical("Aborting, `async` multiprocessing resulted in error.")
-                sys.exit()
-        else:
-            num_triples = sum(pool.starmap(_materialize_mapping_partition,
-                                           zip(self.mapping_partitions, repeat(self.subject_maps_df),
-                                               repeat(self.config))))
+        num_triples = sum(pool.starmap(_materialize_mapping_partition,
+                                       zip(self.mapping_partitions, repeat(self.subject_maps_df), repeat(self.config))))
         pool.close()
         pool.join()
 

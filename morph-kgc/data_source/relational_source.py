@@ -170,4 +170,4 @@ def get_sql_data(config, mapping_rule, references, parent_triples_map_rule=None,
                                 chunksize=config.get_chunksize(),
                                 coerce_float=config.coerce_float())
 
-    return result_chunks, db_connection
+    return result_chunks

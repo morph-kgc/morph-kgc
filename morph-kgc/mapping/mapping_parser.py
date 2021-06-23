@@ -464,7 +464,7 @@ class MappingParser:
 
         for i, mapping_rule in self.mappings_df.iterrows():
             # datatype inferring only applies to relational data sources
-            if (mapping_rule['source_type'] in constants.VALID_RELATIONAL_SOURCE_TYPES) and (
+            if (mapping_rule['source_type'] == constants.RDB_SOURCE_TYPE) and (
                     # datatype inferring only applies to literals
                     mapping_rule['object_termtype'] == constants.R2RML_LITERAL) and (
                     # if the literal has a language tag or an overridden datatype, datatype inference does not apply

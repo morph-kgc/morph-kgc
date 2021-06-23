@@ -23,14 +23,13 @@ DEFAULT_REMOVE_DUPLICATES = 'yes'
 DEFAULT_CLEAN_OUTPUT_DIR = 'yes'
 DEFAULT_READ_PARSED_MAPPINGS_PATH = ''
 DEFAULT_WRITE_PARSED_MAPPINGS_PATH = ''
-DEFAULT_LOGS_FILE = ''
+DEFAULT_LOGGING_FILE = ''
 DEFAULT_LOGGING_LEVEL = 'INFO'
 DEFAULT_PUSH_DOWN_SQL_DISTINCTS = 'no'
 DEFAULT_PUSH_DOWN_SQL_JOINS = 'no'
 DEFAULT_INFER_SQL_DATATYPES = 'yes'
 DEFAULT_NUMBER_OF_PROCESSES = 2 * mp.cpu_count()
 DEFAULT_PROCESS_START_METHOD = 'default'
-DEFAULT_ASYNC_MULTIPROCESSING = 'no'
 DEFAULT_CHUNKSIZE = 100000
 DEFAULT_REMOVE_SELF_JOINS = 'yes'
 DEFAULT_COERCE_FLOAT = 'no'
@@ -43,18 +42,35 @@ DEFAULT_MATERIALIZE_DEFAULT_GRAPH = 'no'
 ##############################################################################
 ########################   MAPPING PARTITION OPTIONS   #######################
 ##############################################################################
+
 PARTIAL_AGGREGATIONS_PARTITIONING = 'PARTIAL-AGGREGATIONS'
 MAXIMAL_PARTITIONING = 'MAXIMAL'
 NO_PARTITIONING = ['NO', 'FALSE', 'OFF', '0']
 
 
 ##############################################################################
+#########################   DATA SOURCE TYPES   ##############################
+##############################################################################
+
+RDB_SOURCE_TYPE = 'RDB'
+CSV_SOURCE_TYPE = 'CSV'
+TSV_SOURCE_TYPE = 'TSV'
+PARQUET_SOURCE_TYPE = 'PARQUET'
+FEATHER_SOURCE_TYPE = 'FEATHER'
+ORC_SOURCE_TYPE = 'ORC'
+STATA_SOURCE_TYPE = 'STATA'
+SAS_SOURCE_TYPE = 'SAS'
+SPSS_SOURCE_TYPE = 'SPSS'
+
+TABULAR_SOURCE_TYPES = [CSV_SOURCE_TYPE, TSV_SOURCE_TYPE, PARQUET_SOURCE_TYPE, FEATHER_SOURCE_TYPE, ORC_SOURCE_TYPE,
+                        STATA_SOURCE_TYPE, SAS_SOURCE_TYPE, SPSS_SOURCE_TYPE]
+DATA_SOURCE_TYPES = [RDB_SOURCE_TYPE] + TABULAR_SOURCE_TYPES
+
+
+##############################################################################
 #########################   VALID ARGUMENTS VALUES   #########################
 ##############################################################################
 
-VALID_RELATIONAL_SOURCE_TYPES = ['RDB']
-VALID_TABULAR_SOURCE_TYPES = ['CSV', 'TSV']
-VALID_DATA_SOURCE_TYPES = VALID_RELATIONAL_SOURCE_TYPES + VALID_TABULAR_SOURCE_TYPES
 VALID_OUTPUT_FORMATS = ['N-TRIPLES', 'N-QUADS']
 VALID_PROCESS_START_METHOD = ['DEFAULT', 'SPAWN', 'FORK', 'FORKSERVER']
 VALID_LOGGING_LEVEL = ['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']

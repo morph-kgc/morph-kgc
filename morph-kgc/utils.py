@@ -14,7 +14,7 @@ import rdflib
 import time
 
 
-def configure_logger(logging_level, logs_file):
+def configure_logger(logging_level, logging_file):
     """
     Configures the logger. If a logging file is provided, the logs messages are redirected to it, if not they are
     redirected to stdout. Messages are logged according to the provided logging level.
@@ -29,8 +29,8 @@ def configure_logger(logging_level, logs_file):
         'NOTSET': logging.NOTSET,
     }
 
-    if logs_file:
-        logging.basicConfig(filename=logs_file,
+    if logging_file:
+        logging.basicConfig(filename=logging_file,
                             format='%(levelname)s | %(asctime)s | %(message)s',
                             filemode='w',
                             level=logging_level_string_to_numeric[logging_level.upper()])
