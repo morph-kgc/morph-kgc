@@ -8,7 +8,6 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 import logging
 import constants
-import sys
 import time
 import pandas as pd
 import multiprocessing as mp

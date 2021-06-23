@@ -5,3 +5,4 @@ requests==2.25.0
 urllib3==1.26.2
 sql_metadata==1.10.0
 SQLAlchemy==1.4.17
+pyarrow==4.0.1
