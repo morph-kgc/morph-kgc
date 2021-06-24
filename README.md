@@ -18,29 +18,22 @@ Morph-KGC is an engine that constructs [RDF](https://www.w3.org/TR/rdf11-concept
 
 ## Wiki
 
-Check the [wiki](https://github.com/oeg-upm/Morph-KGC/wiki) with all the information. 
+Check the **[wiki](https://github.com/oeg-upm/Morph-KGC/wiki)** with all the information.
 
 **[Getting Started](https://github.com/oeg-upm/Morph-KGC/wiki/Getting-Started)**
 - [PyPi](https://github.com/oeg-upm/Morph-KGC/wiki/Installing-via-PyPi)
 - [Docker](https://github.com/oeg-upm/Morph-KGC/wiki/Using-As-A-Docker-Container)
 - [From Source](https://github.com/oeg-upm/Morph-KGC/wiki/Installing-From-Source)
-
-**[Features](https://github.com/oeg-upm/Morph-KGC/wiki/Features)**
-
-**[Tutorial](https://github.com/oeg-upm/Morph-KGC/wiki/Tutorial)**
-
 **[Configuration](https://github.com/oeg-upm/Morph-KGC/wiki/Configuration)**
 - **[Engine](https://github.com/oeg-upm/Morph-KGC/wiki/Engine-Configuration)**
 - **[Data Sources](https://github.com/oeg-upm/Morph-KGC/wiki/Data-Source-Configuration)**
   - [Relational Databases](https://github.com/oeg-upm/Morph-KGC/wiki/Relational-Databases)
   - [Tabular Files](https://github.com/oeg-upm/Morph-KGC/wiki/Tabular-Files)
-
+**[Tutorial](https://github.com/oeg-upm/Morph-KGC/wiki/Tutorial)**
+**[Features](https://github.com/oeg-upm/Morph-KGC/wiki/Features)**
 **[[R2]RML conformance](https://github.com/oeg-upm/Morph-KGC/wiki/[R2]RML-conformance)**
-
 **[License](https://github.com/oeg-upm/Morph-KGC/wiki/License)**
-
 **[Projects using Morph-KGC](https://github.com/oeg-upm/Morph-KGC/wiki/Projects-using-Morph-KGC)**
-
 **[FAQ]()**
 
 ## Authors
