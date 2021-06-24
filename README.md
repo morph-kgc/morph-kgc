@@ -4,13 +4,6 @@
 
 Morph-KGC is an engine that constructs [RDF](https://www.w3.org/TR/rdf11-concepts/) knowledge graphs from heterogeneous data sources with [R2RML](https://www.w3.org/TR/r2rml/) and [RML](https://rml.io/specs/rml/) mapping languages. Morph-KGC is built on top of [pandas](https://pandas.pydata.org/) and it leverages *mapping partitions* to significantly reduce execution times and memory consumption for large data sources.
 
-[//]: #**Citing Morph-KGC**: If you used Morph-KGC in your work, please cite the [paper]():
-
-[//]: #```bib
-[//]: #@inproceedings{
-[//]: #}
-[//]: #```
-
 ## Main Features
 
 - Supports [R2RML](https://www.w3.org/TR/r2rml/) and [RML](https://rml.io/specs/rml/) mapping languages.
@@ -25,7 +18,7 @@ Morph-KGC is an engine that constructs [RDF](https://www.w3.org/TR/rdf11-concept
 
 ## Wiki
 
-**[Getting Started](https://github.com/oeg-upm/Morph-KGC/wiki/Getting-Started)**
+###**[Getting Started](https://github.com/oeg-upm/Morph-KGC/wiki/Getting-Started)**
 - **[PyPi](https://github.com/oeg-upm/Morph-KGC/wiki/Installing-via-PyPi)**
 - **[Docker](https://github.com/oeg-upm/Morph-KGC/wiki/Using-As-A-Docker-Container)**
 - **[From Source](https://github.com/oeg-upm/Morph-KGC/wiki/Installing-From-Source)**
