@@ -18,7 +18,7 @@ Morph-KGC is an engine that constructs [RDF](https://www.w3.org/TR/rdf11-concept
 
 ## Wiki
 
-###**[Getting Started](https://github.com/oeg-upm/Morph-KGC/wiki/Getting-Started)**
+### **[Getting Started](https://github.com/oeg-upm/Morph-KGC/wiki/Getting-Started)**
 - **[PyPi](https://github.com/oeg-upm/Morph-KGC/wiki/Installing-via-PyPi)**
 - **[Docker](https://github.com/oeg-upm/Morph-KGC/wiki/Using-As-A-Docker-Container)**
 - **[From Source](https://github.com/oeg-upm/Morph-KGC/wiki/Installing-From-Source)**
