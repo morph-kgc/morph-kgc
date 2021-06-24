@@ -4,19 +4,12 @@
 
 Morph-KGC is an engine that constructs [RDF](https://www.w3.org/TR/rdf11-concepts/) knowledge graphs from heterogeneous data sources with [R2RML](https://www.w3.org/TR/r2rml/) and [RML](https://rml.io/specs/rml/) mapping languages. Morph-KGC is built on top of [pandas](https://pandas.pydata.org/) and it leverages *mapping partitions* to significantly reduce execution times and memory consumption for large data sources.
 
-**Citing Morph-KGC**: If you used Morph-KGC in your work, please cite the [ISWC 2021 paper]():
+[//]: #**Citing Morph-KGC**: If you used Morph-KGC in your work, please cite the [paper]():
 
-```bib
-@inproceedings{arenas2021Morph,
-  title = {{Morph-KGC: Scalable Knowledge Graph Construction with Mapping Partitions}},
-  author = {Arenas-Guerrero, Julián and Chaves-Fraga, David and Corcho, Oscar},
-  booktitle = {International Semantic Web Conference},
-  pages = {94--102},
-  year = {2017},
-  organization = {Springer, Cham},
-  doi = {},
-}
-```
+[//]: #```bib
+[//]: #@inproceedings{
+[//]: #}
+[//]: #```
 
 ## Main Features
 
@@ -31,6 +24,29 @@ Morph-KGC is an engine that constructs [RDF](https://www.w3.org/TR/rdf11-concept
 - Available under the [Apache License 2.0](https://github.com/oeg-upm/Morph-KGC/blob/main/LICENSE).
 
 ## Wiki
+
+**[Getting Started](https://github.com/oeg-upm/Morph-KGC/wiki/Getting-Started)**
+- **[PyPi](https://github.com/oeg-upm/Morph-KGC/wiki/Installing-via-PyPi)**
+- **[Docker](https://github.com/oeg-upm/Morph-KGC/wiki/Using-As-A-Docker-Container)**
+- **[From Source](https://github.com/oeg-upm/Morph-KGC/wiki/Installing-From-Source)**
+
+**[Features](https://github.com/oeg-upm/Morph-KGC/wiki/Features)**
+
+**[Tutorial](https://github.com/oeg-upm/Morph-KGC/wiki/Tutorial)**
+
+**[Configuration](https://github.com/oeg-upm/Morph-KGC/wiki/Configuration)**
+- **[Engine](https://github.com/oeg-upm/Morph-KGC/wiki/Engine-Configuration)**
+- **[Data Sources](https://github.com/oeg-upm/Morph-KGC/wiki/Data-Source-Configuration)**
+  - **[Relational Databases](https://github.com/oeg-upm/Morph-KGC/wiki/Relational-Databases)**
+  - **[Tabular Files](https://github.com/oeg-upm/Morph-KGC/wiki/Tabular-Files)**
+
+**[[R2]RML conformance](https://github.com/oeg-upm/Morph-KGC/wiki/[R2]RML-conformance)**
+
+**[License](https://github.com/oeg-upm/Morph-KGC/wiki/License)**
+
+**[Projects using Morph-KGC](https://github.com/oeg-upm/Morph-KGC/wiki/Projects-using-Morph-KGC)**
+
+**[FAQ]()**
 
 ## Authors
 
