@@ -18,28 +18,30 @@ Morph-KGC is an engine that constructs [RDF](https://www.w3.org/TR/rdf11-concept
 
 ## Wiki
 
-- **[Getting Started](https://github.com/oeg-upm/Morph-KGC/wiki/Getting-Started)**
-  - [PyPi](https://github.com/oeg-upm/Morph-KGC/wiki/Installing-via-PyPi)
-  - [Docker](https://github.com/oeg-upm/Morph-KGC/wiki/Using-As-A-Docker-Container)
-  - [From Source](https://github.com/oeg-upm/Morph-KGC/wiki/Installing-From-Source)
+Check the [wiki](https://github.com/oeg-upm/Morph-KGC/wiki) with all the information. 
 
-- **[Features](https://github.com/oeg-upm/Morph-KGC/wiki/Features)**
+**[Getting Started](https://github.com/oeg-upm/Morph-KGC/wiki/Getting-Started)**
+- [PyPi](https://github.com/oeg-upm/Morph-KGC/wiki/Installing-via-PyPi)
+- [Docker](https://github.com/oeg-upm/Morph-KGC/wiki/Using-As-A-Docker-Container)
+- [From Source](https://github.com/oeg-upm/Morph-KGC/wiki/Installing-From-Source)
 
-- **[Tutorial](https://github.com/oeg-upm/Morph-KGC/wiki/Tutorial)**
+**[Features](https://github.com/oeg-upm/Morph-KGC/wiki/Features)**
 
-- **[Configuration](https://github.com/oeg-upm/Morph-KGC/wiki/Configuration)**
-  - [Engine](https://github.com/oeg-upm/Morph-KGC/wiki/Engine-Configuration)
-  - [Data Sources](https://github.com/oeg-upm/Morph-KGC/wiki/Data-Source-Configuration)
-    - [Relational Databases](https://github.com/oeg-upm/Morph-KGC/wiki/Relational-Databases)
-    - [Tabular Files](https://github.com/oeg-upm/Morph-KGC/wiki/Tabular-Files)
+**[Tutorial](https://github.com/oeg-upm/Morph-KGC/wiki/Tutorial)**
 
-- **[[R2]RML conformance](https://github.com/oeg-upm/Morph-KGC/wiki/[R2]RML-conformance)**
+**[Configuration](https://github.com/oeg-upm/Morph-KGC/wiki/Configuration)**
+- **[Engine](https://github.com/oeg-upm/Morph-KGC/wiki/Engine-Configuration)**
+- **[Data Sources](https://github.com/oeg-upm/Morph-KGC/wiki/Data-Source-Configuration)**
+  - [Relational Databases](https://github.com/oeg-upm/Morph-KGC/wiki/Relational-Databases)
+  - [Tabular Files](https://github.com/oeg-upm/Morph-KGC/wiki/Tabular-Files)
 
-- **[License](https://github.com/oeg-upm/Morph-KGC/wiki/License)**
+**[[R2]RML conformance](https://github.com/oeg-upm/Morph-KGC/wiki/[R2]RML-conformance)**
 
-- **[Projects using Morph-KGC](https://github.com/oeg-upm/Morph-KGC/wiki/Projects-using-Morph-KGC)**
+**[License](https://github.com/oeg-upm/Morph-KGC/wiki/License)**
 
-- **[FAQ]()**
+**[Projects using Morph-KGC](https://github.com/oeg-upm/Morph-KGC/wiki/Projects-using-Morph-KGC)**
+
+**[FAQ]()**
 
 ## Authors
 
