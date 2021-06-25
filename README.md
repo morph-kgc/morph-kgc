@@ -4,6 +4,18 @@
 
 Morph-KGC is an engine that constructs [RDF](https://www.w3.org/TR/rdf11-concepts/) knowledge graphs from heterogeneous data sources with [R2RML](https://www.w3.org/TR/r2rml/) and [RML](https://rml.io/specs/rml/) mapping languages. Morph-KGC is built on top of [pandas](https://pandas.pydata.org/) and it leverages *mapping partitions* to significantly reduce execution times and memory consumption for large data sources.
 
+**Citing Morph-KGC**: If you used Morph-KGC in your work, please cite the [paper (under review)]():
+
+```bib
+@article{arenas2021Morph,
+  title = {{Morph-KGC: Scalable Knowledge Graph Construction with Mapping Partitions}},
+  author = {Arenas-Guerrero, Julián and Chaves-Fraga, David and Corcho, Oscar},
+  journal = {Semantic Web},
+  year = {2021},
+  url = {},
+}
+```
+
 ## Main Features
 
 - Supports [R2RML](https://www.w3.org/TR/r2rml/) and [RML](https://rml.io/specs/rml/) mapping languages.
