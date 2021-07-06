@@ -8,12 +8,11 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 import constants
 import logging
+import utils
 import pandas as pd
 import multiprocessing as mp
 
 from itertools import permutations
-
-import utils
 
 
 def get_invariant_of_template(template):
@@ -181,13 +180,14 @@ class MappingPartitioner:
             self._get_term_invariants()
             self._generate_maximal_partition()
         elif self.config.get_mapping_partition() in constants.NO_PARTITIONING:
+            # assign empty partition
             self.mappings_df['mapping_partition'] = ''
 
         return self.mappings_df
 
     def _generate_maximal_partition(self):
         """
-        Generates a mapping partition based on the algorithm presented in XXXXXXXXX.
+        Generates a mapping partition with the maximum number of mapping groups.
         """
 
         self.mappings_df['literal_type'] = self.mappings_df['object_language'] + self.mappings_df['object_datatype']
@@ -204,21 +204,21 @@ class MappingPartitioner:
 
         if self.config.is_multiprocessing_enabled():
             pool = mp.Pool(self.config.get_number_of_processes())
-            partition_mappings_dfs = pool.starmap(_generate_maximal_partition_for_a_position_ordering,
+            mapping_partitions_dfs = pool.starmap(_generate_maximal_partition_for_a_position_ordering,
                                                   zip([self.mappings_df.copy()] * len(position_orderings),
                                                       position_orderings))
         else:
-            partition_mappings_dfs = []
+            mapping_partitions_dfs = []
             for position_ordering in position_orderings:
-                partition_mappings_dfs.append(
+                mapping_partitions_dfs.append(
                     _generate_maximal_partition_for_a_position_ordering(self.mappings_df.copy(), position_ordering))
 
-        max_num_partitions = -1
+        max_num_groups = -1
         maximal_partition = None
-        for partition_mappings_df in partition_mappings_dfs:
-            if len(set(partition_mappings_df['mapping_partition'])) > max_num_partitions:
-                max_num_partitions = len(set(partition_mappings_df['mapping_partition'])) > max_num_partitions
-                maximal_partition = partition_mappings_df
+        for mapping_partitions_df in mapping_partitions_dfs:
+            if len(set(mapping_partitions_df['mapping_partition'])) > max_num_groups:
+                max_num_groups = len(set(mapping_partitions_df['mapping_partition'])) > max_num_groups
+                maximal_partition = mapping_partitions_df
 
         maximal_partition['mapping_partition'] = maximal_partition['mapping_partition'].str[1:]
         # drop the auxiliary columns that were created just to generate the mapping partition
@@ -238,7 +238,8 @@ class MappingPartitioner:
 
     def _generate_partial_aggregations_partition(self):
         """
-        Generates a mapping partition based on the algorithm presented in XXXXXXXXX.
+        Generates a mapping partition by independently partitioning by Subject, Predicate, Object and Graph, and
+        aggregating this independent partitions.
         """
 
         # initialize empty mapping partition
