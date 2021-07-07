@@ -87,21 +87,69 @@ OUTPUT_FORMAT_FILE_EXTENSION = {
 
 
 ##############################################################################
-######################   [R2]RML & RDF SPECIFICATIONS   ######################
+###########################   R2RML SPECIFICATION   ##########################
 ##############################################################################
 
+# classes
+R2RML_BASE_TABLE_OR_VIEW_CLASS = 'http://www.w3.org/ns/r2rml#BaseTableOrView'
+R2RML_GRAPH_MAP_CLASS = 'http://www.w3.org/ns/r2rml#GraphMap'
+R2RML_JOIN_CLASS = 'http://www.w3.org/ns/r2rml#Join'
+R2RML_LOGICAL_TABLE_CLASS = 'http://www.w3.org/ns/r2rml#LogicalTable'
+R2RML_OBJECT_MAP_CLASS = 'http://www.w3.org/ns/r2rml#ObjectMap'
+R2RML_PREDICATE_MAP_CLASS = 'http://www.w3.org/ns/r2rml#PredicateMap'
+R2RML_PREDICATE_OBJECT_MAP_CLASS = 'http://www.w3.org/ns/r2rml#PredicateObjectMap'
+R2RML_R2RMLVIEW_CLASS = 'http://www.w3.org/ns/r2rml#R2RMLView'
+R2RML_REF_OBJECT_MAP_CLASS = 'http://www.w3.org/ns/r2rml#RefObjectMap'
+R2RML_SUBJECT_MAP_CLASS = 'http://www.w3.org/ns/r2rml#SubjectMap'
+R2RML_TERM_MAP_CLASS = 'http://www.w3.org/ns/r2rml#TermMap'
+R2RML_TRIPLES_MAP_CLASS = 'http://www.w3.org/ns/r2rml#TriplesMap'
+
+# properties
 R2RML_LOGICAL_TABLE = 'http://www.w3.org/ns/r2rml#logicalTable'
-R2RML_SQL_QUERY = 'http://www.w3.org/ns/r2rml#sqlQuery'
+R2RML_TABLE_NAME = 'http://www.w3.org/ns/r2rml#tableName'
+R2RML_PARENT_TRIPLES_MAP = 'http://www.w3.org/ns/r2rml#parentTriplesMap'
+R2RML_SUBJECT_MAP = 'http://www.w3.org/ns/r2rml#subjectMap'
+R2RML_PREDICATE_MAP = 'http://www.w3.org/ns/r2rml#predicateMap'
+R2RML_OBJECT_MAP = 'http://www.w3.org/ns/r2rml#objectMap'
+R2RML_GRAPH_MAP = 'http://www.w3.org/ns/r2rml#graphMap'
+R2RML_SUBJECT_CONSTANT_SHORTCUT = 'http://www.w3.org/ns/r2rml#subject'
+R2RML_PREDICATE_CONSTANT_SHORTCUT = 'http://www.w3.org/ns/r2rml#predicate'
+R2RML_OBJECT_CONSTANT_SHORTCUT = 'http://www.w3.org/ns/r2rml#object'
+R2RML_GRAPH_CONSTANT_SHORTCUT = 'http://www.w3.org/ns/r2rml#graph'
+R2RML_PREDICATE_OBJECT_MAP = 'http://www.w3.org/ns/r2rml#predicateObjectMap'
+R2RML_CONSTANT = 'http://www.w3.org/ns/r2rml#constant'
+R2RML_TEMPLATE = 'http://www.w3.org/ns/r2rml#template'
 R2RML_COLUMN = 'http://www.w3.org/ns/r2rml#column'
+R2RML_CLASS = 'http://www.w3.org/ns/r2rml#class'
+R2RML_CHILD = 'http://www.w3.org/ns/r2rml#child'
+R2RML_PARENT = 'http://www.w3.org/ns/r2rml#parent'
+R2RML_JOIN_CONDITION = 'http://www.w3.org/ns/r2rml#joinCondition'
+R2RML_DATATYPE = 'http://www.w3.org/ns/r2rml#datatype'
+R2RML_LANGUAGE = 'http://www.w3.org/ns/r2rml#language'
+R2RML_SQL_QUERY = 'http://www.w3.org/ns/r2rml#sqlQuery'
+R2RML_SQL_VERSION = 'http://www.w3.org/ns/r2rml#sqlVersion'
+R2RML_TERM_TYPE = 'http://www.w3.org/ns/r2rml#termType'
+
+# other
 R2RML_DEFAULT_GRAPH = 'http://www.w3.org/ns/r2rml#defaultGraph'
 R2RML_IRI = 'http://www.w3.org/ns/r2rml#IRI'
 R2RML_LITERAL = 'http://www.w3.org/ns/r2rml#Literal'
 R2RML_BLANK_NODE = 'http://www.w3.org/ns/r2rml#BlankNode'
+R2RML_SQL2008 = 'http://www.w3.org/ns/r2rml#SQL2008'
+
+
+##############################################################################
+############################   RML SPECIFICATION   ###########################
+##############################################################################
 
 RML_LOGICAL_SOURCE = 'http://semweb.mmlab.be/ns/rml#logicalSource'
 RML_QUERY = 'http://semweb.mmlab.be/ns/rml#query'
 RML_REFERENCE = 'http://semweb.mmlab.be/ns/rml#reference'
 
+
+##############################################################################
+##################################   RDF    #################################3
+##############################################################################
 RDF_TYPE = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'
 
 

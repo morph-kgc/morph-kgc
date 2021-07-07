@@ -54,7 +54,6 @@ MAPPING_PARSING_QUERY = """
             OPTIONAL { ?_subject_map rr:constant ?subject_constant . }
             OPTIONAL { ?_subject_map rr:class ?subject_rdf_class . }
             OPTIONAL { ?_subject_map rr:termType ?subject_termtype . }
-            OPTIONAL { ?_subject_map rr:graph ?graph_constant . }
             OPTIONAL {
                 ?_subject_map rr:graphMap ?_graph_structure .
                 ?_graph_structure rr:constant ?graph_constant .
@@ -68,7 +67,6 @@ MAPPING_PARSING_QUERY = """
                 ?_graph_structure rr:reference ?graph_reference .
             }
         }
-        OPTIONAL { ?triples_map_id rr:subject ?subject_constant . }
 
     # Predicate -----------------------------------------------------------------------
         OPTIONAL {
@@ -85,7 +83,6 @@ MAPPING_PARSING_QUERY = """
                 ?_predicate_object_map rr:predicateMap ?_predicate_map .
                 ?_predicate_map rml:reference ?predicate_reference .
             }
-            OPTIONAL { ?_predicate_object_map rr:predicate ?predicate_constant . }
 
     # Object --------------------------------------------------------------------------
             OPTIONAL {
@@ -114,12 +111,6 @@ MAPPING_PARSING_QUERY = """
                 ?object_map rr:parentTriplesMap ?object_parent_triples_map .
                 OPTIONAL { ?object_map rr:termType ?object_termtype . }
             }
-            OPTIONAL {
-                ?_predicate_object_map rr:object ?object_constant .
-                OPTIONAL { ?object_map rr:datatype ?object_datatype . }
-                OPTIONAL { ?object_map rr:language ?object_language . }
-            }
-            OPTIONAL { ?_predicate_object_map rr:graph ?predicate_object_graph_constant . }
             OPTIONAL {
                 ?_predicate_object_map rr:graphMap ?_graph_structure .
                 ?_graph_structure rr:constant ?predicate_object_graph_constant .

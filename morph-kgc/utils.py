@@ -178,8 +178,8 @@ def replace_predicates_in_graph(graph, predicate_to_remove, predicate_to_add):
     """
 
     # get the triples with the predicate to be replaced
-    r2rml_sources_query = 'SELECT ?s ?o WHERE {?s <' + predicate_to_remove + '> ?o .}'
-    subjects_objects_matched = graph.query(r2rml_sources_query)
+    r2_rml_sources_query = 'SELECT ?s ?o WHERE {?s <' + predicate_to_remove + '> ?o .}'
+    subjects_objects_matched = graph.query(r2_rml_sources_query)
 
     # for each triple to be replaced add a similar one (same subject and object) but with the new predicate
     for s, o in subjects_objects_matched:

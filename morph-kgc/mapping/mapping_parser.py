@@ -20,23 +20,97 @@ from mapping.mapping_partitioner import MappingPartitioner
 from data_source import relational_source
 
 
-def _mapping_to_rml(mapping_graph, section_name):
+def _mapping_to_rml(mapping_graph):
     """
     Replaces R2RML rules in in the graph with the corresponding RML rules.
     """
 
-    r2rml_query = 'SELECT ?s WHERE {?s <http://www.w3.org/ns/r2rml#logicalTable> ?o .} LIMIT 1 '
-    # if the query result set is not empty then the mapping language is R2RML
-    if len(mapping_graph.query(r2rml_query)) > 0:
-        logging.debug("Data source `" + section_name + "` has R2RML rules, converting them to RML.")
+    # replace R2RML predicates with the equivalent RML predicates
+    mapping_graph = utils.replace_predicates_in_graph(mapping_graph, constants.R2RML_LOGICAL_TABLE,
+                                                      constants.RML_LOGICAL_SOURCE)
+    mapping_graph = utils.replace_predicates_in_graph(mapping_graph, constants.R2RML_SQL_QUERY, constants.RML_QUERY)
+    mapping_graph = utils.replace_predicates_in_graph(mapping_graph, constants.R2RML_COLUMN, constants.RML_REFERENCE)
 
-        # replace R2RML predicates with the equivalent RML predicates
-        mapping_graph = utils.replace_predicates_in_graph(mapping_graph, constants.R2RML_LOGICAL_TABLE,
-                                                          constants.RML_LOGICAL_SOURCE)
-        mapping_graph = utils.replace_predicates_in_graph(mapping_graph, constants.R2RML_SQL_QUERY,
-                                                          constants.RML_QUERY)
-        mapping_graph = utils.replace_predicates_in_graph(mapping_graph, constants.R2RML_COLUMN,
-                                                          constants.RML_REFERENCE)
+    return mapping_graph
+
+
+def _expand_constant_shortcut_properties(mapping_graph):
+    """
+    Expand constant shortcut properties rr:subject, rr:predicate, rr:object and rr:graph.
+    See R2RML specification (https://www.w3.org/2001/sw/rdb2rdf/r2rml/#constant).
+    """
+
+    constant_properties = [constants.R2RML_SUBJECT_MAP, constants.R2RML_PREDICATE_MAP,
+                           constants.R2RML_OBJECT_MAP, constants.R2RML_GRAPH_MAP]
+    constant_shortcuts = [constants.R2RML_SUBJECT_CONSTANT_SHORTCUT, constants.R2RML_PREDICATE_CONSTANT_SHORTCUT,
+                          constants.R2RML_OBJECT_CONSTANT_SHORTCUT, constants.R2RML_GRAPH_CONSTANT_SHORTCUT]
+
+    for constant_property, constant_shortcut in zip(constant_properties, constant_shortcuts):
+        for s, o in mapping_graph.query('SELECT ?s ?o WHERE {?s <' + constant_shortcut + '> ?o .}'):
+            blanknode = rdflib.BNode()
+            mapping_graph.add((s, rdflib.term.URIRef(constant_property), blanknode))
+            mapping_graph.add((blanknode, rdflib.term.URIRef(constants.R2RML_CONSTANT), o))
+
+        mapping_graph.remove((None, rdflib.term.URIRef(constant_shortcut), None))
+
+    return mapping_graph
+
+
+def _rdf_class_to_pom(mapping_graph):
+    """
+    Replace rr:class definitions by predicate object maps.
+    """
+
+    query = 'SELECT ?tm ?c WHERE { ' \
+            '?tm <' + constants.R2RML_SUBJECT_MAP + '> ?sm . ' \
+            '?sm <' + constants.R2RML_CLASS + '> ?c . }'
+    for tm, c in mapping_graph.query(query):
+        blanknode = rdflib.BNode()
+        mapping_graph.add((tm, rdflib.term.URIRef(constants.R2RML_PREDICATE_OBJECT_MAP), blanknode))
+        mapping_graph.add((blanknode, rdflib.term.URIRef(constants.R2RML_CONSTANT), c))
+
+    mapping_graph.remove((None, rdflib.term.URIRef(constants.R2RML_CLASS), None))
+
+    return mapping_graph
+
+
+def _subject_graph_maps_to_pom(mapping_graph):
+    """
+    Move graph maps in subject maps to the predicate object maps of subject maps.
+    """
+
+    # add the graph maps in the subject maps to every predicate object map of the subject maps
+    query = 'SELECT ?sm ?gm ?pom WHERE { ' \
+            '?tm <' + constants.R2RML_SUBJECT_MAP + '> ?sm . ' \
+            '?sm <' + constants.R2RML_GRAPH_MAP + '> ?gm . ' \
+            '?tm <' + constants.R2RML_PREDICATE_OBJECT_MAP + '> ?pom . }'
+    for sm, gm, pom in mapping_graph.query(query):
+        mapping_graph.add((pom, rdflib.term.URIRef(constants.R2RML_GRAPH_MAP), gm))
+
+    # remove the graph maps from the subject maps
+    query = 'SELECT ?sm ?gm WHERE { ' \
+            '?tm <' + constants.R2RML_SUBJECT_MAP + '> ?sm . ' \
+            '?sm <' + constants.R2RML_GRAPH_MAP + '> ?gm . }'
+    for sm, gm in mapping_graph.query(query):
+        mapping_graph.remove((sm, rdflib.term.URIRef(constants.R2RML_GRAPH_MAP), gm))
+
+    return mapping_graph
+
+
+def _complete_pom_with_default_graph(mapping_graph):
+    """
+    Complete predicate object maps without graph maps with rr:defaultGraph.
+    """
+
+    query = 'SELECT DISTINCT ?tm ?pom WHERE { ' \
+            '?tm <' + constants.R2RML_PREDICATE_OBJECT_MAP + '> ?pom . ' \
+            'OPTIONAL { ?pom <' + constants.R2RML_GRAPH_MAP + '> ?gm . } . ' \
+            'FILTER ( !bound(?gm) ) }'
+    for tm, pom in mapping_graph.query(query):
+        blanknode = rdflib.BNode()
+        mapping_graph.add((pom, rdflib.term.URIRef(constants.R2RML_GRAPH_MAP), blanknode))
+        mapping_graph.add((blanknode, rdflib.term.URIRef(constants.R2RML_CONSTANT),
+                           rdflib.term.URIRef(constants.R2RML_DEFAULT_GRAPH)))
 
     return mapping_graph
 
@@ -215,8 +289,16 @@ class MappingParser:
         except Exception as n3_mapping_parse_exception:
             raise Exception(n3_mapping_parse_exception)
 
-        # before further processing, convert R2RML rules to RML, so that we can assume RML for parsing
-        mapping_graph = _mapping_to_rml(mapping_graph, section_name)
+        # convert R2RML rules to RML, so that we can assume RML for parsing
+        mapping_graph = _mapping_to_rml(mapping_graph)
+        # convert rr:class to new POMs
+        mapping_graph = _rdf_class_to_pom(mapping_graph)
+        # expand constant shortcut properties rr:subject, rr:predicate, rr:object and rr:graph
+        mapping_graph = _expand_constant_shortcut_properties(mapping_graph)
+        # move graph maps in subject maps to the predicate object maps of subject maps
+        mapping_graph = _subject_graph_maps_to_pom(mapping_graph)
+        # complete predicate object maps without graph maps with rr:defaultGraph
+        mapping_graph = _complete_pom_with_default_graph(mapping_graph)
 
         # parse the mappings with the parsing queries
         mapping_query_results = mapping_graph.query(MAPPING_PARSING_QUERY)
@@ -233,10 +315,6 @@ class MappingParser:
         self.mappings_df = self.mappings_df.drop_duplicates()
         # complete source type with reference formulation
         self._complete_source_types()
-        # convert rr:class to new POMs
-        self._rdf_class_to_pom()
-        # normalizes graphs terms in the mappings
-        self._process_pom_graphs()
         # if a term as no associated rr:termType, complete it as indicated in R2RML specification
         self._complete_termtypes()
 
@@ -286,95 +364,6 @@ class MappingParser:
                         self.mappings_df.at[i, 'object_reference'] = parent_triples_map_rule.at['subject_reference']
                         self.mappings_df.at[i, 'object_termtype'] = parent_triples_map_rule.at['subject_termtype']
 
-    def _rdf_class_to_pom(self):
-        """
-        Transforms rr:class properties (subject_rdf_class column in the input DataFrame) into POMs. The new mapping
-        rules corresponding to rr:class properties are added to the input DataFrame and subject_rdf_class column is
-        removed.
-        """
-
-        # make a copy of the parsed mappings
-        initial_mapping_df = self.mappings_df.copy()
-
-        # iterate over the mapping rules
-        for i, row in initial_mapping_df.iterrows():
-            # if a mapping rules has rr:class, generate a new POM to generate triples for this graph
-            if pd.notna(row['subject_rdf_class']):
-                # get the position of the new POM in the DataFrame
-                j = len(self.mappings_df)
-
-                # build the new POM from the mapping rule
-                self.mappings_df.at[j, 'source_name'] = row['source_name']
-                self.mappings_df.at[j, 'triples_map_id'] = row['triples_map_id']
-                self.mappings_df.at[j, 'tablename'] = row['tablename']
-                self.mappings_df.at[j, 'query'] = row['query']
-                self.mappings_df.at[j, 'subject_template'] = row['subject_template']
-                self.mappings_df.at[j, 'subject_reference'] = row['subject_reference']
-                self.mappings_df.at[j, 'subject_constant'] = row['subject_constant']
-                self.mappings_df.at[j, 'graph_constant'] = row['graph_constant']
-                self.mappings_df.at[j, 'graph_reference'] = row['graph_reference']
-                self.mappings_df.at[j, 'graph_template'] = row['graph_template']
-                self.mappings_df.at[j, 'subject_termtype'] = row['subject_termtype']
-                self.mappings_df.at[j, 'predicate_constant'] = constants.RDF_TYPE
-                self.mappings_df.at[j, 'object_constant'] = row['subject_rdf_class']
-                self.mappings_df.at[j, 'object_termtype'] = constants.R2RML_IRI
-                self.mappings_df.at[j, 'join_conditions'] = ''
-
-        # subject_rdf_class column is no longer needed, remove it
-        self.mappings_df = self.mappings_df.drop('subject_rdf_class', axis=1)
-        # ensure that we do not generate duplicated mapping rules
-        self.mappings_df = self.mappings_df.drop_duplicates()
-
-    def _process_pom_graphs(self):
-        """
-        Completes mapping rules in the input DataFrame with rr:defaultGraph if no graph term map is provided for that
-        mapping rule (as indicated in R2RML specification
-        (https://www.w3.org/2001/sw/rdb2rdf/r2rml/#generated-triples)). Also simplifies the DataFrame unifying graph
-        terms in one column (graph_constant, graph_template, graph_reference).
-        """
-
-        # use rr:defaultGraph for those mapping rules that do not have any graph term
-        for i, mapping_rule in self.mappings_df.iterrows():
-            # check that the POM has no associated graph term
-            if pd.isna(mapping_rule['graph_constant']) and pd.isna(mapping_rule['graph_reference']) and \
-                    pd.isna(mapping_rule['graph_template']):
-                if pd.isna(mapping_rule['predicate_object_graph_constant']) and \
-                        pd.isna(mapping_rule['predicate_object_graph_reference']) and \
-                        pd.isna(mapping_rule['predicate_object_graph_template']):
-                    # no graph term for this POM, assign rr:defaultGraph
-                    self.mappings_df.at[i, 'graph_constant'] = constants.R2RML_DEFAULT_GRAPH
-
-        # instead of having two columns for graph terms (one for subject maps, i.e. graph_constant, and other for POMs,
-        # i.e. predicate_object_graph_constant), keep only one for simplicity. In order
-        # to have only one column, append POM graph terms as new mapping rules in the DataFrame.
-        for i, mapping_rule in self.mappings_df.copy().iterrows():
-            # position of the new rule in the DataFrame
-            j = len(self.mappings_df)
-            if pd.notna(mapping_rule['predicate_object_graph_constant']):
-                # copy (duplicate) the mapping rule
-                self.mappings_df.loc[j] = mapping_rule
-                # update the graph term (with the POM graph term) of the new mapping rule
-                self.mappings_df.at[j, 'graph_constant'] = mapping_rule['predicate_object_graph_constant']
-            if pd.notna(mapping_rule['predicate_object_graph_template']):
-                self.mappings_df.loc[j] = mapping_rule
-                self.mappings_df.at[j, 'graph_template'] = mapping_rule['predicate_object_graph_template']
-            if pd.notna(mapping_rule['predicate_object_graph_reference']):
-                self.mappings_df.loc[j] = mapping_rule
-                self.mappings_df.at[j, 'graph_reference'] = mapping_rule['predicate_object_graph_reference']
-
-        # remove POM graph columns
-        self.mappings_df = self.mappings_df.drop(
-            columns=['predicate_object_graph_constant', 'predicate_object_graph_template',
-                     'predicate_object_graph_reference'])
-        # Drop where graph_constant, graph_template and graph_reference are null. This is because it can happen that
-        # original mapping rules have graph term for subject maps but not for POM, and if this happens, the newly
-        # appended mapping rule applies, but the the old one (without graph term in the subject map) must not be
-        # considered.
-        self.mappings_df = self.mappings_df.dropna(subset=['graph_constant', 'graph_template', 'graph_reference'],
-                                                   how='all')
-        # ensure that we do not introduce duplicate mapping rules
-        self.mappings_df = self.mappings_df.drop_duplicates()
-
     def _complete_termtypes(self):
         """
         Completes term types of mapping rules that do not have rr:termType property as indicated in R2RML specification
@@ -403,16 +392,18 @@ class MappingParser:
     def _complete_source_types(self):
         """
         Adds a column with the source type. The source type is taken from the value provided in the config for that data
-        source. If it is not profided, it is taken from the reference formulation in the mapping rule.
+        source. If it is not provided, it is taken from the reference formulation in the mapping rule.
         """
 
         for i, mapping_rule in self.mappings_df.iterrows():
             if self.config.has_source_type(mapping_rule['source_name']):
+                # take the source type from the config if it is provided
                 self.mappings_df.at[i, 'source_type'] = self.config.get_source_type(mapping_rule['source_name']).upper()
             elif pd.notna(mapping_rule['ref_form']):
-                self.mappings_df.at[i, 'source_type'] = str(mapping_rule['ref_form']).split('#')[1].upper()
+                # take the source type from the reference formulation (fragment) in the mapping rules
+                self.mappings_df.at[i, 'source_type'] = str(mapping_rule['ref_form']).split('#')[-1].upper()
             else:
-                logging.error('No source type could be retrieved for mapping rule `' + mapping_rule['id'] + '`.')
+                logging.error('No source type could be retrieved for mapping rule some mapping rules.')
 
         # ref form is no longer needed, remove it
         self.mappings_df = self.mappings_df.drop('ref_form', axis=1)
