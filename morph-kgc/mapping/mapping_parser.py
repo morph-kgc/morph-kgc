@@ -330,10 +330,6 @@ class MappingParser:
         self.mappings_df.insert(0, 'id', self.mappings_df.reset_index(drop=True).index)
 
     def _remove_self_joins_from_mappings(self):
-        # check whether self join removal is enabled in the config file
-        if not self.config.remove_self_joins():
-            return
-
         for i, mapping_rule in self.mappings_df.iterrows():
             if pd.notna(mapping_rule['object_parent_triples_map']):
                 parent_triples_map_rule = utils.get_mapping_rule_from_triples_map_id(self.mappings_df, mapping_rule[

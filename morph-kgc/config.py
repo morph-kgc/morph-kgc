@@ -33,7 +33,6 @@ MATERIALIZE_DEFAULT_GRAPH = 'materialize_default_graph'
 
 MAPPING_PARTITION = 'mapping_partition'
 INFER_SQL_DATATYPES = 'infer_sql_datatypes'
-REMOVE_SELF_JOINS = 'remove_self_joins'
 READ_PARSED_MAPPINGS_PATH = 'read_parsed_mappings_path'
 WRITE_PARSED_MAPPINGS_PATH = 'write_parsed_mappings_path'
 
@@ -83,7 +82,6 @@ CONFIGURATION_OPTIONS_EMPTY_NON_VALID = {
             PUSH_DOWN_SQL_DISTINCTS: constants.DEFAULT_PUSH_DOWN_SQL_DISTINCTS,
             PUSH_DOWN_SQL_JOINS: constants.DEFAULT_PUSH_DOWN_SQL_JOINS,
             INFER_SQL_DATATYPES: constants.DEFAULT_INFER_SQL_DATATYPES,
-            REMOVE_SELF_JOINS: constants.DEFAULT_REMOVE_SELF_JOINS,
             PROCESS_START_METHOD: constants.DEFAULT_PROCESS_START_METHOD,
             CHUNKSIZE: constants.DEFAULT_CHUNKSIZE,
             COERCE_FLOAT: constants.DEFAULT_COERCE_FLOAT,
@@ -230,9 +228,6 @@ class Config(ConfigParser):
 
     def coerce_float(self):
         return self.getboolean(self.configuration_section, COERCE_FLOAT)
-
-    def remove_self_joins(self):
-        return self.getboolean(self.configuration_section, REMOVE_SELF_JOINS)
 
     def clean_output_dir(self):
         return self.getboolean(self.configuration_section, CLEAN_OUTPUT_DIR)
