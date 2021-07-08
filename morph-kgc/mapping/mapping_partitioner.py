@@ -232,7 +232,8 @@ class MappingPartitioner:
 
         self.mappings_df = maximal_partition
 
-        logging.info(str(len(set(self.mappings_df['mapping_partition']))) + ' mapping partition generated.')
+        logging.info(
+            'Mapping partition with ' + str(len(set(self.mappings_df['mapping_partition']))) + ' groups generated.')
         logging.info('Maximum number of rules within mapping group: ' + str(
             self.mappings_df['mapping_partition'].value_counts()[0]) + '.')
 
