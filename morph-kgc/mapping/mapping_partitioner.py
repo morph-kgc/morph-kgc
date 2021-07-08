@@ -182,8 +182,8 @@ class MappingPartitioner:
             self._get_term_invariants()
             self._generate_maximal_partition()
         elif self.config.get_mapping_partition() in constants.NO_PARTITIONING:
-            # assign a unique partition
-            self.mappings_df['mapping_partition'] = '0'
+            # assign empty partition
+            self.mappings_df['mapping_partition'] = '0-0-0-0'
         else:
             logging.error('Selected mapping partitioning algorithm is not valid.')
 
