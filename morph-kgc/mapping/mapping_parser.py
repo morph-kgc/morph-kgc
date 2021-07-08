@@ -138,6 +138,55 @@ def _get_join_object_maps_join_conditions(join_query_results):
     return join_conditions_dict
 
 
+def _complete_termtypes(mapping_graph):
+    """
+    Completes term types of mapping rules that do not have rr:termType property as indicated in R2RML specification
+    (https://www.w3.org/2001/sw/rdb2rdf/r2rml/#termtype).
+    """
+
+    # add missing literal and blanknode termtypes in the constant-valued object maps
+    query = 'SELECT DISTINCT ?term_map WHERE { ' \
+            '?term_map <' + constants.R2RML_CONSTANT + '> ?constant . ' \
+            'OPTIONAL { ?term_map <' + constants.R2RML_TERM_TYPE + '> ?termtype . } . ' \
+            'FILTER ( !bound(?termtype) && bound(?constant) && isBlank(?constant) ) }'
+    for term_map in mapping_graph.query(query):
+        mapping_graph.add(
+            (term_map, rdflib.term.URIRef(constants.R2RML_TERM_TYPE), rdflib.term.URIRef(constants.R2RML_BLANK_NODE)))
+    query = 'SELECT DISTINCT ?term_map WHERE { ' \
+            '?term_map <' + constants.R2RML_CONSTANT + '> ?constant . ' \
+            'OPTIONAL { ?term_map <' + constants.R2RML_TERM_TYPE + '> ?termtype . } . ' \
+            'FILTER ( !bound(?termtype) && bound(?constant) && isLiteral(?constant) ) }'
+    for term_map in mapping_graph.query(query):
+        mapping_graph.add(
+            (term_map, rdflib.term.URIRef(constants.R2RML_TERM_TYPE), rdflib.term.URIRef(constants.R2RML_LITERAL)))
+
+    # add missing literal termtypes in the object maps
+    query = 'SELECT DISTINCT ?om WHERE { ' \
+            '?pom <' + constants.R2RML_OBJECT_MAP + '> ?om . ' \
+            'OPTIONAL { ?om <' + constants.R2RML_TERM_TYPE + '> ?termtype . } . ' \
+            'OPTIONAL { ?om <' + constants.R2RML_COLUMN + '> ?column . } . ' \
+            'OPTIONAL { ?om <' + constants.R2RML_LANGUAGE + '> ?language . } . ' \
+            'OPTIONAL { ?om <' + constants.R2RML_DATATYPE + '> ?datatype . } . ' \
+            'FILTER ( !bound(?termtype) && ( bound(?column) || bound(?language) || bound(?datatype) ) ) }'
+    for om in mapping_graph.query(query):
+        mapping_graph.add(
+            (om, rdflib.term.URIRef(constants.R2RML_TERM_TYPE), rdflib.term.URIRef(constants.R2RML_LITERAL)))
+
+    # now all missing termtypes are IRIs
+    query = 'SELECT DISTINCT ?term_map WHERE { ' \
+            'OPTIONAL { ?term_map <' + constants.R2RML_SUBJECT_MAP + '> ?sm . }' \
+            'OPTIONAL { ?term_map <' + constants.R2RML_PREDICATE_MAP + '> ?pm . }' \
+            'OPTIONAL { ?term_map <' + constants.R2RML_OBJECT_MAP + '> ?om . }' \
+            'OPTIONAL { ?term_map <' + constants.R2RML_GRAPH_MAP + '> ?gm . }' \
+            'OPTIONAL { ?om <' + constants.R2RML_TERM_TYPE + '> ?termtype . } . ' \
+            'FILTER ( !bound(?termtype) ) }'
+    for term_map in mapping_graph.query(query):
+        mapping_graph.add(
+            (term_map, rdflib.term.URIRef(constants.R2RML_TERM_TYPE), rdflib.term.URIRef(constants.R2RML_IRI)))
+
+    return mapping_graph
+
+
 def _validate_no_repeated_triples_maps(mapping_graph, source_name):
     """
     Checks that there are no repeated triples maps in the mapping rules of a source. This is important because
@@ -301,6 +350,8 @@ class MappingParser:
         mapping_graph = _subject_graph_maps_to_pom(mapping_graph)
         # complete predicate object maps without graph maps with rr:defaultGraph
         mapping_graph = _complete_pom_with_default_graph(mapping_graph)
+        # if a term as no associated rr:termType, complete it according to R2RML specification
+        mapping_graph = _complete_termtypes(mapping_graph)
 
         # parse the mappings with the parsing queries
         mapping_query_results = mapping_graph.query(MAPPING_PARSING_QUERY)
@@ -317,8 +368,6 @@ class MappingParser:
         self.mappings_df = self.mappings_df.drop_duplicates()
         # complete source type with reference formulation
         self._complete_source_types()
-        # if a term as no associated rr:termType, complete it as indicated in R2RML specification
-        self._complete_termtypes()
 
         # ignore the delimited identifiers (this is not conformant with R2MRL specification)
         self._remove_delimiters_from_mappings()
@@ -361,31 +410,6 @@ class MappingParser:
                         self.mappings_df.at[i, 'object_template'] = parent_triples_map_rule.at['subject_template']
                         self.mappings_df.at[i, 'object_reference'] = parent_triples_map_rule.at['subject_reference']
                         self.mappings_df.at[i, 'object_termtype'] = parent_triples_map_rule.at['subject_termtype']
-
-    def _complete_termtypes(self):
-        """
-        Completes term types of mapping rules that do not have rr:termType property as indicated in R2RML specification
-        (https://www.w3.org/2001/sw/rdb2rdf/r2rml/#termtype).
-        """
-
-        for i, mapping_rule in self.mappings_df.iterrows():
-            # if subject termtype is missing, then subject termtype is rr:IRI
-            if pd.isna(mapping_rule['subject_termtype']):
-                self.mappings_df.at[i, 'subject_termtype'] = constants.R2RML_IRI
-
-            if pd.isna(mapping_rule['object_termtype']):
-                # if object termtype is missing and there is a language tag or datatype or object term is a
-                # reference, then termtype is rr:Literal
-                if pd.notna(mapping_rule['object_language']) or pd.notna(mapping_rule['object_datatype']) or \
-                        pd.notna(mapping_rule['object_reference']):
-                    self.mappings_df.at[i, 'object_termtype'] = constants.R2RML_LITERAL
-                else:
-                    # if previous conditions (language tag, datatype or reference) do not hold, then termtype is rr:IRI
-                    self.mappings_df.at[i, 'object_termtype'] = constants.R2RML_IRI
-
-        # convert to str (instead of rdflib object) to avoid problems later
-        self.mappings_df['subject_termtype'] = self.mappings_df['subject_termtype'].astype(str)
-        self.mappings_df['object_termtype'] = self.mappings_df['object_termtype'].astype(str)
 
     def _complete_source_types(self):
         """
