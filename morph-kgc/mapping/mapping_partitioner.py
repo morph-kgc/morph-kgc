@@ -173,6 +173,8 @@ class MappingPartitioner:
         mapping rule.
         """
 
+        self.mappings_df = self.mappings_df.reset_index(drop=True)
+
         if self.config.get_mapping_partition() == constants.PARTIAL_AGGREGATIONS_PARTITIONING:
             self._get_term_invariants()
             self._generate_partial_aggregations_partition()
