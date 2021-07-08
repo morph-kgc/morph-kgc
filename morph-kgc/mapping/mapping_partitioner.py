@@ -217,7 +217,7 @@ class MappingPartitioner:
         maximal_partition = None
         for mapping_partitions_df in mapping_partitions_dfs:
             if len(set(mapping_partitions_df['mapping_partition'])) > max_num_groups:
-                max_num_groups = len(set(mapping_partitions_df['mapping_partition'])) > max_num_groups
+                max_num_groups = len(set(mapping_partitions_df['mapping_partition']))
                 maximal_partition = mapping_partitions_df
 
         maximal_partition['mapping_partition'] = maximal_partition['mapping_partition'].str[1:]
