@@ -65,9 +65,11 @@ def _rdf_class_to_pom(mapping_graph):
             '?tm <' + constants.R2RML_SUBJECT_MAP + '> ?sm . ' \
             '?sm <' + constants.R2RML_CLASS + '> ?c . }'
     for tm, c in mapping_graph.query(query):
-        blanknode = rdflib.BNode()
-        mapping_graph.add((tm, rdflib.term.URIRef(constants.R2RML_PREDICATE_OBJECT_MAP), blanknode))
-        mapping_graph.add((blanknode, rdflib.term.URIRef(constants.R2RML_CONSTANT), c))
+        pom_blanknode = rdflib.BNode()
+        om_blanknode = rdflib.BNode()
+        mapping_graph.add((tm, rdflib.term.URIRef(constants.R2RML_PREDICATE_OBJECT_MAP), pom_blanknode))
+        mapping_graph.add((pom_blanknode, rdflib.term.URIRef(constants.R2RML_OBJECT_MAP), om_blanknode))
+        mapping_graph.add((om_blanknode, rdflib.term.URIRef(constants.R2RML_CONSTANT), c))
 
     mapping_graph.remove((None, rdflib.term.URIRef(constants.R2RML_CLASS), None))
 
