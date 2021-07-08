@@ -72,7 +72,6 @@ def _rdf_class_to_pom(mapping_graph):
                            rdflib.term.URIRef(constants.RDF_TYPE)))
 
     mapping_graph.remove((None, rdflib.term.URIRef(constants.R2RML_CLASS), None))
-    mapping_graph.serialize('../testing/a.out', format='ntriples')
 
     return mapping_graph
 
