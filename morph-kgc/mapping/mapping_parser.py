@@ -156,8 +156,8 @@ def _complete_termtypes(mapping_graph):
             (om, rdflib.term.URIRef(constants.R2RML_TERM_TYPE), rdflib.term.URIRef(constants.R2RML_LITERAL)))
 
     # now all missing termtypes are IRIs
-    for term_map_property in [constants.R2RML_SUBJECT_MAP, constants.R2RML_PREDICATE_MAP, constants.R2RML_OBJECT_MAP,
-               constants.R2RML_GRAPH_MAP]:
+    for term_map_property in [constants.R2RML_SUBJECT_MAP, constants.R2RML_PREDICATE_MAP,
+                              constants.R2RML_OBJECT_MAP, constants.R2RML_GRAPH_MAP]:
         query = 'SELECT DISTINCT ?term_map ?x WHERE { ' \
                 '?x <' + term_map_property + '> ?term_map . ' \
                 'OPTIONAL { ?term_map <' + constants.R2RML_TERM_TYPE + '> ?termtype . } . ' \
@@ -165,8 +165,6 @@ def _complete_termtypes(mapping_graph):
         for term_map, _ in mapping_graph.query(query):
             mapping_graph.add(
                 (term_map, rdflib.term.URIRef(constants.R2RML_TERM_TYPE), rdflib.term.URIRef(constants.R2RML_IRI)))
-
-    mapping_graph.serialize(destination='../testing/b.txt', format='turtle')
 
     return mapping_graph
 
