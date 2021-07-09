@@ -40,14 +40,15 @@ def _mapping_to_rml(mapping_graph):
                 mapping_graph.add((logical_source, rdflib.term.URIRef(constants.RML_REFERENCE_FORMULATION),
                                    rdflib.term.URIRef(constants.QL_CSV)))
 
-
     # replace R2RML predicates with the equivalent RML predicates
     mapping_graph = utils.replace_predicates_in_graph(mapping_graph, constants.R2RML_LOGICAL_TABLE,
                                                       constants.RML_LOGICAL_SOURCE)
     mapping_graph = utils.replace_predicates_in_graph(mapping_graph, constants.R2RML_SQL_QUERY, constants.RML_QUERY)
     mapping_graph = utils.replace_predicates_in_graph(mapping_graph, constants.R2RML_COLUMN, constants.RML_REFERENCE)
 
-
+    # remove R2RML classes
+    r2rml_classes = [constants.R2RML_R2RML_VIEW_CLASS, constants.R2RML_LOGICAL_TABLE_CLASS]
+    mapping_graph.remove((None, rdflib.term.URIRef(r2rml_classes), None))
 
     return mapping_graph
 
@@ -182,6 +183,15 @@ def _complete_termtypes(mapping_graph):
                 (term_map, rdflib.term.URIRef(constants.R2RML_TERM_TYPE), rdflib.term.URIRef(constants.R2RML_IRI)))
 
     return mapping_graph
+
+
+def _complete_rml_classes(mapping_graph):
+    """
+
+    """
+
+    return mapping_graph
+
 
 
 def _get_join_object_maps_join_conditions(join_query_results):
@@ -370,6 +380,8 @@ class MappingParser:
         mapping_graph = _complete_pom_with_default_graph(mapping_graph)
         # if a term as no associated rr:termType, complete it according to R2RML specification
         mapping_graph = _complete_termtypes(mapping_graph)
+        # add rdf:type RML classes
+        mapping_graph = _complete_rml_classes(mapping_graph)
 
         # parse the mappings with the parsing queries
         mapping_query_results = mapping_graph.query(MAPPING_PARSING_QUERY)
