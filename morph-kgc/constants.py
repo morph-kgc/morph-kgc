@@ -141,10 +141,16 @@ R2RML_SQL2008 = 'http://www.w3.org/ns/r2rml#SQL2008'
 ############################   RML SPECIFICATION   ###########################
 ##############################################################################
 
+QL_NAMESPACE = 'http://semweb.mmlab.be/ns/ql#'
+QL_CSV = 'http://semweb.mmlab.be/ns/ql#CSV'
+QL_JSON = 'http://semweb.mmlab.be/ns/ql#JSONPath'
+QL_XML = 'http://semweb.mmlab.be/ns/ql#XPath'
+
 RML_NAMESPACE = 'http://semweb.mmlab.be/ns/rml#'
 RML_LOGICAL_SOURCE = 'http://semweb.mmlab.be/ns/rml#logicalSource'
 RML_QUERY = 'http://semweb.mmlab.be/ns/rml#query'
 RML_REFERENCE = 'http://semweb.mmlab.be/ns/rml#reference'
+RML_REFERENCE_FORMULATION = 'http://semweb.mmlab.be/ns/rml#referenceFormulation'
 
 
 AUXILIAR_UNIQUE_REPLACING_STRING = 'zzyy_xxww\u200B'
