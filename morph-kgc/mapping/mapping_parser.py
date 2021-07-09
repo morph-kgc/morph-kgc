@@ -47,9 +47,9 @@ def _mapping_to_rml(mapping_graph):
     mapping_graph = utils.replace_predicates_in_graph(mapping_graph, constants.R2RML_COLUMN, constants.RML_REFERENCE)
 
     # remove R2RML classes
-    r2rml_classes = [constants.R2RML_R2RML_VIEW_CLASS, constants.R2RML_LOGICAL_TABLE_CLASS]
-    for r2rml_class in r2rml_classes:
-        mapping_graph.remove((None, rdflib.term.URIRef(r2rml_class), None))
+    mapping_graph.remove((None, rdflib.term.URIRef(constants.R2RML_R2RML_VIEW_CLASS), None))
+    mapping_graph.remove((None, rdflib.term.URIRef(constants.R2RML_LOGICAL_TABLE_CLASS), None))
+
 
     return mapping_graph
 
