@@ -188,7 +188,7 @@ def _complete_termtypes(mapping_graph):
 
 def _complete_rml_classes(mapping_graph):
     """
-
+    TODO
     """
 
     return mapping_graph
