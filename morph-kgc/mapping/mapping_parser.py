@@ -25,6 +25,9 @@ def _mapping_to_rml(mapping_graph):
     Replaces R2RML rules in in the graph with the corresponding RML rules.
     """
 
+    # add RML namespace
+    mapping_graph.bind('rml', rdflib.term.URIRef(constants.RML_NAMESPACE))
+
     # replace R2RML predicates with the equivalent RML predicates
     mapping_graph = utils.replace_predicates_in_graph(mapping_graph, constants.R2RML_LOGICAL_TABLE,
                                                       constants.RML_LOGICAL_SOURCE)
@@ -68,8 +71,7 @@ def _rdf_class_to_pom(mapping_graph):
         blanknode = rdflib.BNode()
         mapping_graph.add((tm, rdflib.term.URIRef(constants.R2RML_PREDICATE_OBJECT_MAP), blanknode))
         mapping_graph.add((blanknode, rdflib.term.URIRef(constants.R2RML_OBJECT_CONSTANT_SHORTCUT), c))
-        mapping_graph.add((blanknode, rdflib.term.URIRef(constants.R2RML_PREDICATE_CONSTANT_SHORTCUT),
-                           rdflib.term.URIRef(constants.RDF_TYPE)))
+        mapping_graph.add((blanknode, rdflib.term.URIRef(constants.R2RML_PREDICATE_CONSTANT_SHORTCUT), rdflib.RDF.type))
 
     mapping_graph.remove((None, rdflib.term.URIRef(constants.R2RML_CLASS), None))
 
@@ -117,6 +119,58 @@ def _complete_pom_with_default_graph(mapping_graph):
     return mapping_graph
 
 
+def _complete_termtypes(mapping_graph):
+    """
+    Completes term types of mapping rules that do not have rr:termType property as indicated in R2RML specification
+    (https://www.w3.org/2001/sw/rdb2rdf/r2rml/#termtype).
+    """
+
+    # add missing blanknode termtypes in the constant-valued object maps
+    query = 'SELECT DISTINCT ?term_map ?constant WHERE { ' \
+            '?term_map <' + constants.R2RML_CONSTANT + '> ?constant . ' \
+            'OPTIONAL { ?term_map <' + constants.R2RML_TERM_TYPE + '> ?termtype . } . ' \
+            'FILTER ( !bound(?termtype) && isBlank(?constant) ) }'
+    for term_map, _ in mapping_graph.query(query):
+        mapping_graph.add(
+            (term_map, rdflib.term.URIRef(constants.R2RML_TERM_TYPE), rdflib.term.URIRef(constants.R2RML_BLANK_NODE)))
+
+    # add missing literals termtypes in the constant-valued object maps
+    query = 'SELECT DISTINCT ?term_map ?constant WHERE { ' \
+            '?term_map <' + constants.R2RML_CONSTANT + '> ?constant . ' \
+            'OPTIONAL { ?term_map <' + constants.R2RML_TERM_TYPE + '> ?termtype . } . ' \
+            'FILTER ( !bound(?termtype) && isLiteral(?constant) ) }'
+    for term_map, _ in mapping_graph.query(query):
+        mapping_graph.add(
+            (term_map, rdflib.term.URIRef(constants.R2RML_TERM_TYPE), rdflib.term.URIRef(constants.R2RML_LITERAL)))
+
+    # add missing literal termtypes in the object maps
+    query = 'SELECT DISTINCT ?om ?pom WHERE { ' \
+            '?pom <' + constants.R2RML_OBJECT_MAP + '> ?om . ' \
+            'OPTIONAL { ?om <' + constants.R2RML_TERM_TYPE + '> ?termtype . } . ' \
+            'OPTIONAL { ?om <' + constants.RML_REFERENCE + '> ?column . } . ' \
+            'OPTIONAL { ?om <' + constants.R2RML_LANGUAGE + '> ?language . } . ' \
+            'OPTIONAL { ?om <' + constants.R2RML_DATATYPE + '> ?datatype . } . ' \
+            'FILTER ( !bound(?termtype) && ( bound(?column) || bound(?language) || bound(?datatype) ) ) }'
+    for om, _ in mapping_graph.query(query):
+        mapping_graph.add(
+            (om, rdflib.term.URIRef(constants.R2RML_TERM_TYPE), rdflib.term.URIRef(constants.R2RML_LITERAL)))
+
+    # now all missing termtypes are IRIs
+    for term_map_property in [constants.R2RML_SUBJECT_MAP, constants.R2RML_PREDICATE_MAP, constants.R2RML_OBJECT_MAP,
+               constants.R2RML_GRAPH_MAP]:
+        query = 'SELECT DISTINCT ?term_map ?x WHERE { ' \
+                '?x <' + term_map_property + '> ?term_map . ' \
+                'OPTIONAL { ?term_map <' + constants.R2RML_TERM_TYPE + '> ?termtype . } . ' \
+                'FILTER ( !bound(?termtype) ) }'
+        for term_map, _ in mapping_graph.query(query):
+            mapping_graph.add(
+                (term_map, rdflib.term.URIRef(constants.R2RML_TERM_TYPE), rdflib.term.URIRef(constants.R2RML_IRI)))
+
+    mapping_graph.serialize(destination='../testing/b.txt', format='turtle')
+
+    return mapping_graph
+
+
 def _get_join_object_maps_join_conditions(join_query_results):
     """
     Creates a dictionary with the results of the JOIN_CONDITION_PARSING_QUERY. The keys are the identifiers of the
@@ -136,55 +190,6 @@ def _get_join_object_maps_join_conditions(join_query_results):
             {'child_value': str(join_condition.child_value), 'parent_value': str(join_condition.parent_value)}
 
     return join_conditions_dict
-
-
-def _complete_termtypes(mapping_graph):
-    """
-    Completes term types of mapping rules that do not have rr:termType property as indicated in R2RML specification
-    (https://www.w3.org/2001/sw/rdb2rdf/r2rml/#termtype).
-    """
-
-    # add missing literal and blanknode termtypes in the constant-valued object maps
-    query = 'SELECT DISTINCT ?term_map WHERE { ' \
-            '?term_map <' + constants.R2RML_CONSTANT + '> ?constant . ' \
-            'OPTIONAL { ?term_map <' + constants.R2RML_TERM_TYPE + '> ?termtype . } . ' \
-            'FILTER ( !bound(?termtype) && bound(?constant) && isBlank(?constant) ) }'
-    for term_map in mapping_graph.query(query):
-        mapping_graph.add(
-            (term_map, rdflib.term.URIRef(constants.R2RML_TERM_TYPE), rdflib.term.URIRef(constants.R2RML_BLANK_NODE)))
-    query = 'SELECT DISTINCT ?term_map WHERE { ' \
-            '?term_map <' + constants.R2RML_CONSTANT + '> ?constant . ' \
-            'OPTIONAL { ?term_map <' + constants.R2RML_TERM_TYPE + '> ?termtype . } . ' \
-            'FILTER ( !bound(?termtype) && bound(?constant) && isLiteral(?constant) ) }'
-    for term_map in mapping_graph.query(query):
-        mapping_graph.add(
-            (term_map, rdflib.term.URIRef(constants.R2RML_TERM_TYPE), rdflib.term.URIRef(constants.R2RML_LITERAL)))
-
-    # add missing literal termtypes in the object maps
-    query = 'SELECT DISTINCT ?om WHERE { ' \
-            '?pom <' + constants.R2RML_OBJECT_MAP + '> ?om . ' \
-            'OPTIONAL { ?om <' + constants.R2RML_TERM_TYPE + '> ?termtype . } . ' \
-            'OPTIONAL { ?om <' + constants.R2RML_COLUMN + '> ?column . } . ' \
-            'OPTIONAL { ?om <' + constants.R2RML_LANGUAGE + '> ?language . } . ' \
-            'OPTIONAL { ?om <' + constants.R2RML_DATATYPE + '> ?datatype . } . ' \
-            'FILTER ( !bound(?termtype) && ( bound(?column) || bound(?language) || bound(?datatype) ) ) }'
-    for om in mapping_graph.query(query):
-        mapping_graph.add(
-            (om, rdflib.term.URIRef(constants.R2RML_TERM_TYPE), rdflib.term.URIRef(constants.R2RML_LITERAL)))
-
-    # now all missing termtypes are IRIs
-    query = 'SELECT DISTINCT ?term_map WHERE { ' \
-            'OPTIONAL { ?term_map <' + constants.R2RML_SUBJECT_MAP + '> ?sm . }' \
-            'OPTIONAL { ?term_map <' + constants.R2RML_PREDICATE_MAP + '> ?pm . }' \
-            'OPTIONAL { ?term_map <' + constants.R2RML_OBJECT_MAP + '> ?om . }' \
-            'OPTIONAL { ?term_map <' + constants.R2RML_GRAPH_MAP + '> ?gm . }' \
-            'OPTIONAL { ?om <' + constants.R2RML_TERM_TYPE + '> ?termtype . } . ' \
-            'FILTER ( !bound(?termtype) ) }'
-    for term_map in mapping_graph.query(query):
-        mapping_graph.add(
-            (term_map, rdflib.term.URIRef(constants.R2RML_TERM_TYPE), rdflib.term.URIRef(constants.R2RML_IRI)))
-
-    return mapping_graph
 
 
 def _validate_no_repeated_triples_maps(mapping_graph, source_name):

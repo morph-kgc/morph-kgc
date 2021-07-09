@@ -141,15 +141,10 @@ R2RML_SQL2008 = 'http://www.w3.org/ns/r2rml#SQL2008'
 ############################   RML SPECIFICATION   ###########################
 ##############################################################################
 
+RML_NAMESPACE = 'http://semweb.mmlab.be/ns/rml#'
 RML_LOGICAL_SOURCE = 'http://semweb.mmlab.be/ns/rml#logicalSource'
 RML_QUERY = 'http://semweb.mmlab.be/ns/rml#query'
 RML_REFERENCE = 'http://semweb.mmlab.be/ns/rml#reference'
-
-
-##############################################################################
-##################################   RDF    #################################3
-##############################################################################
-RDF_TYPE = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'
 
 
 AUXILIAR_UNIQUE_REPLACING_STRING = 'zzyy_xxww\u200B'
