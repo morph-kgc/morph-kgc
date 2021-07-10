@@ -187,6 +187,11 @@ class MappingPartitioner:
         else:
             logging.error('Selected mapping partitioning algorithm is not valid.')
 
+        logging.info(
+            'Mapping partition with ' + str(len(set(self.mappings_df['mapping_partition']))) + ' groups generated.')
+        logging.info('Maximum number of rules within mapping group: ' + str(
+            self.mappings_df['mapping_partition'].value_counts()[0]) + '.')
+
         return self.mappings_df
 
     def _generate_maximal_partition(self):
@@ -235,11 +240,6 @@ class MappingPartitioner:
             axis=1, inplace=True)
 
         self.mappings_df = maximal_partition
-
-        logging.info(
-            'Mapping partition with ' + str(len(set(self.mappings_df['mapping_partition']))) + ' groups generated.')
-        logging.info('Maximum number of rules within mapping group: ' + str(
-            self.mappings_df['mapping_partition'].value_counts()[0]) + '.')
 
     def _generate_partial_aggregations_partition(self):
         """
@@ -366,10 +366,6 @@ class MappingPartitioner:
             'graph_invariant',
             'literal_type'],
             axis=1, inplace=True)
-
-        logging.info(str(len(set(self.mappings_df['mapping_partition']))) + ' mapping partition generated.')
-        logging.info('Maximum number of rules within mapping group: ' + str(
-            self.mappings_df['mapping_partition'].value_counts()[0]) + '.')
 
     def _get_term_invariants(self):
         """
