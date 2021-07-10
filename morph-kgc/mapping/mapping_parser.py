@@ -30,15 +30,16 @@ def _mapping_to_rml(mapping_graph):
     mapping_graph.bind('ql', rdflib.term.URIRef(constants.QL_NAMESPACE))
 
     # add reference formulation and sql version for RDB sources
-    sql_properties = [constants.R2RML_TABLE_NAME, constants.R2RML_SQL_QUERY]
-    for sql_property in sql_properties:
-        query = 'SELECT ?logical_source ?x WHERE { ?logical_source <' + sql_property + '> ?x . '
-        for logical_source, _ in mapping_graph.query(query):
-            mapping_graph.add((logical_source, rdflib.term.URIRef(constants.R2RML_SQL_VERSION),
-                               rdflib.term.URIRef(constants.R2RML_SQL2008)))
-            if sql_property == constants.R2RML_SQL_QUERY:
-                mapping_graph.add((logical_source, rdflib.term.URIRef(constants.RML_REFERENCE_FORMULATION),
-                                   rdflib.term.URIRef(constants.QL_CSV)))
+    query = 'SELECT ?logical_source ?x WHERE { ?logical_source <' + constants.R2RML_TABLE_NAME + '> ?x . } '
+    for logical_source, _ in mapping_graph.query(query):
+        mapping_graph.add((logical_source, rdflib.term.URIRef(constants.R2RML_SQL_VERSION),
+                           rdflib.term.URIRef(constants.R2RML_SQL2008)))
+    query = 'SELECT ?logical_source ?x WHERE { ?logical_source <' + constants.R2RML_SQL_QUERY + '> ?x . } '
+    for logical_source, _ in mapping_graph.query(query):
+        mapping_graph.add((logical_source, rdflib.term.URIRef(constants.R2RML_SQL_VERSION),
+                           rdflib.term.URIRef(constants.R2RML_SQL2008)))
+        mapping_graph.add((logical_source, rdflib.term.URIRef(constants.RML_REFERENCE_FORMULATION),
+                           rdflib.term.URIRef(constants.QL_CSV)))
 
     # replace R2RML predicates with the equivalent RML predicates
     mapping_graph = utils.replace_predicates_in_graph(mapping_graph, constants.R2RML_LOGICAL_TABLE,
@@ -192,7 +193,6 @@ def _complete_rml_classes(mapping_graph):
     """
 
     return mapping_graph
-
 
 
 def _get_join_object_maps_join_conditions(join_query_results):
