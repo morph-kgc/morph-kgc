@@ -168,6 +168,6 @@ def get_sql_data(config, mapping_rule, references, parent_triples_map_rule=None,
     result_chunks = pd.read_sql(sql_query,
                                 con=db_connection,
                                 chunksize=config.get_chunksize(),
-                                coerce_float=config.coerce_float())
+                                coerce_float=False)
 
     return result_chunks

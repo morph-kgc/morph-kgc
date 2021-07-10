@@ -39,7 +39,6 @@ WRITE_PARSED_MAPPINGS_PATH = 'write_parsed_mappings_path'
 CHUNKSIZE = 'chunksize'
 PUSH_DOWN_SQL_DISTINCTS = 'push_down_sql_distincts'
 PUSH_DOWN_SQL_JOINS = 'push_down_sql_joins'
-COERCE_FLOAT = 'coerce_float'
 
 NUMBER_OF_PROCESSES = 'number_of_processes'
 
@@ -82,7 +81,6 @@ CONFIGURATION_OPTIONS_EMPTY_NON_VALID = {
             PUSH_DOWN_SQL_JOINS: constants.DEFAULT_PUSH_DOWN_SQL_JOINS,
             INFER_SQL_DATATYPES: constants.DEFAULT_INFER_SQL_DATATYPES,
             CHUNKSIZE: constants.DEFAULT_CHUNKSIZE,
-            COERCE_FLOAT: constants.DEFAULT_COERCE_FLOAT,
             LOGGING_LEVEL: constants.DEFAULT_LOGGING_LEVEL,
             NA_FILTER: constants.DEFAULT_NA_FILTER,
             NUMBER_OF_PROCESSES: constants.DEFAULT_NUMBER_OF_PROCESSES
@@ -213,9 +211,6 @@ class Config(ConfigParser):
 
     def push_down_sql_distincts(self):
         return self.getboolean(self.configuration_section, PUSH_DOWN_SQL_DISTINCTS)
-
-    def coerce_float(self):
-        return self.getboolean(self.configuration_section, COERCE_FLOAT)
 
     def clean_output_dir(self):
         return self.getboolean(self.configuration_section, CLEAN_OUTPUT_DIR)
