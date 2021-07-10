@@ -61,6 +61,9 @@ def _materialize_template(results_df, template, columns_alias='', termtype=const
         splitted_template = template.split('{' + reference + '}')
         results_df['triple'] = results_df['triple'] + splitted_template[0] + results_df['reference_results']
         template = str('{' + reference + '}').join(splitted_template[1:])
+    if template:
+        # add what remains in the template after the last reference
+        results_df['triple'] = results_df['triple'] + template
 
     if str(termtype).strip() == constants.R2RML_LITERAL:
         results_df['triple'] = results_df['triple'] + '"'
