@@ -42,7 +42,6 @@ PUSH_DOWN_SQL_JOINS = 'push_down_sql_joins'
 COERCE_FLOAT = 'coerce_float'
 
 NUMBER_OF_PROCESSES = 'number_of_processes'
-PROCESS_START_METHOD = 'process_start_method'
 
 LOGGING_LEVEL = 'logging_level'
 LOGGING_FILE = 'logging_file'
@@ -82,7 +81,6 @@ CONFIGURATION_OPTIONS_EMPTY_NON_VALID = {
             PUSH_DOWN_SQL_DISTINCTS: constants.DEFAULT_PUSH_DOWN_SQL_DISTINCTS,
             PUSH_DOWN_SQL_JOINS: constants.DEFAULT_PUSH_DOWN_SQL_JOINS,
             INFER_SQL_DATATYPES: constants.DEFAULT_INFER_SQL_DATATYPES,
-            PROCESS_START_METHOD: constants.DEFAULT_PROCESS_START_METHOD,
             CHUNKSIZE: constants.DEFAULT_CHUNKSIZE,
             COERCE_FLOAT: constants.DEFAULT_COERCE_FLOAT,
             LOGGING_LEVEL: constants.DEFAULT_LOGGING_LEVEL,
@@ -164,13 +162,6 @@ class Config(ConfigParser):
                     [constants.MAXIMAL_PARTITIONING] + [
                         constants.PARTIAL_AGGREGATIONS_PARTITIONING] + constants.NO_PARTITIONING) + '.')
 
-        # PROCESS START METHOD
-        process_start_method = str(self.get_process_start_method()).upper()
-        self.set_process_start_method(process_start_method)
-        if process_start_method not in constants.VALID_PROCESS_START_METHOD:
-            raise ValueError(PROCESS_START_METHOD + ' value `' + self.get_process_start_method() +
-                             '` is not valid. It must be in: ' + str(constants.VALID_PROCESS_START_METHOD) + '.')
-
     def validate_data_source_sections(self):
         # SOURCE TYPE
         for section in self.get_data_sources_sections():
@@ -201,9 +192,6 @@ class Config(ConfigParser):
 
     def is_multiprocessing_enabled(self):
         return self.getint(self.configuration_section, NUMBER_OF_PROCESSES) > 1
-
-    def is_process_start_method_default(self):
-        return self.get(self.configuration_section, PROCESS_START_METHOD) == 'DEFAULT'
 
     def is_read_parsed_mappings_file_provided(self):
         if self.get(self.configuration_section, READ_PARSED_MAPPINGS_PATH):
@@ -237,9 +225,6 @@ class Config(ConfigParser):
 
     def get_configuration_option(self, option):
         return self.get(self.configuration_section, option)
-
-    def get_process_start_method(self):
-        return self.get(self.configuration_section, PROCESS_START_METHOD)
 
     def get_number_of_processes(self):
         return self.getint(self.configuration_section, NUMBER_OF_PROCESSES)
@@ -319,9 +304,6 @@ class Config(ConfigParser):
 
     def set_output_format(self, output_format):
         self.set(self.configuration_section, OUTPUT_FORMAT, output_format)
-
-    def set_process_start_method(self, process_start_method):
-        self.set(self.configuration_section, PROCESS_START_METHOD, process_start_method)
 
     ################################################################################
     #######################   DATA SOURCE SECTIONS METHODS   #######################

@@ -314,8 +314,7 @@ class Materializer:
         logging.info('Number of triples generated in total: ' + str(num_triples) + '.')
 
     def materialize_concurrently(self):
-        logging.debug("Parallelizing with " + str(self.config.get_number_of_processes()) +
-                      " cores. Using `" + str(mp.get_start_method()).upper() + "` as process start method.")
+        logging.debug("Parallelizing with " + str(self.config.get_number_of_processes()) + " cores.")
 
         pool = mp.Pool(self.config.get_number_of_processes())
         num_triples = sum(pool.starmap(_materialize_mapping_partition,
