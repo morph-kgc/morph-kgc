@@ -56,7 +56,7 @@ def _materialize_template(results_df, template, columns_alias='', termtype=const
         results_df['reference_results'] = results_df[columns_alias + reference]
 
         if str(termtype).strip() == constants.R2RML_IRI:
-            results_df['reference_results'] = results_df['reference_results'].apply(lambda x: quote(x))
+            results_df['reference_results'] = results_df['reference_results'].apply(lambda x: quote(x, safe=''))
 
         splitted_template = template.split('{' + reference + '}')
         results_df['triple'] = results_df['triple'] + splitted_template[0] + results_df['reference_results']
@@ -81,7 +81,7 @@ def _materialize_reference(results_df, reference, columns_alias='', termtype=con
     results_df['reference_results'] = results_df[columns_alias + str(reference)]
 
     if str(termtype).strip() == constants.R2RML_IRI:
-        results_df['reference_results'] = results_df['reference_results'].apply(lambda x: quote(x, safe='://'))
+        results_df['reference_results'] = results_df['reference_results'].apply(lambda x: quote(x, safe='://')) # TODO verify this quote
         results_df['triple'] = results_df['triple'] + '<' + results_df['reference_results'] + '> '
     elif str(termtype).strip() == constants.R2RML_LITERAL:
         results_df['triple'] = results_df['triple'] + '"' + results_df['reference_results'] + '"'
