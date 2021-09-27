@@ -167,7 +167,7 @@ def _materialize_mapping_rule_terms(results_df, mapping_rule, config):
         results_df = _materialize_constant(results_df, mapping_rule['object_constant'], termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
     elif pd.notna(mapping_rule['object_reference']):
         results_df = _materialize_reference(results_df, mapping_rule['object_reference'], termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
-    if config.get_output_format() == 'NQUADS':
+    if config.get_output_format() == 'N-QUADS':
         if pd.notna(mapping_rule['graph_template']):
             results_df = _materialize_template(results_df, mapping_rule['graph_template'])
         elif pd.notna(mapping_rule['graph_constant']):
