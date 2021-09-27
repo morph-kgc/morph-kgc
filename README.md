@@ -1,6 +1,5 @@
 ![Licence](https://img.shields.io/github/license/oeg-upm/Morph-KGC)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/w/oeg-upm/Morph-KGC?style=plastic)
-[![Build Status](https://travis-ci.org/oeg-upm/Morph-KGC.svg?branch=master)](https://travis-ci.org/oeg-upm/Morph-KGC)
 
 <p align="center">
 <img src="https://github.com/oeg-upm/morph-website/blob/master/morph-group/src/assets/logo.png" height="100" alt="morph">
