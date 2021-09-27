@@ -1,7 +1,6 @@
 ![Licence](https://img.shields.io/github/license/oeg-upm/Morph-KGC)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/w/oeg-upm/Morph-KGC?style=plastic)
-[![Coverage status](https://img.shields.io/codecov/c/github/oeg-upm/Morph-KGC)](https://codecov.io/gh/oeg-upm/Morph-KGC)
-[![Dependency Status](https://img.shields.io/david/oeg-upm/Morph-KGC)](https://david-dm.org/oeg-upm/Morph-KGC)
+[![Build Status](https://travis-ci.org/oeg-upm/Morph-KGC.svg?branch=master)](https://travis-ci.org/oeg-upm/Morph-KGC)
 
 <p align="center">
 <img src="https://github.com/oeg-upm/morph-website/blob/master/morph-group/src/assets/logo.png" height="100" alt="morph">
