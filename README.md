@@ -1,5 +1,5 @@
 [![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0)
-![GitHub commit activity](https://img.shields.io/github/commit-activity/m/oeg-upm/Morph-KGC?style=plastic)
+[![GitHub commit activity](https://img.shields.io/github/commit-activity/m/oeg-upm/Morph-KGC?style=plastic)](https://github.com/oeg-upm/Morph-KGC/commits/main)
 
 <p align="center">
 <img src="https://github.com/oeg-upm/morph-website/blob/master/morph-group/src/assets/logo.png" height="100" alt="morph">
