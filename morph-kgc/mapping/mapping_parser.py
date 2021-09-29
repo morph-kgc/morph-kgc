@@ -560,18 +560,17 @@ class MappingParser:
 
         # check termtypes are correct (i.e. that they are rr:IRI, rr:BlankNode or rr:Literal and that subject map is
         # not a rr:literal). Use subset operation
-        if not (set(self.mappings_df['subject_termtype'].astype(str)) <= {constants.R2RML_IRI,
-                                                                          constants.R2RML_BLANK_NODE}):
-            raise ValueError('Found an invalid subject termtype. Found values ' +
-                             str(set(self.mappings_df['subject_termtype'].astype(str))) +
-                             '. Subject maps must be rr:IRI or rr:BlankNode.')
+        subject_termtypes = set([str(termtype) for termtype in set(self.mappings_df['subject_termtype'])])
+        if not (subject_termtypes <= {constants.R2RML_IRI, constants.R2RML_BLANK_NODE}):
+            raise ValueError('Found an invalid subject termtype. Found values ' + str(subject_termtypes) + \
+                             '. Subject maps must be ' + constants.R2RML_IRI + ' or ' + constants.R2RML_BLANK_NODE + \
+                             '.')
 
-        if not (set(self.mappings_df['object_termtype'].astype(str)) <= {constants.R2RML_IRI,
-                                                                         constants.R2RML_BLANK_NODE,
-                                                                         constants.R2RML_LITERAL}):
-            raise ValueError('Found an invalid object termtype. Found values ' +
-                             str(set(self.mappings_df['subject_termtype'].astype(str))) +
-                             '. Object maps must be rr:IRI, rr:BlankNode or rr:Literal.')
+        object_termtypes = set([str(termtype) for termtype in set(self.mappings_df['object_termtype'])])
+        if not (object_termtypes <= {constants.R2RML_IRI, constants.R2RML_BLANK_NODE, constants.R2RML_LITERAL}):
+            raise ValueError('Found an invalid object termtype. Found values ' + str(object_termtypes) + \
+                             '. Object maps must be ' + constants.R2RML_IRI + ', ' + constants.R2RML_BLANK_NODE + \
+                             ' or ' + constants.R2RML_LITERAL + '.')
 
         # if there is a datatype or language tag then the object map termtype must be a rr:Literal
         if len(self.mappings_df.loc[(self.mappings_df['object_termtype'] != constants.R2RML_LITERAL) &
