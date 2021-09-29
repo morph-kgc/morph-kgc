@@ -40,6 +40,8 @@ Check the **[wiki](https://github.com/oeg-upm/Morph-KGC/wiki)** with all the inf
 
 **[License](https://github.com/oeg-upm/Morph-KGC/wiki/License)**
 
+**[FAQ](https://github.com/oeg-upm/Morph-KGC/wiki/FAQ)**
+
 ## Authors
 
 - **Julián Arenas-Guerrero (julian.arenas.guerrero@upm.es)**
