@@ -195,6 +195,48 @@ def _complete_rml_classes(mapping_graph):
     return mapping_graph
 
 
+def _remove_self_joins(mapping_graph):
+    query = 'SELECT DISTINCT ?OM ?join_condition ?parentSM_template ?parentSM_constant ?parentSM_reference ' \
+                           ' ?parentSM_termtype WHERE { ' \
+            '?childTM <' + constants.R2RML_PREDICATE_OBJECT_MAP + '> ?POM . ' \
+            '?POM <' + constants.R2RML_OBJECT_MAP + '> ?OM . ' \
+            '?OM <' + constants.R2RML_PARENT_TRIPLES_MAP + '> ?parentTM . ' \
+            '?parentTM <' + constants.R2RML_SUBJECT_MAP + '> ?parentSM . ' \
+            'OPTIONAL { ?join_condition <' + constants.R2RML_JOIN_CONDITION + '> ?join_condition . } . ' \
+            'OPTIONAL { ?parentSM <' + constants.R2RML_TEMPLATE + '> ?parentSM_template . } . ' \
+            'OPTIONAL { ?parentSM <' + constants.R2RML_CONSTANT + '> ?parentSM_constant . } . ' \
+            'OPTIONAL { ?parentSM <' + constants.RML_REFERENCE + '> ?parentSM_reference . } . ' \
+            '?parentSM <' + constants.R2RML_TERM_TYPE + '> ?parentSM_termtype . ' \
+            'OPTIONAL { ?childTM <' + constants.RML_LOGICAL_SOURCE + '> ?child_logical_source . ' \
+                      ' ?parentTM <' + constants.RML_LOGICAL_SOURCE + '> ?parent_logical_source . ' \
+                      ' FILTER ( ?child_logical_source != ?parent_logical_source) } . ' \
+            'OPTIONAL { ?childTM <' + constants.RML_QUERY + '> ?child_query . ' \
+                      ' ?parentTM <' + constants.RML_QUERY + '> ?parent_query . ' \
+                      ' FILTER ( ?child_query != ?parent_query ) } . ' \
+            'OPTIONAL { ?childTM <' + constants.RML_ITERATOR + '> ?child_iterator . ' \
+                      ' ?parentTM <' + constants.RML_ITERATOR + '> ?parent_iterator . ' \
+                      ' FILTER ( ?child_query != ?parent_query ) } . ' \
+            'OPTIONAL { ?childTM <' + constants.R2RML_TABLE_NAME + '> ?child_tablename . ' \
+                      ' ?parentTM <' + constants.R2RML_TABLE_NAME + '> ?parent_tablename . ' \
+                      ' FILTER ( ?child_query != ?parent_query ) } . }'
+
+    for OM, join_condition, parentSM_template, parentSM_constant, parentSM_reference, parentSM_termtype in \
+            mapping_graph.query(query):
+        mapping_graph.remove((OM, None, None))
+        if join_condition:
+            mapping_graph.remove((join_condition, None, None))
+
+        mapping_graph.add((OM, rdflib.term.URIRef(constants.R2RML_TERM_TYPE), parentSM_termtype))
+        if parentSM_template:
+            mapping_graph.add((OM, rdflib.term.URIRef(constants.R2RML_TEMPLATE), parentSM_template))
+        elif parentSM_constant:
+            mapping_graph.add((OM, rdflib.term.URIRef(constants.R2RML_CONSTANT), parentSM_constant))
+        elif parentSM_reference:
+            mapping_graph.add((OM, rdflib.term.URIRef(constants.RML_REFERENCE), parentSM_reference))
+
+    return mapping_graph
+
+
 def _get_join_object_maps_join_conditions(join_query_results):
     """
     Creates a dictionary with the results of the JOIN_CONDITION_PARSING_QUERY. The keys are the identifiers of the
@@ -317,7 +359,6 @@ class MappingParser:
     def parse_mappings(self):
         self._get_from_r2_rml()
         self._normalize_mappings()
-        self._remove_self_joins_from_mappings()
         self._infer_datatypes()
 
         self.validate_mappings()
@@ -365,7 +406,7 @@ class MappingParser:
         mapping_file_paths = self.config.get_mappings_files(section_name)
         try:
             # load mapping rules to the graph
-            [mapping_graph.load(f, format=rdflib.util.guess_format(f)) for f in mapping_file_paths]
+            [mapping_graph.parse(f, format=rdflib.util.guess_format(f)) for f in mapping_file_paths]
         except Exception as n3_mapping_parse_exception:
             raise Exception(n3_mapping_parse_exception)
 
@@ -381,6 +422,8 @@ class MappingParser:
         mapping_graph = _complete_pom_with_default_graph(mapping_graph)
         # if a term as no associated rr:termType, complete it according to R2RML specification
         mapping_graph = _complete_termtypes(mapping_graph)
+        # remove self joins
+        mapping_graph = _remove_self_joins(mapping_graph)
         # add rdf:type RML classes
         mapping_graph = _complete_rml_classes(mapping_graph)
 
@@ -397,6 +440,7 @@ class MappingParser:
     def _normalize_mappings(self):
         # start by removing duplicated triples
         self.mappings_df = self.mappings_df.drop_duplicates()
+
         # complete source type with reference formulation
         self._complete_source_types()
 
@@ -410,37 +454,6 @@ class MappingParser:
 
         # create a unique id for each mapping rule
         self.mappings_df.insert(0, 'id', self.mappings_df.reset_index(drop=True).index)
-
-    def _remove_self_joins_from_mappings(self):
-        for i, mapping_rule in self.mappings_df.iterrows():
-            if pd.notna(mapping_rule['object_parent_triples_map']):
-                parent_triples_map_rule = utils.get_mapping_rule_from_triples_map_id(self.mappings_df, mapping_rule[
-                    'object_parent_triples_map'])
-
-                # str() is to be able to compare np.nan
-                if str(mapping_rule['source_name']) == str(parent_triples_map_rule['source_name']) and \
-                        str(mapping_rule['data_source']) == str(parent_triples_map_rule['data_source']) and \
-                        str(mapping_rule['tablename']) == str(parent_triples_map_rule['tablename']) and \
-                        str(mapping_rule['iterator']) == str(parent_triples_map_rule['iterator']) and \
-                        str(mapping_rule['query']) == str(parent_triples_map_rule['query']):
-
-                    remove_join = True
-
-                    # check that all conditions in the join condition have the same references
-                    join_conditions = eval(mapping_rule['join_conditions'])
-                    for key, join_condition in join_conditions.items():
-                        if join_condition['child_value'] != join_condition['parent_value']:
-                            remove_join = False
-
-                    if remove_join:
-                        logging.debug('Removing join from mapping rule `' + str(mapping_rule['id']) + '`.')
-
-                        self.mappings_df.at[i, 'object_parent_triples_map'] = ''
-                        self.mappings_df.at[i, 'join_conditions'] = ''
-                        self.mappings_df.at[i, 'object_constant'] = parent_triples_map_rule.at['subject_constant']
-                        self.mappings_df.at[i, 'object_template'] = parent_triples_map_rule.at['subject_template']
-                        self.mappings_df.at[i, 'object_reference'] = parent_triples_map_rule.at['subject_reference']
-                        self.mappings_df.at[i, 'object_termtype'] = parent_triples_map_rule.at['subject_termtype']
 
     def _complete_source_types(self):
         """

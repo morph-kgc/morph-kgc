@@ -147,6 +147,7 @@ QL_XML = 'http://semweb.mmlab.be/ns/ql#XPath'
 RML_NAMESPACE = 'http://semweb.mmlab.be/ns/rml#'
 RML_LOGICAL_SOURCE = 'http://semweb.mmlab.be/ns/rml#logicalSource'
 RML_QUERY = 'http://semweb.mmlab.be/ns/rml#query'
+RML_ITERATOR = 'http://semweb.mmlab.be/ns/rml#iterator'
 RML_REFERENCE = 'http://semweb.mmlab.be/ns/rml#reference'
 RML_REFERENCE_FORMULATION = 'http://semweb.mmlab.be/ns/rml#referenceFormulation'
 
