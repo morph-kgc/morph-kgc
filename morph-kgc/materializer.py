@@ -57,6 +57,8 @@ def _materialize_template(results_df, template, columns_alias='', termtype=const
 
         if str(termtype).strip() == constants.R2RML_IRI:
             results_df['reference_results'] = results_df['reference_results'].apply(lambda x: quote(x, safe=''))
+        elif str(termtype).strip() == constants.R2RML_LITERAL:
+            results_df['reference_results'] = results_df['reference_results'].apply(lambda x: x.replace('"', '\\"').replace('\\', '\\\\"'))
 
         splitted_template = template.split('{' + reference + '}')
         results_df['triple'] = results_df['triple'] + splitted_template[0] + results_df['reference_results']
@@ -87,6 +89,7 @@ def _materialize_reference(results_df, reference, columns_alias='', termtype=con
         results_df['reference_results'] = results_df['reference_results'].apply(lambda x: quote(x, safe='://')) # TODO verify this quote
         results_df['triple'] = results_df['triple'] + '<' + results_df['reference_results'] + '> '
     elif str(termtype).strip() == constants.R2RML_LITERAL:
+        results_df['reference_results'] = results_df['reference_results'].apply(lambda x: x.replace('"', '\\"').replace('\\', '\\\\"'))
         results_df['triple'] = results_df['triple'] + '"' + results_df['reference_results'] + '"'
         if pd.notna(language_tag):
             results_df['triple'] = results_df['triple'] + '@' + language_tag + ' '
@@ -317,7 +320,7 @@ class Materializer:
         logging.info('Number of triples generated in total: ' + str(num_triples) + '.')
 
     def materialize_concurrently(self):
-        logging.debug("Parallelizing with " + str(self.config.get_number_of_processes()) + " cores.")
+        logging.debug('Parallelizing with ' + str(self.config.get_number_of_processes()) + ' cores.')
 
         pool = mp.Pool(self.config.get_number_of_processes())
         num_triples = sum(pool.starmap(_materialize_mapping_partition,
