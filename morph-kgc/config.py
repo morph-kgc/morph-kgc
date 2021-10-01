@@ -10,6 +10,7 @@ import os
 import constants
 import logging
 import utils
+import errno
 
 from configparser import ConfigParser
 
@@ -326,6 +327,8 @@ class Config(ConfigParser):
                     mapping_file = os.path.join(mapping_path, mapping_file_name)
                     if os.path.isfile(mapping_file):
                         mapping_file_paths.append(mapping_file)
+            else:
+                raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), mapping_path)
 
         return mapping_file_paths
 
