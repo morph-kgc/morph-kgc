@@ -1,4 +1,4 @@
-__version__ = "v1.0.1"
+__version__ = "v1.1.1"
 
 __author__ = "Julián Arenas-Guerrero"
 __copyright__ = "Copyright (C) 2020-2021 Julián Arenas-Guerrero"
