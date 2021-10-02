@@ -13,6 +13,7 @@ import os
 
 from config import Config
 from configparser import ExtendedInterpolation
+from _version import __version__
 
 
 def _existing_file_path(file_path):
@@ -41,7 +42,7 @@ def _parse_arguments():
 
     parser.add_argument('config', type=_existing_file_path, help='path to the configuration file')
     parser.add_argument('-v', '--version', action='version',
-                        version='Morph-KGC ' + constants.__version__ + ' | ' + constants.__copyright__)
+                        version='Morph-KGC v' + __version__ + ' | ' + constants.__copyright__)
 
     return parser.parse_args()
 
