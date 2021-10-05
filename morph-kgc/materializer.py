@@ -13,7 +13,7 @@ import pandas as pd
 import multiprocessing as mp
 
 from itertools import repeat
-from urllib.parse import quote
+from falcon.uri import encode
 
 from data_source import relational_source, tabular_source
 import utils
@@ -56,7 +56,7 @@ def _materialize_template(results_df, template, columns_alias='', termtype=const
         results_df['reference_results'] = results_df[columns_alias + reference]
 
         if str(termtype).strip() == constants.R2RML_IRI:
-            results_df['reference_results'] = results_df['reference_results'].apply(lambda x: quote(x, safe=''))
+            results_df['reference_results'] = results_df['reference_results'].apply(lambda x: encode(x))
         elif str(termtype).strip() == constants.R2RML_LITERAL:
             results_df['reference_results'] = results_df['reference_results'].str.replace('"', '\\"').str.replace('\\', '\\\\"')
 
@@ -86,7 +86,7 @@ def _materialize_reference(results_df, reference, columns_alias='', termtype=con
     results_df['reference_results'] = results_df[columns_alias + str(reference)]
 
     if str(termtype).strip() == constants.R2RML_IRI:
-        results_df['reference_results'] = results_df['reference_results'].apply(lambda x: quote(x, safe='://')) # TODO verify this quote
+        results_df['reference_results'] = results_df['reference_results'].apply(lambda x: encode(x))
         results_df['triple'] = results_df['triple'] + '<' + results_df['reference_results'] + '> '
     elif str(termtype).strip() == constants.R2RML_LITERAL:
         results_df['reference_results'] = results_df['reference_results'].str.replace('"', '\\"').str.replace('\\', '\\\\"')
