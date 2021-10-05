@@ -59,7 +59,7 @@ def _materialize_template(results_df, template, columns_alias='', termtype=const
             # falcon's encode is faster than urllib's quote
             results_df['reference_results'] = results_df['reference_results'].apply(lambda x: encode(x))
         elif str(termtype).strip() == constants.R2RML_LITERAL:
-            results_df['reference_results'] = results_df['reference_results'].str.replace('"', '\\"').str.replace('\\', '\\\\"')
+            results_df['reference_results'] = results_df['reference_results'].str.replace('"', '\\"', regex=False).str.replace('\\', '\\\\"', regex=False)
 
         splitted_template = template.split('{' + reference + '}')
         results_df['triple'] = results_df['triple'] + splitted_template[0] + results_df['reference_results']
@@ -91,7 +91,7 @@ def _materialize_reference(results_df, reference, columns_alias='', termtype=con
         results_df['reference_results'] = results_df['reference_results'].apply(lambda x: encode(x))
         results_df['triple'] = results_df['triple'] + '<' + results_df['reference_results'] + '> '
     elif str(termtype).strip() == constants.R2RML_LITERAL:
-        results_df['reference_results'] = results_df['reference_results'].str.replace('"', '\\"').str.replace('\\', '\\\\"')
+        results_df['reference_results'] = results_df['reference_results'].str.replace('"', '\\"', regex=False).str.replace('\\', '\\\\"', regex=False)
         results_df['triple'] = results_df['triple'] + '"' + results_df['reference_results'] + '"'
         if pd.notna(language_tag):
             results_df['triple'] = results_df['triple'] + '@' + language_tag + ' '
