@@ -15,6 +15,8 @@ def get_table_data(config, mapping_rule, references):
 
     if tabular_source_type in [constants.CSV_SOURCE_TYPE, constants.TSV_SOURCE_TYPE]:
         return _read_csv(config, mapping_rule, references, tabular_source_type)
+    elif tabular_source_type == constants.EXCEL_SOURCE_TYPE:
+        return _read_excel(config, mapping_rule, references)
     elif tabular_source_type == constants.PARQUET_SOURCE_TYPE:
         return _read_parquet(mapping_rule, references)
     elif tabular_source_type == constants.FEATHER_SOURCE_TYPE:
@@ -94,3 +96,16 @@ def _read_spss(mapping_rule, references):
                            convert_categoricals=False)
 
     return [spss_df]
+
+
+def _read_excel(config, mapping_rule, references):
+    excel_df = pd.read_excel(mapping_rule['data_source'],
+                            sheet_name=0,
+                            engine='openpyxl',
+                            usecols=references,
+                            dtype=str,
+                            keep_default_na=False,
+                            na_values=config.get_na_values(),
+                            na_filter=config.apply_na_filter())
+
+    return [excel_df]

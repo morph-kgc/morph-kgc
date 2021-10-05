@@ -6,3 +6,4 @@ falcon==3.0.1
 sql_metadata==2.3.0
 SQLAlchemy==1.4.25
 pyarrow==5.0.0
+openpyxl==3.0.9
