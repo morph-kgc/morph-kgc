@@ -124,20 +124,21 @@ def get_references_in_template(template):
 
 def triples_to_file(triples, config, mapping_partition=''):
     """
-    Write triples to file. If mapping_partition is provided it is used as file name. File extension is inferred from
-    output_format in config. If mapping_partition is provided and final results will be in a unique file, the triples
-    are written to a temporary directory.
+    Writes triples to file.
     """
 
     f = open(config.get_output_file_path(mapping_partition), 'a')
-    if config.only_write_printable_characters():
-        for triple in triples:
-            # REMOVING NON PRINTABLE CHARACTERS THIS WAY IS VERY SLOW!
-            f.write(''.join(c for c in triple if c.isprintable()) + '.\n')
-    else:
-        for triple in triples:
-            f.write(triple + '.\n')
+    for triple in triples:
+        f.write(triple + '.\n')
     f.close()
+
+
+def remove_non_printable_characters(string):
+    """
+    Eliminates from the input string all the characters that are not printable.
+    """
+
+    return ''.join(char for char in string if char.isprintable())
 
 
 def clean_output_dir(config):

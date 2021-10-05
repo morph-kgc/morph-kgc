@@ -43,7 +43,7 @@ def _get_references_in_mapping_rule(mapping_rule, only_subject_map=False):
     return set(references)
 
 
-def _materialize_template(results_df, template, columns_alias='', termtype=constants.R2RML_IRI, language_tag='',
+def _materialize_template(results_df, template, config, columns_alias='', termtype=constants.R2RML_IRI, language_tag='',
                           datatype=''):
     references = utils.get_references_in_template(str(template))
 
@@ -54,6 +54,9 @@ def _materialize_template(results_df, template, columns_alias='', termtype=const
 
     for reference in references:
         results_df['reference_results'] = results_df[columns_alias + reference]
+
+        if config.only_write_printable_characters():
+            results_df['reference_results'] = results_df['reference_results'].apply(lambda x: utils.remove_non_printable_characters(encode(x)))
 
         if str(termtype).strip() == constants.R2RML_IRI:
             # falcon's encode is faster than urllib's quote
@@ -82,9 +85,12 @@ def _materialize_template(results_df, template, columns_alias='', termtype=const
     return results_df
 
 
-def _materialize_reference(results_df, reference, columns_alias='', termtype=constants.R2RML_LITERAL,
+def _materialize_reference(results_df, reference, config, columns_alias='', termtype=constants.R2RML_LITERAL,
                            language_tag='', datatype=''):
     results_df['reference_results'] = results_df[columns_alias + str(reference)]
+
+    if config.only_write_printable_characters():
+        results_df['reference_results'] = results_df['reference_results'].apply(lambda x: utils.remove_non_printable_characters(encode(x)))
 
     if str(termtype).strip() == constants.R2RML_IRI:
         # falcon's encode is faster than urllib's quote
@@ -121,33 +127,33 @@ def _materialize_constant(results_df, constant, termtype=constants.R2RML_IRI, la
     return results_df
 
 
-def _materialize_join_mapping_rule_terms(results_df, mapping_rule, parent_triples_map_rule):
+def _materialize_join_mapping_rule_terms(results_df, mapping_rule, parent_triples_map_rule, config):
     results_df['triple'] = ''
     if pd.notna(mapping_rule['subject_template']):
-        results_df = _materialize_template(results_df, mapping_rule['subject_template'], termtype=mapping_rule['subject_termtype'], columns_alias='child_')
+        results_df = _materialize_template(results_df, mapping_rule['subject_template'], config, termtype=mapping_rule['subject_termtype'], columns_alias='child_')
     elif pd.notna(mapping_rule['subject_constant']):
         results_df = _materialize_constant(results_df, mapping_rule['subject_constant'], termtype=mapping_rule['subject_termtype'])
     elif pd.notna(mapping_rule['subject_reference']):
-        results_df = _materialize_reference(results_df, mapping_rule['subject_reference'], termtype=mapping_rule['subject_termtype'], columns_alias='child_')
+        results_df = _materialize_reference(results_df, mapping_rule['subject_reference'], config, termtype=mapping_rule['subject_termtype'], columns_alias='child_')
     if pd.notna(mapping_rule['predicate_template']):
-        results_df = _materialize_template(results_df, mapping_rule['predicate_template'], columns_alias='child_')
+        results_df = _materialize_template(results_df, mapping_rule['predicate_template'], config, columns_alias='child_')
     elif pd.notna(mapping_rule['predicate_constant']):
         results_df = _materialize_constant(results_df, mapping_rule['predicate_constant'])
     elif pd.notna(mapping_rule['predicate_reference']):
-        results_df = _materialize_reference(results_df, mapping_rule['predicate_reference'], termtype=constants.R2RML_IRI, columns_alias='child_')
+        results_df = _materialize_reference(results_df, mapping_rule['predicate_reference'], config, termtype=constants.R2RML_IRI, columns_alias='child_')
     if pd.notna(parent_triples_map_rule['subject_template']):
-        results_df = _materialize_template(results_df, parent_triples_map_rule['subject_template'], termtype=parent_triples_map_rule['subject_termtype'], columns_alias='parent_')
+        results_df = _materialize_template(results_df, parent_triples_map_rule['subject_template'], config, termtype=parent_triples_map_rule['subject_termtype'], columns_alias='parent_')
     elif pd.notna(parent_triples_map_rule['subject_constant']):
         results_df = _materialize_constant(results_df, parent_triples_map_rule['subject_constant'], termtype=parent_triples_map_rule['subject_termtype'])
     elif pd.notna(parent_triples_map_rule['subject_reference']):
-        results_df = _materialize_reference(results_df, parent_triples_map_rule['subject_reference'], termtype=parent_triples_map_rule['subject_termtype'], columns_alias='parent_')
+        results_df = _materialize_reference(results_df, parent_triples_map_rule['subject_reference'], config, termtype=parent_triples_map_rule['subject_termtype'], columns_alias='parent_')
     if pd.notna(mapping_rule['graph_template']):
-        results_df = _materialize_template(results_df, mapping_rule['graph_template'], columns_alias='child_')
+        results_df = _materialize_template(results_df, mapping_rule['graph_template'], config, columns_alias='child_')
     elif pd.notna(mapping_rule['graph_constant']):
         if pd.notna(mapping_rule['graph_constant'] != constants.R2RML_DEFAULT_GRAPH):
             results_df = _materialize_constant(results_df, mapping_rule['graph_constant'])
     elif pd.notna(mapping_rule['graph_reference']):
-        results_df = _materialize_reference(results_df, mapping_rule['graph_reference'], termtype=constants.R2RML_IRI, columns_alias='child_')
+        results_df = _materialize_reference(results_df, mapping_rule['graph_reference'], config, termtype=constants.R2RML_IRI, columns_alias='child_')
 
     return set(results_df['triple'])
 
@@ -155,31 +161,31 @@ def _materialize_join_mapping_rule_terms(results_df, mapping_rule, parent_triple
 def _materialize_mapping_rule_terms(results_df, mapping_rule, config):
     results_df['triple'] = ''
     if pd.notna(mapping_rule['subject_template']):
-        results_df = _materialize_template(results_df, mapping_rule['subject_template'], termtype=mapping_rule['subject_termtype'])
+        results_df = _materialize_template(results_df, mapping_rule['subject_template'], config, termtype=mapping_rule['subject_termtype'])
     elif pd.notna(mapping_rule['subject_constant']):
         results_df = _materialize_constant(results_df, mapping_rule['subject_constant'], termtype=mapping_rule['subject_termtype'])
     elif pd.notna(mapping_rule['subject_reference']):
-        results_df = _materialize_reference(results_df, mapping_rule['subject_reference'], termtype=mapping_rule['subject_termtype'])
+        results_df = _materialize_reference(results_df, mapping_rule['subject_reference'], config, termtype=mapping_rule['subject_termtype'])
     if pd.notna(mapping_rule['predicate_template']):
         results_df = _materialize_template(results_df, mapping_rule['predicate_template'])
     elif pd.notna(mapping_rule['predicate_constant']):
         results_df = _materialize_constant(results_df, mapping_rule['predicate_constant'])
     elif pd.notna(mapping_rule['predicate_reference']):
-        results_df = _materialize_reference(results_df, mapping_rule['predicate_reference'], termtype=constants.R2RML_IRI)
+        results_df = _materialize_reference(results_df, mapping_rule['predicate_reference'], config, termtype=constants.R2RML_IRI)
     if pd.notna(mapping_rule['object_template']):
-        results_df = _materialize_template(results_df, mapping_rule['object_template'], termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
+        results_df = _materialize_template(results_df, mapping_rule['object_template'], config, termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
     elif pd.notna(mapping_rule['object_constant']):
         results_df = _materialize_constant(results_df, mapping_rule['object_constant'], termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
     elif pd.notna(mapping_rule['object_reference']):
-        results_df = _materialize_reference(results_df, mapping_rule['object_reference'], termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
+        results_df = _materialize_reference(results_df, mapping_rule['object_reference'], config, termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
     if config.get_output_format() == 'N-QUADS':
         if pd.notna(mapping_rule['graph_template']):
-            results_df = _materialize_template(results_df, mapping_rule['graph_template'])
+            results_df = _materialize_template(results_df, mapping_rule['graph_template'], config)
         elif pd.notna(mapping_rule['graph_constant']):
             if config.materialize_default_graph() or mapping_rule['graph_constant'] != constants.R2RML_DEFAULT_GRAPH:
                 results_df = _materialize_constant(results_df, mapping_rule['graph_constant'])
         elif pd.notna(mapping_rule['graph_reference']):
-            results_df = _materialize_reference(results_df, mapping_rule['graph_reference'], termtype=constants.R2RML_IRI)
+            results_df = _materialize_reference(results_df, mapping_rule['graph_reference'], config, termtype=constants.R2RML_IRI)
 
     return set(results_df['triple'])
 
@@ -190,13 +196,12 @@ def _materalize_push_down_sql_join(mapping_rule, parent_triples_map_rule, refere
         references.add(join_condition['child_value'])
 
     triples_rule = set()
-    result_chunks = relational_source.get_sql_data(config, mapping_rule, references,
-                                                                  parent_triples_map_rule, parent_references)
+    result_chunks = relational_source.get_sql_data(config, mapping_rule, references, parent_triples_map_rule, parent_references)
     for query_results_chunk_df in result_chunks:
         query_results_chunk_df = utils.dataframe_columns_to_str(query_results_chunk_df)
         # query_results_chunk_df.dropna(axis=0, how='any', inplace=True)
         triples_rule.update(
-            _materialize_join_mapping_rule_terms(query_results_chunk_df, mapping_rule, parent_triples_map_rule))
+            _materialize_join_mapping_rule_terms(query_results_chunk_df, mapping_rule, parent_triples_map_rule, config))
 
     return triples_rule
 
