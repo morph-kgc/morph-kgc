@@ -34,7 +34,7 @@ To run the engine you just need to execute the following:
 python3 -m morph_kgc config.ini
 ```
 
-You can find how to generate the config file [here](https://github.com/oeg-upm/Morph-KGC/wiki/Configuration).
+You can find how to generate the configuration file [here](https://github.com/oeg-upm/Morph-KGC/wiki/Configuration).
 
 ## Wiki
 
