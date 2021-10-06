@@ -11,10 +11,8 @@ import time
 import sys
 import utils
 import pandas as pd
-import multiprocessing as mp
 
 from mapping.mapping_parser import MappingParser
-from args_parser import parse_config
 from materializer import Materializer
 
 
@@ -48,11 +46,3 @@ def process_materialization(mappings, config):
         materializer.materialize()
 
     logging.info('Materialization finished in ' + utils.get_delta_time(start_time) + ' seconds.')
-
-
-if __name__ == "__main__":
-
-    config = parse_config()
-
-    mappings = retrieve_mappings(config)
-    process_materialization(mappings, config)
