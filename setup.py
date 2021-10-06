@@ -1,28 +1,55 @@
+import os
+import re
+import sys
 import setuptools
 
 
-with open("README.md", "r") as fh:
-    long_description = fh.read()
+CURRENT_PYTHON = sys.version_info[:2]
+REQUIRED_PYTHON = (3, 7)
 
-with open("VERSION", "r") as fh:
-    v = fh.read().replace("\n", "")
+# borrowed from urllib3
+if CURRENT_PYTHON < REQUIRED_PYTHON:
+    sys.stderr.write("""
+==========================
+Unsupported Python version
+==========================
+This version of Morph-KGC requires Python {}.{}, but you're trying to install it on Python {}.{}.
+""".format(*(REQUIRED_PYTHON + CURRENT_PYTHON)))
+    sys.exit(1)
 
-with open("requirements.txt") as r:
-    requirements = list(filter(None, r.read().split("\n")[0:]))
+
+# borrowed from SQLAlchemy
+with open(os.path.join(os.path.dirname(__file__), "src", "morph_kgc", "_version.py")) as file:
+    version = (
+        re.compile(r""".*__version__ = ["'](.*?)['"]""", re.S).match(file.read()).group(1)
+    )
+
+
+with open(os.path.join(os.path.dirname(__file__), "README.md"), "r", encoding="utf-8") as file:
+    readme = file.read()
+
+
+with open(os.path.join(os.path.dirname(__file__), "requirements.txt")) as file:
+    requirements = [line.strip().replace(" ", "") for line in file.readlines()]
 
 
 setuptools.setup(
     name="Morph-KGC",
-    version=v,
+    version=version,
     author="Julián Arenas-Guerrero",
     author_email="arenas.guerrero.julian@outlook.com",
     license="Apache 2.0",
-    description="Morph-KGC is an engine that constructs RDF knowledge graphs from heterogeneous data sources with "
-                "R2RML and RML mapping languages. Morph-KGC is built on top of pandas and it leverages mapping "
-                "partitions to significantly reduce execution times and memory consumption for large data sources.",
-    long_description=long_description,
+    description="Scalable [R2]RML engine to create RDF knowledge graphs from heterogeneous data sources.",
+    keywords="morph-kgc, rdf, r2rml, rml, knowledge graphs, data integration"
+    ,
+    long_description=readme,
     long_description_content_type="text/markdown",
     url="https://github.com/oeg-upm/Morph-KGC",
+    project_urls={
+        "Documentation": "https://github.com/oeg-upm/Morph-KGC/wiki",
+        "Source code": "https://github.com/oeg-upm/Morph-KGC",
+        "Issue tracker": "https://github.com/oeg-upm/Morph-KGC/issues",
+    },
     include_package_data=True,
     packages=setuptools.find_packages(),
     classifiers=[
