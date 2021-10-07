@@ -15,7 +15,6 @@ from itertools import repeat
 from falcon.uri import encode
 
 import constants
-
 import utils
 
 from data_source import relational_source, tabular_source
