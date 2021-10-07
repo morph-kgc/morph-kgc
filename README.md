@@ -11,7 +11,7 @@ Morph-KGC is an engine that constructs [RDF](https://www.w3.org/TR/rdf11-concept
 
 ## Main Features
 
-- Supports [R2RML](https://www.w3.org/TR/r2rml/) and [RML](https://rml.io/specs/rml/) mapping languages.<!--- - [PyPi]() package and [Docker container image]() provided. -->
+- Supports [R2RML](https://www.w3.org/TR/r2rml/) and [RML](https://rml.io/specs/rml/) mapping languages.
 - Input data formats:
   - Relational databases: [MySQL](https://www.mysql.com/), [PostgreSQL](https://www.postgresql.org/), [Oracle](https://www.oracle.com/database/), [Microsoft SQL Server](https://www.microsoft.com/sql-server), [MariaDB](https://mariadb.org/), [SQLite](https://www.sqlite.org/index.html).
   - Tabular files: [CSV](https://en.wikipedia.org/wiki/Comma-separated_values), [TSV](https://en.wikipedia.org/wiki/Tab-separated_values), [Excel](https://www.microsoft.com/en-us/microsoft-365/excel), [Parquet](https://parquet.apache.org/documentation/latest/), [Feather](https://arrow.apache.org/docs/python/feather.html), [ORC](https://orc.apache.org/), [Stata](https://www.stata.com/), [SAS](https://www.sas.com), [SPSS](https://www.ibm.com/analytics/spss-statistics-software).
@@ -24,14 +24,14 @@ Morph-KGC is an engine that constructs [RDF](https://www.w3.org/TR/rdf11-concept
 
 ## Installing and Running
 
-PyPi is the fastest way to install Morph-KGC:
+[PyPi](https://pypi.org/project/morph-kgc/) is the fastest way to install Morph-KGC:
 ```
-pip install morph_kgc
+pip install morph-kgc
 ```
 
 To run the engine you just need to execute the following:
 ```
-python3 -m morph_kgc config.ini
+python3 -m morph_kgc configuration.ini
 ```
 
 You can find how to generate the configuration file [here](https://github.com/oeg-upm/Morph-KGC/wiki/Configuration).
