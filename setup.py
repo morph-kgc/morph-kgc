@@ -20,9 +20,7 @@ This version of Morph-KGC requires Python {}.{}, but you're trying to install it
 
 # borrowed from SQLAlchemy
 with open(os.path.join(os.path.dirname(__file__), 'src', 'morph_kgc', '_version.py')) as file:
-    version = (
-        re.compile(r""".*__version__ = ["'](.*?)['"]""", re.S).match(file.read()).group(1)
-    )
+    version = (re.compile(r""".*__version__ = ["'](.*?)['"]""", re.S).match(file.read()).group(1))
 
 
 with open(os.path.join(os.path.dirname(__file__), 'README.md'), 'r', encoding='utf-8') as file:
@@ -52,6 +50,7 @@ setuptools.setup(
     },
     include_package_data=True,
     packages=setuptools.find_packages(os.path.join(os.path.dirname(__file__), 'src')),
+    package_dir={'morph_kgc': os.path.join(os.path.dirname(__file__), 'src', 'morph_kgc')},
     classifiers=[
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: Apache Software License',
