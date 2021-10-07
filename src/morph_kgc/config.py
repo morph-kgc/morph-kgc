@@ -10,10 +10,10 @@ import os
 import logging
 import errno
 
+from configparser import ConfigParser
+
 import constants
 import utils
-
-from configparser import ConfigParser
 
 
 CONFIGURATION_SECTION = 'CONFIGURATION'
