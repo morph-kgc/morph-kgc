@@ -38,12 +38,13 @@ def _parse_arguments():
         description='Generate Knowledge Graphs from Heterogeneous Data Sources.',
         epilog=__copyright__,
         allow_abbrev=False,
+        prog='python3 -m morph_kgc',
         argument_default=argparse.SUPPRESS
     )
 
     parser.add_argument('config', type=_existing_file_path, help='path to the configuration file')
     parser.add_argument('-v', '--version', action='version',
-                        version='Morph-KGC v' + __version__ + ' | ' + __copyright__)
+                        version='Morph-KGC ' + __version__ + ' | ' + __copyright__)
 
     return parser.parse_args()
 
