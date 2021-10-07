@@ -7,13 +7,14 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 
 import logging
-import constants
 import time
 import pandas as pd
 import multiprocessing as mp
 
 from itertools import repeat
 from falcon.uri import encode
+
+import constants
 
 import utils
 

@@ -11,9 +11,10 @@ import logging
 import sql_metadata
 import pandas as pd
 import numpy as np
+import multiprocessing as mp
+
 import constants
 import utils
-import multiprocessing as mp
 
 from mapping.mapping_constants import MAPPINGS_DATAFRAME_COLUMNS, MAPPING_PARSING_QUERY, JOIN_CONDITION_PARSING_QUERY
 from mapping.mapping_partitioner import MappingPartitioner

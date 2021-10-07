@@ -7,11 +7,12 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 
 import argparse
-import utils
-import constants
 import os
 
 from configparser import ExtendedInterpolation
+
+import utils
+import constants
 
 from config import Config
 from _version import __version__

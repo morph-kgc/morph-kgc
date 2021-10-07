@@ -6,13 +6,14 @@ __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"
 
 
-import constants
 import logging
-import utils
 import pandas as pd
 import multiprocessing as mp
 
 from itertools import permutations
+
+import constants
+import utils
 
 
 def get_invariant_of_template(template):

@@ -9,8 +9,9 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 import logging
 import time
 import sys
-import utils
 import pandas as pd
+
+import utils
 
 from mapping.mapping_parser import MappingParser
 from materializer import Materializer
