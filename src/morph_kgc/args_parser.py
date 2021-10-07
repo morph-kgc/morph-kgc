@@ -43,8 +43,7 @@ def _parse_arguments():
     )
 
     parser.add_argument('config', type=_existing_file_path, help='path to the configuration file')
-    parser.add_argument('-v', '--version', action='version',
-                        version='Morph-KGC ' + __version__ + ' | ' + __copyright__)
+    parser.add_argument('-v', '--version', action='version', version='Morph-KGC ' + __version__ + ' | ' + __copyright__)
 
     return parser.parse_args()
 
