@@ -15,8 +15,9 @@ import multiprocessing as mp
 from itertools import repeat
 from falcon.uri import encode
 
-from data_source import relational_source, tabular_source
 import utils
+
+from data_source import relational_source, tabular_source
 
 
 def _get_references_in_mapping_rule(mapping_rule, only_subject_map=False):
