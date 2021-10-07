@@ -52,7 +52,6 @@ setuptools.setup(
     },
     include_package_data=True,
     packages=setuptools.find_packages(os.path.join(os.path.dirname(__file__), 'src')),
-    package_dir={'morph_kgc': 'src/morph_kgc'},
     classifiers=[
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: Apache Software License',
