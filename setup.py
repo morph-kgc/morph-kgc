@@ -26,6 +26,10 @@ with open(os.path.join(os.path.dirname(__file__), 'src', 'morph_kgc', '_version.
 
 with open(os.path.join(os.path.dirname(__file__), 'README.md'), 'r', encoding='utf-8') as file:
     readme = file.read()
+    # remove morph logo
+    readme = re.sub("<p[^>]*>", "", readme)
+    readme = re.sub("<img[^>]*>", "", readme)
+    readme = re.sub("</?p[^>]*>", "", readme)
 
 
 with open(os.path.join(os.path.dirname(__file__), 'requirements.txt')) as file:
