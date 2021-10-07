@@ -12,8 +12,8 @@ import multiprocessing as mp
 
 from itertools import permutations
 
-import constants
-import utils
+from ..constants import *
+from ..utils import get_mapping_rule_from_triples_map_id
 
 
 def get_invariant_of_template(template):
@@ -23,10 +23,10 @@ def get_invariant_of_template(template):
     exception is thrown.
     """
 
-    template_for_splitting = template.replace('\\{', constants.AUXILIAR_UNIQUE_REPLACING_STRING)
+    template_for_splitting = template.replace('\\{', AUXILIAR_UNIQUE_REPLACING_STRING)
     if '{' in template_for_splitting:
         invariant_of_template = template_for_splitting.split('{')[0]
-        invariant_of_template = invariant_of_template.replace(constants.AUXILIAR_UNIQUE_REPLACING_STRING, '\\{')
+        invariant_of_template = invariant_of_template.replace(AUXILIAR_UNIQUE_REPLACING_STRING, '\\{')
     else:
         # no references were found in the template, and therefore the template is invalid
         raise Exception("Invalid template `" + template + "`. No pairs of unescaped curly braces were found.")
@@ -42,8 +42,8 @@ def _generate_maximal_partition_for_a_position_ordering(mappings_df, position_or
     for position in position_ordering:
         current_global_group = mappings_df.at[0, 'mapping_partition']  # to simulate a groupby
         current_group = 0
-        current_invariant = constants.AUXILIAR_UNIQUE_REPLACING_STRING
-        current_literal_type = constants.AUXILIAR_UNIQUE_REPLACING_STRING
+        current_invariant = AUXILIAR_UNIQUE_REPLACING_STRING
+        current_literal_type = AUXILIAR_UNIQUE_REPLACING_STRING
 
         # ---------------------------- SUBJECT ----------------------------
 
@@ -53,10 +53,10 @@ def _generate_maximal_partition_for_a_position_ordering(mappings_df, position_or
             for i, mapping_rule in mappings_df.iterrows():
                 if current_global_group != mapping_rule['mapping_partition']:
                     current_group = 0
-                    current_invariant = constants.AUXILIAR_UNIQUE_REPLACING_STRING
+                    current_invariant = AUXILIAR_UNIQUE_REPLACING_STRING
                     current_global_group = mapping_rule['mapping_partition']
 
-                if mapping_rule['subject_termtype'] == constants.R2RML_BLANK_NODE:
+                if mapping_rule['subject_termtype'] == R2RML_BLANK_NODE:
                     mappings_df.at[i, 'mapping_partition'] = mappings_df.at[i, 'mapping_partition'] + '-0'
                 elif mapping_rule['subject_invariant'].startswith(current_invariant):
                     mappings_df.at[i, 'mapping_partition'] = mappings_df.at[i, 'mapping_partition'] + '-' + str(
@@ -78,7 +78,7 @@ def _generate_maximal_partition_for_a_position_ordering(mappings_df, position_or
             for i, mapping_rule in mappings_df.iterrows():
                 if current_global_group != mapping_rule['mapping_partition']:
                     current_group = 0
-                    current_invariant = constants.AUXILIAR_UNIQUE_REPLACING_STRING
+                    current_invariant = AUXILIAR_UNIQUE_REPLACING_STRING
                     current_global_group = mapping_rule['mapping_partition']
 
                 if enforce_invariant_non_subset and mapping_rule['predicate_invariant'] == current_invariant:
@@ -103,12 +103,12 @@ def _generate_maximal_partition_for_a_position_ordering(mappings_df, position_or
             for i, mapping_rule in mappings_df.iterrows():
                 if current_global_group != mapping_rule['mapping_partition']:
                     current_group = 0
-                    current_invariant = constants.AUXILIAR_UNIQUE_REPLACING_STRING
+                    current_invariant = AUXILIAR_UNIQUE_REPLACING_STRING
                     current_global_group = mapping_rule['mapping_partition']
 
-                if mapping_rule['object_termtype'] == constants.R2RML_BLANK_NODE:
+                if mapping_rule['object_termtype'] == R2RML_BLANK_NODE:
                     mappings_df.at[i, 'mapping_partition'] = mappings_df.at[i, 'mapping_partition'] + '-0'
-                elif mapping_rule['object_termtype'] == constants.R2RML_LITERAL:
+                elif mapping_rule['object_termtype'] == R2RML_LITERAL:
                     if mapping_rule['literal_type'] != current_literal_type:
                         current_group += 1
                         current_literal_type = mapping_rule['literal_type']
@@ -134,7 +134,7 @@ def _generate_maximal_partition_for_a_position_ordering(mappings_df, position_or
             for i, mapping_rule in mappings_df.iterrows():
                 if current_global_group != mapping_rule['mapping_partition']:
                     current_group = 0
-                    current_invariant = constants.AUXILIAR_UNIQUE_REPLACING_STRING
+                    current_invariant = AUXILIAR_UNIQUE_REPLACING_STRING
                     current_global_group = mapping_rule['mapping_partition']
 
                 if enforce_invariant_non_subset and mapping_rule['graph_invariant'] == current_invariant:
@@ -176,13 +176,13 @@ class MappingPartitioner:
 
         self.mappings_df = self.mappings_df.reset_index(drop=True)
 
-        if self.config.get_mapping_partition() == constants.PARTIAL_AGGREGATIONS_PARTITIONING:
+        if self.config.get_mapping_partition() == PARTIAL_AGGREGATIONS_PARTITIONING:
             self._get_term_invariants()
             self._generate_partial_aggregations_partition()
-        elif self.config.get_mapping_partition() == constants.MAXIMAL_PARTITIONING:
+        elif self.config.get_mapping_partition() == MAXIMAL_PARTITIONING:
             self._get_term_invariants()
             self._generate_maximal_partition()
-        elif self.config.get_mapping_partition() in constants.NO_PARTITIONING:
+        elif self.config.get_mapping_partition() in NO_PARTITIONING:
             # assign empty partition
             self.mappings_df['mapping_partition'] = '0-0-0-0'
         else:
@@ -266,13 +266,13 @@ class MappingPartitioner:
         self.mappings_df.sort_values(by=['subject_invariant'], inplace=True, ascending=True)
 
         current_group = 0
-        current_invariant = constants.AUXILIAR_UNIQUE_REPLACING_STRING
+        current_invariant = AUXILIAR_UNIQUE_REPLACING_STRING
 
         # iterate over the mapping rules and check if the invariant starts with the invariant of the previous rule
         # if it does, then it is in the same mapping partition than the previous mapping rule
         # if it does not, then the mapping rule is in a new mapping partition
         for i, mapping_rule in self.mappings_df.iterrows():
-            if mapping_rule['subject_termtype'] == constants.R2RML_BLANK_NODE:
+            if mapping_rule['subject_termtype'] == R2RML_BLANK_NODE:
                 self.mappings_df.at[i, 'subject_partition'] = '0'
             elif mapping_rule['subject_invariant'].startswith(current_invariant):
                 self.mappings_df.at[i, 'subject_partition'] = str(current_group)
@@ -286,7 +286,7 @@ class MappingPartitioner:
         self.mappings_df.sort_values(by='predicate_invariant', inplace=True, ascending=True)
 
         current_group = 0
-        current_invariant = constants.AUXILIAR_UNIQUE_REPLACING_STRING
+        current_invariant = AUXILIAR_UNIQUE_REPLACING_STRING
 
         # if all predicates are constant terms we can use full string comparison instead of startswith
         enforce_invariant_non_subset = self.mappings_df['predicate_constant'].notna().all()
@@ -309,13 +309,13 @@ class MappingPartitioner:
                                      inplace=True, ascending=True)
 
         current_group = 0
-        current_literal_type = constants.AUXILIAR_UNIQUE_REPLACING_STRING
-        current_invariant = constants.AUXILIAR_UNIQUE_REPLACING_STRING
+        current_literal_type = AUXILIAR_UNIQUE_REPLACING_STRING
+        current_invariant = AUXILIAR_UNIQUE_REPLACING_STRING
 
         for i, mapping_rule in self.mappings_df.iterrows():
-            if mapping_rule['object_termtype'] == constants.R2RML_BLANK_NODE:
+            if mapping_rule['object_termtype'] == R2RML_BLANK_NODE:
                 self.mappings_df.at[i, 'object_partition'] = '0'
-            elif mapping_rule['object_termtype'] == constants.R2RML_LITERAL:
+            elif mapping_rule['object_termtype'] == R2RML_LITERAL:
                 if mapping_rule['literal_type'] != current_literal_type:
                     current_group += 1
                     current_literal_type = mapping_rule['literal_type']
@@ -332,7 +332,7 @@ class MappingPartitioner:
         self.mappings_df.sort_values(by=['graph_invariant'], inplace=True, ascending=True)
 
         current_group = 0
-        current_invariant = constants.AUXILIAR_UNIQUE_REPLACING_STRING
+        current_invariant = AUXILIAR_UNIQUE_REPLACING_STRING
 
         # if all graph are constant terms we can use full string comparison instead of startswith
         enforce_invariant_non_subset = self.mappings_df['graph_constant'].notna().all()
@@ -404,7 +404,7 @@ class MappingPartitioner:
                     get_invariant_of_template(str(mapping_rule['object_template']))
             elif pd.notna(mapping_rule['object_parent_triples_map']):
                 # get the invariant for referencing object maps
-                parent_mapping_rule = utils.get_mapping_rule_from_triples_map_id(self.mappings_df, mapping_rule[
+                parent_mapping_rule = get_mapping_rule_from_triples_map_id(self.mappings_df, mapping_rule[
                     'object_parent_triples_map'])
                 if pd.notna(parent_mapping_rule['subject_constant']):
                     self.mappings_df.at[i, 'object_invariant'] = str(parent_mapping_rule['subject_constant'])

@@ -8,27 +8,27 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 import pandas as pd
 
-import constants
+from ..constants import *
 
 
 def get_table_data(config, mapping_rule, references):
     tabular_source_type = mapping_rule['source_type']
 
-    if tabular_source_type in [constants.CSV_SOURCE_TYPE, constants.TSV_SOURCE_TYPE]:
+    if tabular_source_type in [CSV_SOURCE_TYPE, TSV_SOURCE_TYPE]:
         return _read_csv(config, mapping_rule, references, tabular_source_type)
-    elif tabular_source_type == constants.EXCEL_SOURCE_TYPE:
+    elif tabular_source_type == EXCEL_SOURCE_TYPE:
         return _read_excel(config, mapping_rule, references)
-    elif tabular_source_type == constants.PARQUET_SOURCE_TYPE:
+    elif tabular_source_type == PARQUET_SOURCE_TYPE:
         return _read_parquet(mapping_rule, references)
-    elif tabular_source_type == constants.FEATHER_SOURCE_TYPE:
+    elif tabular_source_type == FEATHER_SOURCE_TYPE:
         return _read_feather(mapping_rule, references)
-    elif tabular_source_type == constants.ORC_SOURCE_TYPE:
+    elif tabular_source_type == ORC_SOURCE_TYPE:
         return _read_orc(mapping_rule, references)
-    elif tabular_source_type == constants.STATA_SOURCE_TYPE:
+    elif tabular_source_type == STATA_SOURCE_TYPE:
         return _read_stata(config, mapping_rule, references)
-    elif tabular_source_type == constants.SAS_SOURCE_TYPE:
+    elif tabular_source_type == SAS_SOURCE_TYPE:
         return _read_sas(config, mapping_rule)
-    elif tabular_source_type == constants.SPSS_SOURCE_TYPE:
+    elif tabular_source_type == SPSS_SOURCE_TYPE:
         return _read_spss(mapping_rule, references)
     else:
         raise ValueError('Found an invalid source type. Found value `' + tabular_source_type + '`.')

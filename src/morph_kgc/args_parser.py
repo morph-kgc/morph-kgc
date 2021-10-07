@@ -11,11 +11,10 @@ import os
 
 from configparser import ExtendedInterpolation
 
-import utils
-import constants
-
-from config import Config
-from _version import __version__
+from .utils import configure_logger
+from .constants import __copyright__
+from .config import Config
+from ._version import __version__
 
 
 def _existing_file_path(file_path):
@@ -37,14 +36,14 @@ def _parse_arguments():
 
     parser = argparse.ArgumentParser(
         description='Generate Knowledge Graphs from Heterogeneous Data Sources.',
-        epilog=constants.__copyright__,
+        epilog=__copyright__,
         allow_abbrev=False,
         argument_default=argparse.SUPPRESS
     )
 
     parser.add_argument('config', type=_existing_file_path, help='path to the configuration file')
     parser.add_argument('-v', '--version', action='version',
-                        version='Morph-KGC v' + __version__ + ' | ' + constants.__copyright__)
+                        version='Morph-KGC v' + __version__ + ' | ' + __copyright__)
 
     return parser.parse_args()
 
@@ -64,7 +63,7 @@ def parse_config():
     config.validate_configuration_section()
     config.validate_data_source_sections()
 
-    utils.configure_logger(config.get_logging_level(), config.get_logging_file())
+    configure_logger(config.get_logging_level(), config.get_logging_file())
     config.log_config_info()
 
     return config

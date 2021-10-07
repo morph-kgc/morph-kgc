@@ -6,19 +6,18 @@ __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"
 
 
-import rdflib
-import logging
 import sql_metadata
 import pandas as pd
 import numpy as np
 import multiprocessing as mp
+import rdflib
+import logging
 
-import constants
-import utils
-
-from mapping.mapping_constants import MAPPINGS_DATAFRAME_COLUMNS, MAPPING_PARSING_QUERY, JOIN_CONDITION_PARSING_QUERY
-from mapping.mapping_partitioner import MappingPartitioner
-from data_source.relational_source import get_column_datatype
+from ..constants import *
+from ..utils import *
+from ..mapping.mapping_constants import MAPPINGS_DATAFRAME_COLUMNS, MAPPING_PARSING_QUERY, JOIN_CONDITION_PARSING_QUERY
+from ..mapping.mapping_partitioner import MappingPartitioner
+from ..data_source.relational_source import get_column_datatype
 
 
 def _mapping_to_rml(mapping_graph):

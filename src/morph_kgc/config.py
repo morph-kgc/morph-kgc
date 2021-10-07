@@ -6,14 +6,14 @@ __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"
 
 
+import errno
 import os
 import logging
-import errno
 
 from configparser import ConfigParser
 
-import constants
-import utils
+from .constants import *
+from .utils import get_valid_dir_path, get_valid_file_name, get_valid_file_path, remove_file_extension
 
 
 CONFIGURATION_SECTION = 'CONFIGURATION'
@@ -63,29 +63,29 @@ DATABASE_URL = 'db_url'
 
 # input parameters that are not to be completed with default value if they are empty
 CONFIGURATION_OPTIONS_EMPTY_VALID = {
-            OUTPUT_FILE: constants.DEFAULT_OUTPUT_FILE,
-            NA_VALUES: constants.DEFAULT_NA_VALUES,
-            READ_PARSED_MAPPINGS_PATH: constants.DEFAULT_READ_PARSED_MAPPINGS_PATH,
-            WRITE_PARSED_MAPPINGS_PATH: constants.DEFAULT_WRITE_PARSED_MAPPINGS_PATH,
-            MAPPING_PARTITION: constants.PARTIAL_AGGREGATIONS_PARTITIONING,
-            LOGGING_FILE: constants.DEFAULT_LOGGING_FILE,
+            OUTPUT_FILE: DEFAULT_OUTPUT_FILE,
+            NA_VALUES: DEFAULT_NA_VALUES,
+            READ_PARSED_MAPPINGS_PATH: DEFAULT_READ_PARSED_MAPPINGS_PATH,
+            WRITE_PARSED_MAPPINGS_PATH: DEFAULT_WRITE_PARSED_MAPPINGS_PATH,
+            MAPPING_PARTITION: PARTIAL_AGGREGATIONS_PARTITIONING,
+            LOGGING_FILE: DEFAULT_LOGGING_FILE,
         }
 
 
 # input parameters that are to be replaced with the default vale if they are empty
 CONFIGURATION_OPTIONS_EMPTY_NON_VALID = {
-            OUTPUT_DIR: constants.DEFAULT_OUTPUT_DIR,
-            OUTPUT_FORMAT: constants.DEFAULT_OUTPUT_FORMAT,
-            CLEAN_OUTPUT_DIR: constants.DEFAULT_CLEAN_OUTPUT_DIR,
-            ONLY_PRINTABLE_CHARACTERS: constants.DEFAULT_ONLY_PRINTABLE_CHARACTERS,
-            MATERIALIZE_DEFAULT_GRAPH: constants.DEFAULT_MATERIALIZE_DEFAULT_GRAPH,
-            PUSH_DOWN_SQL_DISTINCTS: constants.DEFAULT_PUSH_DOWN_SQL_DISTINCTS,
-            PUSH_DOWN_SQL_JOINS: constants.DEFAULT_PUSH_DOWN_SQL_JOINS,
-            INFER_SQL_DATATYPES: constants.DEFAULT_INFER_SQL_DATATYPES,
-            CHUNKSIZE: constants.DEFAULT_CHUNKSIZE,
-            LOGGING_LEVEL: constants.DEFAULT_LOGGING_LEVEL,
-            NA_FILTER: constants.DEFAULT_NA_FILTER,
-            NUMBER_OF_PROCESSES: constants.DEFAULT_NUMBER_OF_PROCESSES
+            OUTPUT_DIR: DEFAULT_OUTPUT_DIR,
+            OUTPUT_FORMAT: DEFAULT_OUTPUT_FORMAT,
+            CLEAN_OUTPUT_DIR: DEFAULT_CLEAN_OUTPUT_DIR,
+            ONLY_PRINTABLE_CHARACTERS: DEFAULT_ONLY_PRINTABLE_CHARACTERS,
+            MATERIALIZE_DEFAULT_GRAPH: DEFAULT_MATERIALIZE_DEFAULT_GRAPH,
+            PUSH_DOWN_SQL_DISTINCTS: DEFAULT_PUSH_DOWN_SQL_DISTINCTS,
+            PUSH_DOWN_SQL_JOINS: DEFAULT_PUSH_DOWN_SQL_JOINS,
+            INFER_SQL_DATATYPES: DEFAULT_INFER_SQL_DATATYPES,
+            CHUNKSIZE: DEFAULT_CHUNKSIZE,
+            LOGGING_LEVEL: DEFAULT_LOGGING_LEVEL,
+            NA_FILTER: DEFAULT_NA_FILTER,
+            NUMBER_OF_PROCESSES: DEFAULT_NUMBER_OF_PROCESSES
         }
 
 
@@ -133,46 +133,46 @@ class Config(ConfigParser):
 
     def validate_configuration_section(self):
         # OUTPUT DIR & FILE, WRITE PARSED MAPPINGS FILE, LOGS FILE
-        self.set_output_dir(utils.get_valid_dir_path(self.get_output_dir()))
-        self.set_output_file(utils.get_valid_file_name(self.get_output_file()))
-        self.set_parsed_mappings_write_path(utils.get_valid_file_path(self.get_parsed_mappings_write_path()))
-        self.set_logging_file(utils.get_valid_file_path(self.get_logging_file()))
+        self.set_output_dir(get_valid_dir_path(self.get_output_dir()))
+        self.set_output_file(get_valid_file_name(self.get_output_file()))
+        self.set_parsed_mappings_write_path(get_valid_file_path(self.get_parsed_mappings_write_path()))
+        self.set_logging_file(get_valid_file_path(self.get_logging_file()))
 
         # OUTPUT FORMAT
         output_format = str(self.get_output_format()).upper()
         self.set_output_format(output_format)
-        if output_format not in constants.VALID_OUTPUT_FORMATS:
+        if output_format not in VALID_OUTPUT_FORMATS:
             raise ValueError(OUTPUT_FORMAT + ' value `' + self.get_output_format() +
-                             '` is not valid. It must be in: ' + str(constants.VALID_OUTPUT_FORMATS) + '.')
+                             '` is not valid. It must be in: ' + str(VALID_OUTPUT_FORMATS) + '.')
 
         # LOGGING LEVEL
         logging_level = str(self.get_logging_level()).upper()
         self.set_logging_level(logging_level)
-        if logging_level not in constants.VALID_LOGGING_LEVEL:
+        if logging_level not in VALID_LOGGING_LEVEL:
             raise ValueError(LOGGING_LEVEL + ' value `' + self.get_logging_level() +
-                             '` is not valid. It must be in: ' + str(constants.VALID_LOGGING_LEVEL) + '.')
+                             '` is not valid. It must be in: ' + str(VALID_LOGGING_LEVEL) + '.')
 
         # MAPPING PARTITIONING
         mapping_partitioning = str(self.get_mapping_partition()).upper()
         self.set_mapping_partition(mapping_partitioning)
-        if mapping_partitioning not in constants.NO_PARTITIONING + [constants.PARTIAL_AGGREGATIONS_PARTITIONING] + [
-                constants.MAXIMAL_PARTITIONING]:
+        if mapping_partitioning not in NO_PARTITIONING + [PARTIAL_AGGREGATIONS_PARTITIONING] + [
+                MAXIMAL_PARTITIONING]:
             raise ValueError(
                 MAPPING_PARTITION + ' value `' + self.get_mapping_partition() + '` is not valid. It must be in: ' + str(
-                    [constants.MAXIMAL_PARTITIONING] + [
-                        constants.PARTIAL_AGGREGATIONS_PARTITIONING] + constants.NO_PARTITIONING) + '.')
+                    [MAXIMAL_PARTITIONING] + [
+                        PARTIAL_AGGREGATIONS_PARTITIONING] + NO_PARTITIONING) + '.')
 
     def validate_data_source_sections(self):
         # SOURCE TYPE
         for section in self.get_data_sources_sections():
             if self.has_source_type(section):
                 self.set(section, SOURCE_TYPE, self.get_source_type(section).upper())
-                if self.get_source_type(section) not in constants.DATA_SOURCE_TYPES:
+                if self.get_source_type(section) not in DATA_SOURCE_TYPES:
                     raise ValueError(SOURCE_TYPE + ' value `' + self.get_source_type(section) + ' is not valid. '
-                                     'It must be in: ' + str(constants.DATA_SOURCE_TYPES) + '.')
+                                     'It must be in: ' + str(DATA_SOURCE_TYPES) + '.')
             else:
                 if self.has_database_url(section):
-                    self.set(section, SOURCE_TYPE, constants.RDB_SOURCE_TYPE)
+                    self.set(section, SOURCE_TYPE, RDB_SOURCE_TYPE)
 
     def log_config_info(self):
         logging.debug('CONFIGURATION: ' + str(dict(self.items(self.configuration_section))))
@@ -269,7 +269,7 @@ class Config(ConfigParser):
         if self.get_output_file():
             file_path = os.path.join(self.get_output_dir(), self.get_output_file())
             # remove file extension, we will set it based on the output format
-            file_path = utils.remove_file_extension(file_path)
+            file_path = remove_file_extension(file_path)
         elif mapping_partition:
             file_path = os.path.join(self.get_output_dir(), mapping_partition)
         else:
@@ -277,7 +277,7 @@ class Config(ConfigParser):
             file_path = os.path.join(self.get_output_dir(), OUTPUT_FILE)
 
         # add file extension
-        file_path += constants.OUTPUT_FORMAT_FILE_EXTENSION[self.get_output_format()]
+        file_path += OUTPUT_FORMAT_FILE_EXTENSION[self.get_output_format()]
 
         return file_path
 

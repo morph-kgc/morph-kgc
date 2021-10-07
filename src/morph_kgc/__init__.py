@@ -6,6 +6,5 @@ __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"
 
 
-import engine
-
-from args_parser import parse_config
+from .engine import *
+from .args_parser import parse_config

@@ -6,8 +6,8 @@ __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"
 
 
-from args_parser import parse_config
-from engine import retrieve_mappings, process_materialization
+from .args_parser import parse_config
+from .engine import retrieve_mappings, process_materialization
 
 
 if __name__ == "__main__":
