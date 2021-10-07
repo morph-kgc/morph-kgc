@@ -11,8 +11,9 @@ import utils
 import constants
 import os
 
-from config import Config
 from configparser import ExtendedInterpolation
+
+from config import Config
 from _version import __version__
 
 
