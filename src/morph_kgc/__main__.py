@@ -7,7 +7,7 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 
 from args_parser import parse_config
-from morph_kgc import retrieve_mappings, process_materialization
+from engine import retrieve_mappings, process_materialization
 
 
 if __name__ == "__main__":

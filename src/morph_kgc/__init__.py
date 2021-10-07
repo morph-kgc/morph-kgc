@@ -6,6 +6,6 @@ __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"
 
 
-import morph_kgc
+import engine
 
 from args_parser import parse_config
