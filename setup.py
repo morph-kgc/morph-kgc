@@ -49,8 +49,12 @@ setuptools.setup(
         'Issue tracker': 'https://github.com/oeg-upm/Morph-KGC/issues',
     },
     include_package_data=True,
-    packages=setuptools.find_packages(os.path.join(os.path.dirname(__file__), 'src')),
-    package_dir={'morph_kgc': os.path.join(os.path.dirname(__file__), 'src', 'morph_kgc')},
+    packages=[
+        'morph_kgc',
+        'morph_kgc.mapping',
+        'morph_kgc.data_source',
+    ],
+    package_dir={'': 'src'},
     classifiers=[
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: Apache Software License',
@@ -65,5 +69,5 @@ setuptools.setup(
         'Topic :: Scientific/Engineering :: Interface Engine/Protocol Translator'
     ],
     install_requires=requirements,
-    python_requires='>=3.7',
+    python_requires='>=3.7, <4',
 )
