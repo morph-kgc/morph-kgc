@@ -45,4 +45,4 @@ def process_materialization(mappings, config):
     else:
         materializer.materialize()
 
-    logging.info('Materialization finished in ' + utils.get_delta_time(start_time) + ' seconds.')
+    logging.info('Materialization finished in ' + get_delta_time(start_time) + ' seconds.')
