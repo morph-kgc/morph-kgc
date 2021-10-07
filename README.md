@@ -1,5 +1,6 @@
 [![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](https://github.com/oeg-upm/Morph-KGC/blob/main/LICENSE)
 [![DOI](https://zenodo.org/badge/311956260.svg?style=flat)](https://zenodo.org/badge/latestdoi/311956260)
+[![Latest PyPI version](https://img.shields.io/pypi/v/morph-kgc?style=flat)](https://pypi.python.org/pypi/morph-kgc)
 [![version](https://img.shields.io/badge/python-3.7+-blue.svg?style=flat)](https://www.python.org/downloads/release/python-370/)
 [![GitHub commit activity](https://img.shields.io/github/commit-activity/m/oeg-upm/Morph-KGC?style=flat)](https://github.com/oeg-upm/Morph-KGC/commits/main)
 
