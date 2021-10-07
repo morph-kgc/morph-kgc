@@ -18,7 +18,7 @@ import utils
 
 from mapping.mapping_constants import MAPPINGS_DATAFRAME_COLUMNS, MAPPING_PARSING_QUERY, JOIN_CONDITION_PARSING_QUERY
 from mapping.mapping_partitioner import MappingPartitioner
-from data_source import relational_source
+from data_source.relational_source import get_column_datatype
 
 
 def _mapping_to_rml(mapping_graph):
@@ -529,7 +529,7 @@ class MappingParser:
                     pd.isna(mapping_rule['object_datatype']) and pd.isna(mapping_rule['object_language'])):
 
                 if pd.notna(mapping_rule['tablename']) and pd.notna(mapping_rule['object_reference']):
-                    inferred_data_type = relational_source.get_column_datatype(
+                    inferred_data_type = get_column_datatype(
                         self.config, mapping_rule['source_name'], mapping_rule['tablename'],
                         mapping_rule['object_reference']
                     )
@@ -548,7 +548,7 @@ class MappingParser:
                         # for each table in the query get the datatype of the object reference in that table if an
                         # exception is thrown, then the reference is not a column in that table, and nothing is done
                         try:
-                            data_type = relational_source.get_column_datatype(
+                            data_type = get_column_datatype(
                                 self.config, mapping_rule['source_name'], table_name,
                                 mapping_rule['object_reference']
                             )

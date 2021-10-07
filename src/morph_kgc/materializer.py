@@ -17,7 +17,8 @@ from falcon.uri import encode
 import constants
 import utils
 
-from data_source import relational_source, tabular_source
+from data_source.relational_source import get_sql_data
+from data_source.tabular_source import get_table_data
 
 
 def _get_references_in_mapping_rule(mapping_rule, only_subject_map=False):
@@ -197,7 +198,7 @@ def _materalize_push_down_sql_join(mapping_rule, parent_triples_map_rule, refere
         references.add(join_condition['child_value'])
 
     triples_rule = set()
-    result_chunks = relational_source.get_sql_data(config, mapping_rule, references, parent_triples_map_rule, parent_references)
+    result_chunks = get_sql_data(config, mapping_rule, references, parent_triples_map_rule, parent_references)
     for query_results_chunk_df in result_chunks:
         query_results_chunk_df = utils.dataframe_columns_to_str(query_results_chunk_df)
         # query_results_chunk_df.dropna(axis=0, how='any', inplace=True)
@@ -244,9 +245,9 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
                                                                                    parent_references)
 
             if mapping_rule['source_type'] == constants.RDB_SOURCE_TYPE:
-                result_chunks = relational_source.get_sql_data(config, mapping_rule, references)
+                result_chunks = get_sql_data(config, mapping_rule, references)
             elif mapping_rule['source_type'] in constants.TABULAR_SOURCE_TYPES:
-                result_chunks = tabular_source.get_table_data(config, mapping_rule, references)
+                result_chunks = get_table_data(config, mapping_rule, references)
 
             for query_results_chunk_df in result_chunks:
                 query_results_chunk_df = utils.dataframe_columns_to_str(query_results_chunk_df)
@@ -255,9 +256,9 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
                 query_results_chunk_df = query_results_chunk_df.add_prefix('child_')
 
                 if parent_triples_map_rule['source_type'] == constants.RDB_SOURCE_TYPE:
-                    parent_result_chunks = relational_source.get_sql_data(config, parent_triples_map_rule, parent_references)
+                    parent_result_chunks = get_sql_data(config, parent_triples_map_rule, parent_references)
                 elif parent_triples_map_rule['source_type'] in constants.TABULAR_SOURCE_TYPES:
-                    parent_result_chunks = tabular_source.get_table_data(config, parent_triples_map_rule, parent_references)
+                    parent_result_chunks = get_table_data(config, parent_triples_map_rule, parent_references)
 
                 for parent_query_results_chunk_df in parent_result_chunks:
                     parent_query_results_chunk_df = utils.dataframe_columns_to_str(parent_query_results_chunk_df)
@@ -273,9 +274,9 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
 
     else:
         if mapping_rule['source_type'] in constants.RDB_SOURCE_TYPE:
-            result_chunks = relational_source.get_sql_data(config, mapping_rule, references)
+            result_chunks = get_sql_data(config, mapping_rule, references)
         elif mapping_rule['source_type'] in constants.TABULAR_SOURCE_TYPES:
-            result_chunks = tabular_source.get_table_data(config, mapping_rule, references)
+            result_chunks = get_table_data(config, mapping_rule, references)
 
         for query_results_chunk_df in result_chunks:
             #query_results_chunk_df.replace(config.get_na_values(), np.NaN)
