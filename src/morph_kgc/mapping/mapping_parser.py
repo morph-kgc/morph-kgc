@@ -14,7 +14,7 @@ import rdflib
 import logging
 
 from ..constants import *
-from ..utils import *
+from ..utils import replace_predicates_in_graph, get_repeated_elements_in_list
 from ..mapping.mapping_constants import MAPPINGS_DATAFRAME_COLUMNS, MAPPING_PARSING_QUERY, JOIN_CONDITION_PARSING_QUERY
 from ..mapping.mapping_partitioner import MappingPartitioner
 from ..data_source.relational_source import get_column_datatype
@@ -26,30 +26,26 @@ def _mapping_to_rml(mapping_graph):
     """
 
     # add RML and QL namespaces
-    mapping_graph.bind('rml', rdflib.term.URIRef(constants.RML_NAMESPACE))
-    mapping_graph.bind('ql', rdflib.term.URIRef(constants.QL_NAMESPACE))
+    mapping_graph.bind('rml', rdflib.term.URIRef(RML_NAMESPACE))
+    mapping_graph.bind('ql', rdflib.term.URIRef(QL_NAMESPACE))
 
     # add reference formulation and sql version for RDB sources
-    query = 'SELECT ?logical_source ?x WHERE { ?logical_source <' + constants.R2RML_TABLE_NAME + '> ?x . } '
+    query = 'SELECT ?logical_source ?x WHERE { ?logical_source <' + R2RML_TABLE_NAME + '> ?x . } '
     for logical_source, _ in mapping_graph.query(query):
-        mapping_graph.add((logical_source, rdflib.term.URIRef(constants.R2RML_SQL_VERSION),
-                           rdflib.term.URIRef(constants.R2RML_SQL2008)))
-    query = 'SELECT ?logical_source ?x WHERE { ?logical_source <' + constants.R2RML_SQL_QUERY + '> ?x . } '
+        mapping_graph.add((logical_source, rdflib.term.URIRef(R2RML_SQL_VERSION), rdflib.term.URIRef(R2RML_SQL2008)))
+    query = 'SELECT ?logical_source ?x WHERE { ?logical_source <' + R2RML_SQL_QUERY + '> ?x . } '
     for logical_source, _ in mapping_graph.query(query):
-        mapping_graph.add((logical_source, rdflib.term.URIRef(constants.R2RML_SQL_VERSION),
-                           rdflib.term.URIRef(constants.R2RML_SQL2008)))
-        mapping_graph.add((logical_source, rdflib.term.URIRef(constants.RML_REFERENCE_FORMULATION),
-                           rdflib.term.URIRef(constants.QL_CSV)))
+        mapping_graph.add((logical_source, rdflib.term.URIRef(R2RML_SQL_VERSION), rdflib.term.URIRef(R2RML_SQL2008)))
+        mapping_graph.add((logical_source, rdflib.term.URIRef(RML_REFERENCE_FORMULATION), rdflib.term.URIRef(QL_CSV)))
 
     # replace R2RML predicates with the equivalent RML predicates
-    mapping_graph = utils.replace_predicates_in_graph(mapping_graph, constants.R2RML_LOGICAL_TABLE,
-                                                      constants.RML_LOGICAL_SOURCE)
-    mapping_graph = utils.replace_predicates_in_graph(mapping_graph, constants.R2RML_SQL_QUERY, constants.RML_QUERY)
-    mapping_graph = utils.replace_predicates_in_graph(mapping_graph, constants.R2RML_COLUMN, constants.RML_REFERENCE)
+    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_LOGICAL_TABLE, RML_LOGICAL_SOURCE)
+    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_SQL_QUERY, RML_QUERY)
+    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_COLUMN, RML_REFERENCE)
 
     # remove R2RML classes
-    mapping_graph.remove((None, rdflib.term.URIRef(constants.R2RML_R2RML_VIEW_CLASS), None))
-    mapping_graph.remove((None, rdflib.term.URIRef(constants.R2RML_LOGICAL_TABLE_CLASS), None))
+    mapping_graph.remove((None, rdflib.term.URIRef(R2RML_R2RML_VIEW_CLASS), None))
+    mapping_graph.remove((None, rdflib.term.URIRef(R2RML_LOGICAL_TABLE_CLASS), None))
 
 
     return mapping_graph
@@ -61,16 +57,15 @@ def _expand_constant_shortcut_properties(mapping_graph):
     See R2RML specification (https://www.w3.org/2001/sw/rdb2rdf/r2rml/#constant).
     """
 
-    constant_properties = [constants.R2RML_SUBJECT_MAP, constants.R2RML_PREDICATE_MAP,
-                           constants.R2RML_OBJECT_MAP, constants.R2RML_GRAPH_MAP]
-    constant_shortcuts = [constants.R2RML_SUBJECT_CONSTANT_SHORTCUT, constants.R2RML_PREDICATE_CONSTANT_SHORTCUT,
-                          constants.R2RML_OBJECT_CONSTANT_SHORTCUT, constants.R2RML_GRAPH_CONSTANT_SHORTCUT]
+    constant_properties = [R2RML_SUBJECT_MAP, R2RML_PREDICATE_MAP, R2RML_OBJECT_MAP, R2RML_GRAPH_MAP]
+    constant_shortcuts = [R2RML_SUBJECT_CONSTANT_SHORTCUT, R2RML_PREDICATE_CONSTANT_SHORTCUT,
+                          R2RML_OBJECT_CONSTANT_SHORTCUT, R2RML_GRAPH_CONSTANT_SHORTCUT]
 
     for constant_property, constant_shortcut in zip(constant_properties, constant_shortcuts):
         for s, o in mapping_graph.query('SELECT ?s ?o WHERE {?s <' + constant_shortcut + '> ?o .}'):
             blanknode = rdflib.BNode()
             mapping_graph.add((s, rdflib.term.URIRef(constant_property), blanknode))
-            mapping_graph.add((blanknode, rdflib.term.URIRef(constants.R2RML_CONSTANT), o))
+            mapping_graph.add((blanknode, rdflib.term.URIRef(R2RML_CONSTANT), o))
 
         mapping_graph.remove((None, rdflib.term.URIRef(constant_shortcut), None))
 
@@ -83,15 +78,15 @@ def _rdf_class_to_pom(mapping_graph):
     """
 
     query = 'SELECT ?tm ?c WHERE { ' \
-            '?tm <' + constants.R2RML_SUBJECT_MAP + '> ?sm . ' \
-            '?sm <' + constants.R2RML_CLASS + '> ?c . }'
+            '?tm <' + R2RML_SUBJECT_MAP + '> ?sm . ' \
+            '?sm <' + R2RML_CLASS + '> ?c . }'
     for tm, c in mapping_graph.query(query):
         blanknode = rdflib.BNode()
-        mapping_graph.add((tm, rdflib.term.URIRef(constants.R2RML_PREDICATE_OBJECT_MAP), blanknode))
-        mapping_graph.add((blanknode, rdflib.term.URIRef(constants.R2RML_OBJECT_CONSTANT_SHORTCUT), c))
-        mapping_graph.add((blanknode, rdflib.term.URIRef(constants.R2RML_PREDICATE_CONSTANT_SHORTCUT), rdflib.RDF.type))
+        mapping_graph.add((tm, rdflib.term.URIRef(R2RML_PREDICATE_OBJECT_MAP), blanknode))
+        mapping_graph.add((blanknode, rdflib.term.URIRef(R2RML_OBJECT_CONSTANT_SHORTCUT), c))
+        mapping_graph.add((blanknode, rdflib.term.URIRef(R2RML_PREDICATE_CONSTANT_SHORTCUT), rdflib.RDF.type))
 
-    mapping_graph.remove((None, rdflib.term.URIRef(constants.R2RML_CLASS), None))
+    mapping_graph.remove((None, rdflib.term.URIRef(R2RML_CLASS), None))
 
     return mapping_graph
 
@@ -103,18 +98,18 @@ def _subject_graph_maps_to_pom(mapping_graph):
 
     # add the graph maps in the subject maps to every predicate object map of the subject maps
     query = 'SELECT ?sm ?gm ?pom WHERE { ' \
-            '?tm <' + constants.R2RML_SUBJECT_MAP + '> ?sm . ' \
-            '?sm <' + constants.R2RML_GRAPH_MAP + '> ?gm . ' \
-            '?tm <' + constants.R2RML_PREDICATE_OBJECT_MAP + '> ?pom . }'
+            '?tm <' + R2RML_SUBJECT_MAP + '> ?sm . ' \
+            '?sm <' + R2RML_GRAPH_MAP + '> ?gm . ' \
+            '?tm <' + R2RML_PREDICATE_OBJECT_MAP + '> ?pom . }'
     for sm, gm, pom in mapping_graph.query(query):
-        mapping_graph.add((pom, rdflib.term.URIRef(constants.R2RML_GRAPH_MAP), gm))
+        mapping_graph.add((pom, rdflib.term.URIRef(R2RML_GRAPH_MAP), gm))
 
     # remove the graph maps from the subject maps
     query = 'SELECT ?sm ?gm WHERE { ' \
-            '?tm <' + constants.R2RML_SUBJECT_MAP + '> ?sm . ' \
-            '?sm <' + constants.R2RML_GRAPH_MAP + '> ?gm . }'
+            '?tm <' + R2RML_SUBJECT_MAP + '> ?sm . ' \
+            '?sm <' + R2RML_GRAPH_MAP + '> ?gm . }'
     for sm, gm in mapping_graph.query(query):
-        mapping_graph.remove((sm, rdflib.term.URIRef(constants.R2RML_GRAPH_MAP), gm))
+        mapping_graph.remove((sm, rdflib.term.URIRef(R2RML_GRAPH_MAP), gm))
 
     return mapping_graph
 
@@ -125,14 +120,13 @@ def _complete_pom_with_default_graph(mapping_graph):
     """
 
     query = 'SELECT DISTINCT ?tm ?pom WHERE { ' \
-            '?tm <' + constants.R2RML_PREDICATE_OBJECT_MAP + '> ?pom . ' \
-            'OPTIONAL { ?pom <' + constants.R2RML_GRAPH_MAP + '> ?gm . } . ' \
+            '?tm <' + R2RML_PREDICATE_OBJECT_MAP + '> ?pom . ' \
+            'OPTIONAL { ?pom <' + R2RML_GRAPH_MAP + '> ?gm . } . ' \
             'FILTER ( !bound(?gm) ) }'
     for tm, pom in mapping_graph.query(query):
         blanknode = rdflib.BNode()
-        mapping_graph.add((pom, rdflib.term.URIRef(constants.R2RML_GRAPH_MAP), blanknode))
-        mapping_graph.add((blanknode, rdflib.term.URIRef(constants.R2RML_CONSTANT),
-                           rdflib.term.URIRef(constants.R2RML_DEFAULT_GRAPH)))
+        mapping_graph.add((pom, rdflib.term.URIRef(R2RML_GRAPH_MAP), blanknode))
+        mapping_graph.add((blanknode, rdflib.term.URIRef(R2RML_CONSTANT), rdflib.term.URIRef(R2RML_DEFAULT_GRAPH)))
 
     return mapping_graph
 
@@ -145,44 +139,40 @@ def _complete_termtypes(mapping_graph):
 
     # add missing blanknode termtypes in the constant-valued object maps
     query = 'SELECT DISTINCT ?term_map ?constant WHERE { ' \
-            '?term_map <' + constants.R2RML_CONSTANT + '> ?constant . ' \
-            'OPTIONAL { ?term_map <' + constants.R2RML_TERM_TYPE + '> ?termtype . } . ' \
+            '?term_map <' + R2RML_CONSTANT + '> ?constant . ' \
+            'OPTIONAL { ?term_map <' + R2RML_TERM_TYPE + '> ?termtype . } . ' \
             'FILTER ( !bound(?termtype) && isBlank(?constant) ) }'
     for term_map, _ in mapping_graph.query(query):
         mapping_graph.add(
-            (term_map, rdflib.term.URIRef(constants.R2RML_TERM_TYPE), rdflib.term.URIRef(constants.R2RML_BLANK_NODE)))
+            (term_map, rdflib.term.URIRef(R2RML_TERM_TYPE), rdflib.term.URIRef(R2RML_BLANK_NODE)))
 
     # add missing literals termtypes in the constant-valued object maps
     query = 'SELECT DISTINCT ?term_map ?constant WHERE { ' \
-            '?term_map <' + constants.R2RML_CONSTANT + '> ?constant . ' \
-            'OPTIONAL { ?term_map <' + constants.R2RML_TERM_TYPE + '> ?termtype . } . ' \
+            '?term_map <' + R2RML_CONSTANT + '> ?constant . ' \
+            'OPTIONAL { ?term_map <' + R2RML_TERM_TYPE + '> ?termtype . } . ' \
             'FILTER ( !bound(?termtype) && isLiteral(?constant) ) }'
     for term_map, _ in mapping_graph.query(query):
-        mapping_graph.add(
-            (term_map, rdflib.term.URIRef(constants.R2RML_TERM_TYPE), rdflib.term.URIRef(constants.R2RML_LITERAL)))
+        mapping_graph.add((term_map, rdflib.term.URIRef(R2RML_TERM_TYPE), rdflib.term.URIRef(R2RML_LITERAL)))
 
     # add missing literal termtypes in the object maps
     query = 'SELECT DISTINCT ?om ?pom WHERE { ' \
-            '?pom <' + constants.R2RML_OBJECT_MAP + '> ?om . ' \
-            'OPTIONAL { ?om <' + constants.R2RML_TERM_TYPE + '> ?termtype . } . ' \
-            'OPTIONAL { ?om <' + constants.RML_REFERENCE + '> ?column . } . ' \
-            'OPTIONAL { ?om <' + constants.R2RML_LANGUAGE + '> ?language . } . ' \
-            'OPTIONAL { ?om <' + constants.R2RML_DATATYPE + '> ?datatype . } . ' \
+            '?pom <' + R2RML_OBJECT_MAP + '> ?om . ' \
+            'OPTIONAL { ?om <' + R2RML_TERM_TYPE + '> ?termtype . } . ' \
+            'OPTIONAL { ?om <' + RML_REFERENCE + '> ?column . } . ' \
+            'OPTIONAL { ?om <' + R2RML_LANGUAGE + '> ?language . } . ' \
+            'OPTIONAL { ?om <' + R2RML_DATATYPE + '> ?datatype . } . ' \
             'FILTER ( !bound(?termtype) && ( bound(?column) || bound(?language) || bound(?datatype) ) ) }'
     for om, _ in mapping_graph.query(query):
-        mapping_graph.add(
-            (om, rdflib.term.URIRef(constants.R2RML_TERM_TYPE), rdflib.term.URIRef(constants.R2RML_LITERAL)))
+        mapping_graph.add((om, rdflib.term.URIRef(R2RML_TERM_TYPE), rdflib.term.URIRef(R2RML_LITERAL)))
 
     # now all missing termtypes are IRIs
-    for term_map_property in [constants.R2RML_SUBJECT_MAP, constants.R2RML_PREDICATE_MAP,
-                              constants.R2RML_OBJECT_MAP, constants.R2RML_GRAPH_MAP]:
+    for term_map_property in [R2RML_SUBJECT_MAP, R2RML_PREDICATE_MAP, R2RML_OBJECT_MAP, R2RML_GRAPH_MAP]:
         query = 'SELECT DISTINCT ?term_map ?x WHERE { ' \
                 '?x <' + term_map_property + '> ?term_map . ' \
-                'OPTIONAL { ?term_map <' + constants.R2RML_TERM_TYPE + '> ?termtype . } . ' \
+                'OPTIONAL { ?term_map <' + R2RML_TERM_TYPE + '> ?termtype . } . ' \
                 'FILTER ( !bound(?termtype) ) }'
         for term_map, _ in mapping_graph.query(query):
-            mapping_graph.add(
-                (term_map, rdflib.term.URIRef(constants.R2RML_TERM_TYPE), rdflib.term.URIRef(constants.R2RML_IRI)))
+            mapping_graph.add((term_map, rdflib.term.URIRef(R2RML_TERM_TYPE), rdflib.term.URIRef(R2RML_IRI)))
 
     return mapping_graph
 
@@ -198,26 +188,26 @@ def _complete_rml_classes(mapping_graph):
 def _remove_self_joins(mapping_graph):
     query = 'SELECT DISTINCT ?OM ?join_condition ?parentSM_template ?parentSM_constant ?parentSM_reference ' \
                            ' ?parentSM_termtype WHERE { ' \
-            '?childTM <' + constants.R2RML_PREDICATE_OBJECT_MAP + '> ?POM . ' \
-            '?POM <' + constants.R2RML_OBJECT_MAP + '> ?OM . ' \
-            '?OM <' + constants.R2RML_PARENT_TRIPLES_MAP + '> ?parentTM . ' \
-            '?parentTM <' + constants.R2RML_SUBJECT_MAP + '> ?parentSM . ' \
-            'OPTIONAL { ?join_condition <' + constants.R2RML_JOIN_CONDITION + '> ?join_condition . } . ' \
-            'OPTIONAL { ?parentSM <' + constants.R2RML_TEMPLATE + '> ?parentSM_template . } . ' \
-            'OPTIONAL { ?parentSM <' + constants.R2RML_CONSTANT + '> ?parentSM_constant . } . ' \
-            'OPTIONAL { ?parentSM <' + constants.RML_REFERENCE + '> ?parentSM_reference . } . ' \
-            '?parentSM <' + constants.R2RML_TERM_TYPE + '> ?parentSM_termtype . ' \
-            'OPTIONAL { ?childTM <' + constants.RML_LOGICAL_SOURCE + '> ?child_logical_source . ' \
-                      ' ?parentTM <' + constants.RML_LOGICAL_SOURCE + '> ?parent_logical_source . ' \
+            '?childTM <' + R2RML_PREDICATE_OBJECT_MAP + '> ?POM . ' \
+            '?POM <' + R2RML_OBJECT_MAP + '> ?OM . ' \
+            '?OM <' + R2RML_PARENT_TRIPLES_MAP + '> ?parentTM . ' \
+            '?parentTM <' + R2RML_SUBJECT_MAP + '> ?parentSM . ' \
+            'OPTIONAL { ?join_condition <' + R2RML_JOIN_CONDITION + '> ?join_condition . } . ' \
+            'OPTIONAL { ?parentSM <' + R2RML_TEMPLATE + '> ?parentSM_template . } . ' \
+            'OPTIONAL { ?parentSM <' + R2RML_CONSTANT + '> ?parentSM_constant . } . ' \
+            'OPTIONAL { ?parentSM <' + RML_REFERENCE + '> ?parentSM_reference . } . ' \
+            '?parentSM <' + R2RML_TERM_TYPE + '> ?parentSM_termtype . ' \
+            'OPTIONAL { ?childTM <' + RML_LOGICAL_SOURCE + '> ?child_logical_source . ' \
+                      ' ?parentTM <' + RML_LOGICAL_SOURCE + '> ?parent_logical_source . ' \
                       ' FILTER ( ?child_logical_source != ?parent_logical_source) } . ' \
-            'OPTIONAL { ?childTM <' + constants.RML_QUERY + '> ?child_query . ' \
-                      ' ?parentTM <' + constants.RML_QUERY + '> ?parent_query . ' \
+            'OPTIONAL { ?childTM <' + RML_QUERY + '> ?child_query . ' \
+                      ' ?parentTM <' + RML_QUERY + '> ?parent_query . ' \
                       ' FILTER ( ?child_query != ?parent_query ) } . ' \
-            'OPTIONAL { ?childTM <' + constants.RML_ITERATOR + '> ?child_iterator . ' \
-                      ' ?parentTM <' + constants.RML_ITERATOR + '> ?parent_iterator . ' \
+            'OPTIONAL { ?childTM <' + RML_ITERATOR + '> ?child_iterator . ' \
+                      ' ?parentTM <' + RML_ITERATOR + '> ?parent_iterator . ' \
                       ' FILTER ( ?child_query != ?parent_query ) } . ' \
-            'OPTIONAL { ?childTM <' + constants.R2RML_TABLE_NAME + '> ?child_tablename . ' \
-                      ' ?parentTM <' + constants.R2RML_TABLE_NAME + '> ?parent_tablename . ' \
+            'OPTIONAL { ?childTM <' + R2RML_TABLE_NAME + '> ?child_tablename . ' \
+                      ' ?parentTM <' + R2RML_TABLE_NAME + '> ?parent_tablename . ' \
                       ' FILTER ( ?child_query != ?parent_query ) } . }'
 
     for OM, join_condition, parentSM_template, parentSM_constant, parentSM_reference, parentSM_termtype in \
@@ -226,13 +216,13 @@ def _remove_self_joins(mapping_graph):
         if join_condition:
             mapping_graph.remove((join_condition, None, None))
 
-        mapping_graph.add((OM, rdflib.term.URIRef(constants.R2RML_TERM_TYPE), parentSM_termtype))
+        mapping_graph.add((OM, rdflib.term.URIRef(R2RML_TERM_TYPE), parentSM_termtype))
         if parentSM_template:
-            mapping_graph.add((OM, rdflib.term.URIRef(constants.R2RML_TEMPLATE), parentSM_template))
+            mapping_graph.add((OM, rdflib.term.URIRef(R2RML_TEMPLATE), parentSM_template))
         elif parentSM_constant:
-            mapping_graph.add((OM, rdflib.term.URIRef(constants.R2RML_CONSTANT), parentSM_constant))
+            mapping_graph.add((OM, rdflib.term.URIRef(R2RML_CONSTANT), parentSM_constant))
         elif parentSM_reference:
-            mapping_graph.add((OM, rdflib.term.URIRef(constants.RML_REFERENCE), parentSM_reference))
+            mapping_graph.add((OM, rdflib.term.URIRef(RML_REFERENCE), parentSM_reference))
 
     return mapping_graph
 
@@ -271,7 +261,7 @@ def _validate_no_repeated_triples_maps(mapping_graph, source_name):
     triples_map_ids = [str(result.triples_map_id) for result in list(mapping_graph.query(query))]
 
     # get the identifiers that are repeated
-    repeated_triples_map_ids = utils.get_repeated_elements_in_list(triples_map_ids)
+    repeated_triples_map_ids = get_repeated_elements_in_list(triples_map_ids)
 
     # if there are any repeated identifiers, then it will produce errors during materialization
     if len(repeated_triples_map_ids) > 0:
@@ -521,9 +511,9 @@ class MappingParser:
 
         for i, mapping_rule in self.mappings_df.iterrows():
             # datatype inferring only applies to relational data sources
-            if (mapping_rule['source_type'] == constants.RDB_SOURCE_TYPE) and (
+            if (mapping_rule['source_type'] == RDB_SOURCE_TYPE) and (
                     # datatype inferring only applies to literals
-                    mapping_rule['object_termtype'] == constants.R2RML_LITERAL) and (
+                    mapping_rule['object_termtype'] == R2RML_LITERAL) and (
                     # if the literal has a language tag or an overridden datatype, datatype inference does not apply
                     pd.isna(mapping_rule['object_datatype']) and pd.isna(mapping_rule['object_language'])):
 
@@ -574,19 +564,19 @@ class MappingParser:
         # check termtypes are correct (i.e. that they are rr:IRI, rr:BlankNode or rr:Literal and that subject map is
         # not a rr:literal). Use subset operation
         subject_termtypes = set([str(termtype) for termtype in set(self.mappings_df['subject_termtype'])])
-        if not (subject_termtypes <= {constants.R2RML_IRI, constants.R2RML_BLANK_NODE}):
+        if not (subject_termtypes <= {R2RML_IRI, R2RML_BLANK_NODE}):
             raise ValueError('Found an invalid subject termtype. Found values ' + str(subject_termtypes) + \
-                             '. Subject maps must be ' + constants.R2RML_IRI + ' or ' + constants.R2RML_BLANK_NODE + \
+                             '. Subject maps must be ' + R2RML_IRI + ' or ' + R2RML_BLANK_NODE + \
                              '.')
 
         object_termtypes = set([str(termtype) for termtype in set(self.mappings_df['object_termtype'])])
-        if not (object_termtypes <= {constants.R2RML_IRI, constants.R2RML_BLANK_NODE, constants.R2RML_LITERAL}):
+        if not (object_termtypes <= {R2RML_IRI, R2RML_BLANK_NODE, R2RML_LITERAL}):
             raise ValueError('Found an invalid object termtype. Found values ' + str(object_termtypes) + \
-                             '. Object maps must be ' + constants.R2RML_IRI + ', ' + constants.R2RML_BLANK_NODE + \
-                             ' or ' + constants.R2RML_LITERAL + '.')
+                             '. Object maps must be ' + R2RML_IRI + ', ' + R2RML_BLANK_NODE + \
+                             ' or ' + R2RML_LITERAL + '.')
 
         # if there is a datatype or language tag then the object map termtype must be a rr:Literal
-        if len(self.mappings_df.loc[(self.mappings_df['object_termtype'] != constants.R2RML_LITERAL) &
+        if len(self.mappings_df.loc[(self.mappings_df['object_termtype'] != R2RML_LITERAL) &
                                     pd.notna(self.mappings_df['object_datatype']) &
                                     pd.notna(self.mappings_df['object_language'])]) > 0:
             raise Exception('Found object maps with a language tag or a datatype, '
@@ -602,8 +592,7 @@ class MappingParser:
         # Get unique source names and triples map identifiers
         aux_mappings_df = self.mappings_df[['source_name', 'triples_map_id']].drop_duplicates()
         # get repeated triples map identifiers
-        repeated_triples_map_ids = utils.get_repeated_elements_in_list(
-            list(aux_mappings_df['triples_map_id'].astype(str)))
+        repeated_triples_map_ids = get_repeated_elements_in_list(list(aux_mappings_df['triples_map_id'].astype(str)))
         # of those repeated identifiers
         repeated_triples_map_ids = [tm_id for tm_id in repeated_triples_map_ids]
         if len(repeated_triples_map_ids) > 0:
