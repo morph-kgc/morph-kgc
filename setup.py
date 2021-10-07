@@ -1,7 +1,8 @@
 import os
 import re
 import sys
-import setuptools
+
+from setuptools import setup, find_packages
 
 
 CURRENT_PYTHON = sys.version_info[:2]
@@ -31,7 +32,7 @@ with open(os.path.join(os.path.dirname(__file__), 'requirements.txt')) as file:
     requirements = [line.strip().replace(' ', '') for line in file.readlines()]
 
 
-setuptools.setup(
+setup(
     name='morph_kgc',
     version=version,
     author='Julián Arenas-Guerrero',
@@ -49,11 +50,7 @@ setuptools.setup(
         'Issue tracker': 'https://github.com/oeg-upm/Morph-KGC/issues',
     },
     include_package_data=True,
-    packages=[
-        'morph_kgc',
-        'morph_kgc.mapping',
-        'morph_kgc.data_source',
-    ],
+    packages=find_packages('src'),
     package_dir={'': 'src'},
     classifiers=[
         'Programming Language :: Python :: 3',
