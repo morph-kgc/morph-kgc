@@ -5,6 +5,7 @@ testing/
 venv/
 build/
 dist/
+src/morph_kgc.egg-info/
 
 r2rml-test-cases/logs
 
