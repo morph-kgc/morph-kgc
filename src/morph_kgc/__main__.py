@@ -6,13 +6,13 @@ __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"
 
 
-from .args_parser import parse_config
+from .args_parser import load_config_from_command_line
 from .engine import retrieve_mappings, process_materialization
 
 
 if __name__ == "__main__":
 
-    config = parse_config()
+    config = load_config_from_command_line()
 
     mappings = retrieve_mappings(config)
     process_materialization(mappings, config)

@@ -48,15 +48,10 @@ def _parse_arguments():
     return parser.parse_args()
 
 
-def parse_config():
+def _parse_config(config):
     """
-    Parses command line arguments and the config file. Logger is configured.
+    Parses the config file. Logger is configured.
     """
-
-    args = _parse_arguments()
-
-    config = Config(interpolation=ExtendedInterpolation())
-    config.read(args.config)
 
     config.complete_configuration_with_defaults()
 
@@ -65,5 +60,37 @@ def parse_config():
 
     configure_logger(config.get_logging_level(), config.get_logging_file())
     config.log_config_info()
+
+    return config
+
+
+def load_config_from_command_line():
+    """
+    Parses command line arguments.
+    """
+
+    args = _parse_arguments()
+
+    config = Config(interpolation=ExtendedInterpolation())
+    config.read(args.config)
+
+    config = _parse_config(config)
+
+    return config
+
+
+def load_config_from_argument(config_entry):
+    """
+    Parses a config argument. It can be a file path or a string.
+    """
+
+    config = Config(interpolation=ExtendedInterpolation())
+    if os.path.isfile(config_entry):
+        config.read(config_entry)
+    else:
+        # it is a string
+        config.read_string(config_entry)
+
+    config = _parse_config(config)
 
     return config
