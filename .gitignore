@@ -3,6 +3,8 @@ log/
 
 testing/
 venv/
+build/
+dist/
 
 r2rml-test-cases/logs
 
