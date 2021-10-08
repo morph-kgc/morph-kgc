@@ -48,7 +48,7 @@ Check the **[wiki](https://github.com/oeg-upm/Morph-KGC/wiki)** with all the inf
 - **[Engine](https://github.com/oeg-upm/Morph-KGC/wiki/Engine-Configuration)**
 - **[Data Sources](https://github.com/oeg-upm/Morph-KGC/wiki/Data-Source-Configuration)**
   - [Relational Databases](https://github.com/oeg-upm/Morph-KGC/wiki/Relational-Databases)
-  - [Tabular Files](https://github.com/oeg-upm/Morph-KGC/wiki/Tabular-Files)
+  - [Data Files](https://github.com/oeg-upm/Morph-KGC/wiki/Data-Files)
 
 **[Tutorial](https://github.com/oeg-upm/Morph-KGC/wiki/Tutorial)**
 
