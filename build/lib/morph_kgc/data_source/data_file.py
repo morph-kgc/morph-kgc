@@ -6,12 +6,15 @@ __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"
 
 
+import json
 import pandas as pd
+
+from jsonpath_rw import jsonpath, parse
 
 from ..constants import *
 
 
-def get_table_data(config, mapping_rule, references):
+def get_file_data(config, mapping_rule, references):
     tabular_source_type = mapping_rule['source_type']
 
     if tabular_source_type in [CSV_SOURCE_TYPE, TSV_SOURCE_TYPE]:
@@ -27,9 +30,11 @@ def get_table_data(config, mapping_rule, references):
     elif tabular_source_type == STATA_SOURCE_TYPE:
         return _read_stata(config, mapping_rule, references)
     elif tabular_source_type == SAS_SOURCE_TYPE:
-        return _read_sas(config, mapping_rule)
+        return _read_sas(config, mapping_rule, references)
     elif tabular_source_type == SPSS_SOURCE_TYPE:
         return _read_spss(mapping_rule, references)
+    elif tabular_source_type == JSON_SOURCE_TYPE:
+        return _read_json(mapping_rule, references)
     else:
         raise ValueError('Found an invalid source type. Found value `' + tabular_source_type + '`.')
 
@@ -85,10 +90,13 @@ def _read_stata(config, mapping_rule, references):
                          order_categoricals=False)
 
 
-def _read_sas(config, mapping_rule):
-    return pd.read_sas(mapping_rule['data_source'],
-                       encoding='iso-8859-1',
-                       chunksize=config.get_chunksize())
+def _read_sas(config, mapping_rule, references):
+    sas_df = pd.read_sas(mapping_rule['data_source'],
+                         encoding='iso-8859-1',
+                         chunksize=config.get_chunksize())
+    sas_df = sas_df[references]
+
+    return sas_df
 
 
 def _read_spss(mapping_rule, references):
@@ -110,3 +118,16 @@ def _read_excel(config, mapping_rule, references):
                             na_filter=config.apply_na_filter())
 
     return [excel_df]
+
+
+def _read_json(mapping_rule, references):
+    # borrowed from
+    # https://stackoverflow.com/questions/62844742/best-way-to-extract-format-data-in-json-format-using-python
+    json_data = json.loads(mapping_rule['data_source'])
+
+    jsonpath_result = [match.value for match in mapping_rule['iterator'].find(json_data)]
+    json_df = pd.DataFrame.from_records(jsonpath_result)
+
+    json_df = json_df[references]
+
+    return json_df

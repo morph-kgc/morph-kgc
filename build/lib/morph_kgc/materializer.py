@@ -267,8 +267,9 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
                     merged_query_results_chunk_df = _merge_results_chunks(query_results_chunk_df,
                                                                           parent_query_results_chunk_df, mapping_rule)
 
-                    triples.update(_materialize_join_mapping_rule_terms(merged_query_results_chunk_df, mapping_rule,
-                                   parent_triples_map_rule))
+                    triples.update(
+                        _materialize_join_mapping_rule_terms(merged_query_results_chunk_df, mapping_rule,
+                                                             parent_triples_map_rule))
 
     else:
         if mapping_rule['source_type'] in RDB_SOURCE_TYPE:
@@ -278,7 +279,7 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
 
         for query_results_chunk_df in result_chunks:
             #query_results_chunk_df.replace(config.get_na_values(), np.NaN)
-            query_results_chunk_df.dropna(axis=0, how='any', inplace=True)  # this line should apply only in some cases
+            query_results_chunk_df.dropna(axis=0, how='any', inplace=True)
             query_results_chunk_df = dataframe_columns_to_str(query_results_chunk_df)
             triples.update(_materialize_mapping_rule_terms(query_results_chunk_df, mapping_rule, config))
 
