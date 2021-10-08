@@ -9,38 +9,40 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 import json
 import pandas as pd
 
-from jsonpath_rw import jsonpath, parse
+from jsonpath_rw import parse
 
 from ..constants import *
 
 
 def get_file_data(config, mapping_rule, references):
-    tabular_source_type = mapping_rule['source_type']
+    file_source_type = mapping_rule['source_type']
 
-    if tabular_source_type in [CSV_SOURCE_TYPE, TSV_SOURCE_TYPE]:
-        return _read_csv(config, mapping_rule, references, tabular_source_type)
-    elif tabular_source_type == EXCEL_SOURCE_TYPE:
+    if file_source_type in [CSV_SOURCE_TYPE, TSV_SOURCE_TYPE]:
+        return _read_csv(config, mapping_rule, references, file_source_type)
+    elif file_source_type == EXCEL_SOURCE_TYPE:
         return _read_excel(config, mapping_rule, references)
-    elif tabular_source_type == PARQUET_SOURCE_TYPE:
+    elif file_source_type == PARQUET_SOURCE_TYPE:
         return _read_parquet(mapping_rule, references)
-    elif tabular_source_type == FEATHER_SOURCE_TYPE:
+    elif file_source_type == FEATHER_SOURCE_TYPE:
         return _read_feather(mapping_rule, references)
-    elif tabular_source_type == ORC_SOURCE_TYPE:
+    elif file_source_type == ORC_SOURCE_TYPE:
         return _read_orc(mapping_rule, references)
-    elif tabular_source_type == STATA_SOURCE_TYPE:
+    elif file_source_type == STATA_SOURCE_TYPE:
         return _read_stata(config, mapping_rule, references)
-    elif tabular_source_type == SAS_SOURCE_TYPE:
+    elif file_source_type == SAS_SOURCE_TYPE:
         return _read_sas(config, mapping_rule, references)
-    elif tabular_source_type == SPSS_SOURCE_TYPE:
+    elif file_source_type == SPSS_SOURCE_TYPE:
         return _read_spss(mapping_rule, references)
-    elif tabular_source_type == JSON_SOURCE_TYPE:
+    elif file_source_type == JSON_SOURCE_TYPE:
         return _read_json(mapping_rule, references)
+    elif file_source_type == XML_SOURCE_TYPE:
+        return _read_xml(mapping_rule, references)
     else:
-        raise ValueError('Found an invalid source type. Found value `' + tabular_source_type + '`.')
+        raise ValueError('Found an invalid source type. Found value `' + file_source_type + '`.')
 
 
-def _read_csv(config, mapping_rule, references, tabular_source_type):
-    delimiter = ',' if tabular_source_type == 'CSV' else '\t'
+def _read_csv(config, mapping_rule, references, file_source_type):
+    delimiter = ',' if file_source_type == 'CSV' else '\t'
 
     return pd.read_table(mapping_rule['data_source'],
                          delimiter=delimiter,
@@ -109,13 +111,13 @@ def _read_spss(mapping_rule, references):
 
 def _read_excel(config, mapping_rule, references):
     excel_df = pd.read_excel(mapping_rule['data_source'],
-                            sheet_name=0,
-                            engine='openpyxl',
-                            usecols=references,
-                            dtype=str,
-                            keep_default_na=False,
-                            na_values=config.get_na_values(),
-                            na_filter=config.apply_na_filter())
+                             sheet_name=0,
+                             engine='openpyxl',
+                             usecols=references,
+                             dtype=str,
+                             keep_default_na=False,
+                             na_values=config.get_na_values(),
+                             na_filter=config.apply_na_filter())
 
     return [excel_df]
 
@@ -134,3 +136,13 @@ def _read_json(mapping_rule, references):
     json_df = json_df[references]
 
     return [json_df]
+
+
+def _read_xml(mapping_rule, references):
+    xml_df = pd.read_xml(mapping_rule['data_source'],
+                         xpath=mapping_rule['iterator'],
+                         parser='lxml')
+
+    xml_df = xml_df[references]
+
+    return [xml_df]
