@@ -37,6 +37,16 @@ python3 -m morph_kgc configuration.ini
 ```
 
 You can find how to generate the configuration file [here](https://github.com/oeg-upm/Morph-KGC/wiki/Configuration).
+It is also possible to run Morph-KGC as a library with [RDFlib](https://rdflib.readthedocs.io/en/stable/):
+```
+import morph_kgc
+
+# load the generated triples to an RDFlib graph
+graph = morph_kgc.materialize('/path/to/configuration.ini')
+
+# work with the graph
+graph.query(' SELECT DISTINCT ?classes WHERE { ?s a ?classes } ')
+```
 
 ## Wiki
 
