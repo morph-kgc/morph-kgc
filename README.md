@@ -36,12 +36,11 @@ To run the engine you just need to execute the following:
 python3 -m morph_kgc configuration.ini
 ```
 
-You can find how to generate the configuration file [here](https://github.com/oeg-upm/Morph-KGC/wiki/Configuration).
-It is also possible to run Morph-KGC as a library with [RDFlib](https://rdflib.readthedocs.io/en/stable/):
-```
+[Here](https://github.com/oeg-upm/Morph-KGC/wiki/Configuration) you can see how to generate the configuration file. It is also possible to run Morph-KGC as a library with [RDFlib](https://rdflib.readthedocs.io/en/stable/):
+```python
 import morph_kgc
 
-# load the generated triples to an RDFlib graph
+# generate the triples and load them to an RDFlib graph
 graph = morph_kgc.materialize('/path/to/configuration.ini')
 
 # work with the graph
