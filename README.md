@@ -53,6 +53,8 @@ Check the **[wiki](https://github.com/oeg-upm/Morph-KGC/wiki)** with all the inf
 
 **[Getting Started](https://github.com/oeg-upm/Morph-KGC/wiki/Getting-Started)**
 
+**[Running](https://github.com/oeg-upm/Morph-KGC/wiki/Running)**
+
 **[Configuration](https://github.com/oeg-upm/Morph-KGC/wiki/Configuration)**
 - **[Engine](https://github.com/oeg-upm/Morph-KGC/wiki/Engine-Configuration)**
 - **[Data Sources](https://github.com/oeg-upm/Morph-KGC/wiki/Data-Source-Configuration)**
