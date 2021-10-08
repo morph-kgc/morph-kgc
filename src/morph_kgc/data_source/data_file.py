@@ -47,6 +47,8 @@ def _read_csv(config, mapping_rule, references, file_source_type):
     return pd.read_table(mapping_rule['data_source'],
                          delimiter=delimiter,
                          index_col=False,   # TODO: use None?
+                         encoding='utf-8',
+                         encoding_errors='strict',
                          usecols=references,
                          chunksize=config.get_chunksize(),
                          engine='c',
@@ -75,7 +77,7 @@ def _read_feather(mapping_rule, references):
 
 def _read_orc(mapping_rule, references):
     orc_df = pd.read_orc(mapping_rule['data_source'],
-                         encoding='iso-8859-1',
+                         encoding='utf-8',
                          columns=references)
 
     return [orc_df]
@@ -94,7 +96,7 @@ def _read_stata(config, mapping_rule, references):
 
 def _read_sas(config, mapping_rule, references):
     sas_df = pd.read_sas(mapping_rule['data_source'],
-                         encoding='iso-8859-1',
+                         encoding='utf-8',
                          chunksize=config.get_chunksize())
     sas_df = sas_df[references]
 
@@ -125,7 +127,7 @@ def _read_excel(config, mapping_rule, references):
 def _read_json(mapping_rule, references):
     # borrowed from
     # https://stackoverflow.com/questions/62844742/best-way-to-extract-format-data-in-json-format-using-python
-    with open(mapping_rule['data_source']) as jsonfile:
+    with open(mapping_rule['data_source'], encoding='utf-8') as jsonfile:
         json_data = json.load(jsonfile)
 
     jsonpath_expr = parse(mapping_rule['iterator'])
@@ -141,7 +143,8 @@ def _read_json(mapping_rule, references):
 def _read_xml(mapping_rule, references):
     xml_df = pd.read_xml(mapping_rule['data_source'],
                          xpath=mapping_rule['iterator'],
-                         parser='lxml')
+                         parser='lxml',
+                         encoding='utf-8')
 
     xml_df = xml_df[references]
 
