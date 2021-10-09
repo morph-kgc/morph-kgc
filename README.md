@@ -24,7 +24,7 @@ Morph-KGC is an engine that constructs [RDF](https://www.w3.org/TR/rdf11-concept
 - Multiple configuration options.
 - Available under the [Apache License 2.0](https://github.com/oeg-upm/Morph-KGC/blob/main/LICENSE).
 
-## Installing and Running
+## Installing and Usage
 
 [PyPi](https://pypi.org/project/morph-kgc/) is the fastest way to install Morph-KGC:
 ```
@@ -53,7 +53,7 @@ Check the **[wiki](https://github.com/oeg-upm/Morph-KGC/wiki)** with all the inf
 
 **[Getting Started](https://github.com/oeg-upm/Morph-KGC/wiki/Getting-Started)**
 
-**[Running](https://github.com/oeg-upm/Morph-KGC/wiki/Running)**
+**[Usage](https://github.com/oeg-upm/Morph-KGC/wiki/Usage)**
 
 **[Configuration](https://github.com/oeg-upm/Morph-KGC/wiki/Configuration)**
 - **[Engine](https://github.com/oeg-upm/Morph-KGC/wiki/Engine-Configuration)**
