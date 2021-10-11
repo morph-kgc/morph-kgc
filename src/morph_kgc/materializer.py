@@ -20,6 +20,23 @@ from .data_source.relational_database import get_sql_data
 from .data_source.data_file import get_file_data
 
 
+def _preprocess_data(dataframe, mapping_rule, references, config):
+    # deal with ORACLE
+    if mapping_rule['source_type'] == RDB:
+        if config.get_database_url(mapping_rule['source_name']).startswith(ORACLE):
+            dataframe = normalize_oracle_identifier_casing(dataframe, references)
+
+        # for RDB NULLS are removed on query time, but the dataframe is not converted to str
+        dataframe = dataframe_columns_to_str(dataframe)
+
+    # remove NULLS for those data formats that do not allow to remove them in reading time
+    if config.apply_na_filter():
+        if mapping_rule['source_type'] in [PARQUET, FEATHER, ORC, STATA, SAS, SPSS, JSON, XML]:
+            dataframe = remove_null_values_from_dataframe(dataframe, config)
+
+    return dataframe
+
+
 def _get_references_in_mapping_rule(mapping_rule, only_subject_map=False):
     references = []
     if pd.notna(mapping_rule['subject_template']):
@@ -219,26 +236,22 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
         # add references used in the join condition
         references, parent_references = add_references_in_join_condition(mapping_rule, references, parent_references)
 
-        if mapping_rule['source_type'] == RDB_SOURCE_TYPE:
+        if mapping_rule['source_type'] == RDB:
             result_chunks = get_sql_data(config, mapping_rule, references)
         elif mapping_rule['source_type'] in FILE_SOURCE_TYPES:
             result_chunks = get_file_data(config, mapping_rule, references)
 
         for query_results_chunk_df in result_chunks:
-            query_results_chunk_df = dataframe_columns_to_str(query_results_chunk_df)
-            #query_results_chunk_df.replace(config.get_na_values(), np.NaN)
-            query_results_chunk_df.dropna(axis=0, how='any', inplace=True)
+            query_results_chunk_df = _preprocess_data(query_results_chunk_df, mapping_rule, references, config)
             query_results_chunk_df = query_results_chunk_df.add_prefix('child_')
 
-            if parent_triples_map_rule['source_type'] == RDB_SOURCE_TYPE:
+            if parent_triples_map_rule['source_type'] == RDB:
                 parent_result_chunks = get_sql_data(config, parent_triples_map_rule, parent_references)
             elif parent_triples_map_rule['source_type'] in FILE_SOURCE_TYPES:
                 parent_result_chunks = get_file_data(config, parent_triples_map_rule, parent_references)
 
             for parent_query_results_chunk_df in parent_result_chunks:
-                parent_query_results_chunk_df = dataframe_columns_to_str(parent_query_results_chunk_df)
-                #parent_query_results_chunk_df.replace(config.get_na_values(), np.NaN)
-                parent_query_results_chunk_df.dropna(axis=0, how='any', inplace=True)
+                parent_query_results_chunk_df = _preprocess_data(parent_query_results_chunk_df, mapping_rule, references, config)
                 parent_query_results_chunk_df = parent_query_results_chunk_df.add_prefix('parent_')
                 merged_query_results_chunk_df = _merge_results_chunks(query_results_chunk_df,
                                                                       parent_query_results_chunk_df, mapping_rule)
@@ -247,15 +260,13 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
                                                                     parent_triples_map_rule, config))
 
     else:
-        if mapping_rule['source_type'] in RDB_SOURCE_TYPE:
+        if mapping_rule['source_type'] in RDB:
             result_chunks = get_sql_data(config, mapping_rule, references)
         elif mapping_rule['source_type'] in FILE_SOURCE_TYPES:
             result_chunks = get_file_data(config, mapping_rule, references)
 
         for query_results_chunk_df in result_chunks:
-            #query_results_chunk_df.replace(config.get_na_values(), np.NaN)
-            query_results_chunk_df.dropna(axis=0, how='any', inplace=True)  # this line should apply only in some cases
-            query_results_chunk_df = dataframe_columns_to_str(query_results_chunk_df)
+            query_results_chunk_df = _preprocess_data(query_results_chunk_df, mapping_rule, references, config)
             triples.update(_materialize_mapping_rule_terms(query_results_chunk_df, mapping_rule, config))
 
     return triples

@@ -17,25 +17,25 @@ from ..constants import *
 def get_file_data(config, mapping_rule, references):
     file_source_type = mapping_rule['source_type']
 
-    if file_source_type in [CSV_SOURCE_TYPE, TSV_SOURCE_TYPE]:
+    if file_source_type in [CSV, TSV]:
         return _read_csv(config, mapping_rule, references, file_source_type)
-    elif file_source_type == EXCEL_SOURCE_TYPE:
+    elif file_source_type == EXCEL:
         return _read_excel(config, mapping_rule, references)
-    elif file_source_type == PARQUET_SOURCE_TYPE:
+    elif file_source_type == PARQUET:
         return _read_parquet(mapping_rule, references)
-    elif file_source_type == FEATHER_SOURCE_TYPE:
+    elif file_source_type == FEATHER:
         return _read_feather(mapping_rule, references)
-    elif file_source_type == ORC_SOURCE_TYPE:
+    elif file_source_type == ORC:
         return _read_orc(mapping_rule, references)
-    elif file_source_type == STATA_SOURCE_TYPE:
+    elif file_source_type == STATA:
         return _read_stata(config, mapping_rule, references)
-    elif file_source_type == SAS_SOURCE_TYPE:
+    elif file_source_type == SAS:
         return _read_sas(config, mapping_rule, references)
-    elif file_source_type == SPSS_SOURCE_TYPE:
+    elif file_source_type == SPSS:
         return _read_spss(mapping_rule, references)
-    elif file_source_type == JSON_SOURCE_TYPE:
+    elif file_source_type == JSON:
         return _read_json(mapping_rule, references)
-    elif file_source_type == XML_SOURCE_TYPE:
+    elif file_source_type == XML:
         return _read_xml(mapping_rule, references)
     else:
         raise ValueError('Found an invalid source type. Found value `' + file_source_type + '`.')

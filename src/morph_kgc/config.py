@@ -174,7 +174,7 @@ class Config(ConfigParser):
                                      'It must be in: ' + str(DATA_SOURCE_TYPES) + '.')
             else:
                 if self.has_database_url(section):
-                    self.set(section, SOURCE_TYPE, RDB_SOURCE_TYPE)
+                    self.set(section, SOURCE_TYPE, RDB)
 
     def log_config_info(self):
         logging.debug('CONFIGURATION: ' + str(dict(self.items(self.configuration_section))))

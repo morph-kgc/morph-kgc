@@ -12,6 +12,7 @@ import shutil
 import logging
 import rdflib
 import time
+import numpy as np
 
 
 def configure_logger(logging_level, logging_file):
@@ -247,5 +248,12 @@ def normalize_oracle_identifier_casing(dataframe, references):
 
     # rename those columns matching lowercase references
     dataframe.rename(columns=identifier_normalization_dict, inplace=True)
+
+    return dataframe
+
+
+def remove_null_values_from_dataframe(dataframe, config):
+    dataframe.replace(config.get_na_values(), np.NaN, inplace=True)
+    dataframe.dropna(axis=0, how='any', inplace=True)
 
     return dataframe
