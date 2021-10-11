@@ -65,19 +65,20 @@ def _materialize_template(results_df, template, config, columns_alias='', termty
                           datatype=''):
     references = get_references_in_template(str(template))
 
-    if str(termtype).strip() == R2RML_LITERAL:
-        results_df['triple'] = results_df['triple'] + '"'
-    else:
+    if str(termtype).strip() == R2RML_IRI:
         results_df['triple'] = results_df['triple'] + '<'
+    elif str(termtype).strip() == R2RML_LITERAL:
+        results_df['triple'] = results_df['triple'] + '"'
+    elif str(termtype).strip() == R2RML_BLANK_NODE:
+        results_df['triple'] = results_df['triple'] + '_:'
 
     for reference in references:
         results_df['reference_results'] = results_df[columns_alias + reference]
 
         if config.only_write_printable_characters():
-            results_df['reference_results'] = results_df['reference_results'].apply(lambda x: remove_non_printable_characters(encode(x)))
+            results_df['reference_results'] = results_df['reference_results'].apply(lambda x: remove_non_printable_characters(x))
 
         if str(termtype).strip() == R2RML_IRI:
-            # falcon's encode is faster than urllib's quote
             results_df['reference_results'] = results_df['reference_results'].apply(lambda x: encode(x))
         elif str(termtype).strip() == R2RML_LITERAL:
             results_df['reference_results'] = results_df['reference_results'].str.replace('"', '\\"', regex=False).str.replace('\\', '\\\\"', regex=False)
@@ -89,7 +90,9 @@ def _materialize_template(results_df, template, config, columns_alias='', termty
         # add what remains in the template after the last reference
         results_df['triple'] = results_df['triple'] + template
 
-    if str(termtype).strip() == R2RML_LITERAL:
+    if str(termtype).strip() == R2RML_IRI:
+        results_df['triple'] = results_df['triple'] + '> '
+    elif str(termtype).strip() == R2RML_LITERAL:
         results_df['triple'] = results_df['triple'] + '"'
         if pd.notna(language_tag):
             results_df['triple'] = results_df['triple'] + '@' + language_tag + ' '
@@ -97,8 +100,8 @@ def _materialize_template(results_df, template, config, columns_alias='', termty
             results_df['triple'] = results_df['triple'] + '^^<' + datatype + '> '
         else:
             results_df['triple'] = results_df['triple'] + ' '
-    else:
-        results_df['triple'] = results_df['triple'] + '> '
+    elif str(termtype).strip() == R2RML_BLANK_NODE:
+        results_df['triple'] = results_df['triple'] + ' '
 
     return results_df
 
@@ -108,13 +111,9 @@ def _materialize_reference(results_df, reference, config, columns_alias='', term
     results_df['reference_results'] = results_df[columns_alias + str(reference)]
 
     if config.only_write_printable_characters():
-        results_df['reference_results'] = results_df['reference_results'].apply(lambda x: remove_non_printable_characters(encode(x)))
+        results_df['reference_results'] = results_df['reference_results'].apply(lambda x: remove_non_printable_characters(x))
 
-    if str(termtype).strip() == R2RML_IRI:
-        # falcon's encode is faster than urllib's quote
-        results_df['reference_results'] = results_df['reference_results'].apply(lambda x: encode(x))
-        results_df['triple'] = results_df['triple'] + '<' + results_df['reference_results'] + '> '
-    elif str(termtype).strip() == R2RML_LITERAL:
+    if str(termtype).strip() == R2RML_LITERAL:
         results_df['reference_results'] = results_df['reference_results'].str.replace('"', '\\"', regex=False).str.replace('\\', '\\\\"', regex=False)
         results_df['triple'] = results_df['triple'] + '"' + results_df['reference_results'] + '"'
         if pd.notna(language_tag):
@@ -123,12 +122,20 @@ def _materialize_reference(results_df, reference, config, columns_alias='', term
             results_df['triple'] = results_df['triple'] + '^^<' + datatype + '> '
         else:
             results_df['triple'] = results_df['triple'] + ' '
+    elif str(termtype).strip() == R2RML_IRI:
+        results_df['reference_results'] = results_df['reference_results'].apply(lambda x: encode(x))
+        results_df['triple'] = results_df['triple'] + '<' + results_df['reference_results'] + '> '
+    elif str(termtype).strip() == R2RML_BLANK_NODE:
+        results_df['triple'] = results_df['triple'] + '_:' + results_df['reference_results'] + ' '
 
     return results_df
 
 
 def _materialize_constant(results_df, constant, termtype=R2RML_IRI, language_tag='', datatype=''):
-    if str(termtype).strip() == R2RML_LITERAL:
+    complete_constant = ''
+    if str(termtype).strip() == R2RML_IRI:
+        complete_constant = '<' + str(constant) + '> '
+    elif str(termtype).strip() == R2RML_LITERAL:
         complete_constant = '"' + constant + '"'
 
         if pd.notna(language_tag):
@@ -137,8 +144,8 @@ def _materialize_constant(results_df, constant, termtype=R2RML_IRI, language_tag
             complete_constant = complete_constant + '^^<' + datatype + '> '
         else:
             complete_constant = complete_constant + ' '
-    else:
-        complete_constant = '<' + str(constant) + '> '
+    elif str(termtype).strip() == R2RML_BLANK_NODE:
+        complete_constant = '_:' + str(constant) + ' '
 
     results_df['triple'] = results_df['triple'] + complete_constant
 
