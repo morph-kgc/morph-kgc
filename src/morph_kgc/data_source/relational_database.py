@@ -172,3 +172,16 @@ def get_sql_data(config, mapping_rule, references, parent_triples_map_rule=None,
                                 coerce_float=False)
 
     return result_chunks
+
+
+def setup_oracle(config):
+    if config.is_oracle_client_config_dir_provided() or config.is_oracle_client_lib_dir_provided():
+        import cx_Oracle
+
+    if config.is_oracle_client_config_dir_provided() and config. is_oracle_client_lib_dir_provided():
+        cx_Oracle.init_oracle_client(lib_dir=config.get_oracle_client_lib_dir(),
+                                     config_dir=config.get_oracle_client_config_dir())
+    elif config.is_oracle_client_config_dir_provided():
+        cx_Oracle.init_oracle_client(config_dir=config.get_oracle_client_config_dir())
+    elif config.is_oracle_client_lib_dir_provided():
+        cx_Oracle.init_oracle_client(lib_dir=config.get_oracle_client_lib_dir())

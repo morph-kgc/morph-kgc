@@ -35,8 +35,6 @@ MATERIALIZE_DEFAULT_GRAPH = 'materialize_default_graph'
 
 MAPPING_PARTITION = 'mapping_partition'
 INFER_SQL_DATATYPES = 'infer_sql_datatypes'
-READ_PARSED_MAPPINGS_PATH = 'read_parsed_mappings_path'
-WRITE_PARSED_MAPPINGS_PATH = 'write_parsed_mappings_path'
 
 CHUNKSIZE = 'chunksize'
 PUSH_DOWN_SQL_DISTINCTS = 'push_down_sql_distincts'
@@ -46,6 +44,12 @@ NUMBER_OF_PROCESSES = 'number_of_processes'
 
 LOGGING_LEVEL = 'logging_level'
 LOGGING_FILE = 'logging_file'
+
+ORACLE_CLIENT_LIB_DIR = 'oracle_client_lib_dir'
+ORACLE_CLIENT_CONFIG_DIR = 'oracle_client_config_dir'
+
+READ_PARSED_MAPPINGS_PATH = 'read_parsed_mappings_path'
+WRITE_PARSED_MAPPINGS_PATH = 'write_parsed_mappings_path'
 
 
 ##############################################################################
@@ -69,6 +73,8 @@ CONFIGURATION_OPTIONS_EMPTY_VALID = {
             WRITE_PARSED_MAPPINGS_PATH: DEFAULT_WRITE_PARSED_MAPPINGS_PATH,
             MAPPING_PARTITION: PARTIAL_AGGREGATIONS_PARTITIONING,
             LOGGING_FILE: DEFAULT_LOGGING_FILE,
+            ORACLE_CLIENT_LIB_DIR: DEFAULT_ORACLE_CLIENT_LIB_DIR,
+            ORACLE_CLIENT_CONFIG_DIR: DEFAULT_ORACLE_CLIENT_LIB_DIR,
         }
 
 
@@ -205,6 +211,18 @@ class Config(ConfigParser):
         else:
             return False
 
+    def is_oracle_client_lib_dir_provided(self):
+        if self.get(self.configuration_section, ORACLE_CLIENT_LIB_DIR):
+            return True
+        else:
+            return False
+
+    def is_oracle_client_config_dir_provided(self):
+        if self.get(self.configuration_section, ORACLE_CLIENT_CONFIG_DIR):
+            return True
+        else:
+            return False
+
     def infer_sql_datatypes(self):
         return self.getboolean(self.configuration_section, INFER_SQL_DATATYPES)
 
@@ -237,6 +255,12 @@ class Config(ConfigParser):
 
     def get_parsed_mappings_write_path(self):
         return self.get(self.configuration_section, WRITE_PARSED_MAPPINGS_PATH)
+
+    def get_oracle_client_lib_dir(self):
+        return self.get(self.configuration_section, ORACLE_CLIENT_LIB_DIR)
+
+    def get_oracle_client_config_dir(self):
+        return self.get(self.configuration_section, ORACLE_CLIENT_CONFIG_DIR)
 
     def get_mapping_partition(self):
         return self.get(self.configuration_section, MAPPING_PARTITION)

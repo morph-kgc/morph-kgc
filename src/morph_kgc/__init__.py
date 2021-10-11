@@ -14,11 +14,14 @@ from .engine import retrieve_mappings
 from .args_parser import load_config_from_argument
 from .materializer import _materialize_mapping_rule
 from .utils import get_subject_maps
+from .data_source.relational_database import setup_oracle
 
 
 def materialize(config):
 
     config = load_config_from_argument(config)
+
+    setup_oracle(config)
 
     mappings_df = retrieve_mappings(config)
     subject_maps_df = get_subject_maps(mappings_df)
