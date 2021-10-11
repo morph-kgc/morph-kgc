@@ -144,10 +144,9 @@ def _complete_termtypes(mapping_graph):
             'OPTIONAL { ?term_map <' + R2RML_TERM_TYPE + '> ?termtype . } . ' \
             'FILTER ( !bound(?termtype) && isBlank(?constant) ) }'
     for term_map, _ in mapping_graph.query(query):
-        mapping_graph.add(
-            (term_map, rdflib.term.URIRef(R2RML_TERM_TYPE), rdflib.term.URIRef(R2RML_BLANK_NODE)))
+        mapping_graph.add((term_map, rdflib.term.URIRef(R2RML_TERM_TYPE), rdflib.term.URIRef(R2RML_BLANK_NODE)))
 
-    # add missing literals termtypes in the constant-valued object maps
+    # add missing literal termtypes in the constant-valued object maps
     query = 'SELECT DISTINCT ?term_map ?constant WHERE { ' \
             '?term_map <' + R2RML_CONSTANT + '> ?constant . ' \
             'OPTIONAL { ?term_map <' + R2RML_TERM_TYPE + '> ?termtype . } . ' \

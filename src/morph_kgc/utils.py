@@ -233,3 +233,19 @@ def remove_file_extension(file_path):
         return os.path.splitext(file_path)[0]
 
     return file_path
+
+
+def normalize_oracle_identifier_casing(dataframe, references):
+    """
+    This renames the columns of a DataFrame generated when querying Oracle. This is necessary as Oracle identifier
+    casing is inconsistent with SQLAlchemy (https://docs.sqlalchemy.org/en/14/dialects/oracle.html#identifier-casing).
+    This function addresses issue #37 (https://github.com/oeg-upm/Morph-KGC/issues/37).
+    """
+
+    lowercase_references = [reference.lower() for reference in references]
+    identifier_normalization_dict = dict(zip(lowercase_references, references))
+
+    # rename those columns matching lowercase references
+    dataframe.rename(columns=identifier_normalization_dict, inplace=True)
+
+    return dataframe
