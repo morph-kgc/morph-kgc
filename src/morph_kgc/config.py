@@ -37,8 +37,6 @@ MAPPING_PARTITION = 'mapping_partition'
 INFER_SQL_DATATYPES = 'infer_sql_datatypes'
 
 CHUNKSIZE = 'chunksize'
-PUSH_DOWN_SQL_DISTINCTS = 'push_down_sql_distincts'
-PUSH_DOWN_SQL_JOINS = 'push_down_sql_joins'
 
 NUMBER_OF_PROCESSES = 'number_of_processes'
 
@@ -85,8 +83,6 @@ CONFIGURATION_OPTIONS_EMPTY_NON_VALID = {
             CLEAN_OUTPUT_DIR: DEFAULT_CLEAN_OUTPUT_DIR,
             ONLY_PRINTABLE_CHARACTERS: DEFAULT_ONLY_PRINTABLE_CHARACTERS,
             MATERIALIZE_DEFAULT_GRAPH: DEFAULT_MATERIALIZE_DEFAULT_GRAPH,
-            PUSH_DOWN_SQL_DISTINCTS: DEFAULT_PUSH_DOWN_SQL_DISTINCTS,
-            PUSH_DOWN_SQL_JOINS: DEFAULT_PUSH_DOWN_SQL_JOINS,
             INFER_SQL_DATATYPES: DEFAULT_INFER_SQL_DATATYPES,
             CHUNKSIZE: DEFAULT_CHUNKSIZE,
             LOGGING_LEVEL: DEFAULT_LOGGING_LEVEL,
@@ -225,12 +221,6 @@ class Config(ConfigParser):
 
     def infer_sql_datatypes(self):
         return self.getboolean(self.configuration_section, INFER_SQL_DATATYPES)
-
-    def push_down_sql_joins(self):
-        return self.getboolean(self.configuration_section, PUSH_DOWN_SQL_JOINS)
-
-    def push_down_sql_distincts(self):
-        return self.getboolean(self.configuration_section, PUSH_DOWN_SQL_DISTINCTS)
 
     def clean_output_dir(self):
         return self.getboolean(self.configuration_section, CLEAN_OUTPUT_DIR)

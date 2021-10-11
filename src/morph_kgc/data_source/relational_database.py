@@ -39,7 +39,6 @@ SQL_RDF_DATATYPE = {
 
 
 def _replace_query_enclosing_characters(sql_query, db_dialect):
-    db_dialect = db_dialect.upper()
     dialect_sql_query = ''
 
     if db_dialect in [MYSQL, MARIADB]:
@@ -61,7 +60,7 @@ def _replace_query_enclosing_characters(sql_query, db_dialect):
     return dialect_sql_query
 
 
-def relational_db_connection(config, source_name):
+def _relational_db_connection(config, source_name):
     db_connection = create_engine(config.get_database_url(source_name), poolclass=NullPool)
     db_dialect = db_connection.dialect.name.upper()
 
@@ -69,7 +68,7 @@ def relational_db_connection(config, source_name):
 
 
 def get_column_datatype(config, source_name, table_name, column_name):
-    db_connection, db_dialect = relational_db_connection(config, source_name)
+    db_connection, db_dialect = _relational_db_connection(config, source_name)
 
     sql_query = "SELECT `data_type` FROM `information_schema`.`columns` WHERE `table_name`='" + table_name + \
                 "' AND `column_name`='" + column_name + "'"
@@ -93,45 +92,7 @@ def get_column_datatype(config, source_name, table_name, column_name):
         return 'http://www.w3.org/2001/XMLSchema#string'
 
 
-def build_sql_join_query(mapping_rule, parent_triples_map_rule, references, parent_references):
-    if pd.notna(mapping_rule['query']) or pd.notna(parent_triples_map_rule['query']):
-        # This is because additional work is needed to use proper aliases within the rml:query provided
-        raise Exception(
-            'Pushing down SQL joins is not supported for mapping rules using rml:query instead of rr:tablename')
-
-    child_query = build_sql_subquery(mapping_rule, references, 'child_')
-    parent_query = build_sql_subquery(parent_triples_map_rule, parent_references, 'parent_')
-
-    query = 'SELECT * FROM (' + child_query + ') AS `child`, (' + parent_query + ') AS `parent` WHERE '
-    for key, join_condition in eval(mapping_rule['join_conditions']).items():
-        query = query + '`child`.`child_' + join_condition['child_value'] + \
-                '`=`parent`.`parent_' + join_condition['parent_value'] + '` AND '
-    query = query[:-5]
-
-    logging.debug('SQL query for mapping rule `' + str(mapping_rule['id']) + '`: [' + query + ']')
-
-    return query
-
-
-def build_sql_subquery(mapping_rule, references, alias):
-    if pd.notna(mapping_rule['query']):
-        query = mapping_rule['query']
-    elif len(references) > 0:
-        query = 'SELECT '
-        if len(references) > 0:
-            for reference in references:
-                query = query + '`' + reference + '` AS `' + alias + reference + '`, '
-            query = query[:-2] + ' FROM `' + mapping_rule['tablename'] + '` WHERE '
-            for reference in references:
-                query = query + '`' + reference + '` IS NOT NULL AND '
-            query = query[:-5]
-    else:
-        query = None
-
-    return query
-
-
-def build_sql_query(config, mapping_rule, references):
+def _build_sql_query(config, mapping_rule, references):
     """
     Build a query for MYSQL using backticks '`' as enclosing character. This character will later be replaced with the
     one corresponding one to the dialect that applies.
@@ -158,13 +119,10 @@ def build_sql_query(config, mapping_rule, references):
     return query
 
 
-def get_sql_data(config, mapping_rule, references, parent_triples_map_rule=None, parent_references=None):
-    db_connection, db_dialect = relational_db_connection(config, mapping_rule['source_name'])
+def get_sql_data(config, mapping_rule, references):
+    db_connection, db_dialect = _relational_db_connection(config, mapping_rule['source_name'])
 
-    if parent_triples_map_rule is not None:
-        sql_query = build_sql_join_query(mapping_rule, parent_triples_map_rule, references, parent_references)
-    else:
-        sql_query = build_sql_query(config, mapping_rule, references)
+    sql_query = _build_sql_query(config, mapping_rule, references)
 
     sql_query = _replace_query_enclosing_characters(sql_query, db_dialect)
 

@@ -168,7 +168,7 @@ def _materialize_mapping_rule_terms(results_df, mapping_rule, config):
     elif pd.notna(mapping_rule['subject_reference']):
         results_df = _materialize_reference(results_df, mapping_rule['subject_reference'], config, termtype=mapping_rule['subject_termtype'])
     if pd.notna(mapping_rule['predicate_template']):
-        results_df = _materialize_template(results_df, mapping_rule['predicate_template'])
+        results_df = _materialize_template(results_df, mapping_rule['predicate_template'], config)
     elif pd.notna(mapping_rule['predicate_constant']):
         results_df = _materialize_constant(results_df, mapping_rule['predicate_constant'])
     elif pd.notna(mapping_rule['predicate_reference']):
@@ -189,22 +189,6 @@ def _materialize_mapping_rule_terms(results_df, mapping_rule, config):
             results_df = _materialize_reference(results_df, mapping_rule['graph_reference'], config, termtype=R2RML_IRI)
 
     return set(results_df['triple'])
-
-
-def _materalize_push_down_sql_join(mapping_rule, parent_triples_map_rule, references, parent_references, config):
-    for key, join_condition in eval(mapping_rule['join_conditions']).items():
-        parent_references.add(join_condition['parent_value'])
-        references.add(join_condition['child_value'])
-
-    triples_rule = set()
-    result_chunks = get_sql_data(config, mapping_rule, references, parent_triples_map_rule, parent_references)
-    for query_results_chunk_df in result_chunks:
-        query_results_chunk_df = dataframe_columns_to_str(query_results_chunk_df)
-        # query_results_chunk_df.dropna(axis=0, how='any', inplace=True)
-        triples_rule.update(
-            _materialize_join_mapping_rule_terms(query_results_chunk_df, mapping_rule, parent_triples_map_rule, config))
-
-    return triples_rule
 
 
 def _merge_results_chunks(query_results_chunk_df, parent_query_results_chunk_df, mapping_rule):
@@ -232,43 +216,35 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
             subject_maps_df[subject_maps_df.triples_map_id == mapping_rule['object_parent_triples_map']].iloc[0]
         parent_references = _get_references_in_mapping_rule(parent_triples_map_rule, only_subject_map=True)
 
-        if config.push_down_sql_joins() and \
-                mapping_rule['source_type'] == RDB_SOURCE_TYPE and \
-                mapping_rule['source_name'] == parent_triples_map_rule['source_name']:
-            triples.update(_materalize_push_down_sql_join(mapping_rule, parent_triples_map_rule, references,
-                                                          parent_references, config))
+        # add references used in the join condition
+        references, parent_references = add_references_in_join_condition(mapping_rule, references, parent_references)
 
-        else:
-            # add references used in the join condition (not needed when pushing down join to SQL)
-            references, parent_references = add_references_in_join_condition(mapping_rule, references,
-                                                                                   parent_references)
+        if mapping_rule['source_type'] == RDB_SOURCE_TYPE:
+            result_chunks = get_sql_data(config, mapping_rule, references)
+        elif mapping_rule['source_type'] in FILE_SOURCE_TYPES:
+            result_chunks = get_file_data(config, mapping_rule, references)
 
-            if mapping_rule['source_type'] == RDB_SOURCE_TYPE:
-                result_chunks = get_sql_data(config, mapping_rule, references)
-            elif mapping_rule['source_type'] in FILE_SOURCE_TYPES:
-                result_chunks = get_file_data(config, mapping_rule, references)
+        for query_results_chunk_df in result_chunks:
+            query_results_chunk_df = dataframe_columns_to_str(query_results_chunk_df)
+            #query_results_chunk_df.replace(config.get_na_values(), np.NaN)
+            query_results_chunk_df.dropna(axis=0, how='any', inplace=True)
+            query_results_chunk_df = query_results_chunk_df.add_prefix('child_')
 
-            for query_results_chunk_df in result_chunks:
-                query_results_chunk_df = dataframe_columns_to_str(query_results_chunk_df)
-                #query_results_chunk_df.replace(config.get_na_values(), np.NaN)
-                query_results_chunk_df.dropna(axis=0, how='any', inplace=True)
-                query_results_chunk_df = query_results_chunk_df.add_prefix('child_')
+            if parent_triples_map_rule['source_type'] == RDB_SOURCE_TYPE:
+                parent_result_chunks = get_sql_data(config, parent_triples_map_rule, parent_references)
+            elif parent_triples_map_rule['source_type'] in FILE_SOURCE_TYPES:
+                parent_result_chunks = get_file_data(config, parent_triples_map_rule, parent_references)
 
-                if parent_triples_map_rule['source_type'] == RDB_SOURCE_TYPE:
-                    parent_result_chunks = get_sql_data(config, parent_triples_map_rule, parent_references)
-                elif parent_triples_map_rule['source_type'] in FILE_SOURCE_TYPES:
-                    parent_result_chunks = get_file_data(config, parent_triples_map_rule, parent_references)
+            for parent_query_results_chunk_df in parent_result_chunks:
+                parent_query_results_chunk_df = dataframe_columns_to_str(parent_query_results_chunk_df)
+                #parent_query_results_chunk_df.replace(config.get_na_values(), np.NaN)
+                parent_query_results_chunk_df.dropna(axis=0, how='any', inplace=True)
+                parent_query_results_chunk_df = parent_query_results_chunk_df.add_prefix('parent_')
+                merged_query_results_chunk_df = _merge_results_chunks(query_results_chunk_df,
+                                                                      parent_query_results_chunk_df, mapping_rule)
 
-                for parent_query_results_chunk_df in parent_result_chunks:
-                    parent_query_results_chunk_df = dataframe_columns_to_str(parent_query_results_chunk_df)
-                    #parent_query_results_chunk_df.replace(config.get_na_values(), np.NaN)
-                    parent_query_results_chunk_df.dropna(axis=0, how='any', inplace=True)
-                    parent_query_results_chunk_df = parent_query_results_chunk_df.add_prefix('parent_')
-                    merged_query_results_chunk_df = _merge_results_chunks(query_results_chunk_df,
-                                                                          parent_query_results_chunk_df, mapping_rule)
-
-                    triples.update(_materialize_join_mapping_rule_terms(merged_query_results_chunk_df, mapping_rule,
-                                   parent_triples_map_rule))
+                triples.update(_materialize_join_mapping_rule_terms(merged_query_results_chunk_df, mapping_rule,
+                                                                    parent_triples_map_rule, config))
 
     else:
         if mapping_rule['source_type'] in RDB_SOURCE_TYPE:
