@@ -12,6 +12,8 @@ import pandas as pd
 from sqlalchemy import create_engine
 from sqlalchemy.pool import NullPool
 
+from ..constants import MYSQL, MARIADB, MSSQL
+
 
 SQL_RDF_DATATYPE = {
     'INTEGER': 'http://www.w3.org/2001/XMLSchema#integer',
@@ -40,9 +42,9 @@ def _replace_query_enclosing_characters(sql_query, db_dialect):
     db_dialect = db_dialect.upper()
     dialect_sql_query = ''
 
-    if db_dialect in ['MYSQL', 'MARIADB']:
+    if db_dialect in [MYSQL, MARIADB]:
         dialect_sql_query = sql_query   # the query already uses backticks as enclosed characters
-    elif db_dialect == 'MSSQL':
+    elif db_dialect == MSSQL:
         # replace backticks with square brackets
         square_brackets = ['[', ']']
         num_enclosing_char = 0
