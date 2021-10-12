@@ -26,10 +26,10 @@ def _preprocess_data(dataframe, mapping_rule, references, config):
         if config.get_database_url(mapping_rule['source_name']).lower().startswith(ORACLE.lower()):
             dataframe = normalize_oracle_identifier_casing(dataframe, references)
 
-        # for RDB NULLS are removed on query time, but the dataframe is not converted to str
+        # for RDB NULLS are removed at query time, but the dataframe is not converted to str
         dataframe = dataframe_columns_to_str(dataframe)
 
-    # remove NULLS for those data formats that do not allow to remove them in reading time
+    # remove NULLS for those data formats that do not allow to remove them at reading time
     if config.apply_na_filter():
         if mapping_rule['source_type'] in [PARQUET, FEATHER, ORC, STATA, SAS, SPSS, JSON, XML]:
             dataframe = remove_null_values_from_dataframe(dataframe, config)
