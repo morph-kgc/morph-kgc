@@ -172,13 +172,14 @@ def _materialize_join_mapping_rule_terms(results_df, mapping_rule, parent_triple
         results_df = _materialize_constant(results_df, parent_triples_map_rule['subject_constant'], termtype=parent_triples_map_rule['subject_termtype'])
     elif pd.notna(parent_triples_map_rule['subject_reference']):
         results_df = _materialize_reference(results_df, parent_triples_map_rule['subject_reference'], config, termtype=parent_triples_map_rule['subject_termtype'], columns_alias='parent_')
-    if pd.notna(mapping_rule['graph_template']):
-        results_df = _materialize_template(results_df, mapping_rule['graph_template'], config, columns_alias='child_')
-    elif pd.notna(mapping_rule['graph_constant']):
-        if pd.notna(mapping_rule['graph_constant'] != R2RML_DEFAULT_GRAPH):
-            results_df = _materialize_constant(results_df, mapping_rule['graph_constant'])
-    elif pd.notna(mapping_rule['graph_reference']):
-        results_df = _materialize_reference(results_df, mapping_rule['graph_reference'], config, termtype=R2RML_IRI, columns_alias='child_')
+    if config.get_output_format() == 'N-QUADS':
+        if pd.notna(mapping_rule['graph_template']):
+            results_df = _materialize_template(results_df, mapping_rule['graph_template'], config, columns_alias='child_')
+        elif pd.notna(mapping_rule['graph_constant']):
+            if config.materialize_default_graph() or mapping_rule['graph_constant'] != R2RML_DEFAULT_GRAPH:
+                results_df = _materialize_constant(results_df, mapping_rule['graph_constant'])
+        elif pd.notna(mapping_rule['graph_reference']):
+            results_df = _materialize_reference(results_df, mapping_rule['graph_reference'], config, termtype=R2RML_IRI, columns_alias='child_')
 
     return set(results_df['triple'])
 
