@@ -31,7 +31,6 @@ OUTPUT_FILE = 'output_file'
 OUTPUT_FORMAT = 'output_format'
 CLEAN_OUTPUT_DIR = 'clean_output_dir'
 ONLY_PRINTABLE_CHARACTERS = 'only_printable_characters'
-MATERIALIZE_DEFAULT_GRAPH = 'materialize_default_graph'
 
 MAPPING_PARTITION = 'mapping_partition'
 INFER_SQL_DATATYPES = 'infer_sql_datatypes'
@@ -82,7 +81,6 @@ CONFIGURATION_OPTIONS_EMPTY_NON_VALID = {
             OUTPUT_FORMAT: DEFAULT_OUTPUT_FORMAT,
             CLEAN_OUTPUT_DIR: DEFAULT_CLEAN_OUTPUT_DIR,
             ONLY_PRINTABLE_CHARACTERS: DEFAULT_ONLY_PRINTABLE_CHARACTERS,
-            MATERIALIZE_DEFAULT_GRAPH: DEFAULT_MATERIALIZE_DEFAULT_GRAPH,
             INFER_SQL_DATATYPES: DEFAULT_INFER_SQL_DATATYPES,
             CHUNKSIZE: DEFAULT_CHUNKSIZE,
             LOGGING_LEVEL: DEFAULT_LOGGING_LEVEL,
@@ -263,9 +261,6 @@ class Config(ConfigParser):
 
     def get_output_format(self):
         return self.get(self.configuration_section, OUTPUT_FORMAT)
-
-    def materialize_default_graph(self):
-        return self.getboolean(self.configuration_section, MATERIALIZE_DEFAULT_GRAPH)
 
     def get_chunksize(self):
         return self.getint(self.configuration_section, CHUNKSIZE)
