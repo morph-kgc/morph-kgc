@@ -5,7 +5,6 @@ __license__ = "Apache-2.0"
 __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"
 
-
 import sql_metadata
 import pandas as pd
 import numpy as np
@@ -14,7 +13,7 @@ import rdflib
 import logging
 
 from ..constants import *
-from ..utils import replace_predicates_in_graph, get_repeated_elements_in_list
+from ..utils import replace_predicates_in_graph, get_repeated_elements_in_list, get_mapping_rule_from_triples_map_id
 from ..mapping.mapping_constants import MAPPINGS_DATAFRAME_COLUMNS, MAPPING_PARSING_QUERY, JOIN_CONDITION_PARSING_QUERY
 from ..mapping.mapping_partitioner import MappingPartitioner
 from ..data_source.relational_database import get_column_datatype
@@ -48,7 +47,6 @@ def _mapping_to_rml(mapping_graph):
     mapping_graph.remove((None, rdflib.term.URIRef(R2RML_R2RML_VIEW_CLASS), None))
     mapping_graph.remove((None, rdflib.term.URIRef(R2RML_LOGICAL_TABLE_CLASS), None))
 
-
     return mapping_graph
 
 
@@ -80,7 +78,7 @@ def _rdf_class_to_pom(mapping_graph):
 
     query = 'SELECT ?tm ?c WHERE { ' \
             '?tm <' + R2RML_SUBJECT_MAP + '> ?sm . ' \
-            '?sm <' + R2RML_CLASS + '> ?c . }'
+                                          '?sm <' + R2RML_CLASS + '> ?c . }'
     for tm, c in mapping_graph.query(query):
         blanknode = rdflib.BNode()
         mapping_graph.add((tm, rdflib.term.URIRef(R2RML_PREDICATE_OBJECT_MAP), blanknode))
@@ -100,15 +98,15 @@ def _subject_graph_maps_to_pom(mapping_graph):
     # add the graph maps in the subject maps to every predicate object map of the subject maps
     query = 'SELECT ?sm ?gm ?pom WHERE { ' \
             '?tm <' + R2RML_SUBJECT_MAP + '> ?sm . ' \
-            '?sm <' + R2RML_GRAPH_MAP + '> ?gm . ' \
-            '?tm <' + R2RML_PREDICATE_OBJECT_MAP + '> ?pom . }'
+                                          '?sm <' + R2RML_GRAPH_MAP + '> ?gm . ' \
+                                                                      '?tm <' + R2RML_PREDICATE_OBJECT_MAP + '> ?pom . }'
     for sm, gm, pom in mapping_graph.query(query):
         mapping_graph.add((pom, rdflib.term.URIRef(R2RML_GRAPH_MAP), gm))
 
     # remove the graph maps from the subject maps
     query = 'SELECT ?sm ?gm WHERE { ' \
             '?tm <' + R2RML_SUBJECT_MAP + '> ?sm . ' \
-            '?sm <' + R2RML_GRAPH_MAP + '> ?gm . }'
+                                          '?sm <' + R2RML_GRAPH_MAP + '> ?gm . }'
     for sm, gm in mapping_graph.query(query):
         mapping_graph.remove((sm, rdflib.term.URIRef(R2RML_GRAPH_MAP), gm))
 
@@ -122,8 +120,8 @@ def _complete_pom_with_default_graph(mapping_graph):
 
     query = 'SELECT DISTINCT ?tm ?pom WHERE { ' \
             '?tm <' + R2RML_PREDICATE_OBJECT_MAP + '> ?pom . ' \
-            'OPTIONAL { ?pom <' + R2RML_GRAPH_MAP + '> ?gm . } . ' \
-            'FILTER ( !bound(?gm) ) }'
+                                                   'OPTIONAL { ?pom <' + R2RML_GRAPH_MAP + '> ?gm . } . ' \
+                                                                                           'FILTER ( !bound(?gm) ) }'
     for tm, pom in mapping_graph.query(query):
         blanknode = rdflib.BNode()
         mapping_graph.add((pom, rdflib.term.URIRef(R2RML_GRAPH_MAP), blanknode))
@@ -141,27 +139,27 @@ def _complete_termtypes(mapping_graph):
     # add missing blanknode termtypes in the constant-valued object maps
     query = 'SELECT DISTINCT ?term_map ?constant WHERE { ' \
             '?term_map <' + R2RML_CONSTANT + '> ?constant . ' \
-            'OPTIONAL { ?term_map <' + R2RML_TERM_TYPE + '> ?termtype . } . ' \
-            'FILTER ( !bound(?termtype) && isBlank(?constant) ) }'
+                                             'OPTIONAL { ?term_map <' + R2RML_TERM_TYPE + '> ?termtype . } . ' \
+                                                                                          'FILTER ( !bound(?termtype) && isBlank(?constant) ) }'
     for term_map, _ in mapping_graph.query(query):
         mapping_graph.add((term_map, rdflib.term.URIRef(R2RML_TERM_TYPE), rdflib.term.URIRef(R2RML_BLANK_NODE)))
 
     # add missing literal termtypes in the constant-valued object maps
     query = 'SELECT DISTINCT ?term_map ?constant WHERE { ' \
             '?term_map <' + R2RML_CONSTANT + '> ?constant . ' \
-            'OPTIONAL { ?term_map <' + R2RML_TERM_TYPE + '> ?termtype . } . ' \
-            'FILTER ( !bound(?termtype) && isLiteral(?constant) ) }'
+                                             'OPTIONAL { ?term_map <' + R2RML_TERM_TYPE + '> ?termtype . } . ' \
+                                                                                          'FILTER ( !bound(?termtype) && isLiteral(?constant) ) }'
     for term_map, _ in mapping_graph.query(query):
         mapping_graph.add((term_map, rdflib.term.URIRef(R2RML_TERM_TYPE), rdflib.term.URIRef(R2RML_LITERAL)))
 
     # add missing literal termtypes in the object maps
     query = 'SELECT DISTINCT ?om ?pom WHERE { ' \
             '?pom <' + R2RML_OBJECT_MAP + '> ?om . ' \
-            'OPTIONAL { ?om <' + R2RML_TERM_TYPE + '> ?termtype . } . ' \
-            'OPTIONAL { ?om <' + RML_REFERENCE + '> ?column . } . ' \
-            'OPTIONAL { ?om <' + R2RML_LANGUAGE + '> ?language . } . ' \
-            'OPTIONAL { ?om <' + R2RML_DATATYPE + '> ?datatype . } . ' \
-            'FILTER ( !bound(?termtype) && ( bound(?column) || bound(?language) || bound(?datatype) ) ) }'
+                                          'OPTIONAL { ?om <' + R2RML_TERM_TYPE + '> ?termtype . } . ' \
+                                                                                 'OPTIONAL { ?om <' + RML_REFERENCE + '> ?column . } . ' \
+                                                                                                                      'OPTIONAL { ?om <' + R2RML_LANGUAGE + '> ?language . } . ' \
+                                                                                                                                                            'OPTIONAL { ?om <' + R2RML_DATATYPE + '> ?datatype . } . ' \
+                                                                                                                                                                                                  'FILTER ( !bound(?termtype) && ( bound(?column) || bound(?language) || bound(?datatype) ) ) }'
     for om, _ in mapping_graph.query(query):
         mapping_graph.add((om, rdflib.term.URIRef(R2RML_TERM_TYPE), rdflib.term.URIRef(R2RML_LITERAL)))
 
@@ -169,8 +167,8 @@ def _complete_termtypes(mapping_graph):
     for term_map_property in [R2RML_SUBJECT_MAP, R2RML_PREDICATE_MAP, R2RML_OBJECT_MAP, R2RML_GRAPH_MAP]:
         query = 'SELECT DISTINCT ?term_map ?x WHERE { ' \
                 '?x <' + term_map_property + '> ?term_map . ' \
-                'OPTIONAL { ?term_map <' + R2RML_TERM_TYPE + '> ?termtype . } . ' \
-                'FILTER ( !bound(?termtype) ) }'
+                                             'OPTIONAL { ?term_map <' + R2RML_TERM_TYPE + '> ?termtype . } . ' \
+                                                                                          'FILTER ( !bound(?termtype) ) }'
         for term_map, _ in mapping_graph.query(query):
             mapping_graph.add((term_map, rdflib.term.URIRef(R2RML_TERM_TYPE), rdflib.term.URIRef(R2RML_IRI)))
 
@@ -181,48 +179,6 @@ def _complete_rml_classes(mapping_graph):
     """
     TODO
     """
-
-    return mapping_graph
-
-
-def _remove_self_joins(mapping_graph):
-    query = 'SELECT DISTINCT ?OM ?join_condition ?parentSM_template ?parentSM_constant ?parentSM_reference ' \
-                           ' ?parentSM_termtype WHERE { ' \
-            '?childTM <' + R2RML_PREDICATE_OBJECT_MAP + '> ?POM . ' \
-            '?POM <' + R2RML_OBJECT_MAP + '> ?OM . ' \
-            '?OM <' + R2RML_PARENT_TRIPLES_MAP + '> ?parentTM . ' \
-            '?parentTM <' + R2RML_SUBJECT_MAP + '> ?parentSM . ' \
-            'OPTIONAL { ?join_condition <' + R2RML_JOIN_CONDITION + '> ?join_condition . } . ' \
-            'OPTIONAL { ?parentSM <' + R2RML_TEMPLATE + '> ?parentSM_template . } . ' \
-            'OPTIONAL { ?parentSM <' + R2RML_CONSTANT + '> ?parentSM_constant . } . ' \
-            'OPTIONAL { ?parentSM <' + RML_REFERENCE + '> ?parentSM_reference . } . ' \
-            '?parentSM <' + R2RML_TERM_TYPE + '> ?parentSM_termtype . ' \
-            'OPTIONAL { ?childTM <' + RML_LOGICAL_SOURCE + '> ?child_logical_source . ' \
-                      ' ?parentTM <' + RML_LOGICAL_SOURCE + '> ?parent_logical_source . ' \
-                      ' FILTER ( ?child_logical_source != ?parent_logical_source) } . ' \
-            'OPTIONAL { ?childTM <' + RML_QUERY + '> ?child_query . ' \
-                      ' ?parentTM <' + RML_QUERY + '> ?parent_query . ' \
-                      ' FILTER ( ?child_query != ?parent_query ) } . ' \
-            'OPTIONAL { ?childTM <' + RML_ITERATOR + '> ?child_iterator . ' \
-                      ' ?parentTM <' + RML_ITERATOR + '> ?parent_iterator . ' \
-                      ' FILTER ( ?child_query != ?parent_query ) } . ' \
-            'OPTIONAL { ?childTM <' + R2RML_TABLE_NAME + '> ?child_tablename . ' \
-                      ' ?parentTM <' + R2RML_TABLE_NAME + '> ?parent_tablename . ' \
-                      ' FILTER ( ?child_query != ?parent_query ) } . }'
-
-    for OM, join_condition, parentSM_template, parentSM_constant, parentSM_reference, parentSM_termtype in \
-            mapping_graph.query(query):
-        mapping_graph.remove((OM, None, None))
-        if join_condition:
-            mapping_graph.remove((join_condition, None, None))
-
-        mapping_graph.add((OM, rdflib.term.URIRef(R2RML_TERM_TYPE), parentSM_termtype))
-        if parentSM_template:
-            mapping_graph.add((OM, rdflib.term.URIRef(R2RML_TEMPLATE), parentSM_template))
-        elif parentSM_constant:
-            mapping_graph.add((OM, rdflib.term.URIRef(R2RML_CONSTANT), parentSM_constant))
-        elif parentSM_reference:
-            mapping_graph.add((OM, rdflib.term.URIRef(RML_REFERENCE), parentSM_reference))
 
     return mapping_graph
 
@@ -246,27 +202,6 @@ def _get_join_object_maps_join_conditions(join_query_results):
             {'child_value': str(join_condition.child_value), 'parent_value': str(join_condition.parent_value)}
 
     return join_conditions_dict
-
-
-def _validate_no_repeated_triples_maps(mapping_graph, source_name):
-    """
-    Checks that there are no repeated triples maps in the mapping rules of a source. This is important because
-    if there are repeated triples maps (i.e. triples map with the same identifier), it is not possible to process
-    parent triples maps correctly.
-    """
-
-    query = 'SELECT ?triples_map_id WHERE { ?triples_map_id <http://www.w3.org/ns/r2rml#subjectMap> ?_subject_map . }'
-
-    # get the identifiers of all the triples maps in the graph
-    triples_map_ids = [str(result.triples_map_id) for result in list(mapping_graph.query(query))]
-
-    # get the identifiers that are repeated
-    repeated_triples_map_ids = get_repeated_elements_in_list(triples_map_ids)
-
-    # if there are any repeated identifiers, then it will produce errors during materialization
-    if len(repeated_triples_map_ids) > 0:
-        raise Exception("The following triples maps in data source `" + source_name + "` are repeated: " +
-                        str(repeated_triples_map_ids) + '.')
 
 
 def _transform_mappings_into_dataframe(mapping_query_results, join_query_results, section_name):
@@ -412,17 +347,12 @@ class MappingParser:
         mapping_graph = _complete_pom_with_default_graph(mapping_graph)
         # if a term as no associated rr:termType, complete it according to R2RML specification
         mapping_graph = _complete_termtypes(mapping_graph)
-        # remove self joins
-        mapping_graph = _remove_self_joins(mapping_graph)
         # add rdf:type RML classes
         mapping_graph = _complete_rml_classes(mapping_graph)
 
         # parse the mappings with the parsing queries
         mapping_query_results = mapping_graph.query(MAPPING_PARSING_QUERY)
         join_query_results = mapping_graph.query(JOIN_CONDITION_PARSING_QUERY)
-
-        # check triples maps are not repeated, which would lead to errors (because of repeated triples maps identifiers)
-        _validate_no_repeated_triples_maps(mapping_graph, section_name)
 
         # convert the SPARQL result set with the parsed mappings to DataFrame
         return _transform_mappings_into_dataframe(mapping_query_results, join_query_results, section_name)
@@ -437,13 +367,16 @@ class MappingParser:
         # ignore the delimited identifiers (this is not conformant with R2MRL specification)
         self._remove_delimiters_from_mappings()
 
+        # create a unique id for each mapping rule
+        self.mappings_df.insert(0, 'id', self.mappings_df.reset_index(drop=True).index)
+
+        self._remove_self_joins_from_mappings()
+
+        # TODO: this is not correct as this rules could be referenced by a join with join conditions
         # remove mapping rules with no predicate or object (subject map is conserved because rdf class was added as POM)
         self.mappings_df = self.mappings_df.dropna(subset=['predicate_constant', 'predicate_template',
                                                            'predicate_reference', 'object_constant', 'object_template',
                                                            'object_reference'], how='all')
-
-        # create a unique id for each mapping rule
-        self.mappings_df.insert(0, 'id', self.mappings_df.reset_index(drop=True).index)
 
     def _complete_source_types(self):
         """
@@ -497,6 +430,40 @@ class MappingParser:
                     join_conditions[key]['parent_value'] = _get_undelimited_identifier(
                         join_conditions[key]['parent_value'])
                     self.mappings_df.at[i, 'join_conditions'] = str(join_conditions)
+
+    def _remove_self_joins_from_mappings(self):
+        for i, mapping_rule in self.mappings_df.iterrows():
+            if pd.notna(mapping_rule['object_parent_triples_map']):
+                parent_triples_map_rule = get_mapping_rule_from_triples_map_id(self.mappings_df, mapping_rule[
+                    'object_parent_triples_map'])
+
+                # str() is to be able to compare np.nan
+                if str(mapping_rule['source_name']) == str(parent_triples_map_rule['source_name']) and \
+                        str(mapping_rule['data_source']) == str(parent_triples_map_rule['data_source']) and \
+                        str(mapping_rule['tablename']) == str(parent_triples_map_rule['tablename']) and \
+                        str(mapping_rule['iterator']) == str(parent_triples_map_rule['iterator']) and \
+                        str(mapping_rule['query']) == str(parent_triples_map_rule['query']):
+
+                    remove_join = True
+                    # check that all conditions in the join condition have the same references
+                    try:
+                        join_conditions = eval(mapping_rule['join_conditions'])
+                        for key, join_condition in join_conditions.items():
+                            if join_condition['child_value'] != join_condition['parent_value']:
+                                remove_join = False
+                    except:
+                        # eval() has failed because the are no join conditions, the join can be removed
+                        remove_join = True
+
+                    if remove_join:
+                        self.mappings_df.at[i, 'object_parent_triples_map'] = ''
+                        self.mappings_df.at[i, 'join_conditions'] = ''
+                        self.mappings_df.at[i, 'object_constant'] = parent_triples_map_rule.at['subject_constant']
+                        self.mappings_df.at[i, 'object_template'] = parent_triples_map_rule.at['subject_template']
+                        self.mappings_df.at[i, 'object_reference'] = parent_triples_map_rule.at['subject_reference']
+                        self.mappings_df.at[i, 'object_termtype'] = parent_triples_map_rule.at['subject_termtype']
+
+                        logging.debug('Removed self-join from mapping rule `' + str(mapping_rule['id']) + '`.')
 
     def _infer_datatypes(self):
         """
