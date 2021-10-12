@@ -23,7 +23,7 @@ from .data_source.data_file import get_file_data
 def _preprocess_data(dataframe, mapping_rule, references, config):
     # deal with ORACLE
     if mapping_rule['source_type'] == RDB:
-        if config.get_database_url(mapping_rule['source_name']).startswith(ORACLE):
+        if config.get_database_url(mapping_rule['source_name']).lower().startswith(ORACLE.lower()):
             dataframe = normalize_oracle_identifier_casing(dataframe, references)
 
         # for RDB NULLS are removed on query time, but the dataframe is not converted to str
