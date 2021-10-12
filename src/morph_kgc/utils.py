@@ -166,14 +166,6 @@ def clean_output_dir(config):
         logging.debug('Cleaned output directory.')
 
 
-def dataframe_columns_to_str(df):
-    """
-    Converts all the columns in the input dataframe to str.
-    """
-
-    return df.astype(str)
-
-
 def replace_predicates_in_graph(graph, predicate_to_remove, predicate_to_add):
     """
     Replaces the predicates predicate_to_remove in a graph with the predicate predicate_to_add.
