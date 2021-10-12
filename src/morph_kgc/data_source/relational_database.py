@@ -102,8 +102,7 @@ def _build_sql_query(config, mapping_rule, references):
         query = mapping_rule['query']
     elif len(references) > 0:
         query = 'SELECT '
-        if config.push_down_sql_distincts():
-            query = query + 'DISTINCT '
+        # query = query + 'DISTINCT ' # TODO: is this more efficient?
         for reference in references:
             query = query + '`' + reference + '`, '
         query = query[:-2] + ' FROM `' + mapping_rule['tablename'] + '` WHERE '
