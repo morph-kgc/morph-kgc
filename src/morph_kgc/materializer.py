@@ -257,7 +257,7 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
                 parent_result_chunks = get_file_data(config, parent_triples_map_rule, parent_references)
 
             for parent_query_results_chunk_df in parent_result_chunks:
-                parent_query_results_chunk_df = _preprocess_data(parent_query_results_chunk_df, mapping_rule, references, config)
+                parent_query_results_chunk_df = _preprocess_data(parent_query_results_chunk_df, mapping_rule, parent_references, config)
                 parent_query_results_chunk_df = parent_query_results_chunk_df.add_prefix('parent_')
                 merged_query_results_chunk_df = _merge_results_chunks(query_results_chunk_df,
                                                                       parent_query_results_chunk_df, mapping_rule)
