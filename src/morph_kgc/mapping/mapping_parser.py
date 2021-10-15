@@ -78,7 +78,7 @@ def _rdf_class_to_pom(mapping_graph):
 
     query = 'SELECT ?tm ?c WHERE { ' \
             '?tm <' + R2RML_SUBJECT_MAP + '> ?sm . ' \
-                                          '?sm <' + R2RML_CLASS + '> ?c . }'
+            '?sm <' + R2RML_CLASS + '> ?c . }'
     for tm, c in mapping_graph.query(query):
         blanknode = rdflib.BNode()
         mapping_graph.add((tm, rdflib.term.URIRef(R2RML_PREDICATE_OBJECT_MAP), blanknode))
@@ -98,15 +98,15 @@ def _subject_graph_maps_to_pom(mapping_graph):
     # add the graph maps in the subject maps to every predicate object map of the subject maps
     query = 'SELECT ?sm ?gm ?pom WHERE { ' \
             '?tm <' + R2RML_SUBJECT_MAP + '> ?sm . ' \
-                                          '?sm <' + R2RML_GRAPH_MAP + '> ?gm . ' \
-                                                                      '?tm <' + R2RML_PREDICATE_OBJECT_MAP + '> ?pom . }'
+            '?sm <' + R2RML_GRAPH_MAP + '> ?gm . ' \
+            '?tm <' + R2RML_PREDICATE_OBJECT_MAP + '> ?pom . }'
     for sm, gm, pom in mapping_graph.query(query):
         mapping_graph.add((pom, rdflib.term.URIRef(R2RML_GRAPH_MAP), gm))
 
     # remove the graph maps from the subject maps
     query = 'SELECT ?sm ?gm WHERE { ' \
             '?tm <' + R2RML_SUBJECT_MAP + '> ?sm . ' \
-                                          '?sm <' + R2RML_GRAPH_MAP + '> ?gm . }'
+            '?sm <' + R2RML_GRAPH_MAP + '> ?gm . }'
     for sm, gm in mapping_graph.query(query):
         mapping_graph.remove((sm, rdflib.term.URIRef(R2RML_GRAPH_MAP), gm))
 
@@ -120,8 +120,8 @@ def _complete_pom_with_default_graph(mapping_graph):
 
     query = 'SELECT DISTINCT ?tm ?pom WHERE { ' \
             '?tm <' + R2RML_PREDICATE_OBJECT_MAP + '> ?pom . ' \
-                                                   'OPTIONAL { ?pom <' + R2RML_GRAPH_MAP + '> ?gm . } . ' \
-                                                                                           'FILTER ( !bound(?gm) ) }'
+            'OPTIONAL { ?pom <' + R2RML_GRAPH_MAP + '> ?gm . } . ' \
+            'FILTER ( !bound(?gm) ) }'
     for tm, pom in mapping_graph.query(query):
         blanknode = rdflib.BNode()
         mapping_graph.add((pom, rdflib.term.URIRef(R2RML_GRAPH_MAP), blanknode))
@@ -139,27 +139,27 @@ def _complete_termtypes(mapping_graph):
     # add missing blanknode termtypes in the constant-valued object maps
     query = 'SELECT DISTINCT ?term_map ?constant WHERE { ' \
             '?term_map <' + R2RML_CONSTANT + '> ?constant . ' \
-                                             'OPTIONAL { ?term_map <' + R2RML_TERM_TYPE + '> ?termtype . } . ' \
-                                                                                          'FILTER ( !bound(?termtype) && isBlank(?constant) ) }'
+            'OPTIONAL { ?term_map <' + R2RML_TERM_TYPE + '> ?termtype . } . ' \
+            'FILTER ( !bound(?termtype) && isBlank(?constant) ) }'
     for term_map, _ in mapping_graph.query(query):
         mapping_graph.add((term_map, rdflib.term.URIRef(R2RML_TERM_TYPE), rdflib.term.URIRef(R2RML_BLANK_NODE)))
 
     # add missing literal termtypes in the constant-valued object maps
     query = 'SELECT DISTINCT ?term_map ?constant WHERE { ' \
             '?term_map <' + R2RML_CONSTANT + '> ?constant . ' \
-                                             'OPTIONAL { ?term_map <' + R2RML_TERM_TYPE + '> ?termtype . } . ' \
-                                                                                          'FILTER ( !bound(?termtype) && isLiteral(?constant) ) }'
+            'OPTIONAL { ?term_map <' + R2RML_TERM_TYPE + '> ?termtype . } . ' \
+            'FILTER ( !bound(?termtype) && isLiteral(?constant) ) }'
     for term_map, _ in mapping_graph.query(query):
         mapping_graph.add((term_map, rdflib.term.URIRef(R2RML_TERM_TYPE), rdflib.term.URIRef(R2RML_LITERAL)))
 
     # add missing literal termtypes in the object maps
     query = 'SELECT DISTINCT ?om ?pom WHERE { ' \
             '?pom <' + R2RML_OBJECT_MAP + '> ?om . ' \
-                                          'OPTIONAL { ?om <' + R2RML_TERM_TYPE + '> ?termtype . } . ' \
-                                                                                 'OPTIONAL { ?om <' + RML_REFERENCE + '> ?column . } . ' \
-                                                                                                                      'OPTIONAL { ?om <' + R2RML_LANGUAGE + '> ?language . } . ' \
-                                                                                                                                                            'OPTIONAL { ?om <' + R2RML_DATATYPE + '> ?datatype . } . ' \
-                                                                                                                                                                                                  'FILTER ( !bound(?termtype) && ( bound(?column) || bound(?language) || bound(?datatype) ) ) }'
+            'OPTIONAL { ?om <' + R2RML_TERM_TYPE + '> ?termtype . } . ' \
+            'OPTIONAL { ?om <' + RML_REFERENCE + '> ?column . } . ' \
+            'OPTIONAL { ?om <' + R2RML_LANGUAGE + '> ?language . } . ' \
+            'OPTIONAL { ?om <' + R2RML_DATATYPE + '> ?datatype . } . ' \
+            'FILTER ( !bound(?termtype) && ( bound(?column) || bound(?language) || bound(?datatype) ) ) }'
     for om, _ in mapping_graph.query(query):
         mapping_graph.add((om, rdflib.term.URIRef(R2RML_TERM_TYPE), rdflib.term.URIRef(R2RML_LITERAL)))
 
@@ -167,8 +167,8 @@ def _complete_termtypes(mapping_graph):
     for term_map_property in [R2RML_SUBJECT_MAP, R2RML_PREDICATE_MAP, R2RML_OBJECT_MAP, R2RML_GRAPH_MAP]:
         query = 'SELECT DISTINCT ?term_map ?x WHERE { ' \
                 '?x <' + term_map_property + '> ?term_map . ' \
-                                             'OPTIONAL { ?term_map <' + R2RML_TERM_TYPE + '> ?termtype . } . ' \
-                                                                                          'FILTER ( !bound(?termtype) ) }'
+                'OPTIONAL { ?term_map <' + R2RML_TERM_TYPE + '> ?termtype . } . ' \
+                'FILTER ( !bound(?termtype) ) }'
         for term_map, _ in mapping_graph.query(query):
             mapping_graph.add((term_map, rdflib.term.URIRef(R2RML_TERM_TYPE), rdflib.term.URIRef(R2RML_IRI)))
 
@@ -532,15 +532,14 @@ class MappingParser:
         # not a rr:literal). Use subset operation
         subject_termtypes = set([str(termtype) for termtype in set(self.mappings_df['subject_termtype'])])
         if not (subject_termtypes <= {R2RML_IRI, R2RML_BLANK_NODE}):
-            raise ValueError('Found an invalid subject termtype. Found values ' + str(subject_termtypes) + \
-                             '. Subject maps must be ' + R2RML_IRI + ' or ' + R2RML_BLANK_NODE + \
-                             '.')
+            raise ValueError('Found an invalid subject termtype. Found values ' + str(subject_termtypes) +
+                             '. Subject maps must be ' + R2RML_IRI + ' or ' + R2RML_BLANK_NODE + '.')
 
         object_termtypes = set([str(termtype) for termtype in set(self.mappings_df['object_termtype'])])
         if not (object_termtypes <= {R2RML_IRI, R2RML_BLANK_NODE, R2RML_LITERAL}):
-            raise ValueError('Found an invalid object termtype. Found values ' + str(object_termtypes) + \
-                             '. Object maps must be ' + R2RML_IRI + ', ' + R2RML_BLANK_NODE + \
-                             ' or ' + R2RML_LITERAL + '.')
+            raise ValueError('Found an invalid object termtype. Found values ' + str(object_termtypes) +
+                             '. Object maps must be ' + R2RML_IRI + ', ' + R2RML_BLANK_NODE + ' or ' +
+                             R2RML_LITERAL + '.')
 
         # if there is a datatype or language tag then the object map termtype must be a rr:Literal
         if len(self.mappings_df.loc[(self.mappings_df['object_termtype'] != R2RML_LITERAL) &
