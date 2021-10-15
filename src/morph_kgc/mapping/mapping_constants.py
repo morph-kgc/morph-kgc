@@ -8,8 +8,7 @@ MAPPINGS_DATAFRAME_COLUMNS = [
     'graph_constant', 'graph_reference', 'graph_template',
     'predicate_constant', 'predicate_template', 'predicate_reference',
     'object_constant', 'object_template', 'object_reference', 'object_termtype', 'object_datatype', 'object_language',
-    'object_parent_triples_map', 'join_conditions',
-    'predicate_object_graph_constant', 'predicate_object_graph_reference', 'predicate_object_graph_template'
+    'object_parent_triples_map', 'join_conditions'
 ]
 
 
@@ -36,7 +35,6 @@ MAPPING_PARSING_QUERY = """
         ?predicate_constant ?predicate_template ?predicate_reference
         ?object_constant ?object_template ?object_reference ?object_termtype ?object_datatype ?object_language
         ?object_parent_triples_map
-        ?predicate_object_graph_constant ?predicate_object_graph_reference ?predicate_object_graph_template
 
     WHERE {
         ?triples_map_id rml:logicalSource ?_source .
@@ -54,18 +52,6 @@ MAPPING_PARSING_QUERY = """
             OPTIONAL { ?_subject_map rr:constant ?subject_constant . }
             OPTIONAL { ?_subject_map rr:class ?subject_rdf_class . }
             OPTIONAL { ?_subject_map rr:termType ?subject_termtype . }
-            OPTIONAL {
-                ?_subject_map rr:graphMap ?_graph_structure .
-                ?_graph_structure rr:constant ?graph_constant .
-            }
-            OPTIONAL {
-                ?_subject_map rr:graphMap ?_graph_structure .
-                ?_graph_structure rr:template ?graph_template .
-            }
-            OPTIONAL {
-                ?_subject_map rr:graphMap ?_graph_structure .
-                ?_graph_structure rr:reference ?graph_reference .
-            }
         }
 
     # Predicate -----------------------------------------------------------------------
@@ -113,15 +99,15 @@ MAPPING_PARSING_QUERY = """
             }
             OPTIONAL {
                 ?_predicate_object_map rr:graphMap ?_graph_structure .
-                ?_graph_structure rr:constant ?predicate_object_graph_constant .
+                ?_graph_structure rr:constant ?graph_constant .
             }
             OPTIONAL {
                 ?_predicate_object_map rr:graphMap ?_graph_structure .
-                ?_graph_structure rr:template ?predicate_object_graph_template .
+                ?_graph_structure rr:template ?graph_template .
             }
             OPTIONAL {
                 ?_predicate_object_map rr:graphMap ?_graph_structure .
-                ?_graph_structure rr:reference ?predicate_object_graph_reference .
+                ?_graph_structure rr:reference ?graph_reference .
             }
         }
     }
