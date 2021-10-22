@@ -44,7 +44,7 @@ def get_file_data(config, mapping_rule, references):
 def _read_csv(config, mapping_rule, references, file_source_type):
     delimiter = ',' if file_source_type == 'CSV' else '\t'
 
-    return pd.read_table(mapping_rule['data_source'],
+    return pd.read_table(str(mapping_rule['data_source']),
                          delimiter=delimiter,
                          index_col=False,
                          encoding='utf-8',
@@ -60,7 +60,7 @@ def _read_csv(config, mapping_rule, references, file_source_type):
 
 
 def _read_parquet(mapping_rule, references):
-    parquet_df = pd.read_parquet(mapping_rule['data_source'],
+    parquet_df = pd.read_parquet(str(mapping_rule['data_source']),
                                  engine='pyarrow',
                                  columns=references)
 
@@ -68,7 +68,7 @@ def _read_parquet(mapping_rule, references):
 
 
 def _read_feather(mapping_rule, references):
-    feather_df = pd.read_feather(mapping_rule['data_source'],
+    feather_df = pd.read_feather(str(mapping_rule['data_source']),
                                  use_threads=True,
                                  columns=references)
 
@@ -76,7 +76,7 @@ def _read_feather(mapping_rule, references):
 
 
 def _read_orc(mapping_rule, references):
-    orc_df = pd.read_orc(mapping_rule['data_source'],
+    orc_df = pd.read_orc(str(mapping_rule['data_source']),
                          encoding='utf-8',
                          columns=references)
 
@@ -84,7 +84,7 @@ def _read_orc(mapping_rule, references):
 
 
 def _read_stata(config, mapping_rule, references):
-    return pd.read_stata(mapping_rule['data_source'],
+    return pd.read_stata(str(mapping_rule['data_source']),
                          columns=references,
                          chunksize=config.get_chunksize(),
                          convert_dates=False,
@@ -95,7 +95,7 @@ def _read_stata(config, mapping_rule, references):
 
 
 def _read_sas(config, mapping_rule, references):
-    sas_df = pd.read_sas(mapping_rule['data_source'],
+    sas_df = pd.read_sas(str(mapping_rule['data_source']),
                          encoding='utf-8',
                          chunksize=config.get_chunksize())
     sas_df = sas_df[references]
@@ -104,7 +104,7 @@ def _read_sas(config, mapping_rule, references):
 
 
 def _read_spss(mapping_rule, references):
-    spss_df = pd.read_spss(mapping_rule['data_source'],
+    spss_df = pd.read_spss(str(mapping_rule['data_source']),
                            usecols=references,
                            convert_categoricals=False)
 
@@ -112,7 +112,7 @@ def _read_spss(mapping_rule, references):
 
 
 def _read_excel(config, mapping_rule, references):
-    excel_df = pd.read_excel(mapping_rule['data_source'],
+    excel_df = pd.read_excel(str(mapping_rule['data_source']),
                              sheet_name=0,
                              engine='openpyxl',
                              usecols=references,
@@ -127,7 +127,7 @@ def _read_excel(config, mapping_rule, references):
 def _read_json(mapping_rule, references):
     # borrowed from
     # https://stackoverflow.com/questions/62844742/best-way-to-extract-format-data-in-json-format-using-python
-    with open(mapping_rule['data_source'], encoding='utf-8') as jsonfile:
+    with open(str(mapping_rule['data_source']), encoding='utf-8') as jsonfile:
         json_data = json.load(jsonfile)
 
     jsonpath_expr = parse(mapping_rule['iterator'])
