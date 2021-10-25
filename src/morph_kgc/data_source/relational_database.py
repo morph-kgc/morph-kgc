@@ -14,16 +14,27 @@ from sqlalchemy.pool import NullPool
 
 from ..constants import MYSQL, MARIADB, MSSQL
 
-
+# PostgresSQL datatypes: https://www.postgresql.org/docs/14/datatype.html
 SQL_RDF_DATATYPE = {
     'INTEGER': 'http://www.w3.org/2001/XMLSchema#integer',
     'INT': 'http://www.w3.org/2001/XMLSchema#integer',
     'SMALLINT': 'http://www.w3.org/2001/XMLSchema#integer',
+    'INT8': 'http://www.w3.org/2001/XMLSchema#integer',
+    'INT4': 'http://www.w3.org/2001/XMLSchema#integer',
+    'BIGINT': 'http://www.w3.org/2001/XMLSchema#integer',
+    'BIGSERIAL': 'http://www.w3.org/2001/XMLSchema#integer',
+    'SMALLSERIAL': 'http://www.w3.org/2001/XMLSchema#integer',
+    'INT2': 'http://www.w3.org/2001/XMLSchema#integer',
+    'SERIAL2': 'http://www.w3.org/2001/XMLSchema#integer',
+    'SERIAL4': 'http://www.w3.org/2001/XMLSchema#integer',
+    'SERIAL8': 'http://www.w3.org/2001/XMLSchema#integer',
     'DECIMAL': 'http://www.w3.org/2001/XMLSchema#decimal',
     'NUMERIC': 'http://www.w3.org/2001/XMLSchema#decimal',
     'FLOAT': 'http://www.w3.org/2001/XMLSchema#double',
+    'FLOAT8': 'http://www.w3.org/2001/XMLSchema#double',
     'REAL': 'http://www.w3.org/2001/XMLSchema#double',
     'DOUBLE': 'http://www.w3.org/2001/XMLSchema#double',
+    'DOUBLE PRECISION': 'http://www.w3.org/2001/XMLSchema#double',
     'BOOL': 'http://www.w3.org/2001/XMLSchema#boolean',
     'TINYINT': 'http://www.w3.org/2001/XMLSchema#boolean',
     'BOOLEAN': 'http://www.w3.org/2001/XMLSchema#boolean',
@@ -34,6 +45,9 @@ SQL_RDF_DATATYPE = {
     'BINARY': 'http://www.w3.org/2001/XMLSchema#hexBinary',
     'VARBINARY': 'http://www.w3.org/2001/XMLSchema#hexBinary',
     'BIT': 'http://www.w3.org/2001/XMLSchema#hexBinary',
+    'BYTEA': 'http://www.w3.org/2001/XMLSchema#hexBinary',
+    'BIT VARYING': 'http://www.w3.org/2001/XMLSchema#hexBinary',
+    'VARBIT': 'http://www.w3.org/2001/XMLSchema#hexBinary',
     'YEAR': 'http://www.w3.org/2001/XMLSchema#integer'
 }
 
