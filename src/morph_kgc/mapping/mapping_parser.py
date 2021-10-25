@@ -432,14 +432,17 @@ class MappingParser:
                     self.mappings_df.at[i, 'join_conditions'] = str(join_conditions)
 
     def _remove_self_joins_from_mappings(self):
+
+        # because RDB has no rml:source, use source_name for rml:source to facilitate self-join elimination
+        self.mappings_df.loc[self.mappings_df['source_type'] == RDB, 'data_source'] = self.mappings_df['source_name']
+
         for i, mapping_rule in self.mappings_df.iterrows():
             if pd.notna(mapping_rule['object_parent_triples_map']):
                 parent_triples_map_rule = get_mapping_rule_from_triples_map_id(self.mappings_df, mapping_rule[
                     'object_parent_triples_map'])
 
                 # str() is to be able to compare np.nan
-                if str(mapping_rule['source_name']) == str(parent_triples_map_rule['source_name']) and \
-                        str(mapping_rule['data_source']) == str(parent_triples_map_rule['data_source']) and \
+                if str(mapping_rule['data_source']) == str(parent_triples_map_rule['data_source']) and \
                         str(mapping_rule['tablename']) == str(parent_triples_map_rule['tablename']) and \
                         str(mapping_rule['iterator']) == str(parent_triples_map_rule['iterator']) and \
                         str(mapping_rule['query']) == str(parent_triples_map_rule['query']):
