@@ -82,11 +82,9 @@ def _relational_db_connection(config, source_name):
 
 
 def get_column_datatype(config, source_name, table_name, column_name):
-    db_connection, db_dialect = _relational_db_connection(config, source_name)
-
     sql_query = "SELECT `data_type` FROM `information_schema`.`columns` WHERE `table_name`='" + table_name + \
                 "' AND `column_name`='" + column_name + "'"
-
+    db_connection, db_dialect = _relational_db_connection(config, source_name)
     sql_query = _replace_query_enclosing_characters(sql_query, db_dialect)
 
     try:
@@ -106,7 +104,7 @@ def get_column_datatype(config, source_name, table_name, column_name):
         return 'http://www.w3.org/2001/XMLSchema#string'
 
 
-def _build_sql_query(config, mapping_rule, references):
+def _build_sql_query(mapping_rule, references):
     """
     Build a query for MYSQL using backticks '`' as enclosing character. This character will later be replaced with the
     one corresponding one to the dialect that applies.
@@ -126,18 +124,16 @@ def _build_sql_query(config, mapping_rule, references):
     else:
         query = None
 
-    if query is not None:
-        logging.debug('SQL query for mapping rule `' + str(mapping_rule['id']) + '`: [' + query + ']')
-
     return query
 
 
 def get_sql_data(config, mapping_rule, references):
+    sql_query = _build_sql_query(mapping_rule, references)
     db_connection, db_dialect = _relational_db_connection(config, mapping_rule['source_name'])
-
-    sql_query = _build_sql_query(config, mapping_rule, references)
-
     sql_query = _replace_query_enclosing_characters(sql_query, db_dialect)
+
+    if sql_query is not None:
+        logging.debug('SQL query for mapping rule `' + str(mapping_rule['id']) + '`: [' + sql_query + ']')
 
     result_chunks = pd.read_sql(sql_query,
                                 con=db_connection,
