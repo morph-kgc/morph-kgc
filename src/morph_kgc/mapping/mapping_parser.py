@@ -285,6 +285,7 @@ class MappingParser:
         self._get_from_r2_rml()
         self._normalize_mappings()
         self._infer_datatypes()
+        self._enforce_sql_query_filter_not_null()
 
         self.validate_mappings()
 
@@ -520,6 +521,25 @@ class MappingParser:
                             break
                         except:
                             pass
+
+    def _enforce_sql_query_filter_not_null(self):
+        for i, mapping_rule in self.mappings_df.iterrows():
+            if pd.notna(mapping_rule['query']):
+                sql_query = mapping_rule['query']
+                sql_query_metadata = sql_metadata.Parser(sql_query)
+
+                if 'where' in sql_query_metadata.columns_dict:
+                    sql_query = sql_query + ' AND'
+                else:
+                    sql_query = sql_query + ' WHERE'
+
+                for select_column in sql_query_metadata.columns_dict['select']:
+                    sql_query = sql_query + ' `' + select_column + '`' + ' IS NOT NULL AND'
+                sql_query = sql_query[:-4]
+
+                self.mappings_df.at[i, 'query'] = sql_query
+
+
 
     def validate_mappings(self):
         """
