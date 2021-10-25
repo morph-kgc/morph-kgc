@@ -5,12 +5,12 @@ __license__ = "Apache-2.0"
 __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"
 
-import sql_metadata
 import pandas as pd
 import numpy as np
 import multiprocessing as mp
 import rdflib
 import logging
+import sql_metadata
 
 from ..constants import *
 from ..utils import replace_predicates_in_graph, get_repeated_elements_in_list, get_mapping_rule_from_triples_map_id
@@ -483,18 +483,17 @@ class MappingParser:
             # datatype inferring only applies to relational data sources
             if (mapping_rule['source_type'] == RDB) and (
                     # datatype inferring only applies to literals
-                    mapping_rule['object_termtype'] == R2RML_LITERAL) and (
+                    str(mapping_rule['object_termtype']) == R2RML_LITERAL) and (
                     # if the literal has a language tag or an overridden datatype, datatype inference does not apply
                     pd.isna(mapping_rule['object_datatype']) and pd.isna(mapping_rule['object_language'])):
 
                 if pd.notna(mapping_rule['tablename']) and pd.notna(mapping_rule['object_reference']):
-                    inferred_data_type = get_column_datatype(
-                        self.config, mapping_rule['source_name'], mapping_rule['tablename'],
-                        mapping_rule['object_reference']
-                    )
+                    inferred_data_type = get_column_datatype(self.config, mapping_rule['source_name'],
+                                                             mapping_rule['tablename'],
+                                                             mapping_rule['object_reference'])
 
-                    self.mappings_df.at[i, 'object_datatype'] = inferred_data_type
                     if inferred_data_type:
+                        self.mappings_df.at[i, 'object_datatype'] = inferred_data_type
                         logging.debug("`" + inferred_data_type + "` datatype inferred for column `" +
                                       mapping_rule['object_reference'] + "` of table `" +
                                       mapping_rule['tablename'] + "` in data source `" +
@@ -502,19 +501,17 @@ class MappingParser:
 
                 elif pd.notna(mapping_rule['query']):
                     # if mapping rule has a query, get the table names in the query
-                    table_names = sql_metadata.get_query_tables(mapping_rule['query'])
+                    table_names = sql_metadata.Parser(mapping_rule['query']).tables
                     for table_name in table_names:
                         # for each table in the query get the datatype of the object reference in that table if an
                         # exception is thrown, then the reference is not a column in that table, and nothing is done
                         try:
-                            data_type = get_column_datatype(
-                                self.config, mapping_rule['source_name'], table_name,
-                                mapping_rule['object_reference']
-                            )
+                            inferred_data_type = get_column_datatype(self.config, mapping_rule['source_name'],
+                                                                     table_name, mapping_rule['object_reference'])
 
-                            self.mappings_df.at[i, 'object_datatype'] = data_type
-                            if data_type:
-                                logging.debug("`" + data_type + "` datatype inferred for reference `" +
+                            if inferred_data_type:
+                                self.mappings_df.at[i, 'object_datatype'] = inferred_data_type
+                                logging.debug("`" + inferred_data_type + "` datatype inferred for reference `" +
                                               mapping_rule['object_reference'] + "` in query [" +
                                               mapping_rule['query'] + "] in data source `" +
                                               mapping_rule['source_name'] + "`.")
