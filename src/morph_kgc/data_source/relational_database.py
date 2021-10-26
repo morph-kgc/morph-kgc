@@ -14,8 +14,17 @@ from sqlalchemy.pool import NullPool
 
 from ..constants import MYSQL, MARIADB, MSSQL, ORACLE
 
-# PostgresSQL datatypes: https://www.postgresql.org/docs/14/datatype.html
+# PostgresSQL data types: https://www.postgresql.org/docs/14/datatype.html
+# Oracle data types: https://docs.oracle.com/cd/A58617_01/server.804/a58241/ch5.htm
+# MySQL data types: https://dev.mysql.com/doc/refman/8.0/en/data-types.html
 SQL_RDF_DATATYPE = {
+    'BINARY': 'http://www.w3.org/2001/XMLSchema#hexBinary',
+    'VARBINARY': 'http://www.w3.org/2001/XMLSchema#hexBinary',
+    'BLOB': 'http://www.w3.org/2001/XMLSchema#hexBinary',
+    'BFILE': 'http://www.w3.org/2001/XMLSchema#hexBinary',
+    'RAW': 'http://www.w3.org/2001/XMLSchema#hexBinary',
+    'LONG RAW': 'http://www.w3.org/2001/XMLSchema#hexBinary',
+
     'INTEGER': 'http://www.w3.org/2001/XMLSchema#integer',
     'INT': 'http://www.w3.org/2001/XMLSchema#integer',
     'SMALLINT': 'http://www.w3.org/2001/XMLSchema#integer',
@@ -28,27 +37,25 @@ SQL_RDF_DATATYPE = {
     'SERIAL2': 'http://www.w3.org/2001/XMLSchema#integer',
     'SERIAL4': 'http://www.w3.org/2001/XMLSchema#integer',
     'SERIAL8': 'http://www.w3.org/2001/XMLSchema#integer',
+
     'DECIMAL': 'http://www.w3.org/2001/XMLSchema#decimal',
     'NUMERIC': 'http://www.w3.org/2001/XMLSchema#decimal',
+
     'FLOAT': 'http://www.w3.org/2001/XMLSchema#double',
     'FLOAT8': 'http://www.w3.org/2001/XMLSchema#double',
     'REAL': 'http://www.w3.org/2001/XMLSchema#double',
     'DOUBLE': 'http://www.w3.org/2001/XMLSchema#double',
     'DOUBLE PRECISION': 'http://www.w3.org/2001/XMLSchema#double',
+    'NUMBER': 'http://www.w3.org/2001/XMLSchema#double',
+
     'BOOL': 'http://www.w3.org/2001/XMLSchema#boolean',
     'TINYINT': 'http://www.w3.org/2001/XMLSchema#boolean',
     'BOOLEAN': 'http://www.w3.org/2001/XMLSchema#boolean',
+
     'DATE': 'http://www.w3.org/2001/XMLSchema#date',
     'TIME': 'http://www.w3.org/2001/XMLSchema#time',
-    'DATETIME': 'http://www.w3.org/2001/XMLSchema#',
-    'TIMESTAMP': 'http://www.w3.org/2001/XMLSchema#dateTime',
-    'BINARY': 'http://www.w3.org/2001/XMLSchema#hexBinary',
-    'VARBINARY': 'http://www.w3.org/2001/XMLSchema#hexBinary',
-    'BIT': 'http://www.w3.org/2001/XMLSchema#hexBinary',
-    'BYTEA': 'http://www.w3.org/2001/XMLSchema#hexBinary',
-    'BIT VARYING': 'http://www.w3.org/2001/XMLSchema#hexBinary',
-    'VARBIT': 'http://www.w3.org/2001/XMLSchema#hexBinary',
-    'YEAR': 'http://www.w3.org/2001/XMLSchema#integer'
+    'DATETIME': 'http://www.w3.org/2001/XMLSchema#dateTime',
+    'TIMESTAMP': 'http://www.w3.org/2001/XMLSchema#dateTime'
 }
 
 
@@ -103,7 +110,7 @@ def get_column_datatype(config, source_name, table_name, column_name):
         data_type = query_results_df['data_type'][0]
     elif 'DATA_TYPE' in query_results_df.columns and len(query_results_df) == 1:
         data_type = query_results_df['DATA_TYPE'][0]
-
+    print(data_type)
     if data_type.upper() in SQL_RDF_DATATYPE:
         return SQL_RDF_DATATYPE[data_type.upper()]
     else:
