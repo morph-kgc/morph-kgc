@@ -12,7 +12,7 @@ import pandas as pd
 from sqlalchemy import create_engine
 from sqlalchemy.pool import NullPool
 
-from ..constants import MYSQL, MARIADB, MSSQL
+from ..constants import MYSQL, MARIADB, MSSQL, ORACLE
 
 # PostgresSQL datatypes: https://www.postgresql.org/docs/14/datatype.html
 SQL_RDF_DATATYPE = {
@@ -82,10 +82,16 @@ def _relational_db_connection(config, source_name):
 
 
 def get_column_datatype(config, source_name, table_name, column_name):
-    sql_query = "SELECT `data_type` FROM `information_schema`.`columns` WHERE `table_name`='" + table_name + \
-                "' AND `column_name`='" + column_name + "'"
     db_connection, db_dialect = _relational_db_connection(config, source_name)
-    sql_query = _replace_query_enclosing_characters(sql_query, db_dialect)
+
+    if db_dialect == ORACLE:
+        # Oracle does not use the standard INFORMATION_SCHEMA
+        sql_query = "SELECT t.data_type FROM all_tab_columns t WHERE t.TABLE_NAME = '" + table_name + \
+                    "' AND t.COLUMN_NAME='" + column_name + "'"
+    else:
+        sql_query = "SELECT `data_type` FROM `information_schema`.`columns` WHERE `table_name`='" + table_name + \
+                    "' AND `column_name`='" + column_name + "'"
+        sql_query = _replace_query_enclosing_characters(sql_query, db_dialect)
 
     try:
         query_results_df = pd.read_sql(sql_query, con=db_connection)
