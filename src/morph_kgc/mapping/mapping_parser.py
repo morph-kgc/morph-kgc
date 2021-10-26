@@ -13,10 +13,10 @@ import logging
 import sql_metadata
 
 from ..constants import *
-from ..utils import replace_predicates_in_graph, get_repeated_elements_in_list, get_mapping_rule_from_triples_map_id
+from ..utils import *
 from ..mapping.mapping_constants import MAPPINGS_DATAFRAME_COLUMNS, MAPPING_PARSING_QUERY, JOIN_CONDITION_PARSING_QUERY
 from ..mapping.mapping_partitioner import MappingPartitioner
-from ..data_source.relational_database import get_column_datatype
+from ..data_source.relational_database import get_column_datatype, _replace_query_enclosing_characters
 
 
 def _mapping_to_rml(mapping_graph):
@@ -544,6 +544,10 @@ class MappingParser:
                 for select_column in select_columns:
                     sql_query = sql_query + ' `' + select_column + '`' + ' IS NOT NULL AND'
                 sql_query = sql_query[:-4]
+
+                db_url = self.config.get_database_url(mapping_rule['source_name'])
+                db_dialect = get_dialect_from_database_url(db_url)
+                sql_query = _replace_query_enclosing_characters(sql_query, db_dialect)
 
                 self.mappings_df.at[i, 'query'] = sql_query
 

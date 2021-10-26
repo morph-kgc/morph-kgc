@@ -15,6 +15,8 @@ import time
 import numpy as np
 import pandas as pd
 
+from constants import MYSQL, MARIADB, MSSQL, ORACLE, POSTGRESQL
+
 
 def configure_logger(logging_level, logging_file):
     """
@@ -252,3 +254,12 @@ def remove_null_values_from_dataframe(dataframe, config):
     dataframe.dropna(axis=0, how='any', inplace=True)
 
     return dataframe
+
+
+def get_dialect_from_database_url(db_url):
+
+    for dbms in [ORACLE, POSTGRESQL, MYSQL, MARIADB, MSSQL]:
+        if db_url.upper().startswith(dbms):
+            return dbms
+
+    return ''
