@@ -7,5 +7,5 @@ sql_metadata==2.3.0
 SQLAlchemy==1.4.25
 pyarrow==5.0.0
 openpyxl==3.0.9
-jsonpath-rw==1.4.0
+jsonpath-python==1.0.5
 lxml==4.6.3

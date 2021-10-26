@@ -9,7 +9,7 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 import json
 import pandas as pd
 
-from jsonpath_rw import parse
+from jsonpath import JSONPath
 
 from ..constants import *
 
@@ -125,16 +125,11 @@ def _read_excel(config, mapping_rule, references):
 
 
 def _read_json(mapping_rule, references):
-    # borrowed from
-    # https://stackoverflow.com/questions/62844742/best-way-to-extract-format-data-in-json-format-using-python
     with open(str(mapping_rule['data_source']), encoding='utf-8') as jsonfile:
         json_data = json.load(jsonfile)
 
-    jsonpath_expr = parse(mapping_rule['iterator'])
-
-    jsonpath_result = [match.value for match in jsonpath_expr.find(json_data)]
+    jsonpath_result = JSONPath(mapping_rule['iterator']).parse(json_data)
     json_df = pd.DataFrame.from_records(jsonpath_result)
-
     json_df = json_df[references]
 
     return [json_df]
