@@ -533,13 +533,19 @@ class MappingParser:
                 else:
                     sql_query = sql_query + ' WHERE'
 
-                for select_column in sql_query_metadata.columns_dict['select']:
+                inv_column_aliases = {v: k for k, v in sql_query_metadata.columns_aliases.items()}
+                select_columns = []
+                for column in sql_query_metadata.columns_dict['select']:
+                    if column in inv_column_aliases:
+                        select_columns.append(inv_column_aliases[column])
+                    else:
+                        select_columns.append(column)
+
+                for select_column in select_columns:
                     sql_query = sql_query + ' `' + select_column + '`' + ' IS NOT NULL AND'
                 sql_query = sql_query[:-4]
 
                 self.mappings_df.at[i, 'query'] = sql_query
-
-
 
     def validate_mappings(self):
         """
