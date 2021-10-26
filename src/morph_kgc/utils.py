@@ -15,7 +15,7 @@ import time
 import numpy as np
 import pandas as pd
 
-from constants import MYSQL, MARIADB, MSSQL, ORACLE, POSTGRESQL, SQLITE
+from .constants import MYSQL, MARIADB, MSSQL, ORACLE, POSTGRESQL, SQLITE
 
 
 def configure_logger(logging_level, logging_file):
