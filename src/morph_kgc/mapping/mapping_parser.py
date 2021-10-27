@@ -285,7 +285,7 @@ class MappingParser:
         self._get_from_r2_rml()
         self._normalize_mappings()
         self._infer_datatypes()
-        self._enforce_sql_query_filter_not_null()
+        self._enforce_sql_query_filter_null()
 
         self.validate_mappings()
 
@@ -476,7 +476,7 @@ class MappingParser:
         (https://www.w3.org/2001/sw/rdb2rdf/r2rml/#natural-mapping).
         """
 
-        # return if datatype inferring is not enabled in the config
+        # return if datatype inferring is disabled in the config
         if not self.config.infer_sql_datatypes():
             return
 
@@ -522,7 +522,12 @@ class MappingParser:
                         except:
                             pass
 
-    def _enforce_sql_query_filter_not_null(self):
+    def _enforce_sql_query_filter_null(self):
+
+        # return if enforcing NULLs filtering in SQL queries is disabled in the config
+        if not self.config.enforce_sql_filter_null():
+            return
+
         for i, mapping_rule in self.mappings_df.iterrows():
             if pd.notna(mapping_rule['query']):
                 sql_query = mapping_rule['query']
@@ -548,6 +553,7 @@ class MappingParser:
                 db_url = self.config.get_database_url(mapping_rule['source_name'])
                 db_dialect = get_dialect_from_database_url(db_url)
                 sql_query = _replace_query_enclosing_characters(sql_query, db_dialect)
+                print(sql_query)
 
                 self.mappings_df.at[i, 'query'] = sql_query
 

@@ -34,6 +34,7 @@ ONLY_PRINTABLE_CHARACTERS = 'only_printable_characters'
 
 MAPPING_PARTITION = 'mapping_partition'
 INFER_SQL_DATATYPES = 'infer_sql_datatypes'
+ENFORCE_SQL_QUERY_FILTER_NULL = 'enforce_sql_filter_null'
 
 CHUNKSIZE = 'chunksize'
 
@@ -82,6 +83,7 @@ CONFIGURATION_OPTIONS_EMPTY_NON_VALID = {
             CLEAN_OUTPUT_DIR: DEFAULT_CLEAN_OUTPUT_DIR,
             ONLY_PRINTABLE_CHARACTERS: DEFAULT_ONLY_PRINTABLE_CHARACTERS,
             INFER_SQL_DATATYPES: DEFAULT_INFER_SQL_DATATYPES,
+            ENFORCE_SQL_QUERY_FILTER_NULL: DEFAULT_ENFORCE_SQL_QUERY_FILTER_NULL,
             CHUNKSIZE: DEFAULT_CHUNKSIZE,
             LOGGING_LEVEL: DEFAULT_LOGGING_LEVEL,
             NA_FILTER: DEFAULT_NA_FILTER,
@@ -219,6 +221,9 @@ class Config(ConfigParser):
 
     def infer_sql_datatypes(self):
         return self.getboolean(self.configuration_section, INFER_SQL_DATATYPES)
+
+    def enforce_sql_filter_null(self):
+        return self.getboolean(self.configuration_section, ENFORCE_SQL_QUERY_FILTER_NULL)
 
     def clean_output_dir(self):
         return self.getboolean(self.configuration_section, CLEAN_OUTPUT_DIR)
