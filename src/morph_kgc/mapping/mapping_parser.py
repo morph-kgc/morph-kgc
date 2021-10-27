@@ -551,12 +551,8 @@ class MappingParser:
                         select_columns.append(column)
 
                 for select_column in select_columns:
-                    sql_query = sql_query + ' `' + select_column + '`' + ' IS NOT NULL AND'
+                    sql_query = sql_query + ' "' + select_column + '"' + ' IS NOT NULL AND'
                 sql_query = sql_query[:-4]
-
-                db_url = self.config.get_database_url(mapping_rule['source_name'])
-                db_dialect = get_dialect_from_database_url(db_url)
-                sql_query = _replace_query_enclosing_characters(sql_query, db_dialect)
 
                 self.mappings_df.at[i, 'query'] = sql_query
 

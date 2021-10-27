@@ -254,17 +254,3 @@ def remove_null_values_from_dataframe(dataframe, config):
     dataframe.dropna(axis=0, how='any', inplace=True)
 
     return dataframe
-
-
-def get_dialect_from_database_url(db_url):
-    """
-    Return the SQLAlchemy DB dialect based on the
-    db_url (https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls) provided by the user in the config file.
-    If there is no match with supported dialects of SQLAlchemy the empty string is returned.
-    """
-
-    for db_dialect in [ORACLE, POSTGRESQL, MYSQL, MARIADB, MSSQL, SQLITE]:
-        if db_url.upper().startswith(db_dialect):
-            return db_dialect
-
-    return ''
