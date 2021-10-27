@@ -12,50 +12,50 @@ import pandas as pd
 from sqlalchemy import create_engine
 from sqlalchemy.pool import NullPool
 
-from ..constants import MYSQL, MARIADB, MSSQL, ORACLE
+from ..constants import *
 
 # PostgresSQL data types: https://www.postgresql.org/docs/14/datatype.html
 # Oracle data types: https://docs.oracle.com/cd/A58617_01/server.804/a58241/ch5.htm
 # MySQL data types: https://dev.mysql.com/doc/refman/8.0/en/data-types.html
 SQL_RDF_DATATYPE = {
-    'BINARY': 'http://www.w3.org/2001/XMLSchema#hexBinary',
-    'VARBINARY': 'http://www.w3.org/2001/XMLSchema#hexBinary',
-    'BLOB': 'http://www.w3.org/2001/XMLSchema#hexBinary',
-    'BFILE': 'http://www.w3.org/2001/XMLSchema#hexBinary',
-    'RAW': 'http://www.w3.org/2001/XMLSchema#hexBinary',
-    'LONG RAW': 'http://www.w3.org/2001/XMLSchema#hexBinary',
+    'BINARY': XSD_HEX_BINARY,
+    'VARBINARY': XSD_HEX_BINARY,
+    'BLOB': XSD_HEX_BINARY,
+    'BFILE': XSD_HEX_BINARY,
+    'RAW': XSD_HEX_BINARY,
+    'LONG RAW': XSD_HEX_BINARY,
 
-    'INTEGER': 'http://www.w3.org/2001/XMLSchema#integer',
-    'INT': 'http://www.w3.org/2001/XMLSchema#integer',
-    'SMALLINT': 'http://www.w3.org/2001/XMLSchema#integer',
-    'INT8': 'http://www.w3.org/2001/XMLSchema#integer',
-    'INT4': 'http://www.w3.org/2001/XMLSchema#integer',
-    'BIGINT': 'http://www.w3.org/2001/XMLSchema#integer',
-    'BIGSERIAL': 'http://www.w3.org/2001/XMLSchema#integer',
-    'SMALLSERIAL': 'http://www.w3.org/2001/XMLSchema#integer',
-    'INT2': 'http://www.w3.org/2001/XMLSchema#integer',
-    'SERIAL2': 'http://www.w3.org/2001/XMLSchema#integer',
-    'SERIAL4': 'http://www.w3.org/2001/XMLSchema#integer',
-    'SERIAL8': 'http://www.w3.org/2001/XMLSchema#integer',
+    'INTEGER': XSD_INTEGER,
+    'INT': XSD_INTEGER,
+    'SMALLINT': XSD_INTEGER,
+    'INT8': XSD_INTEGER,
+    'INT4': XSD_INTEGER,
+    'BIGINT': XSD_INTEGER,
+    'BIGSERIAL': XSD_INTEGER,
+    'SMALLSERIAL': XSD_INTEGER,
+    'INT2': XSD_INTEGER,
+    'SERIAL2': XSD_INTEGER,
+    'SERIAL4': XSD_INTEGER,
+    'SERIAL8': XSD_INTEGER,
 
-    'DECIMAL': 'http://www.w3.org/2001/XMLSchema#decimal',
-    'NUMERIC': 'http://www.w3.org/2001/XMLSchema#decimal',
+    'DECIMAL': XSD_DECIMAL,
+    'NUMERIC': XSD_DECIMAL,
 
-    'FLOAT': 'http://www.w3.org/2001/XMLSchema#double',
-    'FLOAT8': 'http://www.w3.org/2001/XMLSchema#double',
-    'REAL': 'http://www.w3.org/2001/XMLSchema#double',
-    'DOUBLE': 'http://www.w3.org/2001/XMLSchema#double',
-    'DOUBLE PRECISION': 'http://www.w3.org/2001/XMLSchema#double',
-    'NUMBER': 'http://www.w3.org/2001/XMLSchema#double',
+    'FLOAT': XSD_DOUBLE,
+    'FLOAT8': XSD_DOUBLE,
+    'REAL': XSD_DOUBLE,
+    'DOUBLE': XSD_DOUBLE,
+    'DOUBLE PRECISION': XSD_DOUBLE,
+    'NUMBER': XSD_DOUBLE,
 
-    'BOOL': 'http://www.w3.org/2001/XMLSchema#boolean',
-    'TINYINT': 'http://www.w3.org/2001/XMLSchema#boolean',
-    'BOOLEAN': 'http://www.w3.org/2001/XMLSchema#boolean',
+    'BOOL': XSD_BOOLEAN,
+    'TINYINT': XSD_BOOLEAN,
+    'BOOLEAN': XSD_BOOLEAN,
 
-    'DATE': 'http://www.w3.org/2001/XMLSchema#date',
-    'TIME': 'http://www.w3.org/2001/XMLSchema#time',
-    'DATETIME': 'http://www.w3.org/2001/XMLSchema#dateTime',
-    'TIMESTAMP': 'http://www.w3.org/2001/XMLSchema#dateTime'
+    'DATE': XSD_DATE,
+    'TIME': XSD_TIME,
+    'DATETIME': XSD_DATETIME,
+    'TIMESTAMP': XSD_DATETIME
 }
 
 

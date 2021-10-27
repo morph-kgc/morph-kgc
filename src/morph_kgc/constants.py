@@ -167,6 +167,18 @@ RML_REFERENCE_FORMULATION = 'http://semweb.mmlab.be/ns/rml#referenceFormulation'
 
 
 ##############################################################################
+#############################   XSD DATA TYPES   #############################
+##############################################################################
+XSD_HEX_BINARY = 'http://www.w3.org/2001/XMLSchema#hexBinary'
+XSD_INTEGER = 'http://www.w3.org/2001/XMLSchema#integer'
+XSD_DECIMAL = 'http://www.w3.org/2001/XMLSchema#decimal'
+XSD_DOUBLE = 'http://www.w3.org/2001/XMLSchema#double'
+XSD_BOOLEAN = 'http://www.w3.org/2001/XMLSchema#boolean'
+XSD_DATE = 'http://www.w3.org/2001/XMLSchema#date'
+XSD_TIME = 'http://www.w3.org/2001/XMLSchema#time'
+XSD_DATETIME = 'http://www.w3.org/2001/XMLSchema#dateTime'
+
+##############################################################################
 ##################################   OTHER   #################################
 ##############################################################################
 
