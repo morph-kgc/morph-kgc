@@ -177,6 +177,7 @@ XSD_BOOLEAN = 'http://www.w3.org/2001/XMLSchema#boolean'
 XSD_DATE = 'http://www.w3.org/2001/XMLSchema#date'
 XSD_TIME = 'http://www.w3.org/2001/XMLSchema#time'
 XSD_DATETIME = 'http://www.w3.org/2001/XMLSchema#dateTime'
+XSD_STRING = 'http://www.w3.org/2001/XMLSchema#string'
 
 ##############################################################################
 ##################################   OTHER   #################################

@@ -174,6 +174,16 @@ def _complete_termtypes(mapping_graph):
     return mapping_graph
 
 
+def _remove_string_datatypes(mapping_graph):
+    """
+    Removes xsd:string data types. xsd:string is equivalent to not specifying any data type.
+    """
+
+    mapping_graph.remove((None, rdflib.term.URIRef(R2RML_DATATYPE), rdflib.term.URIRef(XSD_STRING)))
+
+    return mapping_graph
+
+
 def _complete_rml_classes(mapping_graph):
     """
     TODO
@@ -346,6 +356,8 @@ class MappingParser:
         mapping_graph = _complete_pom_with_default_graph(mapping_graph)
         # if a term as no associated rr:termType, complete it according to R2RML specification
         mapping_graph = _complete_termtypes(mapping_graph)
+        # remove xsd:string data types as it is equivalent to not specifying any data type
+        mapping_graph = _remove_string_datatypes(mapping_graph)
         # add rdf:type RML classes
         mapping_graph = _complete_rml_classes(mapping_graph)
 
