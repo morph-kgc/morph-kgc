@@ -33,6 +33,7 @@ def _preprocess_data(dataframe, mapping_rule, references, config):
 
     # data to str
     dataframe = dataframe.astype(str)
+    print(dataframe.dtypes)
 
     return dataframe
 
@@ -114,6 +115,7 @@ def _materialize_reference(results_df, reference, config, columns_alias='', term
         results_df['reference_results'] = results_df['reference_results'].apply(lambda x: remove_non_printable_characters(x))
 
     if str(termtype).strip() == R2RML_LITERAL:
+        print(results_df.dtypes)
         results_df['reference_results'] = results_df['reference_results'].str.replace('"', '\\"', regex=False).str.replace('\\', '\\\\"', regex=False)
         results_df['triple'] = results_df['triple'] + '"' + results_df['reference_results'] + '"'
         if pd.notna(language_tag):
