@@ -285,7 +285,6 @@ class MappingParser:
         self._get_from_r2_rml()
         self._normalize_mappings()
         self._infer_datatypes()
-        self._enforce_sql_query_filter_null()
 
         self.validate_mappings()
 
@@ -521,40 +520,6 @@ class MappingParser:
                             break
                         except:
                             pass
-
-    def _enforce_sql_query_filter_null(self):
-        """
-        Adds to rr:sqlQuery provided by the users clauses to filter NULLs. This is necessary due to a Pandas limitation
-        See issue #35 (https://github.com/oeg-upm/Morph-KGC/issues/35).
-        """
-
-        # return if enforcing NULLs filtering in SQL queries is disabled in the config
-        if not self.config.enforce_sql_filter_null():
-            return
-
-        for i, mapping_rule in self.mappings_df.iterrows():
-            if pd.notna(mapping_rule['query']):
-                sql_query = mapping_rule['query']
-                sql_query_metadata = sql_metadata.Parser(sql_query)
-
-                if 'where' in sql_query_metadata.columns_dict:
-                    sql_query = sql_query + ' AND'
-                else:
-                    sql_query = sql_query + ' WHERE'
-
-                inv_column_aliases = {v: k for k, v in sql_query_metadata.columns_aliases.items()}
-                select_columns = []
-                for column in sql_query_metadata.columns_dict['select']:
-                    if column in inv_column_aliases:
-                        select_columns.append(inv_column_aliases[column])
-                    else:
-                        select_columns.append(column)
-
-                for select_column in select_columns:
-                    sql_query = sql_query + ' "' + select_column + '"' + ' IS NOT NULL AND'
-                sql_query = sql_query[:-4]
-
-                self.mappings_df.at[i, 'query'] = sql_query
 
     def validate_mappings(self):
         """
