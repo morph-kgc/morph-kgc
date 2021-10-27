@@ -15,8 +15,6 @@ import time
 import numpy as np
 import pandas as pd
 
-from .constants import MYSQL, MARIADB, MSSQL, ORACLE, POSTGRESQL, SQLITE
-
 
 def configure_logger(logging_level, logging_file):
     """
@@ -250,6 +248,9 @@ def normalize_oracle_identifier_casing(dataframe, references):
 
 
 def remove_null_values_from_dataframe(dataframe, config):
+    # data to str to be able to perform string replacement
+    dataframe = dataframe.astype(str)
+
     dataframe.replace(config.get_na_values(), np.NaN, inplace=True)
     dataframe.dropna(axis=0, how='any', inplace=True)
 

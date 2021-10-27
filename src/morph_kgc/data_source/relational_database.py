@@ -113,7 +113,7 @@ def get_column_datatype(config, source_name, table_name, column_name):
 
     if data_type.upper() in SQL_RDF_DATATYPE:
         return SQL_RDF_DATATYPE[data_type.upper()]
-    else:infer
+    else:
         return None
 
 
