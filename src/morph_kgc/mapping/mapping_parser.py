@@ -523,6 +523,10 @@ class MappingParser:
                             pass
 
     def _enforce_sql_query_filter_null(self):
+        """
+        Adds to rr:sqlQuery provided by the users clauses to filter NULLs. This is necessary due to a Pandas limitation
+        See issue #35 (https://github.com/oeg-upm/Morph-KGC/issues/35).
+        """
 
         # return if enforcing NULLs filtering in SQL queries is disabled in the config
         if not self.config.enforce_sql_filter_null():
@@ -553,7 +557,6 @@ class MappingParser:
                 db_url = self.config.get_database_url(mapping_rule['source_name'])
                 db_dialect = get_dialect_from_database_url(db_url)
                 sql_query = _replace_query_enclosing_characters(sql_query, db_dialect)
-                print(sql_query)
 
                 self.mappings_df.at[i, 'query'] = sql_query
 
