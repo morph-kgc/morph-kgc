@@ -1,11 +1,11 @@
-pandas==1.3.3
-numpy==1.21.2
-rdflib==6.0.1
+pandas==1.3.4
+numpy==1.21.3
+rdflib==6.0.2
 requests==2.26.0
 falcon==3.0.1
 sql_metadata==2.3.0
-SQLAlchemy==1.4.25
-pyarrow==5.0.0
+SQLAlchemy==1.4.26
+pyarrow==6.0.0
 openpyxl==3.0.9
 jsonpath-python==1.0.5
 lxml==4.6.3
