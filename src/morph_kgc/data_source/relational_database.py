@@ -8,11 +8,13 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 import logging
 import pandas as pd
+import sql_metadata
 
 from sqlalchemy import create_engine
 from sqlalchemy.pool import NullPool
 
 from ..constants import *
+
 
 # PostgresSQL data types: https://www.postgresql.org/docs/14/datatype.html
 # Oracle data types: https://docs.oracle.com/cd/A58617_01/server.804/a58241/ch5.htm
@@ -88,7 +90,7 @@ def _relational_db_connection(config, source_name):
     return db_connection, db_dialect
 
 
-def get_column_datatype(config, source_name, table_name, column_name):
+def _get_column_table_datatype(config, source_name, table_name, column_name):
     db_connection, db_dialect = _relational_db_connection(config, source_name)
 
     if db_dialect == ORACLE:
@@ -115,6 +117,30 @@ def get_column_datatype(config, source_name, table_name, column_name):
         return SQL_RDF_DATATYPE[data_type.upper()]
     else:
         return None
+
+
+def get_rdb_reference_datatype(config, mapping_rule, reference):
+    inferred_data_type = ''
+
+    if pd.notna(mapping_rule['tablename']):
+        inferred_data_type = _get_column_table_datatype(config, mapping_rule['source_name'],
+                                                        mapping_rule['tablename'], reference)
+    elif pd.notna(mapping_rule['query']):
+        # if mapping rule has a query, get the table names in the query
+        table_names = sql_metadata.Parser(mapping_rule['query']).tables
+        for table_name in table_names:
+            # for each table in the query get the datatype of the object reference in that table if an
+            # exception is thrown, then the reference is not a column in that table, and nothing is done
+            try:
+                inferred_data_type = _get_column_table_datatype(config, mapping_rule['source_name'],
+                                                                table_name, reference)
+                if inferred_data_type:
+                    # already found it, end looping
+                    break
+            except:
+                pass
+
+    return inferred_data_type
 
 
 def _build_sql_query(mapping_rule, references):

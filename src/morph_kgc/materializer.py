@@ -16,11 +16,20 @@ from falcon.uri import encode
 
 from .utils import *
 from .constants import *
-from .data_source.relational_database import get_sql_data
+from .data_source.relational_database import get_sql_data, get_rdb_reference_datatype
 from .data_source.data_file import get_file_data
 
 
-def _preprocess_data(dataframe, mapping_rule, references, config):
+def _retrieve_rdb_integer_references(config, mapping_rule, references):
+    integer_references = []
+    for reference in references:
+        if XSD_INTEGER == get_rdb_reference_datatype(config, mapping_rule, reference):
+            integer_references.append(reference)
+
+    return integer_references
+
+
+def _preprocess_data(dataframe, mapping_rule, references, integer_references, config):
     # deal with ORACLE
     if mapping_rule['source_type'] == RDB:
         if config.get_database_url(mapping_rule['source_name']).lower().startswith(ORACLE.lower()):
@@ -31,6 +40,8 @@ def _preprocess_data(dataframe, mapping_rule, references, config):
         if mapping_rule['source_type'] in [RDB, PARQUET, FEATHER, ORC, STATA, SAS, SPSS, JSON, XML]:
             dataframe = remove_null_values_from_dataframe(dataframe, config)
 
+    if mapping_rule['source_type'] == RDB:
+        dataframe[integer_references] = dataframe[integer_references].astype(float).astype(int)
     # data to str
     dataframe = dataframe.astype(str)
 
@@ -233,6 +244,7 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
     parent_result_chunks = None
 
     references = _get_references_in_mapping_rule(mapping_rule)
+    integer_references = _retrieve_rdb_integer_references(config, mapping_rule, references)
 
     if pd.notna(mapping_rule['object_parent_triples_map']):
         parent_triples_map_rule = \
@@ -248,7 +260,7 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
             result_chunks = get_file_data(config, mapping_rule, references)
 
         for query_results_chunk_df in result_chunks:
-            query_results_chunk_df = _preprocess_data(query_results_chunk_df, mapping_rule, references, config)
+            query_results_chunk_df = _preprocess_data(query_results_chunk_df, mapping_rule, references, integer_references, config)
             query_results_chunk_df = query_results_chunk_df.add_prefix('child_')
 
             if parent_triples_map_rule['source_type'] == RDB:
@@ -257,7 +269,7 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
                 parent_result_chunks = get_file_data(config, parent_triples_map_rule, parent_references)
 
             for parent_query_results_chunk_df in parent_result_chunks:
-                parent_query_results_chunk_df = _preprocess_data(parent_query_results_chunk_df, mapping_rule, parent_references, config)
+                parent_query_results_chunk_df = _preprocess_data(parent_query_results_chunk_df, mapping_rule, parent_references, integer_references, config)
                 parent_query_results_chunk_df = parent_query_results_chunk_df.add_prefix('parent_')
                 merged_query_results_chunk_df = _merge_results_chunks(query_results_chunk_df,
                                                                       parent_query_results_chunk_df, mapping_rule)
@@ -272,7 +284,7 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
             result_chunks = get_file_data(config, mapping_rule, references)
 
         for query_results_chunk_df in result_chunks:
-            query_results_chunk_df = _preprocess_data(query_results_chunk_df, mapping_rule, references, config)
+            query_results_chunk_df = _preprocess_data(query_results_chunk_df, mapping_rule, references, integer_references, config)
             triples.update(_materialize_mapping_rule_terms(query_results_chunk_df, mapping_rule, config))
 
     return triples

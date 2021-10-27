@@ -10,13 +10,12 @@ import numpy as np
 import multiprocessing as mp
 import rdflib
 import logging
-import sql_metadata
 
 from ..constants import *
 from ..utils import *
 from ..mapping.mapping_constants import MAPPINGS_DATAFRAME_COLUMNS, MAPPING_PARSING_QUERY, JOIN_CONDITION_PARSING_QUERY
 from ..mapping.mapping_partitioner import MappingPartitioner
-from ..data_source.relational_database import get_column_datatype, _replace_query_enclosing_characters
+from ..data_source.relational_database import get_rdb_reference_datatype
 
 
 def _mapping_to_rml(mapping_graph):
@@ -480,46 +479,32 @@ class MappingParser:
             return
 
         for i, mapping_rule in self.mappings_df.iterrows():
-            # datatype inferring only applies to relational data sources
+            # datatype inference only applies to relational data sources
             if (mapping_rule['source_type'] == RDB) and (
-                    # datatype inferring only applies to literals
+                    # datatype inference only applies to literals
                     str(mapping_rule['object_termtype']) == R2RML_LITERAL) and (
                     # if the literal has a language tag or an overridden datatype, datatype inference does not apply
                     pd.isna(mapping_rule['object_datatype']) and pd.isna(mapping_rule['object_language'])):
 
-                if pd.notna(mapping_rule['tablename']) and pd.notna(mapping_rule['object_reference']):
-                    inferred_data_type = get_column_datatype(self.config, mapping_rule['source_name'],
-                                                             mapping_rule['tablename'],
-                                                             mapping_rule['object_reference'])
+                if pd.notna(mapping_rule['object_reference']):
+                    inferred_data_type = get_rdb_reference_datatype(self.config, mapping_rule,
+                                                                    mapping_rule['object_reference'])
 
-                    if inferred_data_type:
-                        self.mappings_df.at[i, 'object_datatype'] = inferred_data_type
+                    if not inferred_data_type:
+                        # no data type was inferred
+                        continue
+
+                    self.mappings_df.at[i, 'object_datatype'] = inferred_data_type
+                    if pd.notna(mapping_rule['tablename']):
                         logging.debug("`" + inferred_data_type + "` datatype inferred for column `" +
                                       mapping_rule['object_reference'] + "` of table `" +
                                       mapping_rule['tablename'] + "` in data source `" +
                                       mapping_rule['source_name'] + "`.")
-
-                elif pd.notna(mapping_rule['query']):
-                    # if mapping rule has a query, get the table names in the query
-                    table_names = sql_metadata.Parser(mapping_rule['query']).tables
-                    for table_name in table_names:
-                        # for each table in the query get the datatype of the object reference in that table if an
-                        # exception is thrown, then the reference is not a column in that table, and nothing is done
-                        try:
-                            inferred_data_type = get_column_datatype(self.config, mapping_rule['source_name'],
-                                                                     table_name, mapping_rule['object_reference'])
-
-                            if inferred_data_type:
-                                self.mappings_df.at[i, 'object_datatype'] = inferred_data_type
-                                logging.debug("`" + inferred_data_type + "` datatype inferred for reference `" +
-                                              mapping_rule['object_reference'] + "` in query [" +
-                                              mapping_rule['query'] + "] in data source `" +
-                                              mapping_rule['source_name'] + "`.")
-
-                            # already found it, end looping
-                            break
-                        except:
-                            pass
+                    elif pd.notna(mapping_rule['query']):
+                        logging.debug("`" + inferred_data_type + "` datatype inferred for reference `" +
+                                      mapping_rule['object_reference'] + "` in query [" +
+                                      mapping_rule['query'] + "] in data source `" +
+                                      mapping_rule['source_name'] + "`.")
 
     def validate_mappings(self):
         """
