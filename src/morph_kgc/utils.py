@@ -40,6 +40,9 @@ def configure_logger(logging_level, logging_file):
         logging.basicConfig(format='%(levelname)s | %(asctime)s | %(message)s',
                             level=logging_level_string_to_numeric[logging_level.upper()])
 
+    # do not log messages from jsonpath-python library
+    logging.getLogger('jsonpath').setLevel(logging.CRITICAL)
+
 
 def get_valid_dir_path(dir_path):
     """

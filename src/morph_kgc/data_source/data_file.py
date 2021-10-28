@@ -128,9 +128,14 @@ def _read_json(mapping_rule, references):
     with open(str(mapping_rule['data_source']), encoding='utf-8') as jsonfile:
         json_data = json.load(jsonfile)
 
-    jsonpath_result = JSONPath(mapping_rule['iterator']).parse(json_data)
+    jsonpath_expression = mapping_rule['iterator'] + '.('
+    for reference in references:
+        jsonpath_expression += reference + ','
+    jsonpath_expression = jsonpath_expression[:-1] + ')'
+
+    jsonpath_result = JSONPath(jsonpath_expression).parse(json_data)
     json_df = pd.DataFrame.from_records(jsonpath_result)
-    json_df = json_df[references]
+    json_df.dropna(axis=0, how='any', inplace=True)
 
     return [json_df]
 
