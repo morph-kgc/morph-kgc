@@ -8,3 +8,4 @@ pyarrow==6.0.0
 openpyxl==3.0.9
 jsonpath-python==1.0.5
 lxml==4.6.3
+falcon==3.0.1

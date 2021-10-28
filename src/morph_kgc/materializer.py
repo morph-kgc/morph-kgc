@@ -12,7 +12,7 @@ import logging
 import time
 
 from itertools import repeat
-from urllib.parse import quote
+from falcon.uri import encode_value
 
 from .utils import *
 from .constants import *
@@ -90,7 +90,7 @@ def _materialize_template(results_df, template, config, columns_alias='', termty
             results_df['reference_results'] = results_df['reference_results'].apply(lambda x: remove_non_printable_characters(x))
 
         if str(termtype).strip() == R2RML_IRI:
-            results_df['reference_results'] = results_df['reference_results'].apply(lambda x: quote(x))
+            results_df['reference_results'] = results_df['reference_results'].apply(lambda x: encode_value(x))
         elif str(termtype).strip() == R2RML_LITERAL:
             results_df['reference_results'] = results_df['reference_results'].str.replace('"', '\\"', regex=False).str.replace('\\', '\\\\"', regex=False)
 
@@ -134,7 +134,7 @@ def _materialize_reference(results_df, reference, config, columns_alias='', term
         else:
             results_df['triple'] = results_df['triple'] + ' '
     elif str(termtype).strip() == R2RML_IRI:
-        results_df['reference_results'] = results_df['reference_results'].apply(lambda x: quote(x))
+        results_df['reference_results'] = results_df['reference_results'].apply(lambda x: encode_value(x))
         results_df['triple'] = results_df['triple'] + '<' + results_df['reference_results'] + '> '
     elif str(termtype).strip() == R2RML_BLANK_NODE:
         results_df['triple'] = results_df['triple'] + '_:' + results_df['reference_results'] + ' '
