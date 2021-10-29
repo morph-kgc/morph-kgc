@@ -137,6 +137,11 @@ def _read_json(mapping_rule, references):
     json_df = pd.DataFrame.from_records(jsonpath_result)
     json_df.dropna(axis=0, how='any', inplace=True)
 
+    # in case lists where retrieved, explode them e.g.: ['a', 'b'] -> 'a', 'b'
+    for reference in references:
+        json_df = json_df.explode(reference)
+    json_df.dropna(axis=0, how='any', inplace=True)
+
     return [json_df]
 
 
