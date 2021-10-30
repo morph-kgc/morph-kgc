@@ -8,9 +8,8 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 import json
 import pandas as pd
-import xml.etree.ElementTree as ET
-from lxml import etree
 
+from lxml import etree
 from jsonpath import JSONPath
 
 from ..constants import *
@@ -142,7 +141,6 @@ def _read_json(mapping_rule, references):
     # in case lists where retrieved, explode them e.g.: ['a', 'b'] -> 'a', 'b'
     for reference in references:
         json_df = json_df.explode(reference)
-    json_df.dropna(axis=0, how='any', inplace=True)
 
     return [json_df]
 
