@@ -8,6 +8,8 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 import json
 import pandas as pd
+import xml.etree.ElementTree as ET
+from lxml import etree
 
 from jsonpath import JSONPath
 
@@ -125,8 +127,8 @@ def _read_excel(config, mapping_rule, references):
 
 
 def _read_json(mapping_rule, references):
-    with open(str(mapping_rule['data_source']), encoding='utf-8') as jsonfile:
-        json_data = json.load(jsonfile)
+    with open(str(mapping_rule['data_source']), encoding='utf-8') as json_file:
+        json_data = json.load(json_file)
 
     jsonpath_expression = mapping_rule['iterator'] + '.('
     for reference in references:
@@ -146,11 +148,16 @@ def _read_json(mapping_rule, references):
 
 
 def _read_xml(mapping_rule, references):
-    xml_df = pd.read_xml(mapping_rule['data_source'],
-                         xpath=mapping_rule['iterator'],
-                         parser='lxml',
-                         encoding='utf-8')
+    with open(str(mapping_rule['data_source']), encoding='utf-8') as xml_file:
+        xml_root = etree.parse(xml_file).getroot()
 
-    xml_df = xml_df[references]
+    xpath_expression = mapping_rule['iterator']
+    for reference in references:
+        xpath_expression += '[' + reference + ']'
+
+    xpath_result = xml_root.xpath(xpath_expression)
+    xpath_result = [[e.find(reference).text for reference in references] for e in xpath_result]
+
+    xml_df = pd.DataFrame.from_records(xpath_result, columns=references)
 
     return [xml_df]
