@@ -565,6 +565,16 @@ class MappingParser:
             logging.warning('Found object maps with a language tag and a datatype. Both of them cannot be used '
                             'simultaneously for the same object map, and the language tag has preference.')
 
+        # check that language tags are valid
+        language_tags = set(self.mappings_df['object_language'].dropna())
+        # the place to look for valid language subtags is the IANA Language Subtag Registry
+        # (https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry)
+        for language_tag in language_tags:
+            # in general, if the language subtag is longer than 3 characters it is not valid
+            if len(language_tag.split('-')[0]) > 3:
+                raise ValueError('Found invalid language tag `' + language_tag +
+                                 '`. Language tags must be in the IANA Language Subtag Registry.')
+
         # check that a triples map id is not repeated in different data sources
         # Get unique source names and triples map identifiers
         aux_mappings_df = self.mappings_df[['source_name', 'triples_map_id']].drop_duplicates()
