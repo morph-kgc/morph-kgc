@@ -292,7 +292,7 @@ class MappingParser:
 
     def parse_mappings(self):
         self._get_from_r2_rml()
-        self._normalize_mappings()
+        self._preprocess_mappings()
         self._infer_datatypes()
 
         self.validate_mappings()
@@ -368,12 +368,15 @@ class MappingParser:
         # convert the SPARQL result set with the parsed mappings to DataFrame
         return _transform_mappings_into_dataframe(mapping_query_results, join_query_results, section_name)
 
-    def _normalize_mappings(self):
+    def _preprocess_mappings(self):
         # start by removing duplicated triples
         self.mappings_df = self.mappings_df.drop_duplicates()
 
         # complete source type with reference formulation
         self._complete_source_types()
+
+        # complete rml:source with file_paths specified in the config file
+        self._complete_rml_source_with_config_file_paths()
 
         # ignore the delimited identifiers (this is not conformant with R2MRL specification)
         self._remove_delimiters_from_mappings()
@@ -407,6 +410,17 @@ class MappingParser:
 
         # ref form is no longer needed, remove it
         self.mappings_df = self.mappings_df.drop('ref_form', axis=1)
+
+    def _complete_rml_source_with_config_file_paths(self):
+        """
+        Overrides rml:source in the mappings with the file_path parameter in the config file for each data source
+        section if provided.
+        """
+
+        for section_name in self.config.get_data_sources_sections():
+            if self.config.has_file_path(section_name):
+                self.mappings_df.loc[self.mappings_df['source_name'] == section_name, 'data_source'] = \
+                    self.config.get_file_path(section_name)
 
     def _remove_delimiters_from_mappings(self):
         """

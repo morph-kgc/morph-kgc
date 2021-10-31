@@ -32,6 +32,8 @@ OUTPUT_FORMAT = 'output_format'
 CLEAN_OUTPUT_DIR = 'clean_output_dir'
 ONLY_PRINTABLE_CHARACTERS = 'only_printable_characters'
 
+FILE_PATH = 'file_path'
+
 MAPPING_PARTITION = 'mapping_partition'
 INFER_SQL_DATATYPES = 'infer_sql_datatypes'
 ENFORCE_SQL_QUERY_FILTER_NULL = 'enforce_sql_filter_null'
@@ -322,11 +324,17 @@ class Config(ConfigParser):
     def get_data_sources_sections(self):
         return list(set(self.sections()) - {self.configuration_section})
 
+    def has_source_type(self, source_section):
+        return self.has_option(source_section, SOURCE_TYPE)
+
     def get_source_type(self, source_section):
         return self.get(source_section, SOURCE_TYPE)
 
-    def has_source_type(self, source_section):
-        return self.has_option(source_section, SOURCE_TYPE)
+    def has_file_path(self, source_section):
+        return self.has_option(source_section, FILE_PATH)
+
+    def get_file_path(self, source_section):
+        return self.get(source_section, FILE_PATH)
 
     def get_mappings_files(self, source_section):
         mapping_file_paths = []
