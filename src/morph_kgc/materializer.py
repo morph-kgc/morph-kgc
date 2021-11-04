@@ -37,8 +37,7 @@ def _preprocess_data(dataframe, mapping_rule, references, integer_references, co
 
     # remove NULLS for those data formats that do not allow to remove them at reading time
     if config.apply_na_filter():
-        if mapping_rule['source_type'] in [RDB, PARQUET, FEATHER, ORC, STATA, SAS, SPSS, JSON, XML]:
-            dataframe = remove_null_values_from_dataframe(dataframe, config)
+        dataframe = remove_null_values_from_dataframe(dataframe, config)
 
     if mapping_rule['source_type'] == RDB:
         dataframe[integer_references] = dataframe[integer_references].astype(float).astype(int)

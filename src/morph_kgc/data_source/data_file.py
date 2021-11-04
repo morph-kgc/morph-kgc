@@ -54,10 +54,9 @@ def _read_csv(config, mapping_rule, references, file_source_type):
                          chunksize=config.get_chunksize(),
                          engine='c',
                          dtype=str,
-                         memory_map=False,
                          keep_default_na=False,
                          na_values=config.get_na_values(),
-                         na_filter=config.apply_na_filter())
+                         na_filter=False)
 
 
 def _read_parquet(mapping_rule, references):
@@ -120,7 +119,7 @@ def _read_excel(config, mapping_rule, references):
                              dtype=str,
                              keep_default_na=False,
                              na_values=config.get_na_values(),
-                             na_filter=config.apply_na_filter())
+                             na_filter=False)
 
     return [excel_df]
 
