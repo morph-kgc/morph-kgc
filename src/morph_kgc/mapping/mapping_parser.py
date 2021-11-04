@@ -372,11 +372,11 @@ class MappingParser:
         # start by removing duplicated triples
         self.mappings_df = self.mappings_df.drop_duplicates()
 
-        # complete source type config and data file extensions
-        self._complete_source_types()
-
         # complete rml:source with file_paths specified in the config file
         self._complete_rml_source_with_config_file_paths()
+
+        # complete source type with config parameters and data file extensions
+        self._complete_source_types()
 
         # ignore the delimited identifiers (this is not conformant with R2MRL specification)
         self._remove_delimiters_from_mappings()
