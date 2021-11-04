@@ -372,7 +372,7 @@ class MappingParser:
         # start by removing duplicated triples
         self.mappings_df = self.mappings_df.drop_duplicates()
 
-        # complete source type with reference formulation
+        # complete source type config and data file extensions
         self._complete_source_types()
 
         # complete rml:source with file_paths specified in the config file
@@ -394,22 +394,18 @@ class MappingParser:
 
     def _complete_source_types(self):
         """
-        Adds a column with the source type. The source type is taken from the value provided in the config for that data
-        source. If it is not provided, it is taken from the reference formulation in the mapping rule.
+        Adds a column with the source type. The source type is inferred for RDB through the parameter db_url provided
+        in the mapping file. For data files the source type is inferred from the file extension.
         """
 
         for i, mapping_rule in self.mappings_df.iterrows():
-            if self.config.has_source_type(mapping_rule['source_name']):
-                # take the source type from the config if it is provided
-                self.mappings_df.at[i, 'source_type'] = self.config.get_source_type(mapping_rule['source_name']).upper()
-            elif pd.notna(mapping_rule['ref_form']):
-                # take the source type from the reference formulation (fragment) in the mapping rules
-                self.mappings_df.at[i, 'source_type'] = str(mapping_rule['ref_form']).split('#')[-1].upper()
+            if self.config.has_database_url(mapping_rule['source_name']):
+                self.mappings_df.at[i, 'source_type'] = RDB
+            elif pd.notna(mapping_rule['data_source']):
+                file_extension = os.path.splitext(str(mapping_rule['data_source']))[1][1:].strip()
+                self.mappings_df.at[i, 'source_type'] = file_extension.upper()
             else:
-                logging.error('No source type could be retrieved for mapping rule some mapping rules.')
-
-        # ref form is no longer needed, remove it
-        self.mappings_df = self.mappings_df.drop('ref_form', axis=1)
+                raise Exception('No source type could be retrieved for mapping rule some mapping rules.')
 
     def _complete_rml_source_with_config_file_paths(self):
         """

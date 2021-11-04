@@ -56,7 +56,6 @@ WRITE_PARSED_MAPPINGS_PATH = 'write_parsed_mappings_path'
 #########################   DATA SOURCE PARAMETERS   #########################
 ##############################################################################
 
-SOURCE_TYPE = 'source_type'
 MAPPINGS = 'mappings'
 DATABASE_URL = 'db_url'
 
@@ -164,18 +163,6 @@ class Config(ConfigParser):
                 MAPPING_PARTITION + ' value `' + self.get_mapping_partition() + '` is not valid. It must be in: ' + str(
                     [MAXIMAL_PARTITIONING] + [
                         PARTIAL_AGGREGATIONS_PARTITIONING] + NO_PARTITIONING) + '.')
-
-    def validate_data_source_sections(self):
-        # SOURCE TYPE
-        for section in self.get_data_sources_sections():
-            if self.has_source_type(section):
-                self.set(section, SOURCE_TYPE, self.get_source_type(section).upper())
-                if self.get_source_type(section) not in DATA_SOURCE_TYPES:
-                    raise ValueError(SOURCE_TYPE + ' value `' + self.get_source_type(section) + ' is not valid. '
-                                     'It must be in: ' + str(DATA_SOURCE_TYPES) + '.')
-            else:
-                if self.has_database_url(section):
-                    self.set(section, SOURCE_TYPE, RDB)
 
     def log_config_info(self):
         logging.debug('CONFIGURATION: ' + str(dict(self.items(self.configuration_section))))
@@ -323,12 +310,6 @@ class Config(ConfigParser):
 
     def get_data_sources_sections(self):
         return list(set(self.sections()) - {self.configuration_section})
-
-    def has_source_type(self, source_section):
-        return self.has_option(source_section, SOURCE_TYPE)
-
-    def get_source_type(self, source_section):
-        return self.get(source_section, SOURCE_TYPE)
 
     def has_file_path(self, source_section):
         return self.has_option(source_section, FILE_PATH)

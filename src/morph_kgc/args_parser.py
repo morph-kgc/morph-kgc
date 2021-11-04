@@ -56,7 +56,6 @@ def _parse_config(config):
     config.complete_configuration_with_defaults()
 
     config.validate_configuration_section()
-    config.validate_data_source_sections()
 
     configure_logger(config.get_logging_level(), config.get_logging_file())
     config.log_config_info()

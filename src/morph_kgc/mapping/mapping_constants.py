@@ -3,7 +3,7 @@
 ##############################################################################
 
 MAPPINGS_DATAFRAME_COLUMNS = [
-    'source_name', 'triples_map_id', 'data_source', 'object_map', 'ref_form', 'iterator', 'tablename', 'query',
+    'source_name', 'triples_map_id', 'data_source', 'object_map', 'iterator', 'tablename', 'query',
     'subject_template', 'subject_reference', 'subject_constant', 'subject_rdf_class', 'subject_termtype',
     'graph_constant', 'graph_reference', 'graph_template',
     'predicate_constant', 'predicate_template', 'predicate_reference',
@@ -28,7 +28,7 @@ MAPPING_PARSING_QUERY = """
     prefix rml: <http://semweb.mmlab.be/ns/rml#>
 
     SELECT DISTINCT
-        ?triples_map_id ?data_source ?ref_form ?iterator ?tablename ?query ?object_map
+        ?triples_map_id ?data_source ?iterator ?tablename ?query ?object_map
         ?subject_template ?subject_reference ?subject_constant
         ?subject_rdf_class ?subject_termtype
         ?graph_constant ?graph_reference ?graph_template
@@ -39,7 +39,6 @@ MAPPING_PARSING_QUERY = """
     WHERE {
         ?triples_map_id rml:logicalSource ?_source .
         OPTIONAL { ?_source rml:source ?data_source . }
-        OPTIONAL { ?_source rml:referenceFormulation ?ref_form . }
         OPTIONAL { ?_source rml:iterator ?iterator . }
         OPTIONAL { ?_source rr:tableName ?tablename . }
         OPTIONAL { ?_source rml:query ?query . }
