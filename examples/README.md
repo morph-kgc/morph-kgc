@@ -1,3 +1,22 @@
 ## Examples
 
-Here you can find some example config files to run Morph-KGC with. [default_config.ini](https://github.com/oeg-upm/Morph-KGC/blob/main/examples/default_config.ini) contains all available configuration options along with their default values. Options that are not provided in the `CONFIGURATION` section will use their default values.
+
+### JSON and XML
+Examples for _JSON_ and _XML_ can be found in `json-example` and `xml-example` directories. The directories contain: 
+- The `data` file.
+- The `mapping` file (in _Turtle_ format).
+- The `configuration` file that has to be provided to Morph-KGC.
+- The mapping file in [YARRRML](https://rml.io/yarrrml/spec/) format. This is not necessary, but allows to inspect the mapping in a human-readable format.
+
+Note that the **paths parameters in the configuration file need to be updated** accordingly.
+
+### CSV
+An example for _CSV_ can be found in the `csv-example` directory. The directory contains:
+- The `data` directory with several CSV files.
+- The `mapping` file (in _N-Triples_ format).
+- The `configuration` file that has to be provided to Morph-KGC.
+
+Note that the **paths parameters in the configuration file need to be updated** accordingly. Given that this example involves multiple CSV files, the paths to these files are provided in the mapping file with the `rml:source` property, that have to be updated with the correct paths to the CSV files in your system.
+
+### Configuration Files
+The directory `configuration-file-examples` contains some configuration files to run Morph-KGC with. [default_config.ini](https://github.com/oeg-upm/Morph-KGC/blob/main/examples/configuration-file-examples/default_config.ini) contains all possible configuration options along with their default values. Options that are not provided in the `CONFIGURATION` section will use their default values. You can see all the information about configuration files in the [Wiki](https://github.com/oeg-upm/Morph-KGC/wiki/Configuration).
