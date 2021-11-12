@@ -1,5 +1,21 @@
 ## Examples
 
+### Relational Databases
+An example with MySQL using [GTFS-Madrid-Bench](https://github.com/oeg-upm/gtfs-bench) data can be found in the `rdb-example` directory. The directory contains: 
+- The `mapping` file (in _Turtle_ format).
+- The `configuration` file that has to be provided to Morph-KGC.
+
+To start a docker container with the MySQL instance containing the data run the following:
+```
+docker run --name mysql-gtfs1 -p 3306:3306 -d -e MYSQL_ROOT_PASSWORD=gtfs oegdataintegration/mysql-gtfs1:1.0
+```
+
+Note that the MySQL driver needs to be installed, as detailed in the [Wiki](https://github.com/oeg-upm/Morph-KGC/wiki/Relational-Databases). You just need to run the following:
+```
+pip install pymysql
+pip install cryptography
+```
+Also, **update the _paths_ parameters in the configuration file** accordingly.
 
 ### JSON and XML
 Examples for _JSON_ and _XML_ can be found in `json-example` and `xml-example` directories. The directories contain: 
