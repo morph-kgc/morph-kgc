@@ -185,7 +185,7 @@ def _materialize_join_mapping_rule_terms(results_df, mapping_rule, parent_triple
     if config.get_output_format() == NQUADS:
         if pd.notna(mapping_rule['graph_template']):
             results_df = _materialize_template(results_df, mapping_rule['graph_template'], config, columns_alias='child_')
-        elif pd.notna(mapping_rule['graph_constant']):
+        elif pd.notna(mapping_rule['graph_constant']) and mapping_rule['graph_constant'] != R2RML_DEFAULT_GRAPH:
             results_df = _materialize_constant(results_df, mapping_rule['graph_constant'])
         elif pd.notna(mapping_rule['graph_reference']):
             results_df = _materialize_reference(results_df, mapping_rule['graph_reference'], config, termtype=R2RML_IRI, columns_alias='child_')
@@ -216,7 +216,7 @@ def _materialize_mapping_rule_terms(results_df, mapping_rule, config):
     if config.get_output_format() == NQUADS:
         if pd.notna(mapping_rule['graph_template']):
             results_df = _materialize_template(results_df, mapping_rule['graph_template'], config)
-        elif pd.notna(mapping_rule['graph_constant']):
+        elif pd.notna(mapping_rule['graph_constant']) and mapping_rule['graph_constant'] != R2RML_DEFAULT_GRAPH:
             results_df = _materialize_constant(results_df, mapping_rule['graph_constant'])
         elif pd.notna(mapping_rule['graph_reference']):
             results_df = _materialize_reference(results_df, mapping_rule['graph_reference'], config, termtype=R2RML_IRI)
