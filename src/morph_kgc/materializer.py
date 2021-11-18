@@ -182,7 +182,7 @@ def _materialize_join_mapping_rule_terms(results_df, mapping_rule, parent_triple
         results_df = _materialize_constant(results_df, parent_triples_map_rule['subject_constant'], termtype=parent_triples_map_rule['subject_termtype'])
     elif pd.notna(parent_triples_map_rule['subject_reference']):
         results_df = _materialize_reference(results_df, parent_triples_map_rule['subject_reference'], config, termtype=parent_triples_map_rule['subject_termtype'], columns_alias='parent_')
-    if config.get_output_format() == 'N-QUADS':
+    if config.get_output_format() == NQUADS:
         if pd.notna(mapping_rule['graph_template']):
             results_df = _materialize_template(results_df, mapping_rule['graph_template'], config, columns_alias='child_')
         elif pd.notna(mapping_rule['graph_constant']):
@@ -213,7 +213,7 @@ def _materialize_mapping_rule_terms(results_df, mapping_rule, config):
         results_df = _materialize_constant(results_df, mapping_rule['object_constant'], termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
     elif pd.notna(mapping_rule['object_reference']):
         results_df = _materialize_reference(results_df, mapping_rule['object_reference'], config, termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
-    if config.get_output_format() == 'N-QUADS':
+    if config.get_output_format() == NQUADS:
         if pd.notna(mapping_rule['graph_template']):
             results_df = _materialize_template(results_df, mapping_rule['graph_template'], config)
         elif pd.notna(mapping_rule['graph_constant']):
