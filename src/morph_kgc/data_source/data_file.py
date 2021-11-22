@@ -20,17 +20,17 @@ def get_file_data(config, mapping_rule, references):
 
     if file_source_type in [CSV, TSV]:
         return _read_csv(config, mapping_rule, references, file_source_type)
-    elif file_source_type == EXCEL:
+    elif file_source_type in EXCEL:
         return _read_excel(config, mapping_rule, references)
     elif file_source_type == PARQUET:
         return _read_parquet(mapping_rule, references)
-    elif file_source_type == FEATHER:
+    elif file_source_type in FEATHER:
         return _read_feather(mapping_rule, references)
     elif file_source_type == ORC:
         return _read_orc(mapping_rule, references)
     elif file_source_type == STATA:
         return _read_stata(config, mapping_rule, references)
-    elif file_source_type == SAS:
+    elif file_source_type in SAS:
         return _read_sas(config, mapping_rule, references)
     elif file_source_type == SPSS:
         return _read_spss(mapping_rule, references)
