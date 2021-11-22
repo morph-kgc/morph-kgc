@@ -10,32 +10,7 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 import multiprocessing as mp
 
 
-##############################################################################
-########################   ARGUMENTS DEFAULT VALUES   ########################
-##############################################################################
 
-DEFAULT_OUTPUT_DIR = 'output'
-DEFAULT_OUTPUT_FILE = 'result'
-DEFAULT_OUTPUT_FORMAT = 'N-QUADS'
-DEFAULT_REMOVE_DUPLICATES = 'yes'
-DEFAULT_CLEAN_OUTPUT_DIR = 'yes'
-DEFAULT_LOGGING_FILE = ''
-DEFAULT_LOGGING_LEVEL = 'INFO'
-DEFAULT_INFER_SQL_DATATYPES = 'no'
-DEFAULT_NUMBER_OF_PROCESSES = 2 * mp.cpu_count()
-DEFAULT_CHUNKSIZE = 100000
-DEFAULT_NA_FILTER = 'yes'
-DEFAULT_NA_VALUES = ',#N/A,N/A,#N/A N/A,n/a,NA,<NA>,#NA,NULL,null,NaN,nan,None'
-DEFAULT_ONLY_PRINTABLE_CHARACTERS = 'no'
-DEFAULT_MATERIALIZE_DEFAULT_GRAPH = 'no'
-
-# ORACLE
-DEFAULT_ORACLE_CLIENT_LIB_DIR = ''
-DEFAULT_ORACLE_CLIENT_CONFIG_DIR = ''
-
-# DEVELOPMENT OPTIONS
-DEFAULT_READ_PARSED_MAPPINGS_PATH = ''
-DEFAULT_WRITE_PARSED_MAPPINGS_PATH = ''
 
 
 ##############################################################################
@@ -75,12 +50,16 @@ SQLITE = 'SQLITE'
 FILE_SOURCE_TYPES = [CSV, TSV, PARQUET, ORC, STATA, SPSS, JSON, XML] + EXCEL + FEATHER + SAS
 DATA_SOURCE_TYPES = [RDB] + FILE_SOURCE_TYPES
 
+# RDF serializations
+NTRIPLES = 'N-TRIPLES'
+NQUADS = 'N-QUADS'
+
 
 ##############################################################################
 #########################   VALID ARGUMENTS VALUES   #########################
 ##############################################################################
 
-VALID_OUTPUT_FORMATS = ['N-TRIPLES', 'N-QUADS']
+VALID_OUTPUT_FORMATS = ['N-TRIPLES', NQUADS]
 VALID_PROCESS_START_METHOD = ['DEFAULT', 'SPAWN', 'FORK', 'FORKSERVER']
 VALID_LOGGING_LEVEL = ['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 
@@ -90,8 +69,8 @@ VALID_LOGGING_LEVEL = ['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'
 ##############################################################################
 
 OUTPUT_FORMAT_FILE_EXTENSION = {
-    'N-TRIPLES': '.nt',
-    'N-QUADS': '.nq'
+    NTRIPLES: '.nt',
+    NQUADS: '.nq'
 }
 
 
@@ -184,3 +163,29 @@ XSD_STRING = 'http://www.w3.org/2001/XMLSchema#string'
 ##############################################################################
 
 AUXILIAR_UNIQUE_REPLACING_STRING = 'zzyy_xxww\u200B'
+
+
+##############################################################################
+########################   ARGUMENTS DEFAULT VALUES   ########################
+##############################################################################
+
+DEFAULT_OUTPUT_DIR = 'output'
+DEFAULT_OUTPUT_FILE = 'result'
+DEFAULT_OUTPUT_FORMAT = NQUADS
+DEFAULT_CLEAN_OUTPUT_DIR = 'yes'
+DEFAULT_LOGGING_FILE = ''
+DEFAULT_LOGGING_LEVEL = 'INFO'
+DEFAULT_INFER_SQL_DATATYPES = 'no'
+DEFAULT_NUMBER_OF_PROCESSES = 2 * mp.cpu_count()
+DEFAULT_CHUNKSIZE = 100000
+DEFAULT_NA_FILTER = 'yes'
+DEFAULT_NA_VALUES = ',#N/A,N/A,#N/A N/A,n/a,NA,<NA>,#NA,NULL,null,NaN,nan,None'
+DEFAULT_ONLY_PRINTABLE_CHARACTERS = 'no'
+
+# ORACLE
+DEFAULT_ORACLE_CLIENT_LIB_DIR = ''
+DEFAULT_ORACLE_CLIENT_CONFIG_DIR = ''
+
+# DEVELOPMENT OPTIONS
+DEFAULT_READ_PARSED_MAPPINGS_PATH = ''
+DEFAULT_WRITE_PARSED_MAPPINGS_PATH = ''

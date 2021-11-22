@@ -61,8 +61,6 @@ Check the **[wiki](https://github.com/oeg-upm/Morph-KGC/wiki)** with all the inf
   - [Relational Databases](https://github.com/oeg-upm/Morph-KGC/wiki/Relational-Databases)
   - [Data Files](https://github.com/oeg-upm/Morph-KGC/wiki/Data-Files)
 
-**[Tutorial](https://github.com/oeg-upm/Morph-KGC/wiki/Tutorial)**
-
 **[Features](https://github.com/oeg-upm/Morph-KGC/wiki/Features)**
 
 **[Academic Publications](https://github.com/oeg-upm/Morph-KGC/wiki/Academic-Publications)**

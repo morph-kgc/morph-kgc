@@ -91,7 +91,7 @@ def _materialize_template(results_df, template, config, columns_alias='', termty
         if str(termtype).strip() == R2RML_IRI:
             results_df['reference_results'] = results_df['reference_results'].apply(lambda x: encode_value(x))
         elif str(termtype).strip() == R2RML_LITERAL:
-            results_df['reference_results'] = results_df['reference_results'].str.replace('\\', '\\\\', regex=False).str.replace('"', '\\"', regex=False)
+            results_df['reference_results'] = results_df['reference_results'].str.replace('\\', '\\\\', regex=False).str.replace('\n', '\\n', regex=False).str.replace('\r', '\\r', regex=False).str.replace('\t', '\\t', regex=False).str.replace('\b', '\\b', regex=False).str.replace('\f', '\\f', regex=False).str.replace('\r', '\\r', regex=False).str.replace('"', '\\"', regex=False).str.replace("'", "\\'", regex=False)
 
         splitted_template = template.split('{' + reference + '}')
         results_df['triple'] = results_df['triple'] + splitted_template[0] + results_df['reference_results']
@@ -124,7 +124,7 @@ def _materialize_reference(results_df, reference, config, columns_alias='', term
         results_df['reference_results'] = results_df['reference_results'].apply(lambda x: remove_non_printable_characters(x))
 
     if str(termtype).strip() == R2RML_LITERAL:
-        results_df['reference_results'] = results_df['reference_results'].str.replace('\\', '\\\\', regex=False).str.replace('"', '\\"', regex=False)
+        results_df['reference_results'] = results_df['reference_results'].str.replace('\\', '\\\\', regex=False).str.replace('\n', '\\n', regex=False).str.replace('\r', '\\r', regex=False).str.replace('\t', '\\t', regex=False).str.replace('\b', '\\b', regex=False).str.replace('\f', '\\f', regex=False).str.replace('\r', '\\r', regex=False).str.replace('"', '\\"', regex=False).str.replace("'", "\\'", regex=False)
         results_df['triple'] = results_df['triple'] + '"' + results_df['reference_results'] + '"'
         if pd.notna(language_tag):
             results_df['triple'] = results_df['triple'] + '@' + language_tag + ' '
@@ -182,10 +182,10 @@ def _materialize_join_mapping_rule_terms(results_df, mapping_rule, parent_triple
         results_df = _materialize_constant(results_df, parent_triples_map_rule['subject_constant'], termtype=parent_triples_map_rule['subject_termtype'])
     elif pd.notna(parent_triples_map_rule['subject_reference']):
         results_df = _materialize_reference(results_df, parent_triples_map_rule['subject_reference'], config, termtype=parent_triples_map_rule['subject_termtype'], columns_alias='parent_')
-    if config.get_output_format() == 'N-QUADS':
+    if config.get_output_format() == NQUADS:
         if pd.notna(mapping_rule['graph_template']):
             results_df = _materialize_template(results_df, mapping_rule['graph_template'], config, columns_alias='child_')
-        elif pd.notna(mapping_rule['graph_constant']):
+        elif pd.notna(mapping_rule['graph_constant']) and str(mapping_rule['graph_constant']) != R2RML_DEFAULT_GRAPH:
             results_df = _materialize_constant(results_df, mapping_rule['graph_constant'])
         elif pd.notna(mapping_rule['graph_reference']):
             results_df = _materialize_reference(results_df, mapping_rule['graph_reference'], config, termtype=R2RML_IRI, columns_alias='child_')
@@ -213,10 +213,10 @@ def _materialize_mapping_rule_terms(results_df, mapping_rule, config):
         results_df = _materialize_constant(results_df, mapping_rule['object_constant'], termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
     elif pd.notna(mapping_rule['object_reference']):
         results_df = _materialize_reference(results_df, mapping_rule['object_reference'], config, termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
-    if config.get_output_format() == 'N-QUADS':
+    if config.get_output_format() == NQUADS:
         if pd.notna(mapping_rule['graph_template']):
             results_df = _materialize_template(results_df, mapping_rule['graph_template'], config)
-        elif pd.notna(mapping_rule['graph_constant']):
+        elif pd.notna(mapping_rule['graph_constant']) and str(mapping_rule['graph_constant']) != R2RML_DEFAULT_GRAPH:
             results_df = _materialize_constant(results_df, mapping_rule['graph_constant'])
         elif pd.notna(mapping_rule['graph_reference']):
             results_df = _materialize_reference(results_df, mapping_rule['graph_reference'], config, termtype=R2RML_IRI)
