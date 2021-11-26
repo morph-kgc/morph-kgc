@@ -8,6 +8,7 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 import json
 import pandas as pd
+import numpy as np
 
 from lxml import etree
 from jsonpath import JSONPath
@@ -135,6 +136,10 @@ def _read_json(mapping_rule, references):
 
     jsonpath_result = JSONPath(jsonpath_expression).parse(json_data)
     json_df = pd.DataFrame.from_records(jsonpath_result)
+
+    # add columns with null values for those references in the mapping rule that are not present in the data file
+    missing_references_in_df = list(set(references).difference(set(json_df.columns)))
+    json_df[missing_references_in_df] = np.nan
     json_df.dropna(axis=0, how='any', inplace=True)
 
     # in case lists where retrieved, explode them e.g.: ['a', 'b'] -> 'a', 'b'
@@ -156,5 +161,9 @@ def _read_xml(mapping_rule, references):
     xpath_result = [[e.find(reference).text for reference in references] for e in xpath_result]
 
     xml_df = pd.DataFrame.from_records(xpath_result, columns=references)
+
+    # add columns with null values for those references in the mapping rule that are not present in the data file
+    missing_references_in_df = list(set(references).difference(set(xml_df.columns)))
+    xml_df[missing_references_in_df] = np.nan
 
     return [xml_df]
