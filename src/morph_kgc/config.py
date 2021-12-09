@@ -31,6 +31,7 @@ OUTPUT_FILE = 'output_file'
 OUTPUT_FORMAT = 'output_format'
 CLEAN_OUTPUT_DIR = 'clean_output_dir'
 ONLY_PRINTABLE_CHARACTERS = 'only_printable_characters'
+SAFE_PERCENT_ENCODING = 'safe_percent_encoding'
 
 FILE_PATH = 'file_path'
 
@@ -68,6 +69,7 @@ DATABASE_URL = 'db_url'
 CONFIGURATION_OPTIONS_EMPTY_VALID = {
             OUTPUT_FILE: DEFAULT_OUTPUT_FILE,
             NA_VALUES: DEFAULT_NA_VALUES,
+            SAFE_PERCENT_ENCODING: DEFAULT_SAFE_PERCENT_ENCODING,
             READ_PARSED_MAPPINGS_PATH: DEFAULT_READ_PARSED_MAPPINGS_PATH,
             WRITE_PARSED_MAPPINGS_PATH: DEFAULT_WRITE_PARSED_MAPPINGS_PATH,
             MAPPING_PARTITION: PARTIAL_AGGREGATIONS_PARTITIONING,
@@ -266,6 +268,9 @@ class Config(ConfigParser):
             return list(set(self.get(self.configuration_section, NA_VALUES).split(',')))
         else:
             return []
+
+    def get_safe_percent_encoding(self):
+        return self.get(self.configuration_section, SAFE_PERCENT_ENCODING)
 
     def get_output_file_path(self, mapping_partition=None):
         if self.get_output_file():
