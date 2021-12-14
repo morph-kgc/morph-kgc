@@ -7,5 +7,5 @@ SQLAlchemy==1.4.27
 pyarrow==6.0.1
 openpyxl==3.0.9
 jsonpath-python==1.0.5
-lxml==4.6.4
+lxml==4.7.1
 falcon==3.0.1
