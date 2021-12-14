@@ -27,7 +27,6 @@ def materialize(config):
     subject_maps_df = get_subject_maps(mappings_df)
     mapping_partitions = [group for _, group in mappings_df.groupby(by='mapping_partition')]
 
-    num_triples = 0
     graph = Graph()
     for mapping_partition in mapping_partitions:
         triples = set()
@@ -37,9 +36,11 @@ def materialize(config):
             logging.debug(str(len(triples)) + ' triples generated for mapping rule `' + str(mapping_rule['id']) + '`.')
 
         rdf_ntriples = '.\n'.join(triples)
-        rdf_ntriples += '.'
-        graph.parse(data=rdf_ntriples, format=config.get_output_format().replace('-', '').lower())
+        if rdf_ntriples:
+            # it can happen that a mapping rule generates 0 triples, do not add the final full stop
+            rdf_ntriples += '.'
+            graph.parse(data=rdf_ntriples, format=config.get_output_format().replace('-', '').lower())
 
-    logging.info('Number of triples generated in total: ' + str(num_triples) + '.')
+    logging.info('Number of triples generated in total: ' + str(len(graph)) + '.')
 
     return graph

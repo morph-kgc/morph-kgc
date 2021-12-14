@@ -13,6 +13,7 @@ import time
 
 from itertools import repeat
 from falcon.uri import encode_value
+from urllib.parse import quote
 
 from .utils import *
 from .constants import *
@@ -89,7 +90,11 @@ def _materialize_template(results_df, template, config, columns_alias='', termty
             results_df['reference_results'] = results_df['reference_results'].apply(lambda x: remove_non_printable_characters(x))
 
         if str(termtype).strip() == R2RML_IRI:
-            results_df['reference_results'] = results_df['reference_results'].apply(lambda x: encode_value(x))
+            # if all characters are to be encoded use falcon, which is faster
+            if config.get_safe_percent_encoding():
+                results_df['reference_results'] = results_df['reference_results'].apply(lambda x: quote(x, safe=config.get_safe_percent_encoding()))
+            else:
+                results_df['reference_results'] = results_df['reference_results'].apply(lambda x: encode_value(x))
         elif str(termtype).strip() == R2RML_LITERAL:
             results_df['reference_results'] = results_df['reference_results'].str.replace('\\', '\\\\', regex=False).str.replace('\n', '\\n', regex=False).str.replace('\r', '\\r', regex=False).str.replace('\t', '\\t', regex=False).str.replace('\b', '\\b', regex=False).str.replace('\f', '\\f', regex=False).str.replace('\r', '\\r', regex=False).str.replace('"', '\\"', regex=False).str.replace("'", "\\'", regex=False)
 
@@ -133,7 +138,11 @@ def _materialize_reference(results_df, reference, config, columns_alias='', term
         else:
             results_df['triple'] = results_df['triple'] + ' '
     elif str(termtype).strip() == R2RML_IRI:
-        results_df['reference_results'] = results_df['reference_results'].apply(lambda x: encode_value(x))
+        # if all characters are to be encoded use falcon, which is faster
+        if config.get_safe_percent_encoding():
+            results_df['reference_results'] = results_df['reference_results'].apply(lambda x: quote(x, safe=config.get_safe_percent_encoding()))
+        else:
+            results_df['reference_results'] = results_df['reference_results'].apply(lambda x: encode_value(x))
         results_df['triple'] = results_df['triple'] + '<' + results_df['reference_results'] + '> '
     elif str(termtype).strip() == R2RML_BLANK_NODE:
         results_df['triple'] = results_df['triple'] + '_:' + results_df['reference_results'] + ' '
