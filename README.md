@@ -49,7 +49,7 @@ graph.query(' SELECT DISTINCT ?classes WHERE { ?s a ?classes } ')
 
 ## Documentation
 
-Check the **[wiki](https://github.com/oeg-upm/Morph-KGC/wiki)** with all the information.
+Check the **[wiki](https://github.com/oeg-upm/Morph-KGC/wiki)** with all the information:
 
 **[Getting Started](https://github.com/oeg-upm/Morph-KGC/wiki/Getting-Started)**
 
