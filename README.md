@@ -47,7 +47,7 @@ graph = morph_kgc.materialize('/path/to/configuration.ini')
 graph.query(' SELECT DISTINCT ?classes WHERE { ?s a ?classes } ')
 ```
 
-## Wiki
+## Documentation
 
 Check the **[wiki](https://github.com/oeg-upm/Morph-KGC/wiki)** with all the information.
 
