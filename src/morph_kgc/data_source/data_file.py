@@ -9,8 +9,9 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 import json
 import pandas as pd
 import numpy as np
+import elementpath
+import xml.etree.ElementTree as ET
 
-from lxml import etree
 from jsonpath import JSONPath
 
 from ..constants import *
@@ -152,13 +153,13 @@ def _read_json(mapping_rule, references):
 
 def _read_xml(mapping_rule, references):
     with open(str(mapping_rule['data_source']), encoding='utf-8') as xml_file:
-        xml_root = etree.parse(xml_file).getroot()
+        xml_root = ET.parse(xml_file).getroot()
 
     xpath_expression = mapping_rule['iterator']
     for reference in references:
         xpath_expression += '[' + reference + ']'
 
-    xpath_result = xml_root.xpath(xpath_expression)
+    xpath_result = elementpath.select(xml_root, xpath_expression)
     xpath_result = [[e.find(reference).text for reference in references] for e in xpath_result]
 
     xml_df = pd.DataFrame.from_records(xpath_result, columns=references)
