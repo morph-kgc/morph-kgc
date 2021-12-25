@@ -132,7 +132,7 @@ def _read_json(mapping_rule, references):
         json_data = json.load(json_file)
 
     jsonpath_expression = mapping_rule['iterator'] + '.('
-    # add top level object of the references to reduce intermediate results
+    # add top level object of the references to reduce intermediate results (THIS IS NOT STRICTLY NECESSARY)
     for reference in references:
         jsonpath_expression += reference.split('.')[0] + ','
     jsonpath_expression = jsonpath_expression[:-1] + ')'
@@ -155,17 +155,22 @@ def _read_xml(mapping_rule, references):
     with open(str(mapping_rule['data_source']), encoding='utf-8') as xml_file:
         xml_root = ET.parse(xml_file).getroot()
 
-    xpath_expression = mapping_rule['iterator']
-    for reference in references:
-        xpath_expression += '[' + reference + ']'
+    xpath_result = elementpath.iter_select(xml_root, mapping_rule['iterator'])  # XPath2Parser by default
+    xpath_result = [[[r.text for r in e.findall(reference)] for reference in references] for e in xpath_result]
 
-    xpath_result = elementpath.select(xml_root, xpath_expression)
-    xpath_result = [[e.find(reference).text for reference in references] for e in xpath_result]
+    # IMPORTANT NOTES
+    # XPath 2.0 is used by default (XPath 3.1 is in the roadmap of the elementpath library)
+    # with XPath 3.1 the above could be achieved using just an XPath expression by including the references in it
+    # for instance, the XPath expression: /root/[id,creator/name] obtaining for example ["2479", ["Julián", "Jhon"]]
 
     xml_df = pd.DataFrame.from_records(xpath_result, columns=references)
 
     # add columns with null values for those references in the mapping rule that are not present in the data file
     missing_references_in_df = list(set(references).difference(set(xml_df.columns)))
     xml_df[missing_references_in_df] = np.nan
+    xml_df.dropna(axis=0, how='any', inplace=True)
+
+    for reference in references:
+        xml_df = xml_df.explode(reference)
 
     return [xml_df]
