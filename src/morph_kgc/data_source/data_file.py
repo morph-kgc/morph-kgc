@@ -14,6 +14,7 @@ from lxml import etree
 from jsonpath import JSONPath
 
 from ..constants import *
+from ..utils import normalize_hierarchical_data
 
 
 def get_file_data(config, mapping_rule, references):
@@ -130,21 +131,21 @@ def _read_json(mapping_rule, references):
         json_data = json.load(json_file)
 
     jsonpath_expression = mapping_rule['iterator'] + '.('
+    # add top level object of the references to reduce intermediate results
     for reference in references:
-        jsonpath_expression += reference + ','
+        jsonpath_expression += reference.split('.')[0] + ','
     jsonpath_expression = jsonpath_expression[:-1] + ')'
 
     jsonpath_result = JSONPath(jsonpath_expression).parse(json_data)
-    json_df = pd.DataFrame.from_records(jsonpath_result)
+    json_df = pd.json_normalize([json_object for json_object in normalize_hierarchical_data(jsonpath_result)])
 
     # add columns with null values for those references in the mapping rule that are not present in the data file
     missing_references_in_df = list(set(references).difference(set(json_df.columns)))
     json_df[missing_references_in_df] = np.nan
-    json_df.dropna(axis=0, how='any', inplace=True)
 
-    # in case lists where retrieved, explode them e.g.: ['a', 'b'] -> 'a', 'b'
-    for reference in references:
-        json_df = json_df.explode(reference)
+    # keep only reference columns in the dataframe and remove NULLs
+    json_df = json_df[references]
+    json_df.dropna(axis=0, how='any', inplace=True)
 
     return [json_df]
 

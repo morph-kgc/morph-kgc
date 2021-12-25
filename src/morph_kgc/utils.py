@@ -15,6 +15,8 @@ import time
 import numpy as np
 import pandas as pd
 
+from itertools import product
+
 
 def configure_logger(logging_level, logging_file):
     """
@@ -258,3 +260,20 @@ def remove_null_values_from_dataframe(dataframe, config):
     dataframe.dropna(axis=0, how='any', inplace=True)
 
     return dataframe
+
+
+def normalize_hierarchical_data(data):
+    """
+    This is taken from
+    https://stackoverflow.com/questions/36731480/flatten-nested-json-dict-list-into-list-to-prepare-to-write-into-db#answer-43173998
+    """
+    if isinstance(data, dict):
+        keys = data.keys()
+        values = (normalize_hierarchical_data(i) for i in data.values())
+        for i in product(*values):
+            yield (dict(zip(keys, i)))
+    elif isinstance(data, list):
+        for i in data:
+            yield from normalize_hierarchical_data(i)
+    else:
+        yield data
