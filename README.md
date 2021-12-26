@@ -21,7 +21,7 @@ Morph-KGC is an engine that constructs [RDF](https://www.w3.org/TR/rdf11-concept
 - Runs on Linux, Windows and macOS systems.
 - Compatible with Python 3.7 or higher.
 - Optimized to materialize large knowledge graphs.
-- Multiple configuration options.
+- Highly configurable.
 - Available under the [Apache License 2.0](https://github.com/oeg-upm/Morph-KGC/blob/main/LICENSE).
 
 ## Installation and Usage
