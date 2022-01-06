@@ -70,5 +70,5 @@ setup(
         'Topic :: Scientific/Engineering :: Interface Engine/Protocol Translator'
     ],
     install_requires=requirements,
-    python_requires='>=3.7, <4',
+    python_requires='>={}.{}, <4'.format(*(REQUIRED_PYTHON)),
 )
