@@ -43,15 +43,15 @@ setup(
     author_email='arenas.guerrero.julian@outlook.com',
     license='Apache 2.0',
     description='Scalable [R2]RML engine to create RDF knowledge graphs from heterogeneous data sources.',
-    keywords='morph-kgc, rdf, r2rml, rml, knowledge graphs, data integration'
+    keywords='Morph-KGC, RDF, R2RML, RML, Knowledge Graphs, Data Integration'
     ,
     long_description=readme,
     long_description_content_type='text/markdown',
-    url='https://github.com/oeg-upm/Morph-KGC',
+    url='https://github.com/oeg-upm/morph-kgc',
     project_urls={
-        'Documentation': 'https://github.com/oeg-upm/Morph-KGC/wiki',
-        'Source code': 'https://github.com/oeg-upm/Morph-KGC',
-        'Issue tracker': 'https://github.com/oeg-upm/Morph-KGC/issues',
+        'Documentation': 'https://github.com/oeg-upm/morph-kgc/wiki',
+        'Source code': 'https://github.com/oeg-upm/morph-kgc',
+        'Issue tracker': 'https://github.com/oeg-upm/morph-kgc/issues',
     },
     include_package_data=True,
     packages=find_packages('src'),
