@@ -1,0 +1,117 @@
+<?xml version="1.0"?>
+<root xmlns:foo="http://www.foo.org/" xmlns:bar="http://www.bar.org">
+
+<author>
+  <fullname>Ana Iglesias-Molina</fullname>
+  <rank>1</rank>
+</author>
+<author>
+  <fullname>David Chaves-Fraga</fullname>
+  <rank>2</rank>
+</author>
+<author>
+  <fullname>Oscar Corcho</fullname>
+  <rank>3</rank>
+</author>
+<author>
+  <fullname>Julián Arenas-Guerrero</fullname>
+  <pid>
+    <id>
+      <scheme>orcid</scheme>
+      <value>0000-0002-3029-6469</value>
+    </id>
+    <provenance>
+      <provenance>Harvested</provenance>
+      <trust>0.91</trust>
+    </provenance>
+  </pid>
+  <rank>4</rank>
+</author>
+<bestaccessright>
+  <code>dwqeby23dn</code>
+  <label>RESTRICTED</label>
+  <scheme>http://example.com/eb2dhbsda</scheme>
+</bestaccessright>
+<contributor/>
+<country>
+  <code>AR</code>
+  <label>Argentina</label>
+  <provenance>
+    <provenance>Propagation of country to result collected from datasources of type institutional repositories</provenance>
+    <trust>0.85</trust>
+  </provenance>
+</country>
+<coverage/>
+<dateofcollection></dateofcollection>
+<description>RDF-star was recently proposed as a convenient representation to annotate statements in RDF with metadata by introducing the so-called RDF-star triples, bridging the gap between RDF and property graphs. However, even though there are many solutions to generate RDF graphs, there is no systematic approach so far to generate RDF-star graphs from heterogeneous data sources. In this paper, we propose RML-star, an extension of the RML mapping language to generate RDF-star. We introduce the extension of the RML ontology and the associated specification with representative examples.</description>
+<format>application/pdf</format>
+<id>awihd8q2dhqwiiqisq</id>
+<instance>
+  <accessright>
+    <code>shdw8haia</code>
+    <label>RESTRICTED</label>
+    <scheme>http://example.com/d32iubfn</scheme>
+  </accessright>
+  <publicationdate>2015-09-01</publicationdate>
+  <refereed>UNKNOWN</refereed>
+  <type>Article</type>
+  <url>http://example.com/dqugdn2dd</url>
+</instance>
+<instance>
+  <refereed>UNKNOWN</refereed>
+  <type>UNKNOWN</type>
+  <url>http://example.com/dqwjrh2dn</url>
+</instance>
+<instance>
+  <publicationdate>2015-09-21</publicationdate>
+  <refereed>UNKNOWN</refereed>
+  <type>Other literature type</type>
+  <url>http://example.com/d,2nudios</url>
+</instance>
+<instance>
+  <accessright>
+    <code>28y8ehs</code>
+    <label>RESTRICTED</label>
+    <scheme>http://example.com/dnh2sja</scheme>
+  </accessright>
+  <publicationdate>2015-09-21</publicationdate>
+  <refereed>UNKNOWN</refereed>
+  <type>Article</type>
+  <url>http://example.com/cwqhdfi</url>
+  <url>http://example.com/dwqiu2wdghop9x</url>
+</instance>
+<instance>
+  <refereed>UNKNOWN</refereed>
+  <type>Article</type>
+  <url>http://example.com/dqueghuhdbd</url>
+  <url>http://example.com/c3ihjwe8h</url>
+  <url>http://example.com/woufycb89jd</url>
+  <url>http://example.com/d2usqugdk</url>
+  <url>http://example.com/cliawonr8ijns</url>
+</instance>
+<language>
+  <code>eng</code>
+  <label>English</label>
+</language>
+<lastupdatetimestamp>1618221358260</lastupdatetimestamp>
+<maintitle>A High-Level Ontology Network for ICT Infrastructures</maintitle>
+<originalId>dwuduxhhbsk</originalId>
+<originalId>DJQID88HD</originalId>
+<originalId>12183272</originalId>
+<originalId>jdwqoiher82321</originalId>
+<pid>
+  <scheme>doi</scheme>
+  <value>wjd2ujh187</value>
+</pid>
+<pid>
+  <scheme>handle</scheme>
+  <value>hdqi999shbka</value>
+</pid>
+<pid>
+  <scheme>pmid</scheme>
+  <value>wjdbjqjhslla</value>
+</pid>
+<publicationdate>2015-09-21</publicationdate>
+<publisher>American Chemical Society</publisher>
+<type>publication</type>
+</root>

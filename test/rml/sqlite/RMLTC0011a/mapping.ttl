@@ -1,0 +1,81 @@
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ex: <http://example.com/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@prefix d2rq: <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#> .
+
+@base <http://example.com/base/> .
+
+<TriplesMap1>
+    a rr:TriplesMap;
+
+    rml:logicalSource [ 
+       rml:source <#DB_source>;
+       rr:sqlVersion rr:SQL2008;
+       rml:query """
+       SELECT Student.ID as ID,
+              Student.FirstName as FirstName,
+              Student.LastName as LastName,
+              Sport.Description as Description,
+              Sport.ID as Sport_ID
+       FROM Student,Sport,Student_Sport
+       WHERE Student.ID = Student_Sport.ID_Student
+       AND Sport.ID = Student_Sport.ID_Sport;
+       """ ;
+       rml:referenceFormulation ql:CSV
+   ];
+
+    rr:subjectMap [ rr:template "http://example.com/{id}/{firstname};{lastname}" ];
+	
+    rr:predicateObjectMap
+    [ 
+      rr:predicate	ex:id ; 
+      rr:objectMap	[ rml:reference "id"; ]
+    ];
+
+    rr:predicateObjectMap
+    [ 
+      rr:predicate	ex:firstName ; 
+      rr:objectMap	[ rml:reference "firstname" ]
+    ];
+
+    rr:predicateObjectMap
+    [ 
+      rr:predicate	ex:lastName ; 
+      rr:objectMap	[ rml:reference "lastname" ]
+    ];
+
+    rr:predicateObjectMap
+    [ 
+      rr:predicate	ex:plays ; 
+      rr:objectMap	[ rr:template "http://example.com/{sport_id}/{description}" ]
+    ]
+    .
+
+<TriplesMap2>
+    a rr:TriplesMap;
+
+	rr:logicalTable [ rr:tableName  "Sport" ];
+	
+    rr:subjectMap [ rr:template "http://example.com/{id}/{description}"; ];
+
+    rr:predicateObjectMap
+    [ 
+      rr:predicate	ex:id ; 
+      rr:objectMap	[ rml:reference "id"; ]
+    ];
+
+    rr:predicateObjectMap
+    [ 
+      rr:predicate	ex:description ; 
+      rr:objectMap	[ rml:reference "description" ]
+    ]
+    .
+
+<#DB_source> a d2rq:Database;
+  d2rq:jdbcDSN "CONNECTIONDSN";
+  d2rq:jdbcDriver "org.postgresql.Driver";
+  d2rq:username "postgres";
+  d2rq:password "" .

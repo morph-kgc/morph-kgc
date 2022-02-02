@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<Lives>
+  <Live>
+    <fname>Bob</fname>
+    <lname>Smith</lname>
+    <city>London</city>
+  </Live>
+  <Live>
+    <fname>Sue</fname>
+    <lname>Jones</lname>
+    <city>Madrid</city>
+  </Live>
+  <Live>
+    <fname>Bob</fname>
+    <lname>Smith</lname>
+    <city>London</city>
+  </Live>
+</Lives>

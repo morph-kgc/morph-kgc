@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<persons>
+  <person>
+    <fname>Bob</fname>
+    <lname>Smith</lname>
+    <amount>30.0E0</amount>
+  </person>
+  <person>
+    <fname>Sue</fname>
+    <lname>Jones</lname>
+    <amount>20.0E0</amount>
+  </person>
+  <person>
+    <fname>Bob</fname>
+    <lname>Smith</lname>
+    <amount>30.0E0</amount>
+  </person>
+</persons>

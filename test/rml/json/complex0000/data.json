@@ -1,0 +1,114 @@
+[{
+    "author": [
+        {
+            "fullname": "Ana Iglesias-Molina",
+            "rank": 1
+        },
+        {
+            "fullname": "David Chaves-Fraga",
+            "rank": 2
+        },
+        {
+            "fullname": "Oscar Corcho",
+            "rank": 3
+        },
+        {
+            "fullname": "Julián Arenas-Guerrero",
+            "pid": {
+                "id": {
+                    "scheme": "orcid",
+                    "value": "0000-0002-3029-6469"
+                },
+                "provenance": {
+                    "provenance": "Harvested",
+                    "trust": "0.91"
+                }
+            },
+            "rank": 4
+        }
+    ],
+    "bestaccessright": {
+        "code": "abcdef",
+        "label": "RESTRICTED",
+        "scheme": "http://example.com/hahdawlrh"
+    },
+    "contributor": [],
+    "country": [
+        {
+            "code": "ES",
+            "label": "Spain",
+            "provenance": {
+                "provenance": "123456789",
+                "trust": "0.85"
+            }
+        }
+    ],
+    "coverage": [],
+    "dateofcollection": "2021-01-01",
+    "description": [
+        "RDF-star was recently proposed as a convenient representation to annotate statements in RDF with metadata by introducing the so-called RDF-star triples, bridging the gap between RDF and property graphs. However, even though there are many solutions to generate RDF graphs, there is no systematic approach so far to generate RDF-star graphs from heterogeneous data sources. In this paper, we propose RML-star, an extension of the RML mapping language to generate RDF-star. We introduce the extension of the RML ontology and the associated specification with representative examples."
+    ],
+    "format": [
+        "application/pdf","a"
+    ],
+    "id": "2836412",
+    "instance": [
+        {
+            "accessright": {
+                "code": "r28934hdha",
+                "label": "RESTRICTED",
+                "scheme": "UNKNOWN"
+            },
+            "publicationdate": "2021-07-01",
+            "refereed": "UNKNOWN",
+            "type": "Article",
+            "url": [
+                "http://example.com/wqheu2byrfd"
+            ]
+        },
+        {
+            "refereed": "UNKNOWN",
+            "type": "UNKNOWN",
+            "url": [
+                "http://example.com/w3895ryhlalf"
+            ]
+        },
+        {
+            "publicationdate": "2021-10-21",
+            "refereed": "UNKNOWN",
+            "type": "Other literature type",
+            "url": [
+                "http://example.com/hahdawlrhf3wuoybtr98als"
+            ]
+        }
+    ],
+    "language": {
+        "code": "eng",
+        "label": "English"
+    },
+    "lastupdatetimestamp": 1618221358260,
+    "maintitle": "A High-Level Ontology Network for ICT Infrastructures",
+    "originalId": [
+        "oa219846fsdkfuw3h8r2432",
+        "081297465",
+        "218424100125",
+        "892114652"
+    ],
+    "pid": [
+        {
+            "scheme": "doi",
+            "value": "fsdfhnksjer939123474"
+        },
+        {
+            "scheme": "handle",
+            "value": "824hdddhqon3y84vbya"
+        },
+        {
+            "scheme": "pmid",
+            "value": "892daskjdw111"
+        }
+    ],
+    "publicationdate": "2021-1-21",
+    "publisher": "American Chemical Society",
+    "type": "publication"
+}]

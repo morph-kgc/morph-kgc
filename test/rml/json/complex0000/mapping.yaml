@@ -1,0 +1,61 @@
+prefixes:
+  ex: "https://w3id.org/okn/os/o/"
+sources:
+  main-source: ['data.json~jsonpath', '$.*']
+  author-source: ['data.json~jsonpath', '$.*.author[*]']
+  pid-source: ['data.json~jsonpath', '$.*.pid[*]']
+mappings:
+  Author:
+    sources:
+      - author-source
+
+    s: https://w3id.org/okn/os/i/author/$(fullname)
+    po:
+      - [a, ex:Author]
+      - [ex:fullname, $(fullname)]
+      - [ex:name, $(name)]
+      - [ex:surname, $(surname)]
+      - [ex:$(pid.id.scheme)ID, $(pid.id.value)]
+  Paper:
+    sources:
+      - main-source
+    s: https://w3id.org/okn/os/i/paper/$(id)
+    po:
+      - [a, ex:Paper]
+      - [ex:title, $(maintitle)]
+      - [ex:subtitle, $(subtitle)]
+      - [ex:description, $(description),$(language.code)~lang]
+      - [ex:language, $(language.label)]
+      - [ex:format, $(format)]
+      - [ex:publicationDate, $(publicationdate)]
+      - [ex:type, $(type)]
+      - [ex:country, $(country.*.label)]
+      - [ex:license, $(instance.*.license)]
+      - [ex:publisher, $(publisher)]
+      - [ex:source,$(source)]
+      - [ex:has_id,https://w3id.org/okn/os/i/idType/$(pid.*.value)~iri]
+      - [ex:has_id,https://w3id.org/okn/os/i/author/$(author.*.fullname)~iri]
+      - p: ex:has_id
+        o:
+            - mapping: idTypeOpenAire
+              condition:
+               function: equal
+               parameters:
+                 - [str1, $(id)]
+                 - [str2, $(id)]
+  idTypeOpenAire:
+    sources:
+      - pid-source
+    s: https://w3id.org/okn/os/i/idType/$(id)
+    po:
+      - [a, ex:idType]
+      - [ex:source,OpenAire]
+      - [ex:identifier,$(id)]
+  idTypePaperResource:
+    sources:
+      - pid-source
+    s: https://w3id.org/okn/os/i/idType/$(value)
+    po:
+      - [a, ex:idType]
+      - [ex:source,$(scheme)]
+      - [ex:identifier,$(value)]

@@ -1,0 +1,27 @@
+<https://w3id.org/okn/os/i/idType/824hdddhqon3y84vbya> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/okn/os/o/idType> .
+<https://w3id.org/okn/os/i/idType/892daskjdw111> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/okn/os/o/idType> .
+<https://w3id.org/okn/os/i/idType/fsdfhnksjer939123474> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/okn/os/o/idType> .
+<https://w3id.org/okn/os/i/author/David%20Chaves-Fraga> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/okn/os/o/Author> .
+<https://w3id.org/okn/os/i/author/Ana%20Iglesias-Molina> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/okn/os/o/Author> .
+<https://w3id.org/okn/os/i/author/Oscar%20Corcho> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/okn/os/o/Author> .
+<https://w3id.org/okn/os/i/author/Juli%C3%A1n%20Arenas-Guerrero> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/okn/os/o/Author> .
+<https://w3id.org/okn/os/i/author/Juli%C3%A1n%20Arenas-Guerrero> <https://w3id.org/okn/os/o/fullname> "Julián Arenas-Guerrero" .
+<https://w3id.org/okn/os/i/author/Ana%20Iglesias-Molina> <https://w3id.org/okn/os/o/fullname> "Ana Iglesias-Molina" .
+<https://w3id.org/okn/os/i/author/David%20Chaves-Fraga> <https://w3id.org/okn/os/o/fullname> "David Chaves-Fraga" .
+<https://w3id.org/okn/os/i/author/Juli%C3%A1n%20Arenas-Guerrero> <https://w3id.org/okn/os/o/orcidID> "0000-0002-3029-6469" .
+<https://w3id.org/okn/os/i/author/Oscar%20Corcho> <https://w3id.org/okn/os/o/fullname> "Oscar Corcho" .
+<https://w3id.org/okn/os/i/paper/2836412> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/okn/os/o/Paper> .
+<https://w3id.org/okn/os/i/idType/892daskjdw111> <https://w3id.org/okn/os/o/identifier> "892daskjdw111" .
+<https://w3id.org/okn/os/i/idType/fsdfhnksjer939123474> <https://w3id.org/okn/os/o/source> "doi" .
+<https://w3id.org/okn/os/i/idType/824hdddhqon3y84vbya> <https://w3id.org/okn/os/o/identifier> "824hdddhqon3y84vbya" .
+<https://w3id.org/okn/os/i/idType/fsdfhnksjer939123474> <https://w3id.org/okn/os/o/identifier> "fsdfhnksjer939123474" .
+<https://w3id.org/okn/os/i/idType/892daskjdw111> <https://w3id.org/okn/os/o/source> "pmid" .
+<https://w3id.org/okn/os/i/idType/824hdddhqon3y84vbya> <https://w3id.org/okn/os/o/source> "handle" .
+<https://w3id.org/okn/os/i/paper/2836412> <https://w3id.org/okn/os/o/title> "A High-Level Ontology Network for ICT Infrastructures" .
+<https://w3id.org/okn/os/i/paper/2836412> <https://w3id.org/okn/os/o/format> "application/pdf" .
+<https://w3id.org/okn/os/i/paper/2836412> <https://w3id.org/okn/os/o/type> "publication" .
+<https://w3id.org/okn/os/i/paper/2836412> <https://w3id.org/okn/os/o/format> "a" .
+<https://w3id.org/okn/os/i/paper/2836412> <https://w3id.org/okn/os/o/publicationDate> "2021-1-21" .
+<https://w3id.org/okn/os/i/paper/2836412> <https://w3id.org/okn/os/o/description> "RDF-star was recently proposed as a convenient representation to annotate statements in RDF with metadata by introducing the so-called RDF-star triples, bridging the gap between RDF and property graphs. However, even though there are many solutions to generate RDF graphs, there is no systematic approach so far to generate RDF-star graphs from heterogeneous data sources. In this paper, we propose RML-star, an extension of the RML mapping language to generate RDF-star. We introduce the extension of the RML ontology and the associated specification with representative examples." .
+<https://w3id.org/okn/os/i/paper/2836412> <https://w3id.org/okn/os/o/publisher> "American Chemical Society" .
+<https://w3id.org/okn/os/i/paper/2836412> <https://w3id.org/okn/os/o/language> "English" .

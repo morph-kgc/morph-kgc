@@ -1,0 +1,32 @@
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ex: <http://example.com/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rml:    <http://semweb.mmlab.be/ns/rml#> .
+@prefix ql:     <http://semweb.mmlab.be/ns/ql#> .
+@prefix d2rq: <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#> .
+
+@base <http://example.com/base/> .
+
+<TriplesMap1>
+  a rr:TriplesMap;
+  rml:logicalSource [
+    rml:source <#DB_source>;
+    rr:sqlVersion rr:SQL2008;
+    rr:tableName "Student"
+  ];
+    
+    rr:subjectMap [ rml:reference "name"; rr:termType rr:IRI; ];
+    
+    rr:predicateObjectMap 
+    [
+    	rr:predicate rdf:type;
+    	rr:object foaf:Person;
+    ].
+
+<#DB_source> a d2rq:Database;
+  d2rq:jdbcDSN "CONNECTIONDSN";
+  d2rq:jdbcDriver "org.postgresql.Driver";
+  d2rq:username "postgres";
+  d2rq:password "password" .

@@ -1,0 +1,6 @@
+{
+  "persons": [
+    {"ID":"1","Name":"Alice","DateOfBirth":null},
+    {"ID":"2","Name":"Bob","DateOfBirth":"September, 2010"}
+  ]
+}

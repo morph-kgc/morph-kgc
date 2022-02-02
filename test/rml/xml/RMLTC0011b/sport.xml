@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<Sports>
+  <Sport>
+    <ID>110</ID>
+    <Description>Tennis</Description>
+  </Sport>
+  <Sport>
+    <ID>111</ID>
+    <Description>Football</Description>
+  </Sport>
+  <Sport>
+    <ID>112</ID>
+    <Description>Formula1</Description>
+  </Sport>
+</Sports>

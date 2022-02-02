@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<persons>
+    <person>
+        <ID>10</ID>
+        <FirstName>http://example.com/ns#Jhon</FirstName>
+        <LastName>Smith</LastName>
+    </person>
+    <person>
+        <ID>20</ID>
+        <FirstName>Carlos</FirstName>
+        <LastName>Mendoza</LastName>
+    </person>
+</persons>

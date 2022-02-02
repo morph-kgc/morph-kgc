@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<countries>
+  <country>
+    <CountryCode>1</CountryCode>
+    <Name>Bolivia, Plurinational State of</Name>
+    <ISO3166>BO</ISO3166>
+  </country>
+  <country>
+    <CountryCode>2</CountryCode>
+    <Name>Ireland</Name>
+    <ISO3166>IE</ISO3166>
+  </country>
+  <country>
+    <CountryCode>3</CountryCode>
+    <Name>Saint Martin (French part)</Name>
+    <ISO3166>MF</ISO3166>
+  </country>
+</countries>
+

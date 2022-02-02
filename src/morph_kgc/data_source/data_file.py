@@ -101,7 +101,7 @@ def _read_sas(config, mapping_rule, references):
     sas_df = pd.read_sas(str(mapping_rule['data_source']),
                          encoding='utf-8',
                          chunksize=config.get_chunksize())
-    sas_df = sas_df[references]
+    sas_df = sas_df[list(references)]
 
     return sas_df
 
@@ -145,7 +145,7 @@ def _read_json(mapping_rule, references):
     json_df[missing_references_in_df] = np.nan
 
     # keep only reference columns in the dataframe and remove NULLs
-    json_df = json_df[references]
+    json_df = json_df[list(references)]
     json_df.dropna(axis=0, how='any', inplace=True)
 
     return [json_df]

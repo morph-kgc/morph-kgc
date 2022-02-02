@@ -1,0 +1,7 @@
+{
+  "lives": [
+    {"fname":"Bob","lname":"Smith","city":"London"},
+    {"fname":"Sue","lname":"Jones","city":"Madrid"},
+    {"fname":"Bob","lname":"Smith","city":"London"}
+  ]
+}

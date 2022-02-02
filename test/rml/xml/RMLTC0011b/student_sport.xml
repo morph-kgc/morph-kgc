@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<links>
+  <link>
+    <ID_Student>10</ID_Student>
+    <ID_Sport>110</ID_Sport>
+  </link>
+  <link>
+    <ID_Student>11</ID_Student>
+    <ID_Sport>111</ID_Sport>
+  </link>
+  <link>
+    <ID_Student>11</ID_Student>
+    <ID_Sport>112</ID_Sport>
+  </link>
+  <link>
+    <ID_Student>12</ID_Student>
+    <ID_Sport>111</ID_Sport>
+  </link>
+</links>

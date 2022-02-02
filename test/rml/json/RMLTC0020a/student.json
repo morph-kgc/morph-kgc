@@ -1,0 +1,9 @@
+{
+  "students": [
+    {"Name": "http://example.com/company/Alice"},
+    {"Name": "Bob"},
+    {"Name": "Bob/Charles"},
+    {"Name": "path/../Danny"},
+    {"Name": "Emily Smith"}
+  ]
+}

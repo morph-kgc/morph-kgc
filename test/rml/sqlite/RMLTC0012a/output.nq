@@ -1,0 +1,5 @@
+_:Bob_Smith_30 <http://example.com/amount> "30"^^<http://www.w3.org/2001/XMLSchema#integer> .
+_:Bob_Smith_30 <http://xmlns.com/foaf/0.1/name> "Bob Smith" .
+_:Sue_Jones_20 <http://example.com/amount> "20"^^<http://www.w3.org/2001/XMLSchema#integer> .
+_:Sue_Jones_20 <http://xmlns.com/foaf/0.1/name> "Sue Jones" .
+
