@@ -269,8 +269,6 @@ def _transform_mappings_into_dataframe(mapping_graph, section_name):
     # link the mapping rules to their data source name
     source_mappings_df['source_name'] = section_name
 
-    source_mappings_df.to_csv('/home/julian/PycharmProjects/Morph-KGC-dev/testing/rml-star/a.csv', index=False)
-
     return source_mappings_df
 
 
