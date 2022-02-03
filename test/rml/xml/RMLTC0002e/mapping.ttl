@@ -9,7 +9,7 @@
 <TriplesMap1> a rr:TriplesMap;
 
   rml:logicalSource [
-    rml:source "rml/xml/RMLTC0002e/student.xml";
+    rml:source "rml/xml/RMLTC0002e/student2.xml";
     rml:referenceFormulation ql:XPath;
     rml:iterator "/students/student"
   ];
@@ -20,5 +20,5 @@
 
   rr:predicateObjectMap [
     rr:predicate ex:id ;
-    rr:objectMap [ rml:reference "IDs" ]
+    rr:objectMap [ rml:reference "ID" ]
   ].
