@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://github.com/oeg-upm/morph-website/blob/master/morph-group/src/assets/logo.png" height="100" alt="morph">
+<img src="https://github.com/oeg-upm/morph-kgc/blob/main/logo.png" height="100" alt="morph">
 </p>
 
 [![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](https://github.com/oeg-upm/Morph-KGC/blob/main/LICENSE)
