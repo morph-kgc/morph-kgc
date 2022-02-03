@@ -129,17 +129,35 @@ R2RML_SQL2008 = 'http://www.w3.org/ns/r2rml#SQL2008'
 ############################   RML SPECIFICATION   ###########################
 ##############################################################################
 
-QL_NAMESPACE = 'http://semweb.mmlab.be/ns/ql#'
-QL_CSV = 'http://semweb.mmlab.be/ns/ql#CSV'
-QL_JSON = 'http://semweb.mmlab.be/ns/ql#JSONPath'
-QL_XML = 'http://semweb.mmlab.be/ns/ql#XPath'
-
+# properties
 RML_NAMESPACE = 'http://semweb.mmlab.be/ns/rml#'
 RML_LOGICAL_SOURCE = 'http://semweb.mmlab.be/ns/rml#logicalSource'
 RML_QUERY = 'http://semweb.mmlab.be/ns/rml#query'
 RML_ITERATOR = 'http://semweb.mmlab.be/ns/rml#iterator'
 RML_REFERENCE = 'http://semweb.mmlab.be/ns/rml#reference'
 RML_REFERENCE_FORMULATION = 'http://semweb.mmlab.be/ns/rml#referenceFormulation'
+
+QL_NAMESPACE = 'http://semweb.mmlab.be/ns/ql#'
+QL_CSV = 'http://semweb.mmlab.be/ns/ql#CSV'
+QL_JSON = 'http://semweb.mmlab.be/ns/ql#JSONPath'
+QL_XML = 'http://semweb.mmlab.be/ns/ql#XPath'
+
+
+##############################################################################
+############################   RML-star SPECIFICATION   ###########################
+##############################################################################
+
+# classes
+RML_STAR_STAR_MAP = 'http://semweb.mmlab.be/ns/rml#StarMap'
+RML_NON_ASSERTED_TRIPLES_MAP = 'http://semweb.mmlab.be/ns/rml#NonAssertedTriplesMap'
+
+# properties
+RML_STAR_QUOTED_TRIPLES_MAP = 'http://semweb.mmlab.be/ns/rml#quotedTriplesMap'
+RML_STAR_SUBJECT_MAP = 'http://semweb.mmlab.be/ns/rml#subjectMap'
+RML_STAR_OBJECT_MAP = 'http://semweb.mmlab.be/ns/rml#objectMap'
+
+# other
+RML_STAR_RDF_STAR_TRIPLE = 'http://semweb.mmlab.be/ns/rml#RDFstarTriple'
 
 
 ##############################################################################
