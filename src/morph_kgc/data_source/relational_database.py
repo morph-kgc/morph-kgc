@@ -94,9 +94,10 @@ def _get_column_table_datatype(config, source_name, table_name, column_name):
     db_connection, db_dialect = _relational_db_connection(config, source_name)
 
     if db_dialect == ORACLE:
-        # Oracle does not use the standard INFORMATION_SCHEMA
         sql_query = "SELECT t.data_type FROM all_tab_columns t WHERE t.TABLE_NAME = '" + table_name + \
                     "' AND t.COLUMN_NAME='" + column_name + "'"
+    elif db_dialect == SQLITE:
+        sql_query = "SELECT typeof(" + column_name + ") as data_type FROM " + table_name + " LIMIT 1"
     else:
         sql_query = "SELECT `data_type` FROM `information_schema`.`columns` WHERE `table_name`='" + table_name + \
                     "' AND `column_name`='" + column_name + "'"
@@ -107,16 +108,18 @@ def _get_column_table_datatype(config, source_name, table_name, column_name):
     except:
         raise Exception('Query [' + sql_query + '] has failed to execute.')
 
-    data_type = ''
     if 'data_type' in query_results_df.columns and len(query_results_df) == 1:
         data_type = query_results_df['data_type'][0]
     elif 'DATA_TYPE' in query_results_df.columns and len(query_results_df) == 1:
         data_type = query_results_df['DATA_TYPE'][0]
-
-    if data_type.upper() in SQL_RDF_DATATYPE:
-        return SQL_RDF_DATATYPE[data_type.upper()]
     else:
         return None
+
+    data_type = data_type.upper()
+    for k, v in SQL_RDF_DATATYPE.items():
+        if k in data_type:
+            return v
+    return None
 
 
 def get_rdb_reference_datatype(config, mapping_rule, reference):
