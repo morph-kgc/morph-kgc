@@ -138,15 +138,15 @@ def _read_json(mapping_rule, references):
     jsonpath_expression = jsonpath_expression[:-1] + ')'
 
     jsonpath_result = JSONPath(jsonpath_expression).parse(json_data)
-    json_df = pd.json_normalize([json_object for json_object in normalize_hierarchical_data(jsonpath_result)])
+    # normalize and remove nulls
+    json_df = pd.json_normalize([json_object for json_object in normalize_hierarchical_data(jsonpath_result) if None not in json_object.values()])
 
     # add columns with null values for those references in the mapping rule that are not present in the data file
     missing_references_in_df = list(set(references).difference(set(json_df.columns)))
     json_df[missing_references_in_df] = np.nan
 
-    # keep only reference columns in the dataframe and remove NULLs
+    # keep only reference columns in the dataframe
     json_df = json_df[list(references)]
-    json_df.dropna(axis=0, how='any', inplace=True)
 
     return [json_df]
 

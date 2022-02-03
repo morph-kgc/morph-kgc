@@ -10,7 +10,6 @@ import os
 import morph_kgc
 
 from rdflib.graph import Graph
-from rdflib import compare
 
 
 def test_RMLTC0012a():
@@ -21,4 +20,4 @@ def test_RMLTC0012a():
     config = f'[DataSource]\nmappings={mapping_path}'
     g_morph = morph_kgc.materialize(config)
 
-    assert compare.isomorphic(g, g_morph)
+    assert g.isomorphic(g_morph)
