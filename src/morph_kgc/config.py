@@ -13,7 +13,7 @@ import logging
 from configparser import ConfigParser
 
 from .constants import *
-from .utils import get_valid_dir_path, get_valid_file_name, get_valid_file_path, remove_file_extension
+from .utils import get_valid_file_name, get_valid_file_path, remove_file_extension
 
 
 CONFIGURATION_SECTION = 'CONFIGURATION'
@@ -136,8 +136,7 @@ class Config(ConfigParser):
                 self.set(self.configuration_section, configuration_option, str(configuration_option_default))
 
     def validate_configuration_section(self):
-        # OUTPUT DIR & FILE, WRITE PARSED MAPPINGS FILE, LOGS FILE
-        self.set_output_dir(get_valid_dir_path(self.get_output_dir()))
+        # OUTPUT FILE, WRITE PARSED MAPPINGS FILE, LOGS FILE
         self.set_output_file(get_valid_file_name(self.get_output_file()))
         self.set_parsed_mappings_write_path(get_valid_file_path(self.get_parsed_mappings_write_path()))
         self.set_logging_file(get_valid_file_path(self.get_logging_file()))

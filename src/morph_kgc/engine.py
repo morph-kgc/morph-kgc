@@ -14,6 +14,7 @@ import time
 from .utils import get_delta_time
 from .mapping.mapping_parser import MappingParser
 from .materializer import Materializer
+from .utils import get_valid_dir_path
 
 
 def retrieve_mappings(config):
@@ -37,6 +38,7 @@ def retrieve_mappings(config):
 
 
 def process_materialization(mappings, config):
+    config.set_output_dir(get_valid_dir_path(config.get_output_dir()))
     materializer = Materializer(mappings, config)
 
     start_time = time.time()
