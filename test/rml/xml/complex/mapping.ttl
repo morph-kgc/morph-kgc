@@ -69,10 +69,10 @@ map:om_012 a rr:ObjectMap;
     rml:reference "type";
     rr:termType rr:Literal.
 map:om_013 a rr:ObjectMap;
-    rml:reference "country.*.label";
+    rml:reference "country/label";
     rr:termType rr:Literal.
 map:om_014 a rr:ObjectMap;
-    rml:reference "instance.*.license";
+    rml:reference "instance/license";
     rr:termType rr:Literal.
 map:om_015 a rr:ObjectMap;
     rml:reference "publisher";
@@ -81,10 +81,10 @@ map:om_016 a rr:ObjectMap;
     rml:reference "source";
     rr:termType rr:Literal.
 map:om_017 a rr:ObjectMap;
-    rr:template "https://w3id.org/okn/os/i/idType/{pid.*.value}";
+    rr:template "https://w3id.org/okn/os/i/idType/{pid/value}";
     rr:termType rr:IRI.
 map:om_018 a rr:ObjectMap;
-    rr:template "https://w3id.org/okn/os/i/author/{author.*.fullname}";
+    rr:template "https://w3id.org/okn/os/i/author/{author/fullname}";
     rr:termType rr:IRI.
 map:om_019 a rr:ObjectMap;
     rr:parentTriplesMap map:map_idTypeOpenAire_000;
@@ -249,16 +249,16 @@ map:s_003 a rr:SubjectMap;
     rr:template "https://w3id.org/okn/os/i/idType/{value}".
 map:source_000 a rml:LogicalSource;
     rdfs:label "main-source";
-    rml:source "rml/json/complex0000/data.json";
-    rml:iterator "$.*";
-    rml:referenceFormulation ql:JSONPath.
+    rml:source "rml/xml/complex/data.xml";
+    rml:iterator "/*";
+    rml:referenceFormulation ql:XPath.
 map:source_001 a rml:LogicalSource;
     rdfs:label "author-source";
-    rml:source "rml/json/complex0000/data.json";
-    rml:iterator "$.*.author[*]";
-    rml:referenceFormulation ql:JSONPath.
+    rml:source "rml/xml/complex/data.xml";
+    rml:iterator "author";
+    rml:referenceFormulation ql:XPath.
 map:source_002 a rml:LogicalSource;
     rdfs:label "pid-source";
-    rml:source "rml/json/complex0000/data.json";
-    rml:iterator "$.*.pid[*]";
-    rml:referenceFormulation ql:JSONPath.
+    rml:source "rml/xml/complex/data.xml";
+    rml:iterator "pid";
+    rml:referenceFormulation ql:XPath.

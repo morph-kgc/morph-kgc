@@ -305,6 +305,42 @@ def _get_valid_template_identifiers(template):
     return template
 
 
+def _validate_termtypes(mapping_graph):
+    query = 'SELECT DISTINCT ?termtype ?pm WHERE { ' \
+            '?pom <' + R2RML_PREDICATE_MAP + '> ?pm . ' \
+            '?pm <' + R2RML_TERM_TYPE + '> ?termtype . }'
+    predicate_termtypes = [str(termtype) for termtype, _ in mapping_graph.query(query)]
+    if not (set(predicate_termtypes) <= {R2RML_IRI}):
+        raise ValueError('Found an invalid predicate termtype. Found values ' + str(predicate_termtypes) +
+                         '. Predicate maps must be ' + R2RML_IRI + '.')
+
+    query = 'SELECT DISTINCT ?termtype ?gm WHERE { ' \
+            '?pom <' + R2RML_GRAPH_MAP + '> ?gm . ' \
+            '?gm <' + R2RML_TERM_TYPE + '> ?termtype . }'
+    graph_termtypes = [str(termtype) for termtype, _ in mapping_graph.query(query)]
+    if not (set(graph_termtypes) <= {R2RML_IRI}):
+        raise ValueError('Found an invalid graph termtype. Found values ' + str(graph_termtypes) +
+                         '. Graph maps must be ' + R2RML_IRI + '.')
+
+    query = 'SELECT DISTINCT ?termtype ?sm WHERE { ' \
+            '?tm <' + R2RML_SUBJECT_MAP + '> ?sm . ' \
+            '?sm <' + R2RML_TERM_TYPE + '> ?termtype . }'
+    subject_termtypes = [str(termtype) for termtype, _ in mapping_graph.query(query)]
+    if not (set(subject_termtypes) <= {R2RML_IRI, R2RML_BLANK_NODE, RML_STAR_RDF_STAR_TRIPLE}):
+        raise ValueError('Found an invalid subject termtype. Found values ' + str(subject_termtypes) +
+                         '. Subject maps must be ' + R2RML_IRI + ', ' + R2RML_BLANK_NODE + ' or ' +
+                         RML_STAR_RDF_STAR_TRIPLE + '.')
+
+    query = 'SELECT DISTINCT ?termtype ?om WHERE { ' \
+            '?pom <' + R2RML_OBJECT_MAP + '> ?om . ' \
+            '?om <' + R2RML_TERM_TYPE + '> ?termtype . }'
+    object_termtypes = [str(termtype) for termtype, _ in mapping_graph.query(query)]
+    if not (set(object_termtypes) <= {R2RML_IRI, R2RML_BLANK_NODE, R2RML_LITERAL, RML_STAR_RDF_STAR_TRIPLE}):
+        raise ValueError('Found an invalid object termtype. Found values ' + str(object_termtypes) +
+                         '. Object maps must be ' + R2RML_IRI + ', ' + R2RML_BLANK_NODE + ', ' +
+                         R2RML_LITERAL + ' or ' + RML_STAR_RDF_STAR_TRIPLE + '.')
+
+
 class MappingParser:
 
     def __init__(self, config):
@@ -392,6 +428,8 @@ class MappingParser:
         mapping_graph = _remove_string_datatypes(mapping_graph)
         # add rdf:type RML classes
         mapping_graph = _complete_rml_star_classes(mapping_graph)
+        # check termtypes are correct
+        _validate_termtypes(mapping_graph)
 
         # convert the SPARQL result set with the parsed mappings to DataFrame
         return _transform_mappings_into_dataframe(mapping_graph, section_name)
@@ -561,23 +599,9 @@ class MappingParser:
     def validate_mappings(self):
         """
         Checks that the mapping rules in the input DataFrame are valid. If something is wrong in the mappings the
-        execution is stopped. Specifically it is checked that termtypes are correct, and that language tags and
+        execution is stopped. Specifically it is checked that language tags and
         datatypes are used properly. Also checks that different data sources do not have triples map with the same id.
         """
-
-        # check termtypes are correct (i.e. that they are rr:IRI, rr:BlankNode or rr:Literal and that subject map is
-        # not a rr:literal). Use subset operation
-        subject_termtypes = set([str(termtype) for termtype in set(self.mappings_df['subject_termtype'])])
-        if not (subject_termtypes <= {R2RML_IRI, R2RML_BLANK_NODE, RML_STAR_RDF_STAR_TRIPLE}):
-            raise ValueError('Found an invalid subject termtype. Found values ' + str(subject_termtypes) +
-                             '. Subject maps must be ' + R2RML_IRI + ', ' + R2RML_BLANK_NODE + ' or ' +
-                             RML_STAR_RDF_STAR_TRIPLE + '.')
-
-        object_termtypes = set([str(termtype) for termtype in set(self.mappings_df['object_termtype'])])
-        if not (object_termtypes <= {R2RML_IRI, R2RML_BLANK_NODE, R2RML_LITERAL, RML_STAR_RDF_STAR_TRIPLE}):
-            raise ValueError('Found an invalid object termtype. Found values ' + str(object_termtypes) +
-                             '. Object maps must be ' + R2RML_IRI + ', ' + R2RML_BLANK_NODE + ', ' +
-                             R2RML_LITERAL + ' or ' + RML_STAR_RDF_STAR_TRIPLE + '.')
 
         # if there is a datatype or language tag then the object map termtype must be a rr:Literal
         if len(self.mappings_df.loc[(self.mappings_df['object_termtype'] != R2RML_LITERAL) &
