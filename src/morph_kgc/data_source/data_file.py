@@ -19,6 +19,7 @@ from ..utils import normalize_hierarchical_data
 
 
 def get_file_data(config, mapping_rule, references):
+    references = list(references)
     file_source_type = mapping_rule['source_type']
 
     if file_source_type in [CSV, TSV]:
@@ -101,7 +102,7 @@ def _read_sas(config, mapping_rule, references):
     sas_df = pd.read_sas(str(mapping_rule['data_source']),
                          encoding='utf-8',
                          chunksize=config.get_chunksize())
-    sas_df = sas_df[list(references)]
+    sas_df = sas_df[references]
 
     return sas_df
 
@@ -146,7 +147,7 @@ def _read_json(mapping_rule, references):
     json_df[missing_references_in_df] = np.nan
 
     # keep only reference columns in the dataframe
-    json_df = json_df[list(references)]
+    json_df = json_df[references]
 
     return [json_df]
 
