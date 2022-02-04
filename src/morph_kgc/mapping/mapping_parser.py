@@ -205,14 +205,6 @@ def _remove_string_datatypes(mapping_graph):
     return mapping_graph
 
 
-def _complete_rml_star_classes(mapping_graph):
-    """
-    TODO
-    """
-
-    return mapping_graph
-
-
 def _get_join_conditions_dict(join_query_results):
     """
     Creates a dictionary with the results of the JOIN_CONDITION_PARSING_QUERY. The keys are the identifiers of the
@@ -426,8 +418,6 @@ class MappingParser:
         mapping_graph = _complete_termtypes(mapping_graph)
         # remove xsd:string data types as it is equivalent to not specifying any data type
         mapping_graph = _remove_string_datatypes(mapping_graph)
-        # add rdf:type RML classes
-        mapping_graph = _complete_rml_star_classes(mapping_graph)
         # check termtypes are correct
         _validate_termtypes(mapping_graph)
 

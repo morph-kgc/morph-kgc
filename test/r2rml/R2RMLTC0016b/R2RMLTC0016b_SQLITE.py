@@ -22,4 +22,7 @@ def test_R2RMLTC0016b():
     config = f'[CONFIGURATION]\ninfer_sql_datatypes=yes\n[DataSource]\nmappings={mapping_path}\ndb_url=sqlite:///{db_path}'
     g_morph = morph_kgc.materialize(config)
 
+    for s, p, o in g_morph.triples((None, None, None)):
+        print(s, p, o)
+
     assert compare.isomorphic(g, g_morph)

@@ -75,6 +75,8 @@ def _get_references_in_mapping_rule(mapping_rule, only_subject_map=False):
 def _materialize_template(results_df, template, config, columns_alias='', termtype=R2RML_IRI, language_tag='',
                           datatype=''):
     references = get_references_in_template(str(template))
+    # Curly braces that do not enclose column names MUST be escaped by a backslash character (“\”).
+    # This also applies to curly braces within column names.
     template = template.replace('\\{', '{').replace('\\}', '}')
 
     if str(termtype).strip() == R2RML_IRI:

@@ -171,11 +171,14 @@ def _build_sql_query(mapping_rule, references):
 
 def get_sql_data(config, mapping_rule, references):
     sql_query = _build_sql_query(mapping_rule, references)
+    if sql_query is None:
+        # in case all term maps are constants e.g. R2RML test case R2RMLTC0006a
+        return pd.DataFrame(columns=references)
+
     db_connection, db_dialect = _relational_db_connection(config, mapping_rule['source_name'])
     sql_query = _replace_query_enclosing_characters(sql_query, db_dialect)
 
-    if sql_query is not None:
-        logging.debug('SQL query for mapping rule `' + str(mapping_rule['id']) + '`: [' + sql_query + ']')
+    logging.debug('SQL query for mapping rule `' + str(mapping_rule['id']) + '`: [' + sql_query + ']')
 
     result_chunks = pd.read_sql(sql_query,
                                 con=db_connection,
