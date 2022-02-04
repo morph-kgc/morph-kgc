@@ -97,7 +97,7 @@ def _get_column_table_datatype(config, source_name, table_name, column_name):
         sql_query = "SELECT t.data_type FROM all_tab_columns t WHERE t.TABLE_NAME = '" + table_name + \
                     "' AND t.COLUMN_NAME='" + column_name + "'"
     elif db_dialect == SQLITE:
-        sql_query = "SELECT typeof(" + column_name + ") as data_type FROM " + table_name + " LIMIT 1"
+        sql_query = "SELECT typeof('" + column_name + "') as data_type FROM '" + table_name + "' LIMIT 1"
     else:
         sql_query = "SELECT `data_type` FROM `information_schema`.`columns` WHERE `table_name`='" + table_name + \
                     "' AND `column_name`='" + column_name + "'"
