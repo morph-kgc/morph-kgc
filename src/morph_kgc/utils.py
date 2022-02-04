@@ -16,6 +16,7 @@ import numpy as np
 import pandas as pd
 
 from itertools import product
+from .constants import AUXILIAR_UNIQUE_REPLACING_STRING
 
 
 def configure_logger(logging_level, logging_file):
@@ -126,7 +127,13 @@ def get_references_in_template(template):
     Retrieves all reference identifiers in a template-valued term map. References are returned in order of appearance
     """
 
-    return re.findall('\\{([^}]+)', template)
+    # Curly braces that do not enclose column names MUST be escaped by a backslash character (“\”).
+    # This also applies to curly braces within column names.
+    template = template.replace('\\{', AUXILIAR_UNIQUE_REPLACING_STRING).replace('\\}', AUXILIAR_UNIQUE_REPLACING_STRING)
+    references = re.findall('\\{([^}]+)', template)
+    references = [reference.replace(AUXILIAR_UNIQUE_REPLACING_STRING, '\\{').replace(AUXILIAR_UNIQUE_REPLACING_STRING, '\\}') for reference in references]
+
+    return references
 
 
 def triples_to_file(triples, config, mapping_partition=''):

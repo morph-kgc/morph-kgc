@@ -75,6 +75,7 @@ def _get_references_in_mapping_rule(mapping_rule, only_subject_map=False):
 def _materialize_template(results_df, template, config, columns_alias='', termtype=R2RML_IRI, language_tag='',
                           datatype=''):
     references = get_references_in_template(str(template))
+    template = template.replace('\\{', '{').replace('\\}', '}')
 
     if str(termtype).strip() == R2RML_IRI:
         results_df['triple'] = results_df['triple'] + '<'
@@ -90,7 +91,6 @@ def _materialize_template(results_df, template, config, columns_alias='', termty
             results_df['reference_results'] = results_df['reference_results'].apply(lambda x: remove_non_printable_characters(x))
 
         if str(termtype).strip() == R2RML_IRI:
-            # if all characters are to be encoded use falcon, which is faster
             if config.get_safe_percent_encoding():
                 results_df['reference_results'] = results_df['reference_results'].apply(lambda x: quote(x, safe=config.get_safe_percent_encoding()))
             else:
@@ -138,7 +138,6 @@ def _materialize_reference(results_df, reference, config, columns_alias='', term
         else:
             results_df['triple'] = results_df['triple'] + ' '
     elif str(termtype).strip() == R2RML_IRI:
-        # if all characters are to be encoded use falcon, which is faster
         if config.get_safe_percent_encoding():
             results_df['reference_results'] = results_df['reference_results'].apply(lambda x: quote(x, safe=config.get_safe_percent_encoding()))
         else:
