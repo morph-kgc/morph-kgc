@@ -2,11 +2,11 @@
 <img src="https://github.com/oeg-upm/morph-kgc/blob/main/logo.png" height="100" alt="morph">
 </p>
 
-[![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](https://github.com/oeg-upm/Morph-KGC/blob/main/LICENSE)
+[![License](https://img.shields.io/pypi/l/morph-kgc.svg)](https://pypi.python.org/pypi/morph-kgc)
 [![DOI](https://zenodo.org/badge/311956260.svg?style=flat)](https://zenodo.org/badge/latestdoi/311956260)
-[![PyPI status](https://img.shields.io/pypi/status/morph-kgc?style=flat)](https://pypi.python.org/pypi/morph-kgc)
 [![Latest PyPI version](https://img.shields.io/pypi/v/morph-kgc?style=flat)](https://pypi.python.org/pypi/morph-kgc)
-[![Python version](https://img.shields.io/badge/python-3.7+-blue.svg?style=flat)](https://www.python.org/downloads/release/python-370/)
+[![PyPI status](https://img.shields.io:/pypi/status/morph-kgc?color=green)](https://pypi.python.org/pypi/morph-kgc)
+[![Python Version](https://img.shields.io/pypi/pyversions/morph-kgc.svg)](https://pypi.python.org/pypi/morph-kgc)
 [![Build Status](https://app.travis-ci.com/oeg-upm/morph-kgc.svg?branch=main)](https://app.travis-ci.com/oeg-upm/morph-kgc)
 
 Morph-KGC is an engine that constructs [RDF](https://www.w3.org/TR/rdf11-concepts/) knowledge graphs from heterogeneous data sources with [R2RML](https://www.w3.org/TR/r2rml/) and [RML](https://rml.io/specs/rml/) mapping languages. Morph-KGC is built on top of [pandas](https://pandas.pydata.org/) and it leverages *mapping partitions* to significantly reduce execution times and memory consumption for large data sources.
