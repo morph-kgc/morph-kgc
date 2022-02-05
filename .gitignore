@@ -10,6 +10,7 @@ src/morph_kgc.egg-info/
 r2rml-test-cases/logs
 
 __pycache__/
+.pytest_cache
 
 .idea
 .settings/
