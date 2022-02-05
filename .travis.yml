@@ -1,6 +1,8 @@
 language: python
 matrix:
     include:
+
+        # UBUNTU
         - name: "Python 3.7 on Ubuntu Focal 20.04"
           python: 3.7
           dist: focal
@@ -25,6 +27,32 @@ matrix:
         - name: "Python 3.10 on Ubuntu Bionic 18.04"
           python: 3.10
           dist: bionic
+        - name: "Python 3.7 on Ubuntu Xenial 16.04"
+          python: 3.7
+          dist: xenial
+        - name: "Python 3.8 on Ubuntu Xenial 16.04"
+          python: 3.8
+          dist: xenial
+        - name: "Python 3.9 on Ubuntu Xenial 16.04"
+          python: 3.9
+          dist: xenial
+        - name: "Python 3.10 on Ubuntu Xenial 16.04"
+          python: 3.10
+          dist: xenial
+
+        # macOS
+        - name: "Python 3.7 on macOS Mojave 10.14.4"
+          os: osx
+          osx_image: xcode11.2  # Python 3.7 running on macOS 10.14.4
+          language: shell       # 'language: python' is an error on Travis CI macOS
+
+        - name: "Python 3.8 on macOS Mojave 10.14"
+          os: osx
+          osx_image: xcode11.3  # Python 3.8 running on macOS 10.14.6
+          language: shell       # 'language: python' is an error on Travis CI macOS
+
+        # WINDOWS
+
 before_install:
   - python --version
   - pip install -U pip
