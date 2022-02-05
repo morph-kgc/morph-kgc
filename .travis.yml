@@ -36,9 +36,6 @@ matrix:
         - name: "Python 3.9 on Ubuntu Xenial 16.04"
           python: 3.9
           dist: xenial
-        - name: "Python 3.10 on Ubuntu Xenial 16.04"
-          python: 3.10
-          dist: xenial
 
         # macOS
         - name: "Python 3.7 on macOS Mojave 10.14.4"
