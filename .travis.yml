@@ -92,19 +92,6 @@ matrix:
             - python -m pip install --upgrade codecov pytest
           env: PATH=/c/Python39:/c/Python39/Scripts:$PATH
 
-        # FreeBSD
-        - name: "Python 3.7 on FreeBSD 12.1"
-          python: 3.7
-          dist: freebsd
-        # FreeBSD
-        - name: "Python 3.8 on FreeBSD 12.1"
-          python: 3.8
-          dist: freebsd
-        # FreeBSD
-        - name: "Python 3.9 on FreeBSD 12.1"
-          python: 3.9
-          dist: freebsd
-
 before_install:
   - python --version
   - pip install -U pip
