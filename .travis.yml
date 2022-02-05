@@ -42,6 +42,12 @@ matrix:
           os: osx
           osx_image: xcode11.2  # Python 3.7 running on macOS 10.14.4
           language: shell       # 'language: python' is an error on Travis CI macOS
+          before_install:
+            - python3 --version
+            - python3 -m pip install --upgrade pip
+            - python3 -m pip install --upgrade codecov pytest
+          script: python3 -m pytest
+          after_success: python3 -m codecov
 
         - name: "Python 3.8 on macOS Mojave 10.14"
           os: osx
