@@ -12,7 +12,6 @@ import os
 from configparser import ExtendedInterpolation
 
 from .utils import configure_logger
-from .constants import __copyright__
 from .config import Config
 from ._version import __version__
 
@@ -36,14 +35,15 @@ def _parse_arguments():
 
     parser = argparse.ArgumentParser(
         description='Generate Knowledge Graphs from Heterogeneous Data Sources.',
-        epilog=__copyright__,
+        epilog="Copyright © 2020 Julián Arenas-Guerrero",
         allow_abbrev=False,
         prog='python3 -m morph_kgc',
         argument_default=argparse.SUPPRESS
     )
 
     parser.add_argument('config', type=_existing_file_path, help='path to the configuration file')
-    parser.add_argument('-v', '--version', action='version', version='Morph-KGC ' + __version__ + ' | ' + __copyright__)
+    parser.add_argument('-v', '--version', action='version',
+                        version=f'Morph-KGC {__version__} | Copyright © 2020 Julián Arenas-Guerrero')
 
     return parser.parse_args()
 
