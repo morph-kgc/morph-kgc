@@ -1,44 +1,47 @@
+# Building a python project in Travis: https://docs.travis-ci.com/user/languages/python/
+# More on .travis.yml: https://gist.github.com/shaypal5/7fd766933fb265af6f71a88cb91dd08c
+
 language: python
 matrix:
     include:
 
         # UBUNTU
-        - name: "Python 3.7 on Ubuntu Focal 20.04"
+        - name: "Python 3.7 on Ubuntu Focal"
           python: 3.7
           dist: focal
-        - name: "Python 3.8 on Ubuntu Focal 20.04"
+        - name: "Python 3.8 on Ubuntu Focal"
           python: 3.8
           dist: focal
-        - name: "Python 3.9 on Ubuntu Focal 20.04"
+        - name: "Python 3.9 on Ubuntu Focal"
           python: 3.9
           dist: focal
-        - name: "Python 3.10 on Ubuntu Focal 20.04"
+        - name: "Python 3.10 on Ubuntu Focal"
           python: 3.10
           dist: focal
-        - name: "Python 3.7 on Ubuntu Bionic 18.04"
+        - name: "Python 3.7 on Ubuntu Bionic"
           python: 3.7
           dist: bionic
-        - name: "Python 3.8 on Ubuntu Bionic 18.04"
+        - name: "Python 3.8 on Ubuntu Bionic"
           python: 3.8
           dist: bionic
-        - name: "Python 3.9 on Ubuntu Bionic 18.04"
+        - name: "Python 3.9 on Ubuntu Bionic"
           python: 3.9
           dist: bionic
-        - name: "Python 3.10 on Ubuntu Bionic 18.04"
+        - name: "Python 3.10 on Ubuntu Bionic"
           python: 3.10
           dist: bionic
-        - name: "Python 3.7 on Ubuntu Xenial 16.04"
+        - name: "Python 3.7 on Ubuntu Xenial"
           python: 3.7
           dist: xenial
-        - name: "Python 3.8 on Ubuntu Xenial 16.04"
+        - name: "Python 3.8 on Ubuntu Xenial"
           python: 3.8
           dist: xenial
-        - name: "Python 3.9 on Ubuntu Xenial 16.04"
+        - name: "Python 3.9 on Ubuntu Xenial"
           python: 3.9
           dist: xenial
 
         # macOS
-        - name: "Python 3.7 on macOS Mojave 10.14.4"
+        - name: "Python 3.7 on macOS Mojave"
           os: osx
           osx_image: xcode11.2  # Python 3.7 running on macOS 10.14.4
           language: shell       # 'language: python' is an error on Travis CI macOS
@@ -49,12 +52,58 @@ matrix:
           script: python3 -m pytest
           after_success: python3 -m codecov
 
-        - name: "Python 3.8 on macOS Mojave 10.14"
+        - name: "Python 3.8 on macOS Mojave"
           os: osx
           osx_image: xcode11.3  # Python 3.8 running on macOS 10.14.6
           language: shell       # 'language: python' is an error on Travis CI macOS
+          before_install:
+            - python3 --version
+            - python3 -m pip install --upgrade pip
+            - python3 -m pip install --upgrade codecov pytest
+          script: python3 -m pytest
+          after_success: python3 -m codecov
 
         # WINDOWS
+        - name: "Python 3.7 on Windows 10"
+          os: windows           # Windows 10.0.17134 N/A Build 17134
+          language: shell       # 'language: python' is an error on Travis CI Windows
+          before_install:
+            - choco install python --version 3.7.9
+            - python --version
+            - python -m pip install --upgrade pip
+            - python -m pip install --upgrade codecov pytest
+          env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
+        - name: "Python 3.8 on Windows 10"
+          os: windows           # Windows 10.0.17134 N/A Build 17134
+          language: shell       # 'language: python' is an error on Travis CI Windows
+          before_install:
+            - choco install python --version 3.8.8
+            - python --version
+            - python -m pip install --upgrade pip
+            - python -m pip install --upgrade codecov pytest
+          env: PATH=/c/Python38:/c/Python38/Scripts:$PATH
+        - name: "Python 3.9 on Windows 10"
+          os: windows           # Windows 10.0.17134 N/A Build 17134
+          language: shell       # 'language: python' is an error on Travis CI Windows
+          before_install:
+            - choco install python --version 3.9.2
+            - python --version
+            - python -m pip install --upgrade pip
+            - python -m pip install --upgrade codecov pytest
+          env: PATH=/c/Python39:/c/Python39/Scripts:$PATH
+
+        # FreeBSD
+        - name: "Python 3.7 on FreeBSD 12.1"
+          python: 3.7
+          dist: freebsd
+        # FreeBSD
+        - name: "Python 3.8 on FreeBSD 12.1"
+          python: 3.8
+          dist: freebsd
+        # FreeBSD
+        - name: "Python 3.9 on FreeBSD 12.1"
+          python: 3.9
+          dist: freebsd
 
 before_install:
   - python --version
