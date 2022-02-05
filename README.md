@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/pypi/l/morph-kgc.svg)](https://pypi.python.org/pypi/morph-kgc)
 [![DOI](https://zenodo.org/badge/311956260.svg?style=flat)](https://zenodo.org/badge/latestdoi/311956260)
 [![Latest PyPI version](https://img.shields.io/pypi/v/morph-kgc?style=flat)](https://pypi.python.org/pypi/morph-kgc)
-[![PyPI status](https://img.shields.io:/pypi/status/morph-kgc?color=green)](https://pypi.python.org/pypi/morph-kgc)
+[![PyPI status](https://img.shields.io:/pypi/status/morph-kgc?)](https://pypi.python.org/pypi/morph-kgc)
 [![Python Version](https://img.shields.io/pypi/pyversions/morph-kgc.svg)](https://pypi.python.org/pypi/morph-kgc)
 [![Build Status](https://app.travis-ci.com/oeg-upm/morph-kgc.svg?branch=main)](https://app.travis-ci.com/oeg-upm/morph-kgc)
 
