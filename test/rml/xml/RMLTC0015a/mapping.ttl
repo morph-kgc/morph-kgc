@@ -11,7 +11,7 @@
   a rr:TriplesMap;
 
   rml:logicalSource [
-    rml:source "rml/xml/RMLTC0015a/country_en.xml";
+    rml:source "test/rml/xml/RMLTC0015a/country_en.xml";
     rml:referenceFormulation ql:XPath;
     rml:iterator "/countries/country"
   ];
@@ -32,7 +32,7 @@
   a rr:TriplesMap;
 
   rml:logicalSource [
-    rml:source "rml/xml/RMLTC0015a/country_es.xml";
+    rml:source "test/rml/xml/RMLTC0015a/country_es.xml";
     rml:referenceFormulation ql:XPath;
     rml:iterator "/countries/country"
   ];

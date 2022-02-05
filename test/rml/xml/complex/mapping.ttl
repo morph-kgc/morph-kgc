@@ -249,16 +249,16 @@ map:s_003 a rr:SubjectMap;
     rr:template "https://w3id.org/okn/os/i/idType/{value}".
 map:source_000 a rml:LogicalSource;
     rdfs:label "main-source";
-    rml:source "rml/xml/complex/data.xml";
+    rml:source "test/rml/xml/complex/data.xml";
     rml:iterator "/*";
     rml:referenceFormulation ql:XPath.
 map:source_001 a rml:LogicalSource;
     rdfs:label "author-source";
-    rml:source "rml/xml/complex/data.xml";
+    rml:source "test/rml/xml/complex/data.xml";
     rml:iterator "author";
     rml:referenceFormulation ql:XPath.
 map:source_002 a rml:LogicalSource;
     rdfs:label "pid-source";
-    rml:source "rml/xml/complex/data.xml";
+    rml:source "test/rml/xml/complex/data.xml";
     rml:iterator "pid";
     rml:referenceFormulation ql:XPath.

@@ -9,7 +9,7 @@
 <TriplesMap1> a rr:TriplesMap;
 
   rml:logicalSource [
-    rml:source "rml/csv/RMLTC0004a/student_sport.csv";
+    rml:source "test/rml/csv/RMLTC0004a/student_sport.csv";
     rml:referenceFormulation ql:CSV
   ];
 
@@ -28,7 +28,7 @@
 <TriplesMap2> a rr:TriplesMap;
 
   rml:logicalSource [
-    rml:source "rml/csv/RMLTC0004a/student_sport.csv";
+    rml:source "test/rml/csv/RMLTC0004a/student_sport.csv";
     rml:referenceFormulation ql:CSV
   ];
 

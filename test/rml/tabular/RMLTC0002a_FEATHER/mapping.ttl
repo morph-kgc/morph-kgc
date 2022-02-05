@@ -9,7 +9,7 @@
 <TriplesMap1> a rr:TriplesMap;
 
   rml:logicalSource [
-    rml:source "rml/tabular/RMLTC0002a_FEATHER/student.feather";
+    rml:source "test/rml/tabular/RMLTC0002a_FEATHER/student.feather";
     rml:referenceFormulation ql:CSV
   ];
 

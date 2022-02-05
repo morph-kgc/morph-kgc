@@ -1,0 +1,38 @@
+language: python
+matrix:
+    include:
+        - name: "Python 3.7 on Ubuntu Focal 20.04"
+          python: 3.7
+          dist: focal
+        - name: "Python 3.8 on Ubuntu Focal 20.04"
+          python: 3.8
+          dist: focal
+        - name: "Python 3.9 on Ubuntu Focal 20.04"
+          python: 3.9
+          dist: focal
+        - name: "Python 3.10 on Ubuntu Focal 20.04"
+          python: 3.10
+          dist: focal
+        - name: "Python 3.7 on Ubuntu Bionic 18.04"
+          python: 3.7
+          dist: bionic
+        - name: "Python 3.8 on Ubuntu Bionic 18.04"
+          python: 3.8
+          dist: bionic
+        - name: "Python 3.9 on Ubuntu Bionic 18.04"
+          python: 3.9
+          dist: bionic
+        - name: "Python 3.10 on Ubuntu Bionic 18.04"
+          python: 3.10
+          dist: bionic
+before_install:
+  - python --version
+  - pip install -U pip
+  - pip install -U pytest
+  - pip install codecov
+install:
+  - pip install .
+  - pip install -r requirements-dev.txt
+script: pytest
+after_success:
+  - codecov

@@ -9,7 +9,7 @@
 <TriplesMap1> a rr:TriplesMap;
 
   rml:logicalSource [
-    rml:source "rml/json/RMLTC0002e/student2.json";
+    rml:source "test/rml/json/RMLTC0002e/student2.json";
     rml:referenceFormulation ql:JSONPath;
     rml:iterator "$.students[*]"
   ];

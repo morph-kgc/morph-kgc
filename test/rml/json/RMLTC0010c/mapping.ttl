@@ -11,7 +11,7 @@
   a rr:TriplesMap;
 
   rml:logicalSource [
-    rml:source "rml/json/RMLTC0010c/country_info.json";
+    rml:source "test/rml/json/RMLTC0010c/country_info.json";
     rml:referenceFormulation ql:JSONPath;
     rml:iterator "$.countries[*]"
   ];

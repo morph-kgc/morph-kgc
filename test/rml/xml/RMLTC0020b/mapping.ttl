@@ -11,7 +11,7 @@
 <TriplesMap1>
   a rr:TriplesMap;
   rml:logicalSource [
-    rml:source "rml/xml/RMLTC0020b/student.xml";
+    rml:source "test/rml/xml/RMLTC0020b/student.xml";
     rml:referenceFormulation ql:XPath;
     rml:iterator "/students/student"
   ];
