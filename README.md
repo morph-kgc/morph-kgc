@@ -70,11 +70,8 @@ Check the **[wiki](https://github.com/oeg-upm/Morph-KGC/wiki)** with all the inf
 
 **[FAQ](https://github.com/oeg-upm/Morph-KGC/wiki/FAQ)**
 
-## Authors
+## Contact
 
 - **Julián Arenas-Guerrero (julian.arenas.guerrero@upm.es)**
-- David Chaves-Fraga
-- Jhon Toledo
-- Oscar Corcho
 
-Ontology Engineering Group, Universidad Politécnica de Madrid | 2020 - Present
+*Ontology Engineering Group, Universidad Politécnica de Madrid | 2020 - Present*
