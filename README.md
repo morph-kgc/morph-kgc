@@ -2,7 +2,7 @@
 <img src="https://github.com/oeg-upm/morph-kgc/blob/main/logo.png" height="100" alt="morph">
 </p>
 
-[![License](https://img.shields.io/pypi/l/morph-kgc.svg)](https://pypi.python.org/pypi/morph-kgc)
+[![License](https://img.shields.io/pypi/l/morph-kgc.svg)](https://github.com/oeg-upm/morph-kgc/blob/main/LICENSE)
 [![DOI](https://zenodo.org/badge/311956260.svg?style=flat)](https://zenodo.org/badge/latestdoi/311956260)
 [![Latest PyPI version](https://img.shields.io/pypi/v/morph-kgc?style=flat)](https://pypi.python.org/pypi/morph-kgc)
 [![Python Version](https://img.shields.io/pypi/pyversions/morph-kgc.svg)](https://pypi.python.org/pypi/morph-kgc)
