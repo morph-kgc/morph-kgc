@@ -6,9 +6,6 @@ __license__ = "Apache-2.0"
 __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"
 
-from ._version import __version__ as v
-__version__ = v
-
 
 import logging
 

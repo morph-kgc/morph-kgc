@@ -17,13 +17,9 @@ from ._version import __version__
 
 
 def _existing_file_path(file_path):
-    """
-    Checks whether a file exists.
-    """
-
-    file_path = str(file_path).strip()
+    file_path = str(file_path)
     if not os.path.isfile(file_path):
-        raise argparse.ArgumentTypeError("%r is not a valid file path." % file_path)
+        raise argparse.ArgumentTypeError(f'{file_path} is not a valid file path.')
 
     return file_path
 
@@ -54,7 +50,6 @@ def _parse_config(config):
     """
 
     config.complete_configuration_with_defaults()
-
     config.validate_configuration_section()
 
     configure_logger(config.get_logging_level(), config.get_logging_file())

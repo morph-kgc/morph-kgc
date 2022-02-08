@@ -22,6 +22,7 @@ NO_PARTITIONING = ['NO', 'FALSE', 'OFF', '0']
 #########################   DATA SOURCE TYPES   ##############################
 ##############################################################################
 
+# data files
 RDB = 'RDB'
 CSV = 'CSV'
 TSV = 'TSV'
@@ -55,8 +56,7 @@ NQUADS = 'N-QUADS'
 #########################   VALID ARGUMENTS VALUES   #########################
 ##############################################################################
 
-VALID_OUTPUT_FORMATS = ['N-TRIPLES', NQUADS]
-VALID_PROCESS_START_METHOD = ['DEFAULT', 'SPAWN', 'FORK', 'FORKSERVER']
+VALID_OUTPUT_FORMATS = [NTRIPLES, NQUADS]
 VALID_LOGGING_LEVEL = ['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 
 
@@ -77,69 +77,71 @@ OUTPUT_FORMAT_FILE_EXTENSION = {
 R2RML_NAMESPACE = 'http://www.w3.org/ns/r2rml#'
 
 # classes
-R2RML_BASE_TABLE_OR_VIEW_CLASS = 'http://www.w3.org/ns/r2rml#BaseTableOrView'
-R2RML_GRAPH_MAP_CLASS = 'http://www.w3.org/ns/r2rml#GraphMap'
-R2RML_JOIN_CLASS = 'http://www.w3.org/ns/r2rml#Join'
-R2RML_LOGICAL_TABLE_CLASS = 'http://www.w3.org/ns/r2rml#LogicalTable'
-R2RML_OBJECT_MAP_CLASS = 'http://www.w3.org/ns/r2rml#ObjectMap'
-R2RML_PREDICATE_MAP_CLASS = 'http://www.w3.org/ns/r2rml#PredicateMap'
-R2RML_PREDICATE_OBJECT_MAP_CLASS = 'http://www.w3.org/ns/r2rml#PredicateObjectMap'
-R2RML_R2RML_VIEW_CLASS = 'http://www.w3.org/ns/r2rml#R2RMLView'
-R2RML_REF_OBJECT_MAP_CLASS = 'http://www.w3.org/ns/r2rml#RefObjectMap'
-R2RML_SUBJECT_MAP_CLASS = 'http://www.w3.org/ns/r2rml#SubjectMap'
-R2RML_TERM_MAP_CLASS = 'http://www.w3.org/ns/r2rml#TermMap'
-R2RML_TRIPLES_MAP_CLASS = 'http://www.w3.org/ns/r2rml#TriplesMap'
+R2RML_BASE_TABLE_OR_VIEW_CLASS = f'{R2RML_NAMESPACE}BaseTableOrView'
+R2RML_GRAPH_MAP_CLASS = f'{R2RML_NAMESPACE}GraphMap'
+R2RML_JOIN_CLASS = f'{R2RML_NAMESPACE}Join'
+R2RML_LOGICAL_TABLE_CLASS = f'{R2RML_NAMESPACE}LogicalTable'
+R2RML_OBJECT_MAP_CLASS = f'{R2RML_NAMESPACE}ObjectMap'
+R2RML_PREDICATE_MAP_CLASS = f'{R2RML_NAMESPACE}PredicateMap'
+R2RML_PREDICATE_OBJECT_MAP_CLASS = f'{R2RML_NAMESPACE}PredicateObjectMap'
+R2RML_R2RML_VIEW_CLASS = f'{R2RML_NAMESPACE}R2RMLView'
+R2RML_REF_OBJECT_MAP_CLASS = f'{R2RML_NAMESPACE}RefObjectMap'
+R2RML_SUBJECT_MAP_CLASS = f'{R2RML_NAMESPACE}SubjectMap'
+R2RML_TERM_MAP_CLASS = f'{R2RML_NAMESPACE}TermMap'
+R2RML_TRIPLES_MAP_CLASS = f'{R2RML_NAMESPACE}TriplesMap'
 
 # properties
-R2RML_LOGICAL_TABLE = 'http://www.w3.org/ns/r2rml#logicalTable'
-R2RML_TABLE_NAME = 'http://www.w3.org/ns/r2rml#tableName'
-R2RML_PARENT_TRIPLES_MAP = 'http://www.w3.org/ns/r2rml#parentTriplesMap'
-R2RML_SUBJECT_MAP = 'http://www.w3.org/ns/r2rml#subjectMap'
-R2RML_PREDICATE_MAP = 'http://www.w3.org/ns/r2rml#predicateMap'
-R2RML_OBJECT_MAP = 'http://www.w3.org/ns/r2rml#objectMap'
-R2RML_GRAPH_MAP = 'http://www.w3.org/ns/r2rml#graphMap'
-R2RML_SUBJECT_CONSTANT_SHORTCUT = 'http://www.w3.org/ns/r2rml#subject'
-R2RML_PREDICATE_CONSTANT_SHORTCUT = 'http://www.w3.org/ns/r2rml#predicate'
-R2RML_OBJECT_CONSTANT_SHORTCUT = 'http://www.w3.org/ns/r2rml#object'
-R2RML_GRAPH_CONSTANT_SHORTCUT = 'http://www.w3.org/ns/r2rml#graph'
-R2RML_PREDICATE_OBJECT_MAP = 'http://www.w3.org/ns/r2rml#predicateObjectMap'
-R2RML_CONSTANT = 'http://www.w3.org/ns/r2rml#constant'
-R2RML_TEMPLATE = 'http://www.w3.org/ns/r2rml#template'
-R2RML_COLUMN = 'http://www.w3.org/ns/r2rml#column'
-R2RML_CLASS = 'http://www.w3.org/ns/r2rml#class'
-R2RML_CHILD = 'http://www.w3.org/ns/r2rml#child'
-R2RML_PARENT = 'http://www.w3.org/ns/r2rml#parent'
-R2RML_JOIN_CONDITION = 'http://www.w3.org/ns/r2rml#joinCondition'
-R2RML_DATATYPE = 'http://www.w3.org/ns/r2rml#datatype'
-R2RML_LANGUAGE = 'http://www.w3.org/ns/r2rml#language'
-R2RML_SQL_QUERY = 'http://www.w3.org/ns/r2rml#sqlQuery'
-R2RML_SQL_VERSION = 'http://www.w3.org/ns/r2rml#sqlVersion'
-R2RML_TERM_TYPE = 'http://www.w3.org/ns/r2rml#termType'
+R2RML_LOGICAL_TABLE = f'{R2RML_NAMESPACE}logicalTable'
+R2RML_TABLE_NAME = f'{R2RML_NAMESPACE}tableName'
+R2RML_PARENT_TRIPLES_MAP = f'{R2RML_NAMESPACE}parentTriplesMap'
+R2RML_SUBJECT_MAP = f'{R2RML_NAMESPACE}subjectMap'
+R2RML_PREDICATE_MAP = f'{R2RML_NAMESPACE}predicateMap'
+R2RML_OBJECT_MAP = f'{R2RML_NAMESPACE}objectMap'
+R2RML_GRAPH_MAP = f'{R2RML_NAMESPACE}graphMap'
+R2RML_SUBJECT_CONSTANT_SHORTCUT = f'{R2RML_NAMESPACE}subject'
+R2RML_PREDICATE_CONSTANT_SHORTCUT = f'{R2RML_NAMESPACE}predicate'
+R2RML_OBJECT_CONSTANT_SHORTCUT = f'{R2RML_NAMESPACE}object'
+R2RML_GRAPH_CONSTANT_SHORTCUT = f'{R2RML_NAMESPACE}graph'
+R2RML_PREDICATE_OBJECT_MAP = f'{R2RML_NAMESPACE}predicateObjectMap'
+R2RML_CONSTANT = f'{R2RML_NAMESPACE}constant'
+R2RML_TEMPLATE = f'{R2RML_NAMESPACE}template'
+R2RML_COLUMN = f'{R2RML_NAMESPACE}column'
+R2RML_CLASS = f'{R2RML_NAMESPACE}class'
+R2RML_CHILD = f'{R2RML_NAMESPACE}child'
+R2RML_PARENT = f'{R2RML_NAMESPACE}parent'
+R2RML_JOIN_CONDITION = f'{R2RML_NAMESPACE}joinCondition'
+R2RML_DATATYPE = f'{R2RML_NAMESPACE}datatype'
+R2RML_LANGUAGE = f'{R2RML_NAMESPACE}language'
+R2RML_SQL_QUERY = f'{R2RML_NAMESPACE}sqlQuery'
+R2RML_SQL_VERSION = f'{R2RML_NAMESPACE}sqlVersion'
+R2RML_TERM_TYPE = f'{R2RML_NAMESPACE}termType'
 
 # other
-R2RML_DEFAULT_GRAPH = 'http://www.w3.org/ns/r2rml#defaultGraph'
-R2RML_IRI = 'http://www.w3.org/ns/r2rml#IRI'
-R2RML_LITERAL = 'http://www.w3.org/ns/r2rml#Literal'
-R2RML_BLANK_NODE = 'http://www.w3.org/ns/r2rml#BlankNode'
-R2RML_SQL2008 = 'http://www.w3.org/ns/r2rml#SQL2008'
+R2RML_DEFAULT_GRAPH = f'{R2RML_NAMESPACE}defaultGraph'
+R2RML_IRI = f'{R2RML_NAMESPACE}IRI'
+R2RML_LITERAL = f'{R2RML_NAMESPACE}Literal'
+R2RML_BLANK_NODE = f'{R2RML_NAMESPACE}BlankNode'
+R2RML_SQL2008 = f'{R2RML_NAMESPACE}SQL2008'
 
 
 ##############################################################################
 ############################   RML SPECIFICATION   ###########################
 ##############################################################################
 
-# properties
 RML_NAMESPACE = 'http://semweb.mmlab.be/ns/rml#'
-RML_LOGICAL_SOURCE = 'http://semweb.mmlab.be/ns/rml#logicalSource'
-RML_QUERY = 'http://semweb.mmlab.be/ns/rml#query'
-RML_ITERATOR = 'http://semweb.mmlab.be/ns/rml#iterator'
-RML_REFERENCE = 'http://semweb.mmlab.be/ns/rml#reference'
-RML_REFERENCE_FORMULATION = 'http://semweb.mmlab.be/ns/rml#referenceFormulation'
 
+# properties
+RML_LOGICAL_SOURCE = f'{RML_NAMESPACE}logicalSource'
+RML_QUERY = f'{RML_NAMESPACE}query'
+RML_ITERATOR = f'{RML_NAMESPACE}iterator'
+RML_REFERENCE = f'{RML_NAMESPACE}reference'
+RML_REFERENCE_FORMULATION = f'{RML_NAMESPACE}referenceFormulation'
+
+# ql
 QL_NAMESPACE = 'http://semweb.mmlab.be/ns/ql#'
-QL_CSV = 'http://semweb.mmlab.be/ns/ql#CSV'
-QL_JSON = 'http://semweb.mmlab.be/ns/ql#JSONPath'
-QL_XML = 'http://semweb.mmlab.be/ns/ql#XPath'
+QL_CSV = f'{QL_NAMESPACE}CSV'
+QL_JSON = f'{QL_NAMESPACE}JSONPath'
+QL_XML = f'{QL_NAMESPACE}XPath'
 
 
 ##############################################################################
@@ -147,30 +149,33 @@ QL_XML = 'http://semweb.mmlab.be/ns/ql#XPath'
 ##############################################################################
 
 # classes
-RML_STAR_STAR_MAP = 'http://semweb.mmlab.be/ns/rml#StarMap'
-RML_NON_ASSERTED_TRIPLES_MAP = 'http://semweb.mmlab.be/ns/rml#NonAssertedTriplesMap'
+RML_STAR_STAR_MAP = f'{RML_NAMESPACE}StarMap'
+RML_NON_ASSERTED_TRIPLES_MAP = f'{RML_NAMESPACE}NonAssertedTriplesMap'
 
 # properties
-RML_STAR_QUOTED_TRIPLES_MAP = 'http://semweb.mmlab.be/ns/rml#quotedTriplesMap'
-RML_STAR_SUBJECT_MAP = 'http://semweb.mmlab.be/ns/rml#subjectMap'
-RML_STAR_OBJECT_MAP = 'http://semweb.mmlab.be/ns/rml#objectMap'
+RML_STAR_QUOTED_TRIPLES_MAP = f'{RML_NAMESPACE}quotedTriplesMap'
+RML_STAR_SUBJECT_MAP = f'{RML_NAMESPACE}subjectMap'
+RML_STAR_OBJECT_MAP = f'{RML_NAMESPACE}objectMap'
 
 # other
-RML_STAR_RDF_STAR_TRIPLE = 'http://semweb.mmlab.be/ns/rml#RDFstarTriple'
+RML_STAR_RDF_STAR_TRIPLE = f'{RML_NAMESPACE}RDFstarTriple'
 
 
 ##############################################################################
 #############################   XSD DATA TYPES   #############################
 ##############################################################################
-XSD_HEX_BINARY = 'http://www.w3.org/2001/XMLSchema#hexBinary'
-XSD_INTEGER = 'http://www.w3.org/2001/XMLSchema#integer'
-XSD_DECIMAL = 'http://www.w3.org/2001/XMLSchema#decimal'
-XSD_DOUBLE = 'http://www.w3.org/2001/XMLSchema#double'
-XSD_BOOLEAN = 'http://www.w3.org/2001/XMLSchema#boolean'
-XSD_DATE = 'http://www.w3.org/2001/XMLSchema#date'
-XSD_TIME = 'http://www.w3.org/2001/XMLSchema#time'
-XSD_DATETIME = 'http://www.w3.org/2001/XMLSchema#dateTime'
-XSD_STRING = 'http://www.w3.org/2001/XMLSchema#string'
+
+XSD_NAMESPACE = 'http://www.w3.org/2001/XMLSchema#'
+
+XSD_HEX_BINARY = f'{XSD_NAMESPACE}hexBinary'
+XSD_INTEGER = f'{XSD_NAMESPACE}integer'
+XSD_DECIMAL = f'{XSD_NAMESPACE}decimal'
+XSD_DOUBLE = f'{XSD_NAMESPACE}double'
+XSD_BOOLEAN = f'{XSD_NAMESPACE}boolean'
+XSD_DATE = f'{XSD_NAMESPACE}date'
+XSD_TIME = f'{XSD_NAMESPACE}time'
+XSD_DATETIME = f'{XSD_NAMESPACE}dateTime'
+XSD_STRING = f'{XSD_NAMESPACE}string'
 
 ##############################################################################
 ##################################   OTHER   #################################

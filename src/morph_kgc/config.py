@@ -11,6 +11,7 @@ import os
 import logging
 
 from configparser import ConfigParser
+from pathlib import Path
 
 from .constants import *
 from .utils import get_valid_file_name, get_valid_file_path, remove_file_extension
@@ -86,7 +87,7 @@ CONFIGURATION_OPTIONS_EMPTY_NON_VALID = {
             CLEAN_OUTPUT_DIR: DEFAULT_CLEAN_OUTPUT_DIR,
             ONLY_PRINTABLE_CHARACTERS: DEFAULT_ONLY_PRINTABLE_CHARACTERS,
             INFER_SQL_DATATYPES: DEFAULT_INFER_SQL_DATATYPES,
-            CHUNKSIZE: DEFAULT_CHUNKSIZE,
+            CHUNKSIZE: 100000,
             LOGGING_LEVEL: DEFAULT_LOGGING_LEVEL,
             NA_FILTER: DEFAULT_NA_FILTER,
             NUMBER_OF_PROCESSES: DEFAULT_NUMBER_OF_PROCESSES
@@ -273,19 +274,19 @@ class Config(ConfigParser):
 
     def get_output_file_path(self, mapping_partition=None):
         if self.get_output_file():
-            file_path = os.path.join(self.get_output_dir(), self.get_output_file())
-            # remove file extension, we will set it based on the output format
-            file_path = remove_file_extension(file_path)
+            file_name = self.get_output_file()
         elif mapping_partition:
-            file_path = os.path.join(self.get_output_dir(), mapping_partition)
+            file_name = mapping_partition
         else:
             # neither output_file was specified nor mapping partition are used. Use default output_file.
-            file_path = os.path.join(self.get_output_dir(), OUTPUT_FILE)
+            file_name = OUTPUT_FILE
 
-        # add file extension
-        file_path += OUTPUT_FORMAT_FILE_EXTENSION[self.get_output_format()]
+        file_extension = OUTPUT_FORMAT_FILE_EXTENSION[self.get_output_format()]
 
-        return file_path
+        # if filename already has a suffix, with_suffix() will replace it with the new suffix
+        file_path = Path(self.get_output_dir(), file_name).with_suffix(file_extension)
+
+        return file_path.as_posix()
 
     def set_mapping_partition(self, mapping_partitioning):
         self.set(self.configuration_section, MAPPING_PARTITION, mapping_partitioning.upper())
