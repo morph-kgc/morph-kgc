@@ -34,7 +34,7 @@ pip install morph-kgc
 
 To run the engine you just need to execute the following:
 ```
-python3 -m morph_kgc configuration.ini
+python3 -m morph_kgc config.ini
 ```
 
 [Here](https://github.com/oeg-upm/Morph-KGC/wiki/Configuration) you can see how to generate the configuration file. It is also possible to run Morph-KGC as a library with [RDFlib](https://rdflib.readthedocs.io/en/stable/):
@@ -42,7 +42,7 @@ python3 -m morph_kgc configuration.ini
 import morph_kgc
 
 # generate the triples and load them to an RDFlib graph
-graph = morph_kgc.materialize('/path/to/configuration.ini')
+graph = morph_kgc.materialize('/path/to/config.ini')
 
 # work with the graph
 graph.query(' SELECT DISTINCT ?classes WHERE { ?s a ?classes } ')
