@@ -9,12 +9,13 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 import errno
 import os
 import logging
+import multiprocessing as mp
 
 from configparser import ConfigParser
 from pathlib import Path
 
 from .constants import *
-from .utils import get_valid_file_name, get_valid_file_path, remove_file_extension
+from .utils import get_valid_file_name, get_valid_file_path
 
 
 CONFIGURATION_SECTION = 'CONFIGURATION'
@@ -60,6 +61,33 @@ WRITE_PARSED_MAPPINGS_PATH = 'write_parsed_mappings_path'
 
 MAPPINGS = 'mappings'
 DATABASE_URL = 'db_url'
+
+
+##############################################################################
+########################   ARGUMENTS DEFAULT VALUES   ########################
+##############################################################################
+
+DEFAULT_OUTPUT_DIR = 'output'
+DEFAULT_OUTPUT_FILE = 'result'
+DEFAULT_OUTPUT_FORMAT = NQUADS
+DEFAULT_CLEAN_OUTPUT_DIR = 'no'
+DEFAULT_SAFE_PERCENT_ENCODING = ''
+DEFAULT_LOGGING_FILE = ''
+DEFAULT_LOGGING_LEVEL = 'INFO'
+DEFAULT_INFER_SQL_DATATYPES = 'no'
+DEFAULT_NUMBER_OF_PROCESSES = 2 * mp.cpu_count()
+DEFAULT_CHUNKSIZE = 100000
+DEFAULT_NA_FILTER = 'yes'
+DEFAULT_NA_VALUES = ',#N/A,N/A,#N/A N/A,n/a,NA,<NA>,#NA,NULL,null,NaN,nan,None'
+DEFAULT_ONLY_PRINTABLE_CHARACTERS = 'no'
+
+# ORACLE
+DEFAULT_ORACLE_CLIENT_LIB_DIR = ''
+DEFAULT_ORACLE_CLIENT_CONFIG_DIR = ''
+
+# DEVELOPMENT OPTIONS
+DEFAULT_READ_PARSED_MAPPINGS_PATH = ''
+DEFAULT_WRITE_PARSED_MAPPINGS_PATH = ''
 
 
 ##############################################################################

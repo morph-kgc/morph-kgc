@@ -6,9 +6,6 @@ __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"
 
 
-import multiprocessing as mp
-
-
 ##############################################################################
 ########################   MAPPING PARTITION OPTIONS   #######################
 ##############################################################################
@@ -177,35 +174,9 @@ XSD_TIME = f'{XSD_NAMESPACE}time'
 XSD_DATETIME = f'{XSD_NAMESPACE}dateTime'
 XSD_STRING = f'{XSD_NAMESPACE}string'
 
+
 ##############################################################################
 ##################################   OTHER   #################################
 ##############################################################################
 
 AUXILIAR_UNIQUE_REPLACING_STRING = 'zzyy_xxww\u200B'
-
-
-##############################################################################
-########################   ARGUMENTS DEFAULT VALUES   ########################
-##############################################################################
-
-DEFAULT_OUTPUT_DIR = 'output'
-DEFAULT_OUTPUT_FILE = 'result'
-DEFAULT_OUTPUT_FORMAT = NQUADS
-DEFAULT_CLEAN_OUTPUT_DIR = 'no'
-DEFAULT_SAFE_PERCENT_ENCODING = ''
-DEFAULT_LOGGING_FILE = ''
-DEFAULT_LOGGING_LEVEL = 'INFO'
-DEFAULT_INFER_SQL_DATATYPES = 'no'
-DEFAULT_NUMBER_OF_PROCESSES = 2 * mp.cpu_count()
-DEFAULT_CHUNKSIZE = 100000
-DEFAULT_NA_FILTER = 'yes'
-DEFAULT_NA_VALUES = ',#N/A,N/A,#N/A N/A,n/a,NA,<NA>,#NA,NULL,null,NaN,nan,None'
-DEFAULT_ONLY_PRINTABLE_CHARACTERS = 'no'
-
-# ORACLE
-DEFAULT_ORACLE_CLIENT_LIB_DIR = ''
-DEFAULT_ORACLE_CLIENT_CONFIG_DIR = ''
-
-# DEVELOPMENT OPTIONS
-DEFAULT_READ_PARSED_MAPPINGS_PATH = ''
-DEFAULT_WRITE_PARSED_MAPPINGS_PATH = ''
