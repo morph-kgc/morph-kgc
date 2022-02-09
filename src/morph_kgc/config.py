@@ -107,7 +107,6 @@ CONFIGURATION_OPTIONS_EMPTY_VALID = {
             ORACLE_CLIENT_CONFIG_DIR: DEFAULT_ORACLE_CLIENT_LIB_DIR,
         }
 
-
 # input parameters that are to be replaced with the default vale if they are empty
 CONFIGURATION_OPTIONS_EMPTY_NON_VALID = {
             OUTPUT_DIR: DEFAULT_OUTPUT_DIR,
@@ -214,28 +213,16 @@ class Config(ConfigParser):
         return self.getint(self.configuration_section, NUMBER_OF_PROCESSES) > 1
 
     def is_read_parsed_mappings_file_provided(self):
-        if self.get(self.configuration_section, READ_PARSED_MAPPINGS_PATH):
-            return True
-        else:
-            return False
+        return bool(self.get(self.configuration_section, READ_PARSED_MAPPINGS_PATH))
 
     def is_write_parsed_mappings_file_provided(self):
-        if self.get(self.configuration_section, WRITE_PARSED_MAPPINGS_PATH):
-            return True
-        else:
-            return False
+        return bool(self.get(self.configuration_section, WRITE_PARSED_MAPPINGS_PATH))
 
     def is_oracle_client_lib_dir_provided(self):
-        if self.get(self.configuration_section, ORACLE_CLIENT_LIB_DIR):
-            return True
-        else:
-            return False
+        return bool(self.get(self.configuration_section, ORACLE_CLIENT_LIB_DIR))
 
     def is_oracle_client_config_dir_provided(self):
-        if self.get(self.configuration_section, ORACLE_CLIENT_CONFIG_DIR):
-            return True
-        else:
-            return False
+        return bool(self.get(self.configuration_section, ORACLE_CLIENT_CONFIG_DIR))
 
     def infer_sql_datatypes(self):
         return self.getboolean(self.configuration_section, INFER_SQL_DATATYPES)

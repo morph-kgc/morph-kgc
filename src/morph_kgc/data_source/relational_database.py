@@ -103,10 +103,7 @@ def _get_column_table_datatype(config, source_name, table_name, column_name):
                     "' AND `column_name`='" + column_name + "'"
         sql_query = _replace_query_enclosing_characters(sql_query, db_dialect)
 
-    try:
-        query_results_df = pd.read_sql(sql_query, con=db_connection)
-    except:
-        raise Exception('Query [' + sql_query + '] has failed to execute.')
+    query_results_df = pd.read_sql(sql_query, con=db_connection)
 
     if 'data_type' in query_results_df.columns and len(query_results_df) == 1:
         data_type = query_results_df['data_type'][0]
