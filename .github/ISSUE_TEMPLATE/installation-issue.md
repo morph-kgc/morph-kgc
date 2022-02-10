@@ -15,11 +15,10 @@ assignees: ArenasGuerreroJulian
 Please provide the version of Morph-KGC you are trying to install.
 
 #### Installation Method
-Please provide how you tried to install Morph-KGC from a clean environment (e.g. PyPi, from source).
+Please specify how you tried to install Morph-KGC from a clean environment (e.g. PyPi, from source).
 
 #### Installation Logs
 If possible, please copy and paste the installation logs when attempting to install Morph-KGC.
-
 ```
 Replace this line with the installation logs
 ```
