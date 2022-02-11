@@ -140,10 +140,8 @@ def _materialize_reference(results_df, reference, config, columns_alias='', term
         else:
             results_df['triple'] = results_df['triple'] + ' '
     elif str(termtype).strip() == R2RML_IRI:
-        if config.get_safe_percent_encoding():
-            results_df['reference_results'] = results_df['reference_results'].apply(lambda x: quote(x, safe=config.get_safe_percent_encoding()))
-        else:
-            results_df['reference_results'] = results_df['reference_results'].apply(lambda x: encode_value(x))
+        # it is assumed that the IRI values will be correct, and they are not percent encoded
+        results_df['reference_results'] = results_df['reference_results'].apply(lambda x: x.strip())
         results_df['triple'] = results_df['triple'] + '<' + results_df['reference_results'] + '> '
     elif str(termtype).strip() == R2RML_BLANK_NODE:
         results_df['triple'] = results_df['triple'] + '_:' + results_df['reference_results'] + ' '
