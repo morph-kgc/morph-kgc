@@ -29,7 +29,7 @@ Note that the **_paths_ parameters in the configuration file need to be updated*
 ### CSV
 An example for _CSV_ can be found in the [`csv-example`](https://github.com/oeg-upm/morph-kgc/tree/main/examples/csv-example) directory. The directory contains:
 - The `data` directory with several CSV files.
-- The `mapping` file (in _N-Triples_ format).
+- The `mapping` file (in _Turtle_ format).
 - The `configuration` file that has to be provided to Morph-KGC.
 
 Note that the **_paths_ parameters in the configuration file need to be updated** accordingly. Given that this example involves multiple CSV files, the paths to these files are provided in the mapping file with the `rml:source` property. The values of this property have to be updated with the correct _paths_ to the CSV files in your system.
