@@ -158,7 +158,7 @@ def _build_sql_query(mapping_rule, references):
             query = f"{query}`{reference}`, "
         query = f"{query[:-2]} FROM `{mapping_rule['tablename']}` WHERE "
         for reference in references:
-            query = f"query `{reference}` IS NOT NULL AND "
+            query = f"{query} `{reference}` IS NOT NULL AND "
         query = query[:-5]
     else:
         query = None
