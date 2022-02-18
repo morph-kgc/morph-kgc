@@ -94,13 +94,13 @@ def _get_column_table_datatype(config, source_name, table_name, column_name):
     db_connection, db_dialect = _relational_db_connection(config, source_name)
 
     if db_dialect == ORACLE:
-        sql_query = "SELECT t.data_type FROM all_tab_columns t WHERE t.TABLE_NAME = '" + table_name + \
-                    "' AND t.COLUMN_NAME='" + column_name + "'"
+        sql_query = f"SELECT t.data_type FROM all_tab_columns t " \
+                    f"WHERE t.TABLE_NAME = '{table_name}' AND t.COLUMN_NAME='{column_name}'"
     elif db_dialect == SQLITE:
-        sql_query = "SELECT typeof('" + column_name + "') as data_type FROM '" + table_name + "' LIMIT 1"
+        sql_query = f"SELECT typeof('{column_name}') as data_type FROM '{table_name}' LIMIT 1"
     else:
-        sql_query = "SELECT `data_type` FROM `information_schema`.`columns` WHERE `table_name`='" + table_name + \
-                    "' AND `column_name`='" + column_name + "'"
+        sql_query = f"SELECT `data_type` FROM `information_schema`.`columns` " \
+                    f"WHERE `table_name`='{table_name}' AND `column_name`='{column_name}'"
         sql_query = _replace_query_enclosing_characters(sql_query, db_dialect)
 
     query_results_df = pd.read_sql(sql_query, con=db_connection)
@@ -155,10 +155,10 @@ def _build_sql_query(mapping_rule, references):
         query = 'SELECT '
         # query = query + 'DISTINCT ' # TODO: is this more efficient?
         for reference in references:
-            query = query + '`' + reference + '`, '
-        query = query[:-2] + ' FROM `' + mapping_rule['tablename'] + '` WHERE '
+            query = f"{query}`{reference}`, "
+        query = f"{query[:-2]} FROM `{mapping_rule['tablename']}` WHERE "
         for reference in references:
-            query = query + '`' + reference + '` IS NOT NULL AND '
+            query = f"query `{reference}` IS NOT NULL AND "
         query = query[:-5]
     else:
         query = None
@@ -175,7 +175,7 @@ def get_sql_data(config, mapping_rule, references):
     db_connection, db_dialect = _relational_db_connection(config, mapping_rule['source_name'])
     sql_query = _replace_query_enclosing_characters(sql_query, db_dialect)
 
-    logging.debug('SQL query for mapping rule `' + str(mapping_rule['id']) + '`: [' + sql_query + ']')
+    logging.debug(f"SQL query for mapping rule `{mapping_rule['id']}`: [{sql_query}]")
 
     result_chunks = pd.read_sql(sql_query,
                                 con=db_connection,

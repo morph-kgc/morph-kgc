@@ -303,8 +303,8 @@ def _materialize_mapping_partition(mapping_partition, subject_maps_df, config):
         start_time = time.time()
         triples.update(set(_materialize_mapping_rule(mapping_rule, subject_maps_df, config)))
 
-        logging.debug(str(len(triples)) + ' triples generated for mapping rule `' + str(
-            mapping_rule['id']) + '` in ' + get_delta_time(start_time) + ' seconds.')
+        logging.debug(f"len(triples) triples generated for mapping rule `{mapping_rule['id']}` "
+                      f"in {get_delta_time(start_time)} seconds.")
 
     triples_to_file(triples, config, mapping_partition.iloc[0]['mapping_partition'])
 
@@ -336,10 +336,10 @@ class Materializer:
         for mapping_partition in self.mapping_partitions:
             num_triples += _materialize_mapping_partition(mapping_partition, self.subject_maps_df, self.config)
 
-        logging.info('Number of triples generated in total: ' + str(num_triples) + '.')
+        logging.info(f'Number of triples generated in total: {num_triples}.')
 
     def materialize_concurrently(self):
-        logging.debug('Parallelizing with ' + str(self.config.get_number_of_processes()) + ' cores.')
+        logging.debug(f'Parallelizing with {self.config.get_number_of_processes()} cores.')
 
         pool = mp.Pool(self.config.get_number_of_processes())
         num_triples = sum(pool.starmap(_materialize_mapping_partition,
@@ -347,4 +347,4 @@ class Materializer:
         pool.close()
         pool.join()
 
-        logging.info('Number of triples generated in total: ' + str(num_triples) + '.')
+        logging.info(f'Number of triples generated in total: {num_triples}.')

@@ -173,15 +173,15 @@ class Config(ConfigParser):
         output_format = str(self.get_output_format()).upper()
         self.set_output_format(output_format)
         if output_format not in VALID_OUTPUT_FORMATS:
-            raise ValueError(OUTPUT_FORMAT + ' value `' + self.get_output_format() +
-                             '` is not valid. It must be in: ' + str(VALID_OUTPUT_FORMATS) + '.')
+            raise ValueError(f'{OUTPUT_FORMAT} value `{self.get_output_format()}` is not valid. '
+                             f'It must be in: {VALID_OUTPUT_FORMATS}.')
 
         # LOGGING LEVEL
         logging_level = str(self.get_logging_level()).upper()
         self.set_logging_level(logging_level)
         if logging_level not in VALID_LOGGING_LEVEL:
-            raise ValueError(LOGGING_LEVEL + ' value `' + self.get_logging_level() +
-                             '` is not valid. It must be in: ' + str(VALID_LOGGING_LEVEL) + '.')
+            raise ValueError(f'{LOGGING_LEVEL} value `{self.get_logging_level()}` is not valid. '
+                             f'It must be in: {VALID_LOGGING_LEVEL}.')
 
         # MAPPING PARTITIONING
         mapping_partitioning = str(self.get_mapping_partition()).upper()
@@ -189,15 +189,14 @@ class Config(ConfigParser):
         if mapping_partitioning not in NO_PARTITIONING + [PARTIAL_AGGREGATIONS_PARTITIONING] + [
                 MAXIMAL_PARTITIONING]:
             raise ValueError(
-                MAPPING_PARTITION + ' value `' + self.get_mapping_partition() + '` is not valid. It must be in: ' + str(
-                    [MAXIMAL_PARTITIONING] + [
-                        PARTIAL_AGGREGATIONS_PARTITIONING] + NO_PARTITIONING) + '.')
+                f'{MAPPING_PARTITION} value `{self.get_mapping_partition()}` is not valid. '
+                f'It must be in: {[MAXIMAL_PARTITIONING] + [PARTIAL_AGGREGATIONS_PARTITIONING] + NO_PARTITIONING}.')
 
     def log_config_info(self):
-        logging.debug('CONFIGURATION: ' + str(dict(self.items(self.configuration_section))))
+        logging.debug(f'CONFIGURATION: {dict(self.items(self.configuration_section))}')
 
         for data_source_section in self.get_data_sources_sections():
-            logging.debug('DATA SOURCE `' + data_source_section + '`: ' + str(dict(self.items(data_source_section))))
+            logging.debug(f'DATA SOURCE `{data_source_section}`: {dict(self.items(data_source_section))}')
 
     #################################################################################
     #######################   CONFIGURATION SECTION METHODS   #######################

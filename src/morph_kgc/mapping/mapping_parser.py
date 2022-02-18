@@ -30,10 +30,10 @@ def _mapping_to_rml(mapping_graph):
     mapping_graph.bind('ql', rdflib.term.URIRef(QL_NAMESPACE))
 
     # add reference formulation and sql version for RDB sources
-    query = 'SELECT ?logical_source ?x WHERE { ?logical_source <' + R2RML_TABLE_NAME + '> ?x . } '
+    query = f'SELECT ?logical_source ?x WHERE {{ ?logical_source <{R2RML_TABLE_NAME}> ?x . }} '
     for logical_source, _ in mapping_graph.query(query):
         mapping_graph.add((logical_source, rdflib.term.URIRef(R2RML_SQL_VERSION), rdflib.term.URIRef(R2RML_SQL2008)))
-    query = 'SELECT ?logical_source ?x WHERE { ?logical_source <' + R2RML_SQL_QUERY + '> ?x . } '
+    query = f'SELECT ?logical_source ?x WHERE {{ ?logical_source <{R2RML_SQL_QUERY}> ?x . }} '
     for logical_source, _ in mapping_graph.query(query):
         mapping_graph.add((logical_source, rdflib.term.URIRef(R2RML_SQL_VERSION), rdflib.term.URIRef(R2RML_SQL2008)))
         mapping_graph.add((logical_source, rdflib.term.URIRef(RML_REFERENCE_FORMULATION), rdflib.term.URIRef(QL_CSV)))
@@ -73,7 +73,7 @@ def _expand_constant_shortcut_properties(mapping_graph):
                           R2RML_OBJECT_CONSTANT_SHORTCUT, R2RML_GRAPH_CONSTANT_SHORTCUT]
 
     for constant_property, constant_shortcut in zip(constant_properties, constant_shortcuts):
-        for s, o in mapping_graph.query('SELECT ?s ?o WHERE {?s <' + constant_shortcut + '> ?o .}'):
+        for s, o in mapping_graph.query(f'SELECT ?s ?o WHERE {{?s <{constant_shortcut}> ?o .}}'):
             blanknode = rdflib.BNode()
             mapping_graph.add((s, rdflib.term.URIRef(constant_property), blanknode))
             mapping_graph.add((blanknode, rdflib.term.URIRef(R2RML_CONSTANT), o))
@@ -89,8 +89,8 @@ def _rdf_class_to_pom(mapping_graph):
     """
 
     query = 'SELECT ?tm ?c WHERE { ' \
-            '?tm <' + RML_STAR_SUBJECT_MAP + '> ?sm . ' \
-            '?sm <' + R2RML_CLASS + '> ?c . }'
+            f'?tm <{RML_STAR_SUBJECT_MAP}> ?sm . ' \
+            f'?sm <{R2RML_CLASS}> ?c . }}'
     for tm, c in mapping_graph.query(query):
         blanknode = rdflib.BNode()
         mapping_graph.add((tm, rdflib.term.URIRef(R2RML_PREDICATE_OBJECT_MAP), blanknode))
@@ -109,16 +109,16 @@ def _subject_graph_maps_to_pom(mapping_graph):
 
     # add the graph maps in the subject maps to every predicate object map of the subject maps
     query = 'SELECT ?sm ?gm ?pom WHERE { ' \
-            '?tm <' + RML_STAR_SUBJECT_MAP + '> ?sm . ' \
-            '?sm <' + R2RML_GRAPH_MAP + '> ?gm . ' \
-            '?tm <' + R2RML_PREDICATE_OBJECT_MAP + '> ?pom . }'
+            f'?tm <{RML_STAR_SUBJECT_MAP}> ?sm . ' \
+            f'?sm <{R2RML_GRAPH_MAP}> ?gm . ' \
+            f'?tm <{R2RML_PREDICATE_OBJECT_MAP}> ?pom . }}'
     for sm, gm, pom in mapping_graph.query(query):
         mapping_graph.add((pom, rdflib.term.URIRef(R2RML_GRAPH_MAP), gm))
 
     # remove the graph maps from the subject maps
     query = 'SELECT ?sm ?gm WHERE { ' \
-            '?tm <' + RML_STAR_SUBJECT_MAP + '> ?sm . ' \
-            '?sm <' + R2RML_GRAPH_MAP + '> ?gm . }'
+            f'?tm <{RML_STAR_SUBJECT_MAP}> ?sm . ' \
+            f'?sm <{R2RML_GRAPH_MAP}> ?gm . }}'
     for sm, gm in mapping_graph.query(query):
         mapping_graph.remove((sm, rdflib.term.URIRef(R2RML_GRAPH_MAP), gm))
 
@@ -131,8 +131,8 @@ def _complete_pom_with_default_graph(mapping_graph):
     """
 
     query = 'SELECT DISTINCT ?tm ?pom WHERE { ' \
-            '?tm <' + R2RML_PREDICATE_OBJECT_MAP + '> ?pom . ' \
-            'OPTIONAL { ?pom <' + R2RML_GRAPH_MAP + '> ?gm . } . ' \
+            f'?tm <{R2RML_PREDICATE_OBJECT_MAP}> ?pom . ' \
+            f'OPTIONAL {{ ?pom <{R2RML_GRAPH_MAP}> ?gm . }} . ' \
             'FILTER ( !bound(?gm) ) }'
     for tm, pom in mapping_graph.query(query):
         blanknode = rdflib.BNode()
@@ -150,35 +150,35 @@ def _complete_termtypes(mapping_graph):
 
     # add missing RDF-star triples termtypes (in the subject and object maps)
     query = 'SELECT DISTINCT ?term_map ?quoted_triples_map WHERE { ' \
-            '?term_map <' + RML_STAR_QUOTED_TRIPLES_MAP + '> ?quoted_triples_map . ' \
-            'OPTIONAL { ?term_map <' + R2RML_TERM_TYPE + '> ?termtype . } . ' \
+            f'?term_map <{RML_STAR_QUOTED_TRIPLES_MAP}> ?quoted_triples_map . ' \
+            f'OPTIONAL {{ ?term_map <{R2RML_TERM_TYPE}> ?termtype . }} . ' \
             'FILTER ( !bound(?termtype) ) }'
     for term_map, _ in mapping_graph.query(query):
         mapping_graph.add((term_map, rdflib.term.URIRef(R2RML_TERM_TYPE), rdflib.term.URIRef(RML_STAR_RDF_STAR_TRIPLE)))
 
     # add missing blanknode termtypes in the constant-valued object maps
     query = 'SELECT DISTINCT ?term_map ?constant WHERE { ' \
-            '?term_map <' + R2RML_CONSTANT + '> ?constant . ' \
-            'OPTIONAL { ?term_map <' + R2RML_TERM_TYPE + '> ?termtype . } . ' \
+            f'?term_map <{R2RML_CONSTANT}> ?constant . ' \
+            f'OPTIONAL {{ ?term_map <{R2RML_TERM_TYPE}> ?termtype . }} . ' \
             'FILTER ( !bound(?termtype) && isBlank(?constant) ) }'
     for term_map, _ in mapping_graph.query(query):
         mapping_graph.add((term_map, rdflib.term.URIRef(R2RML_TERM_TYPE), rdflib.term.URIRef(R2RML_BLANK_NODE)))
 
     # add missing literal termtypes in the constant-valued object maps
     query = 'SELECT DISTINCT ?term_map ?constant WHERE { ' \
-            '?term_map <' + R2RML_CONSTANT + '> ?constant . ' \
-            'OPTIONAL { ?term_map <' + R2RML_TERM_TYPE + '> ?termtype . } . ' \
+            f'?term_map <{R2RML_CONSTANT}> ?constant . ' \
+            f'OPTIONAL {{ ?term_map <{R2RML_TERM_TYPE}> ?termtype . }} . ' \
             'FILTER ( !bound(?termtype) && isLiteral(?constant) ) }'
     for term_map, _ in mapping_graph.query(query):
         mapping_graph.add((term_map, rdflib.term.URIRef(R2RML_TERM_TYPE), rdflib.term.URIRef(R2RML_LITERAL)))
 
     # add missing literal termtypes in the object maps
     query = 'SELECT DISTINCT ?om ?pom WHERE { ' \
-            '?pom <' + RML_STAR_OBJECT_MAP + '> ?om . ' \
-            'OPTIONAL { ?om <' + R2RML_TERM_TYPE + '> ?termtype . } . ' \
-            'OPTIONAL { ?om <' + RML_REFERENCE + '> ?column . } . ' \
-            'OPTIONAL { ?om <' + R2RML_LANGUAGE + '> ?language . } . ' \
-            'OPTIONAL { ?om <' + R2RML_DATATYPE + '> ?datatype . } . ' \
+            f'?pom <{RML_STAR_OBJECT_MAP}> ?om . ' \
+            f'OPTIONAL {{ ?om <{R2RML_TERM_TYPE}> ?termtype . }} . ' \
+            f'OPTIONAL {{ ?om <{RML_REFERENCE}> ?column . }} . ' \
+            f'OPTIONAL {{ ?om <{R2RML_LANGUAGE}> ?language . }} . ' \
+            f'OPTIONAL {{ ?om <{R2RML_DATATYPE}> ?datatype . }} . ' \
             'FILTER ( !bound(?termtype) && ( bound(?column) || bound(?language) || bound(?datatype) ) ) }'
     for om, _ in mapping_graph.query(query):
         mapping_graph.add((om, rdflib.term.URIRef(R2RML_TERM_TYPE), rdflib.term.URIRef(R2RML_LITERAL)))
@@ -186,8 +186,8 @@ def _complete_termtypes(mapping_graph):
     # now all missing termtypes are IRIs
     for term_map_property in [RML_STAR_SUBJECT_MAP, R2RML_PREDICATE_MAP, RML_STAR_OBJECT_MAP, R2RML_GRAPH_MAP]:
         query = 'SELECT DISTINCT ?term_map ?x WHERE { ' \
-                '?x <' + term_map_property + '> ?term_map . ' \
-                'OPTIONAL { ?term_map <' + R2RML_TERM_TYPE + '> ?termtype . } . ' \
+                f'?x <{term_map_property}> ?term_map . ' \
+                f'OPTIONAL {{ ?term_map <{R2RML_TERM_TYPE}> ?termtype . }} . ' \
                 'FILTER ( !bound(?termtype) ) }'
         for term_map, _ in mapping_graph.query(query):
             mapping_graph.add((term_map, rdflib.term.URIRef(R2RML_TERM_TYPE), rdflib.term.URIRef(R2RML_IRI)))
@@ -299,38 +299,37 @@ def _get_valid_template_identifiers(template):
 
 def _validate_termtypes(mapping_graph):
     query = 'SELECT DISTINCT ?termtype ?pm WHERE { ' \
-            '?pom <' + R2RML_PREDICATE_MAP + '> ?pm . ' \
-            '?pm <' + R2RML_TERM_TYPE + '> ?termtype . }'
+            f'?pom <{R2RML_PREDICATE_MAP}> ?pm . ' \
+            f'?pm <{R2RML_TERM_TYPE}> ?termtype . }}'
     predicate_termtypes = [str(termtype) for termtype, _ in mapping_graph.query(query)]
     if not (set(predicate_termtypes) <= {R2RML_IRI}):
-        raise ValueError('Found an invalid predicate termtype. Found values ' + str(predicate_termtypes) +
-                         '. Predicate maps must be ' + R2RML_IRI + '.')
+        raise ValueError(f'Found an invalid predicate termtype. Found values {predicate_termtypes}. '
+                         f'Predicate maps must be {R2RML_IRI}.')
 
     query = 'SELECT DISTINCT ?termtype ?gm WHERE { ' \
-            '?pom <' + R2RML_GRAPH_MAP + '> ?gm . ' \
-            '?gm <' + R2RML_TERM_TYPE + '> ?termtype . }'
+            f'?pom <{R2RML_GRAPH_MAP}> ?gm . ' \
+            f'?gm <{R2RML_TERM_TYPE}> ?termtype . }}'
     graph_termtypes = [str(termtype) for termtype, _ in mapping_graph.query(query)]
     if not (set(graph_termtypes) <= {R2RML_IRI}):
-        raise ValueError('Found an invalid graph termtype. Found values ' + str(graph_termtypes) +
-                         '. Graph maps must be ' + R2RML_IRI + '.')
+        raise ValueError(f'Found an invalid graph termtype. Found values {graph_termtypes}. '
+                         f'Graph maps must be {R2RML_IRI}.')
 
     query = 'SELECT DISTINCT ?termtype ?sm WHERE { ' \
-            '?tm <' + R2RML_SUBJECT_MAP + '> ?sm . ' \
-            '?sm <' + R2RML_TERM_TYPE + '> ?termtype . }'
+            f'?tm <{R2RML_SUBJECT_MAP}> ?sm . ' \
+            f'?sm <{R2RML_TERM_TYPE}> ?termtype . }}'
     subject_termtypes = [str(termtype) for termtype, _ in mapping_graph.query(query)]
     if not (set(subject_termtypes) <= {R2RML_IRI, R2RML_BLANK_NODE, RML_STAR_RDF_STAR_TRIPLE}):
-        raise ValueError('Found an invalid subject termtype. Found values ' + str(subject_termtypes) +
-                         '. Subject maps must be ' + R2RML_IRI + ', ' + R2RML_BLANK_NODE + ' or ' +
-                         RML_STAR_RDF_STAR_TRIPLE + '.')
+        raise ValueError(f'Found an invalid subject termtype. Found values {subject_termtypes}. '
+                         f'Subject maps must be {R2RML_IRI}, {R2RML_BLANK_NODE} or {RML_STAR_RDF_STAR_TRIPLE}.')
 
     query = 'SELECT DISTINCT ?termtype ?om WHERE { ' \
-            '?pom <' + R2RML_OBJECT_MAP + '> ?om . ' \
-            '?om <' + R2RML_TERM_TYPE + '> ?termtype . }'
+            f'?pom <{R2RML_OBJECT_MAP}> ?om . ' \
+            f'?om <{R2RML_TERM_TYPE}> ?termtype . }}'
     object_termtypes = [str(termtype) for termtype, _ in mapping_graph.query(query)]
     if not (set(object_termtypes) <= {R2RML_IRI, R2RML_BLANK_NODE, R2RML_LITERAL, RML_STAR_RDF_STAR_TRIPLE}):
-        raise ValueError('Found an invalid object termtype. Found values ' + str(object_termtypes) +
-                         '. Object maps must be ' + R2RML_IRI + ', ' + R2RML_BLANK_NODE + ', ' +
-                         R2RML_LITERAL + ' or ' + RML_STAR_RDF_STAR_TRIPLE + '.')
+        raise ValueError(f'Found an invalid object termtype. Found values {object_termtypes}. '
+                         f'Object maps must be {R2RML_IRI}, {R2RML_BLANK_NODE}, {R2RML_LITERAL} '
+                         f'or {RML_STAR_RDF_STAR_TRIPLE}.')
 
 
 class MappingParser:
@@ -355,7 +354,7 @@ class MappingParser:
 
         self.validate_mappings()
 
-        logging.info(str(len(self.mappings_df)) + ' mapping rules retrieved.')
+        logging.info(f'{len(self.mappings_df)} mapping rules retrieved.')
 
         # generate mapping partitions
         mapping_partitioner = MappingPartitioner(self.mappings_df, self.config)
@@ -545,7 +544,7 @@ class MappingParser:
                         self.mappings_df.at[i, 'object_reference'] = parent_triples_map_rule.at['subject_reference']
                         self.mappings_df.at[i, 'object_termtype'] = parent_triples_map_rule.at['subject_termtype']
 
-                        logging.debug('Removed self-join from mapping rule `' + str(mapping_rule['id']) + '`.')
+                        logging.debug(f"Removed self-join from mapping rule `{mapping_rule['id']}`.")
 
     def _infer_datatypes(self):
         """
@@ -576,15 +575,13 @@ class MappingParser:
 
                     self.mappings_df.at[i, 'object_datatype'] = inferred_data_type
                     if pd.notna(mapping_rule['tablename']):
-                        logging.debug("`" + inferred_data_type + "` datatype inferred for column `" +
-                                      mapping_rule['object_reference'] + "` of table `" +
-                                      mapping_rule['tablename'] + "` in data source `" +
-                                      mapping_rule['source_name'] + "`.")
+                        logging.debug(f"`{inferred_data_type}` datatype inferred for column "
+                                      f"`{mapping_rule['object_reference']}` of table `{mapping_rule['tablename']}` "
+                                      f"in data source `{mapping_rule['source_name']}`.")
                     elif pd.notna(mapping_rule['query']):
-                        logging.debug("`" + inferred_data_type + "` datatype inferred for reference `" +
-                                      mapping_rule['object_reference'] + "` in query [" +
-                                      mapping_rule['query'] + "] in data source `" +
-                                      mapping_rule['source_name'] + "`.")
+                        logging.debug(f"`{inferred_data_type}` datatype inferred for reference "
+                                      f"`{mapping_rule['object_reference']}` in query [{mapping_rule['query']}] "
+                                      f"in data source `{mapping_rule['source_name']}`.")
 
     def validate_mappings(self):
         """
@@ -613,8 +610,8 @@ class MappingParser:
         for language_tag in language_tags:
             # in general, if the language subtag is longer than 3 characters it is not valid
             if len(language_tag.split('-')[0]) > 3:
-                raise ValueError('Found invalid language tag `' + language_tag +
-                                 '`. Language tags must be in the IANA Language Subtag Registry.')
+                raise ValueError(f'Found invalid language tag `{language_tag}`. '
+                                 f'Language tags must be in the IANA Language Subtag Registry.')
 
         # check that a triples map id is not repeated in different data sources
         # Get unique source names and triples map identifiers
@@ -624,6 +621,6 @@ class MappingParser:
         # of those repeated identifiers
         repeated_triples_map_ids = [tm_id for tm_id in repeated_triples_map_ids]
         if len(repeated_triples_map_ids) > 0:
-            raise Exception('The following triples maps appear in more than one data source: ' +
-                            str(repeated_triples_map_ids) +
-                            '. Check the mapping files, one triple map cannot be repeated in different data sources.')
+            raise Exception('The following triples maps appear in more than one data source: '
+                            f'{repeated_triples_map_ids}. '
+                            'Check the mapping files, one triple map cannot be repeated in different data sources.')

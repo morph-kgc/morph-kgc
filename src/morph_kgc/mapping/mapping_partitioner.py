@@ -29,7 +29,7 @@ def get_invariant_of_template(template):
         invariant_of_template = invariant_of_template.replace(AUXILIAR_UNIQUE_REPLACING_STRING, '\\{')
     else:
         # no references were found in the template, and therefore the template is invalid
-        raise Exception("Invalid template `" + template + "`. No pairs of unescaped curly braces were found.")
+        raise Exception(f'Invalid template `{template}`. No pairs of unescaped curly braces were found.')
 
     return invariant_of_template
 
@@ -57,15 +57,13 @@ def _generate_maximal_partition_for_a_position_ordering(mappings_df, position_or
                     current_global_group = mapping_rule['mapping_partition']
 
                 if mapping_rule['subject_termtype'] == R2RML_BLANK_NODE:
-                    mappings_df.at[i, 'mapping_partition'] = mappings_df.at[i, 'mapping_partition'] + '-0'
+                    mappings_df.at[i, 'mapping_partition'] = f"{mappings_df.at[i, 'mapping_partition']}-0"
                 elif mapping_rule['subject_invariant'].startswith(current_invariant):
-                    mappings_df.at[i, 'mapping_partition'] = mappings_df.at[i, 'mapping_partition'] + '-' + str(
-                        current_group)
+                    mappings_df.at[i, 'mapping_partition'] = f"{mappings_df.at[i, 'mapping_partition']}-{current_group}"
                 else:
                     current_group += 1
                     current_invariant = mapping_rule['subject_invariant']
-                    mappings_df.at[i, 'mapping_partition'] = mappings_df.at[i, 'mapping_partition'] + '-' + str(
-                        current_group)
+                    mappings_df.at[i, 'mapping_partition'] = f"{mappings_df.at[i, 'mapping_partition']}-{current_group}"
 
         # ---------------------------- PREDICATE ----------------------------
 
@@ -82,17 +80,14 @@ def _generate_maximal_partition_for_a_position_ordering(mappings_df, position_or
                     current_global_group = mapping_rule['mapping_partition']
 
                 if enforce_invariant_non_subset and mapping_rule['predicate_invariant'] == current_invariant:
-                    mappings_df.at[i, 'mapping_partition'] = mappings_df.at[i, 'mapping_partition'] + '-' + str(
-                        current_group)
+                    mappings_df.at[i, 'mapping_partition'] = f"{mappings_df.at[i, 'mapping_partition']}-{current_group}"
                 elif not enforce_invariant_non_subset and mapping_rule['predicate_invariant'].startswith(
                         current_invariant):
-                    mappings_df.at[i, 'mapping_partition'] = mappings_df.at[i, 'mapping_partition'] + '-' + str(
-                        current_group)
+                    mappings_df.at[i, 'mapping_partition'] = f"{mappings_df.at[i, 'mapping_partition']}-{current_group}"
                 else:
                     current_group += 1
                     current_invariant = mapping_rule['predicate_invariant']
-                    mappings_df.at[i, 'mapping_partition'] = mappings_df.at[i, 'mapping_partition'] + '-' + str(
-                        current_group)
+                    mappings_df.at[i, 'mapping_partition'] = f"{mappings_df.at[i, 'mapping_partition']}-{current_group}"
 
         # ---------------------------- OBJECT ----------------------------
 
@@ -107,21 +102,18 @@ def _generate_maximal_partition_for_a_position_ordering(mappings_df, position_or
                     current_global_group = mapping_rule['mapping_partition']
 
                 if mapping_rule['object_termtype'] == R2RML_BLANK_NODE:
-                    mappings_df.at[i, 'mapping_partition'] = mappings_df.at[i, 'mapping_partition'] + '-0'
+                    mappings_df.at[i, 'mapping_partition'] = f"{mappings_df.at[i, 'mapping_partition']}-0"
                 elif mapping_rule['object_termtype'] == R2RML_LITERAL:
                     if mapping_rule['literal_type'] != current_literal_type:
                         current_group += 1
                         current_literal_type = mapping_rule['literal_type']
-                    mappings_df.at[i, 'mapping_partition'] = mappings_df.at[i, 'mapping_partition'] + '-' + str(
-                        current_group)
+                    mappings_df.at[i, 'mapping_partition'] = f"{mappings_df.at[i, 'mapping_partition']}-{current_group}"
                 elif mapping_rule['object_invariant'].startswith(current_invariant):
-                    mappings_df.at[i, 'mapping_partition'] = mappings_df.at[i, 'mapping_partition'] + '-' + str(
-                        current_group)
+                    mappings_df.at[i, 'mapping_partition'] = f"{mappings_df.at[i, 'mapping_partition']}-{current_group}"
                 else:
                     current_group += 1
                     current_invariant = mapping_rule['object_invariant']
-                    mappings_df.at[i, 'mapping_partition'] = mappings_df.at[i, 'mapping_partition'] + '-' + str(
-                        current_group)
+                    mappings_df.at[i, 'mapping_partition'] = f"{mappings_df.at[i, 'mapping_partition']}-{current_group}"
 
         # ---------------------------- GRAPH ----------------------------
 
@@ -138,16 +130,13 @@ def _generate_maximal_partition_for_a_position_ordering(mappings_df, position_or
                     current_global_group = mapping_rule['mapping_partition']
 
                 if enforce_invariant_non_subset and mapping_rule['graph_invariant'] == current_invariant:
-                    mappings_df.at[i, 'mapping_partition'] = mappings_df.at[i, 'mapping_partition'] + '-' + str(
-                        current_group)
+                    mappings_df.at[i, 'mapping_partition'] = f"{mappings_df.at[i, 'mapping_partition']}-{current_group}"
                 elif not enforce_invariant_non_subset and mapping_rule['graph_invariant'].startswith(current_invariant):
-                    mappings_df.at[i, 'mapping_partition'] = mappings_df.at[i, 'mapping_partition'] + '-' + str(
-                        current_group)
+                    mappings_df.at[i, 'mapping_partition'] = f"{mappings_df.at[i, 'mapping_partition']}-{current_group}"
                 else:
                     current_group += 1
                     current_invariant = mapping_rule['graph_invariant']
-                    mappings_df.at[i, 'mapping_partition'] = mappings_df.at[i, 'mapping_partition'] + '-' + str(
-                        current_group)
+                    mappings_df.at[i, 'mapping_partition'] = f"{mappings_df.at[i, 'mapping_partition']}-{current_group}"
 
     return mappings_df
 
@@ -188,10 +177,9 @@ class MappingPartitioner:
         else:
             logging.error('Selected mapping partitioning algorithm is not valid.')
 
-        logging.info(
-            'Mapping partition with ' + str(len(set(self.mappings_df['mapping_partition']))) + ' groups generated.')
-        logging.info('Maximum number of rules within mapping group: ' + str(
-            self.mappings_df['mapping_partition'].value_counts()[0]) + '.')
+        logging.info(f"Mapping partition with {len(set(self.mappings_df['mapping_partition']))} groups generated.")
+        logging.info('Maximum number of rules within mapping group: '
+                     f"{self.mappings_df['mapping_partition'].value_counts()[0]}.")
 
         return self.mappings_df
 
@@ -351,9 +339,10 @@ class MappingPartitioner:
 
         # aggregate the independent mapping partition generated for subjects, predicates and graphs to generate the
         # final mapping partition
-        self.mappings_df['mapping_partition'] = self.mappings_df['subject_partition'].astype(str) + '-' + \
-            self.mappings_df['predicate_partition'].astype(str) + '-' + \
-            self.mappings_df['object_partition'].astype(str) + '-' + self.mappings_df['graph_partition'].astype(str)
+        self.mappings_df['mapping_partition'] = f"{self.mappings_df['subject_partition'].astype(str)}-" \
+                                                f"{self.mappings_df['predicate_partition'].astype(str) }-" \
+                                                f"{self.mappings_df['object_partition'].astype(str)}-" \
+                                                f"{self.mappings_df['graph_partition'].astype(str)}"
 
         # drop the auxiliary columns that were created just to generate the mapping partition
         self.mappings_df.drop([

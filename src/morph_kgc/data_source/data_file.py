@@ -43,7 +43,7 @@ def get_file_data(config, mapping_rule, references):
     elif file_source_type == XML:
         return _read_xml(mapping_rule, references)
     else:
-        raise ValueError('Found an invalid source type. Found value `' + file_source_type + '`.')
+        raise ValueError(f'Found an invalid source type. Found value `{file_source_type}`.')
 
 
 def _read_csv(config, mapping_rule, references, file_source_type):
