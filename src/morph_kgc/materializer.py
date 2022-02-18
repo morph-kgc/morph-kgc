@@ -303,7 +303,7 @@ def _materialize_mapping_partition(mapping_partition, subject_maps_df, config):
         start_time = time.time()
         triples.update(set(_materialize_mapping_rule(mapping_rule, subject_maps_df, config)))
 
-        logging.debug(f"len(triples) triples generated for mapping rule `{mapping_rule['id']}` "
+        logging.debug(f"{len(triples)} triples generated for mapping rule `{mapping_rule['id']}` "
                       f"in {get_delta_time(start_time)} seconds.")
 
     triples_to_file(triples, config, mapping_partition.iloc[0]['mapping_partition'])

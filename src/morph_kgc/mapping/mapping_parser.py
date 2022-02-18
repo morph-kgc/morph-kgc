@@ -611,7 +611,7 @@ class MappingParser:
             # in general, if the language subtag is longer than 3 characters it is not valid
             if len(language_tag.split('-')[0]) > 3:
                 raise ValueError(f'Found invalid language tag `{language_tag}`. '
-                                 f'Language tags must be in the IANA Language Subtag Registry.')
+                                 'Language tags must be in the IANA Language Subtag Registry.')
 
         # check that a triples map id is not repeated in different data sources
         # Get unique source names and triples map identifiers
