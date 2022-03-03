@@ -41,8 +41,6 @@ MAPPING_PARTITION = 'mapping_partition'
 INFER_SQL_DATATYPES = 'infer_sql_datatypes'
 ENFORCE_SQL_QUERY_FILTER_NULL = 'enforce_sql_filter_null'
 
-CHUNKSIZE = 'chunksize'
-
 NUMBER_OF_PROCESSES = 'number_of_processes'
 
 LOGGING_LEVEL = 'logging_level'
@@ -76,7 +74,6 @@ DEFAULT_LOGGING_FILE = ''
 DEFAULT_LOGGING_LEVEL = 'INFO'
 DEFAULT_INFER_SQL_DATATYPES = 'no'
 DEFAULT_NUMBER_OF_PROCESSES = 2 * mp.cpu_count()
-DEFAULT_CHUNKSIZE = 100000
 DEFAULT_NA_FILTER = 'yes'
 DEFAULT_NA_VALUES = ',#N/A,N/A,#N/A N/A,n/a,NA,<NA>,#NA,NULL,null,NaN,nan,None'
 DEFAULT_ONLY_PRINTABLE_CHARACTERS = 'no'
@@ -114,7 +111,6 @@ CONFIGURATION_OPTIONS_EMPTY_NON_VALID = {
             CLEAN_OUTPUT_DIR: DEFAULT_CLEAN_OUTPUT_DIR,
             ONLY_PRINTABLE_CHARACTERS: DEFAULT_ONLY_PRINTABLE_CHARACTERS,
             INFER_SQL_DATATYPES: DEFAULT_INFER_SQL_DATATYPES,
-            CHUNKSIZE: 100000,
             LOGGING_LEVEL: DEFAULT_LOGGING_LEVEL,
             NA_FILTER: DEFAULT_NA_FILTER,
             NUMBER_OF_PROCESSES: DEFAULT_NUMBER_OF_PROCESSES
@@ -270,9 +266,6 @@ class Config(ConfigParser):
 
     def get_output_format(self):
         return self.get(self.configuration_section, OUTPUT_FORMAT)
-
-    def get_chunksize(self):
-        return self.getint(self.configuration_section, CHUNKSIZE)
 
     def apply_na_filter(self):
         return self.getboolean(self.configuration_section, NA_FILTER)

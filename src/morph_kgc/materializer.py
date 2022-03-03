@@ -232,23 +232,17 @@ def _materialize_mapping_rule_terms(results_df, mapping_rule, config):
     return set(results_df['triple'])
 
 
-def _merge_results_chunks(query_results_chunk_df, parent_query_results_chunk_df, mapping_rule):
+def _merge_data(data, parent_data, mapping_rule):
     child_join_references, parent_join_references = get_references_in_join_condition(mapping_rule)
 
     child_join_references = ['child_' + reference for reference in child_join_references]
     parent_join_references = ['parent_' + reference for reference in parent_join_references]
 
-    return query_results_chunk_df.merge(parent_query_results_chunk_df,
-                                        how='inner',
-                                        left_on=child_join_references,
-                                        right_on=parent_join_references)
+    return data.merge(parent_data, how='inner', left_on=child_join_references, right_on=parent_join_references)
 
 
 def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
     triples = set()
-
-    result_chunks = None
-    parent_result_chunks = None
 
     references = _get_references_in_mapping_rule(mapping_rule)
     integer_references = _retrieve_rdb_integer_references(config, mapping_rule, references)
@@ -262,37 +256,32 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
         references, parent_references = add_references_in_join_condition(mapping_rule, references, parent_references)
 
         if mapping_rule['source_type'] == RDB:
-            result_chunks = get_sql_data(config, mapping_rule, references)
+            data = get_sql_data(config, mapping_rule, references)
         elif mapping_rule['source_type'] in FILE_SOURCE_TYPES:
-            result_chunks = get_file_data(config, mapping_rule, references)
+            data = get_file_data(mapping_rule, references)
 
-        for query_results_chunk_df in result_chunks:
-            query_results_chunk_df = _preprocess_data(query_results_chunk_df, mapping_rule, references, integer_references, config)
-            query_results_chunk_df = query_results_chunk_df.add_prefix('child_')
+        data = _preprocess_data(data, mapping_rule, references, integer_references, config)
+        data = data.add_prefix('child_')
 
-            if parent_triples_map_rule['source_type'] == RDB:
-                parent_result_chunks = get_sql_data(config, parent_triples_map_rule, parent_references)
-            elif parent_triples_map_rule['source_type'] in FILE_SOURCE_TYPES:
-                parent_result_chunks = get_file_data(config, parent_triples_map_rule, parent_references)
+        if parent_triples_map_rule['source_type'] == RDB:
+            parent_data = get_sql_data(config, parent_triples_map_rule, parent_references)
+        elif parent_triples_map_rule['source_type'] in FILE_SOURCE_TYPES:
+            parent_data = get_file_data(parent_triples_map_rule, parent_references)
 
-            for parent_query_results_chunk_df in parent_result_chunks:
-                parent_query_results_chunk_df = _preprocess_data(parent_query_results_chunk_df, mapping_rule, parent_references, integer_references, config)
-                parent_query_results_chunk_df = parent_query_results_chunk_df.add_prefix('parent_')
-                merged_query_results_chunk_df = _merge_results_chunks(query_results_chunk_df,
-                                                                      parent_query_results_chunk_df, mapping_rule)
+        parent_data = _preprocess_data(parent_data, mapping_rule, parent_references, integer_references, config)
+        parent_data = parent_data.add_prefix('parent_')
+        merged_data = _merge_data(data, parent_data, mapping_rule)
 
-                triples.update(_materialize_join_mapping_rule_terms(merged_query_results_chunk_df, mapping_rule,
-                                                                    parent_triples_map_rule, config))
+        triples.update(_materialize_join_mapping_rule_terms(merged_data, mapping_rule, parent_triples_map_rule, config))
 
     else:
         if mapping_rule['source_type'] in RDB:
-            result_chunks = get_sql_data(config, mapping_rule, references)
+            data = get_sql_data(config, mapping_rule, references)
         elif mapping_rule['source_type'] in FILE_SOURCE_TYPES:
-            result_chunks = get_file_data(config, mapping_rule, references)
+            data = get_file_data(mapping_rule, references)
 
-        for query_results_chunk_df in result_chunks:
-            query_results_chunk_df = _preprocess_data(query_results_chunk_df, mapping_rule, references, integer_references, config)
-            triples.update(_materialize_mapping_rule_terms(query_results_chunk_df, mapping_rule, config))
+        data = _preprocess_data(data, mapping_rule, references, integer_references, config)
+        triples.update(_materialize_mapping_rule_terms(data, mapping_rule, config))
 
     return triples
 
