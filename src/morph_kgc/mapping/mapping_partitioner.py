@@ -343,10 +343,9 @@ class MappingPartitioner:
 
         # aggregate the independent mapping partition generated for subjects, predicates and graphs to generate the
         # final mapping partition
-        self.mappings_df['mapping_partition'] = f"{self.mappings_df['subject_partition'].astype(str)}-" \
-                                                f"{self.mappings_df['predicate_partition'].astype(str)}-" \
-                                                f"{self.mappings_df['object_partition'].astype(str)}-" \
-                                                f"{self.mappings_df['graph_partition'].astype(str)}"
+        self.mappings_df['mapping_partition'] = self.mappings_df['subject_partition'].astype(str) + '-' + \
+            self.mappings_df['predicate_partition'].astype(str) + '-' + \
+            self.mappings_df['object_partition'].astype(str) + '-' + self.mappings_df['graph_partition'].astype(str)
 
         # drop the auxiliary columns that were created just to generate the mapping partition
         self.mappings_df.drop([
