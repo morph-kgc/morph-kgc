@@ -165,6 +165,10 @@ class MappingPartitioner:
 
         self.mappings_df = self.mappings_df.reset_index(drop=True)
 
+        # if RML-star do not partition mappings
+        if self.mappings_df['subject_quoted'].notnull().any() or self.mappings_df['object_quoted'].notnull().any():
+            return self.mappings_df
+
         if self.config.get_mapping_partition() == PARTIAL_AGGREGATIONS_PARTITIONING:
             self._get_term_invariants()
             self._generate_partial_aggregations_partition()
