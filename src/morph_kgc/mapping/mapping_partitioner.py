@@ -165,6 +165,10 @@ class MappingPartitioner:
 
         self.mappings_df = self.mappings_df.reset_index(drop=True)
 
+        # if RML-star do not partition mappings
+        if self.mappings_df['subject_quoted'].notnull().any() or self.mappings_df['object_quoted'].notnull().any():
+            return self.mappings_df
+
         if self.config.get_mapping_partition() == PARTIAL_AGGREGATIONS_PARTITIONING:
             self._get_term_invariants()
             self._generate_partial_aggregations_partition()
@@ -339,10 +343,9 @@ class MappingPartitioner:
 
         # aggregate the independent mapping partition generated for subjects, predicates and graphs to generate the
         # final mapping partition
-        self.mappings_df['mapping_partition'] = f"{self.mappings_df['subject_partition'].astype(str)}-" \
-                                                f"{self.mappings_df['predicate_partition'].astype(str)}-" \
-                                                f"{self.mappings_df['object_partition'].astype(str)}-" \
-                                                f"{self.mappings_df['graph_partition'].astype(str)}"
+        self.mappings_df['mapping_partition'] = self.mappings_df['subject_partition'].astype(str) + '-' + \
+            self.mappings_df['predicate_partition'].astype(str) + '-' + \
+            self.mappings_df['object_partition'].astype(str) + '-' + self.mappings_df['graph_partition'].astype(str)
 
         # drop the auxiliary columns that were created just to generate the mapping partition
         self.mappings_df.drop([

@@ -177,12 +177,7 @@ def get_sql_data(config, mapping_rule, references):
 
     logging.debug(f"SQL query for mapping rule `{mapping_rule['id']}`: [{sql_query}]")
 
-    result_chunks = pd.read_sql(sql_query,
-                                con=db_connection,
-                                chunksize=config.get_chunksize(),
-                                coerce_float=False)
-
-    return result_chunks
+    return pd.read_sql(sql_query, con=db_connection, coerce_float=False)
 
 
 def setup_oracle(config):
