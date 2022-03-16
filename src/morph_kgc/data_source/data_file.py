@@ -26,6 +26,8 @@ def get_file_data(mapping_rule, references):
         return _read_csv(mapping_rule, references, file_source_type)
     elif file_source_type in EXCEL:
         return _read_excel(mapping_rule, references)
+    elif file_source_type in ODS:
+        return _read_ods(mapping_rule, references)
     elif file_source_type == PARQUET:
         return _read_parquet(mapping_rule, references)
     elif file_source_type in FEATHER:
@@ -100,6 +102,16 @@ def _read_excel(mapping_rule, references):
     return pd.read_excel(str(mapping_rule['data_source']),
                          sheet_name=0,
                          engine='openpyxl',
+                         usecols=references,
+                         dtype=str,
+                         keep_default_na=False,
+                         na_filter=False)
+
+
+def _read_ods(mapping_rule, references):
+    return pd.read_excel(str(mapping_rule['data_source']),
+                         sheet_name=0,
+                         engine='odf',
                          usecols=references,
                          dtype=str,
                          keep_default_na=False,
