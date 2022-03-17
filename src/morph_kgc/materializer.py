@@ -31,6 +31,9 @@ def _retrieve_rdb_integer_references(config, mapping_rule, references):
 
 
 def _preprocess_data(dataframe, mapping_rule, references, integer_references, config):
+    # keep only reference columns in the dataframe
+    dataframe = dataframe[list(references)]
+
     # deal with ORACLE
     if mapping_rule['source_type'] == RDB:
         if config.get_database_url(mapping_rule['source_name']).lower().startswith(ORACLE.lower()):
@@ -42,6 +45,7 @@ def _preprocess_data(dataframe, mapping_rule, references, integer_references, co
 
     if mapping_rule['source_type'] == RDB:
         dataframe[integer_references] = dataframe[integer_references].astype(float).astype(int)
+
     # data to str
     dataframe = dataframe.astype(str)
 

@@ -86,16 +86,11 @@ def _read_stata(mapping_rule, references):
 
 
 def _read_sas(mapping_rule, references):
-    sas_df = pd.read_sas(str(mapping_rule['data_source']), encoding='utf-8')
-    sas_df = sas_df[references]
-
-    return sas_df
+    return pd.read_sas(str(mapping_rule['data_source']), encoding='utf-8')
 
 
 def _read_spss(mapping_rule, references):
-    spss_df = pd.read_spss(str(mapping_rule['data_source']), usecols=references, convert_categoricals=False)
-
-    return spss_df
+    return pd.read_spss(str(mapping_rule['data_source']), usecols=references, convert_categoricals=False)
 
 
 def _read_excel(mapping_rule, references):
@@ -135,9 +130,6 @@ def _read_json(mapping_rule, references):
     # add columns with null values for those references in the mapping rule that are not present in the data file
     missing_references_in_df = list(set(references).difference(set(json_df.columns)))
     json_df[missing_references_in_df] = np.nan
-
-    # keep only reference columns in the dataframe
-    json_df = json_df[references]
 
     return json_df
 
