@@ -9,7 +9,6 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 import pandas as pd
 import multiprocessing as mp
 import logging
-import time
 
 from itertools import repeat
 from falcon.uri import encode_value
@@ -21,6 +20,15 @@ from .data_source.relational_database import get_sql_data, get_rdb_reference_dat
 from .data_source.data_file import get_file_data
 
 
+def _add_references_in_join_condition(mapping_rule, references, parent_references):
+    references_join, parent_references_join = get_references_in_join_condition(mapping_rule)
+
+    references.update(set(references_join))
+    parent_references.update(set(parent_references_join))
+
+    return references, parent_references
+
+
 def _retrieve_rdb_integer_references(config, mapping_rule, references):
     integer_references = []
     for reference in references:
@@ -30,26 +38,38 @@ def _retrieve_rdb_integer_references(config, mapping_rule, references):
     return integer_references
 
 
-def _preprocess_data(dataframe, mapping_rule, references, integer_references, config):
+def _preprocess_data(data, mapping_rule, references, config):
     # keep only reference columns in the dataframe
-    dataframe = dataframe[list(references)]
+    data = data[list(references)]
 
     # deal with ORACLE
     if mapping_rule['source_type'] == RDB:
         if config.get_database_url(mapping_rule['source_name']).lower().startswith(ORACLE.lower()):
-            dataframe = normalize_oracle_identifier_casing(dataframe, references)
+            data = normalize_oracle_identifier_casing(data, references)
 
     # remove NULLS for those data formats that do not allow to remove them at reading time
     if config.apply_na_filter():
-        dataframe = remove_null_values_from_dataframe(dataframe, config)
+        data = remove_null_values_from_dataframe(data, config)
 
     if mapping_rule['source_type'] == RDB:
-        dataframe[integer_references] = dataframe[integer_references].astype(float).astype(int)
+        # deal with integers
+        integer_references = _retrieve_rdb_integer_references(config, mapping_rule, references)
+        data[integer_references] = data[integer_references].astype(float).astype(int)
 
     # data to str
-    dataframe = dataframe.astype(str)
+    data = data.astype(str)
 
-    return dataframe
+    return data
+
+
+def _get_data(config, mapping_rule, references):
+    if mapping_rule['source_type'] == RDB:
+        data = get_sql_data(config, mapping_rule, references)
+    elif mapping_rule['source_type'] in FILE_SOURCE_TYPES:
+        data = get_file_data(mapping_rule, references)
+    data = _preprocess_data(data, mapping_rule, references, config)
+
+    return data
 
 
 def _get_references_in_mapping_rule(mapping_rule, only_subject_map=False):
@@ -249,7 +269,6 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
     triples = set()
 
     references = _get_references_in_mapping_rule(mapping_rule)
-    integer_references = _retrieve_rdb_integer_references(config, mapping_rule, references)
 
     if pd.notna(mapping_rule['object_parent_triples_map']):
         parent_triples_map_rule = \
@@ -257,34 +276,18 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
         parent_references = _get_references_in_mapping_rule(parent_triples_map_rule, only_subject_map=True)
 
         # add references used in the join condition
-        references, parent_references = add_references_in_join_condition(mapping_rule, references, parent_references)
+        references, parent_references = _add_references_in_join_condition(mapping_rule, references, parent_references)
 
-        if mapping_rule['source_type'] == RDB:
-            data = get_sql_data(config, mapping_rule, references)
-        elif mapping_rule['source_type'] in FILE_SOURCE_TYPES:
-            data = get_file_data(mapping_rule, references)
-
-        data = _preprocess_data(data, mapping_rule, references, integer_references, config)
+        data = _get_data(config, mapping_rule, references)
         data = data.add_prefix('child_')
 
-        if parent_triples_map_rule['source_type'] == RDB:
-            parent_data = get_sql_data(config, parent_triples_map_rule, parent_references)
-        elif parent_triples_map_rule['source_type'] in FILE_SOURCE_TYPES:
-            parent_data = get_file_data(parent_triples_map_rule, parent_references)
-
-        parent_data = _preprocess_data(parent_data, mapping_rule, parent_references, integer_references, config)
+        parent_data = _get_data(config, parent_triples_map_rule, parent_references)
         parent_data = parent_data.add_prefix('parent_')
         merged_data = _merge_data(data, parent_data, mapping_rule)
 
         triples.update(_materialize_join_mapping_rule_terms(merged_data, mapping_rule, parent_triples_map_rule, config))
-
     else:
-        if mapping_rule['source_type'] in RDB:
-            data = get_sql_data(config, mapping_rule, references)
-        elif mapping_rule['source_type'] in FILE_SOURCE_TYPES:
-            data = get_file_data(mapping_rule, references)
-
-        data = _preprocess_data(data, mapping_rule, references, integer_references, config)
+        data = _get_data(config, mapping_rule, references)
         triples.update(_materialize_mapping_rule_terms(data, mapping_rule, config))
 
     return triples

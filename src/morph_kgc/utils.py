@@ -212,15 +212,6 @@ def get_delta_time(start_time):
     return "{:.3f}".format((time.time() - start_time))
 
 
-def add_references_in_join_condition(mapping_rule, references, parent_references):
-    references_join, parent_references_join = get_references_in_join_condition(mapping_rule)
-
-    references.update(set(references_join))
-    parent_references.update(set(parent_references_join))
-
-    return references, parent_references
-
-
 def get_references_in_join_condition(mapping_rule):
     references = list()
     parent_references = list()
