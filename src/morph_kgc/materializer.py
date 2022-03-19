@@ -266,8 +266,6 @@ def _merge_data(data, parent_data, mapping_rule):
 
 
 def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
-    triples = set()
-
     references = _get_references_in_mapping_rule(mapping_rule)
 
     if pd.notna(mapping_rule['object_parent_triples_map']):
@@ -285,10 +283,10 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
         parent_data = parent_data.add_prefix('parent_')
         merged_data = _merge_data(data, parent_data, mapping_rule)
 
-        triples.update(_materialize_join_mapping_rule_terms(merged_data, mapping_rule, parent_triples_map_rule, config))
+        triples = _materialize_join_mapping_rule_terms(merged_data, mapping_rule, parent_triples_map_rule, config)
     else:
         data = _get_data(config, mapping_rule, references)
-        triples.update(_materialize_mapping_rule_terms(data, mapping_rule, config))
+        triples = _materialize_mapping_rule_terms(data, mapping_rule, config)
 
     return triples
 
