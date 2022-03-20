@@ -107,19 +107,14 @@ def get_repeated_elements_in_list(input_list):
     return repeated_elems
 
 
-def get_subject_maps(mappings_df):
+def get_mapping_rule(mappings_df, triples_map_id):
     """
-    Retrieves subject maps from mapping rules in the input DataFrame. No repeated subject maps are returned.
+    Retrieves mapping rule from mapping rules in the input DataFrame by its triples map id.
     """
 
-    subject_maps_df = mappings_df[[
-        'id', 'triples_map_id', 'source_name', 'source_type', 'data_source', 'iterator', 'tablename',
-        'query', 'subject_template', 'subject_reference', 'subject_constant', 'subject_termtype']
-    ]
+    mapping_rule = mappings_df[mappings_df['triples_map_id'] == triples_map_id].iloc[0]
 
-    subject_maps_df = subject_maps_df.drop_duplicates()
-
-    return subject_maps_df
+    return mapping_rule
 
 
 def get_references_in_template(template):
@@ -196,16 +191,6 @@ def replace_predicates_in_graph(graph, predicate_to_remove, predicate_to_add):
     graph.remove((None, rdflib.term.URIRef(predicate_to_remove), None))
 
     return graph
-
-
-def get_mapping_rule_from_triples_map_id(mappings, parent_triples_map_id):
-    """
-    Get the parent triples map of the mapping rule with the given id
-    """
-
-    parent_triples_map = mappings[mappings['triples_map_id'] == parent_triples_map_id]
-
-    return parent_triples_map.iloc[0]
 
 
 def get_delta_time(start_time):

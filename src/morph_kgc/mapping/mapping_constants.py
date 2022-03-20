@@ -11,12 +11,13 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 ##############################################################################
 
 MAPPINGS_DATAFRAME_COLUMNS = [
-    'source_name', 'triples_map_id', 'data_source', 'subject_map', 'object_map', 'iterator', 'tablename', 'query',
+    'source_name', 'triples_map_id', 'triples_map_type', 'data_source',
+    'subject_map', 'object_map', 'iterator', 'tablename', 'query',
     'subject_template', 'subject_reference', 'subject_constant', 'subject_quoted', 'subject_termtype',
     'graph_constant', 'graph_reference', 'graph_template',
     'predicate_constant', 'predicate_template', 'predicate_reference',
-    'object_constant', 'object_template', 'object_reference', 'object_quoted',
     'object_termtype', 'object_datatype', 'object_language',
+    'object_constant', 'object_template', 'object_reference', 'object_quoted',
     'object_parent_triples_map', 'subject_join_conditions', 'object_join_conditions'
 ]
 
@@ -37,7 +38,7 @@ MAPPING_PARSING_QUERY = """
     prefix rml: <http://semweb.mmlab.be/ns/rml#>
 
     SELECT DISTINCT
-        ?triples_map_id ?data_source ?iterator ?tablename ?query ?subject_map ?object_map
+        ?triples_map_id ?triples_map_type ?data_source ?iterator ?tablename ?query ?subject_map ?object_map
         ?subject_template ?subject_reference ?subject_constant ?subject_quoted ?subject_termtype
         ?graph_constant ?graph_reference ?graph_template
         ?predicate_constant ?predicate_template ?predicate_reference
@@ -47,6 +48,7 @@ MAPPING_PARSING_QUERY = """
 
     WHERE {
         ?triples_map_id rml:logicalSource ?_source .
+        ?triples_map_id a ?triples_map_type .
         OPTIONAL { ?_source rml:source ?data_source . }
         OPTIONAL { ?_source rml:iterator ?iterator . }
         OPTIONAL { ?_source rr:tableName ?tablename . }

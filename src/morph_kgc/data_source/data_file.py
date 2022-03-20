@@ -85,7 +85,7 @@ def _read_stata(mapping_rule, references):
                          order_categoricals=False)
 
 
-def _read_sas(mapping_rule, references):
+def _read_sas(mapping_rule):
     return pd.read_sas(str(mapping_rule['data_source']), encoding='utf-8')
 
 

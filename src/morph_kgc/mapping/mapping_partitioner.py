@@ -8,12 +8,13 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 import logging
 import pandas as pd
+import numpy as np
 import multiprocessing as mp
 
 from itertools import permutations
 
 from ..constants import *
-from ..utils import get_mapping_rule_from_triples_map_id
+from ..utils import get_mapping_rule
 
 
 def get_invariant_of_template(template):
@@ -165,8 +166,12 @@ class MappingPartitioner:
 
         self.mappings_df = self.mappings_df.reset_index(drop=True)
 
-        # if RML-star do not partition mappings
-        if self.mappings_df['subject_quoted'].notnull().any() or self.mappings_df['object_quoted'].notnull().any():
+        # if RML-star or TMs without POMs (rml:NonAssertedTriplesMap) do not partition mappings (assign empty partition)
+        if self.mappings_df['subject_quoted'].notnull().any() or self.mappings_df['object_quoted'].notnull().any() or \
+                RML_STAR_NON_ASSERTED_TRIPLES_MAP_CLASS in set(self.mappings_df['triples_map_type']):
+            # TODO: enable mapping partitioning for these cases
+            self.mappings_df['mapping_partition'] = '0-0-0-0'
+
             return self.mappings_df
 
         if self.config.get_mapping_partition() == PARTIAL_AGGREGATIONS_PARTITIONING:
@@ -396,8 +401,7 @@ class MappingPartitioner:
                     get_invariant_of_template(str(mapping_rule['object_template']))
             elif pd.notna(mapping_rule['object_parent_triples_map']):
                 # get the invariant for referencing object maps
-                parent_mapping_rule = get_mapping_rule_from_triples_map_id(self.mappings_df, mapping_rule[
-                    'object_parent_triples_map'])
+                parent_mapping_rule = get_mapping_rule(self.mappings_df, mapping_rule['object_parent_triples_map'])
                 if pd.notna(parent_mapping_rule['subject_constant']):
                     self.mappings_df.at[i, 'object_invariant'] = str(parent_mapping_rule['subject_constant'])
                 elif pd.notna(parent_mapping_rule['subject_template']):

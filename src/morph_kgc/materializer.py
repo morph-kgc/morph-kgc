@@ -265,12 +265,11 @@ def _merge_data(data, parent_data, mapping_rule):
     return data.merge(parent_data, how='inner', left_on=child_join_references, right_on=parent_join_references)
 
 
-def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
+def _materialize_mapping_rule(mapping_rule, mappings_df, config):
     references = _get_references_in_mapping_rule(mapping_rule)
 
     if pd.notna(mapping_rule['object_parent_triples_map']):
-        parent_triples_map_rule = \
-            subject_maps_df[subject_maps_df.triples_map_id == mapping_rule['object_parent_triples_map']].iloc[0]
+        parent_triples_map_rule = get_mapping_rule(mappings_df, mapping_rule['object_parent_triples_map'])
         parent_references = _get_references_in_mapping_rule(parent_triples_map_rule, only_subject_map=True)
 
         # add references used in the join condition
@@ -291,16 +290,16 @@ def _materialize_mapping_rule(mapping_rule, subject_maps_df, config):
     return triples
 
 
-def _materialize_mapping_partition(mapping_partition, subject_maps_df, config):
+def _materialize_mapping_partition(mapping_partition_df, mappings_df, config):
     triples = set()
-    for i, mapping_rule in mapping_partition.iterrows():
+    for i, mapping_rule in mapping_partition_df.iterrows():
         start_time = time.time()
-        triples.update(set(_materialize_mapping_rule(mapping_rule, subject_maps_df, config)))
+        triples.update(set(_materialize_mapping_rule(mapping_rule, mappings_df, config)))
 
         logging.debug(f"{len(triples)} triples generated for mapping rule `{mapping_rule['id']}` "
                       f"in {get_delta_time(start_time)} seconds.")
 
-    triples_to_file(triples, config, mapping_partition.iloc[0]['mapping_partition'])
+    triples_to_file(triples, config, mapping_partition_df.iloc[0]['mapping_partition'])
 
     return len(triples)
 
@@ -308,11 +307,12 @@ def _materialize_mapping_partition(mapping_partition, subject_maps_df, config):
 class Materializer:
 
     def __init__(self, mappings_df, config):
-        self.mappings_df = mappings_df
         self.config = config
+        self.mappings_df = mappings_df
 
-        self.subject_maps_df = get_subject_maps(mappings_df)
-        self.mapping_partitions = [group for _, group in mappings_df.groupby(by='mapping_partition')]
+        # keep only asserted mapping rules
+        asserted_mapping_df = mappings_df.loc[mappings_df['triples_map_type'] == R2RML_TRIPLES_MAP_CLASS]
+        self.mapping_partitions = [group for _, group in asserted_mapping_df.groupby(by='mapping_partition')]
 
         clean_output_dir(config)
 
@@ -328,7 +328,7 @@ class Materializer:
     def materialize(self):
         num_triples = 0
         for mapping_partition in self.mapping_partitions:
-            num_triples += _materialize_mapping_partition(mapping_partition, self.subject_maps_df, self.config)
+            num_triples += _materialize_mapping_partition(mapping_partition, self.mappings_df, self.config)
 
         logging.info(f'Number of triples generated in total: {num_triples}.')
 
@@ -337,7 +337,7 @@ class Materializer:
 
         pool = mp.Pool(self.config.get_number_of_processes())
         num_triples = sum(pool.starmap(_materialize_mapping_partition,
-                                       zip(self.mapping_partitions, repeat(self.subject_maps_df), repeat(self.config))))
+                                       zip(self.mapping_partitions, repeat(self.mappings_df), repeat(self.config))))
         pool.close()
         pool.join()
 

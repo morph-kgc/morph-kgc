@@ -222,7 +222,7 @@ def _complete_triples_map_class(mapping_graph):
     query = 'SELECT DISTINCT ?triples_map ?logical_source WHERE { ' \
             f'?triples_map <{RML_LOGICAL_SOURCE}> ?logical_source . ' \
             f'?triples_map a <{R2RML_TRIPLES_MAP_CLASS}> . ' \
-            f'?triples_map a <{RML_STAR_STAR_MAP_CLASS}> . }}'
+            f'?triples_map a <{RML_STAR_NON_ASSERTED_TRIPLES_MAP_CLASS}> . }}'
     for triples_map, _ in mapping_graph.query(query):
         mapping_graph.remove((triples_map, rdflib.term.URIRef(RDF_TYPE), rdflib.term.URIRef(R2RML_TRIPLES_MAP_CLASS)))
 
@@ -291,6 +291,12 @@ def _transform_mappings_into_dataframe(mapping_graph, section_name):
     source_mappings_df['subject_join_conditions'] = source_mappings_df['subject_join_conditions'].astype(str)
     # object_map and subject_map columns no longer needed, remove them
     source_mappings_df = source_mappings_df.drop(['subject_map', 'object_map'], axis=1)
+
+    # convert all values to string
+    for i, row in source_mappings_df.iterrows():
+        for col in source_mappings_df.columns:
+            if pd.notna(row[col]):
+                source_mappings_df.at[i, col] = str(row[col])
 
     # link the mapping rules to their data source name
     source_mappings_df['source_name'] = section_name
@@ -546,8 +552,7 @@ class MappingParser:
 
         for i, mapping_rule in self.mappings_df.iterrows():
             if pd.notna(mapping_rule['object_parent_triples_map']):
-                parent_triples_map_rule = get_mapping_rule_from_triples_map_id(self.mappings_df, mapping_rule[
-                    'object_parent_triples_map'])
+                parent_triples_map_rule = get_mapping_rule(self.mappings_df, mapping_rule['object_parent_triples_map'])
 
                 # str() is to be able to compare np.nan
                 if str(mapping_rule['data_source']) == str(parent_triples_map_rule['data_source']) and \

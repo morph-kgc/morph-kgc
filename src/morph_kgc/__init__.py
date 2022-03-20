@@ -14,8 +14,8 @@ from rdflib import Graph
 from .engine import retrieve_mappings
 from .args_parser import load_config_from_argument
 from .materializer import _materialize_mapping_rule
-from .utils import get_subject_maps
 from .data_source.relational_database import setup_oracle
+from .constants import R2RML_TRIPLES_MAP_CLASS
 
 
 def materialize(config):
@@ -25,14 +25,16 @@ def materialize(config):
     setup_oracle(config)
 
     mappings_df = retrieve_mappings(config)
-    subject_maps_df = get_subject_maps(mappings_df)
-    mapping_partitions = [group for _, group in mappings_df.groupby(by='mapping_partition')]
+
+    # keep only asserted mapping rules
+    asserted_mapping_df = mappings_df.loc[mappings_df['triples_map_type'] == R2RML_TRIPLES_MAP_CLASS]
+    mapping_partitions = [group for _, group in asserted_mapping_df.groupby(by='mapping_partition')]
 
     graph = Graph()
     for mapping_partition in mapping_partitions:
         triples = set()
         for i, mapping_rule in mapping_partition.iterrows():
-            triples.update(set(_materialize_mapping_rule(mapping_rule, subject_maps_df, config)))
+            triples.update(set(_materialize_mapping_rule(mapping_rule, mappings_df, config)))
 
             logging.debug(str(len(triples)) + ' triples generated for mapping rule `' + str(mapping_rule['id']) + '`.')
 
