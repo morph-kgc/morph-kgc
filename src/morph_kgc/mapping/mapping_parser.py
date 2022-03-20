@@ -195,6 +195,29 @@ def _complete_termtypes(mapping_graph):
     return mapping_graph
 
 
+def _complete_triples_map_class(mapping_graph):
+    """
+    Adds rr:TriplesMap typing for triples maps. For rml:NonAssertedTriplesMap remove rr:TriplesMap typing.
+    """
+
+    query = 'SELECT DISTINCT ?triples_map ?logical_source WHERE { ' \
+            f'?triples_map <{RML_LOGICAL_SOURCE}> ?logical_source . ' \
+            f'OPTIONAL {{ ?triples_map a ?triples_map_class . }} . ' \
+            'FILTER ( !bound(?triples_map_class) ) }'
+    for triples_map, _ in mapping_graph.query(query):
+        mapping_graph.add((triples_map, rdflib.term.URIRef(RDF_TYPE), rdflib.term.URIRef(R2RML_TRIPLES_MAP_CLASS)))
+
+    # for rml:NonAssertedTriplesMap remove triples typing then as rr:TriplesMap
+    query = 'SELECT DISTINCT ?triples_map ?logical_source WHERE { ' \
+            f'?triples_map <{RML_LOGICAL_SOURCE}> ?logical_source . ' \
+            f'?triples_map a <{R2RML_TRIPLES_MAP_CLASS}> . ' \
+            f'?triples_map a <{RML_STAR_STAR_MAP_CLASS}> . }}'
+    for triples_map, _ in mapping_graph.query(query):
+        mapping_graph.remove((triples_map, rdflib.term.URIRef(RDF_TYPE), rdflib.term.URIRef(R2RML_TRIPLES_MAP_CLASS)))
+
+    return mapping_graph
+
+
 def _remove_string_datatypes(mapping_graph):
     """
     Removes xsd:string data types. xsd:string is equivalent to not specifying any data type.
@@ -417,6 +440,8 @@ class MappingParser:
         mapping_graph = _complete_termtypes(mapping_graph)
         # remove xsd:string data types as it is equivalent to not specifying any data type
         mapping_graph = _remove_string_datatypes(mapping_graph)
+        # add rr:TriplesMap typing
+        mapping_graph = _complete_triples_map_class(mapping_graph)
         # check termtypes are correct
         _validate_termtypes(mapping_graph)
 

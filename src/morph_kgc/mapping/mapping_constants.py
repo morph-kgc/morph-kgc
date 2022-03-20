@@ -53,14 +53,12 @@ MAPPING_PARSING_QUERY = """
         OPTIONAL { ?_source rml:query ?query . }
 
     # Subject -------------------------------------------------------------------------
-        OPTIONAL {
-            ?triples_map_id rml:subjectMap ?subject_map .
-            OPTIONAL { ?subject_map rr:template ?subject_template . }
-            OPTIONAL { ?subject_map rml:reference ?subject_reference . }
-            OPTIONAL { ?subject_map rr:constant ?subject_constant . }
-            OPTIONAL { ?subject_map rml:quotedTriplesMap ?subject_quoted . }
-            OPTIONAL { ?subject_map rr:termType ?subject_termtype . }
-        }
+        ?triples_map_id rml:subjectMap ?subject_map .
+        OPTIONAL { ?subject_map rr:template ?subject_template . }
+        OPTIONAL { ?subject_map rml:reference ?subject_reference . }
+        OPTIONAL { ?subject_map rr:constant ?subject_constant . }
+        OPTIONAL { ?subject_map rml:quotedTriplesMap ?subject_quoted . }
+        OPTIONAL { ?subject_map rr:termType ?subject_termtype . }
 
     # Predicate -----------------------------------------------------------------------
         OPTIONAL {

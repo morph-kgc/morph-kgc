@@ -147,8 +147,8 @@ QL_XML = f'{QL_NAMESPACE}XPath'
 ##############################################################################
 
 # classes
-RML_STAR_STAR_MAP = f'{RML_NAMESPACE}StarMap'
-RML_NON_ASSERTED_TRIPLES_MAP = f'{RML_NAMESPACE}NonAssertedTriplesMap'
+RML_STAR_STAR_MAP_CLASS = f'{RML_NAMESPACE}StarMap'
+RML_STAR_NON_ASSERTED_TRIPLES_MAP_CLASS = f'{RML_NAMESPACE}NonAssertedTriplesMap'
 
 # properties
 RML_STAR_QUOTED_TRIPLES_MAP = f'{RML_NAMESPACE}quotedTriplesMap'
@@ -174,6 +174,15 @@ XSD_DATE = f'{XSD_NAMESPACE}date'
 XSD_TIME = f'{XSD_NAMESPACE}time'
 XSD_DATETIME = f'{XSD_NAMESPACE}dateTime'
 XSD_STRING = f'{XSD_NAMESPACE}string'
+
+
+##############################################################################
+#############################   XSD DATA TYPES   #############################
+##############################################################################
+
+RDF_NAMESPACE = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+
+RDF_TYPE = f'{RDF_NAMESPACE}type'
 
 
 ##############################################################################
