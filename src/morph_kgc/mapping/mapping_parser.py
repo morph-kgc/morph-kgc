@@ -198,6 +198,8 @@ def _complete_termtypes(mapping_graph):
 def _complete_triples_map_class(mapping_graph):
     """
     Adds rr:TriplesMap typing for triples maps. For rml:NonAssertedTriplesMap remove rr:TriplesMap typing.
+    Triples maps without predicate object maps are transfored to non asserted triples maps as they do no generate
+    triples (but can be used in join conditions in other triples maps).
     """
 
     query = 'SELECT DISTINCT ?triples_map ?logical_source WHERE { ' \
@@ -207,7 +209,16 @@ def _complete_triples_map_class(mapping_graph):
     for triples_map, _ in mapping_graph.query(query):
         mapping_graph.add((triples_map, rdflib.term.URIRef(RDF_TYPE), rdflib.term.URIRef(R2RML_TRIPLES_MAP_CLASS)))
 
-    # for rml:NonAssertedTriplesMap remove triples typing then as rr:TriplesMap
+    # rr:TriplesMap without predicate object maps to rml:NonAssertedTriplesMaps
+    query = 'SELECT DISTINCT ?triples_map ?logical_source WHERE { ' \
+            f'?triples_map <{RML_LOGICAL_SOURCE}> ?logical_source . ' \
+            f'OPTIONAL {{ ?triples_map <{R2RML_PREDICATE_OBJECT_MAP}> ?pom . }} . ' \
+            'FILTER ( !bound(?pom) ) }'
+    for triples_map, _ in mapping_graph.query(query):
+        mapping_graph.add(
+            (triples_map, rdflib.term.URIRef(RDF_TYPE), rdflib.term.URIRef(RML_STAR_NON_ASSERTED_TRIPLES_MAP_CLASS)))
+
+    # for rml:NonAssertedTriplesMap remove triples typing them as rr:TriplesMap
     query = 'SELECT DISTINCT ?triples_map ?logical_source WHERE { ' \
             f'?triples_map <{RML_LOGICAL_SOURCE}> ?logical_source . ' \
             f'?triples_map a <{R2RML_TRIPLES_MAP_CLASS}> . ' \
@@ -465,12 +476,6 @@ class MappingParser:
         self.mappings_df.insert(0, 'id', self.mappings_df.reset_index(drop=True).index)
 
         self._remove_self_joins_from_mappings()
-
-        # TODO: this is not correct as this rules could be referenced by a join with join conditions
-        # remove mapping rules with no predicate or object (subject map is conserved because rdf class was added as POM)
-        self.mappings_df = self.mappings_df.dropna(subset=['predicate_constant', 'predicate_template',
-                                                           'predicate_reference', 'object_constant', 'object_template',
-                                                           'object_reference'], how='all')
 
     def _complete_source_types(self):
         """
