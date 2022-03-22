@@ -10,7 +10,7 @@ import json
 import pandas as pd
 import numpy as np
 import elementpath
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as et
 
 from jsonpath import JSONPath
 
@@ -37,7 +37,7 @@ def get_file_data(mapping_rule, references):
     elif file_source_type == STATA:
         return _read_stata(mapping_rule, references)
     elif file_source_type in SAS:
-        return _read_sas(mapping_rule, references)
+        return _read_sas(mapping_rule)
     elif file_source_type == SPSS:
         return _read_spss(mapping_rule, references)
     elif file_source_type == JSON:
@@ -68,7 +68,7 @@ def _read_parquet(mapping_rule, references):
 
 
 def _read_feather(mapping_rule, references):
-    return pd.read_feather(str(mapping_rule['data_source']), use_threads=True, columns=references)
+    return pd.read_feather(str(mapping_rule['data_source']), use_threads=False, columns=references)
 
 
 def _read_orc(mapping_rule, references):
@@ -136,7 +136,7 @@ def _read_json(mapping_rule, references):
 
 def _read_xml(mapping_rule, references):
     with open(str(mapping_rule['data_source']), encoding='utf-8') as xml_file:
-        xml_root = ET.parse(xml_file).getroot()
+        xml_root = et.parse(xml_file).getroot()
 
     xpath_result = elementpath.iter_select(xml_root, mapping_rule['iterator'])  # XPath2Parser by default
     xpath_result = [[[r.text for r in e.findall(reference)] for reference in references] for e in xpath_result]

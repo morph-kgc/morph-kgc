@@ -246,18 +246,27 @@ def _merge_data(data, parent_data, mapping_rule, join_condition):
     return data.merge(parent_data, how='inner', left_on=child_join_references, right_on=parent_join_references)
 
 
-def _materialize_mapping_rule(mapping_rule, mappings_df, config, quoted_references={}, nest_level=0):
+def _materialize_mapping_rule(mapping_rule, mappings_df, config, quoted_references=set(), nest_level=0):
     references = _get_references_in_mapping_rule(mapping_rule)
     if quoted_references:
         references.update(quoted_references)
 
     if pd.notna(mapping_rule['subject_quoted']) or pd.notna(mapping_rule['object_quoted']):
+        parent_references_join = set()
+        if pd.notna(mapping_rule['subject_quoted']):
+            references_join, parent_references_subject_join = get_references_in_join_condition(mapping_rule, 'subject_join_conditions')
+            references.update(references_join)
+            parent_references_join.update(parent_references_subject_join)
+        if pd.notna(mapping_rule['object_quoted']):
+            references_join, parent_references_object_join = get_references_in_join_condition(mapping_rule, 'object_join_conditions')
+            references.update(references_join)
+            parent_references_join.update(parent_references_object_join)
+
+        data = _get_data(config, mapping_rule, references)
+
         if pd.notna(mapping_rule['subject_quoted']):
             parent_triples_map_rule = get_mapping_rule(mappings_df, mapping_rule['subject_quoted'])
-            references_join, parent_references_join = get_references_in_join_condition(mapping_rule, 'subject_join_conditions')
-            references.update(references_join)
 
-            data = _get_data(config, mapping_rule, references)
             parent_data = _materialize_mapping_rule(parent_triples_map_rule, mappings_df, config, quoted_references=parent_references_join, nest_level=nest_level+1)
             merged_data = _merge_data(data, parent_data, mapping_rule, 'subject_join_conditions')
 
