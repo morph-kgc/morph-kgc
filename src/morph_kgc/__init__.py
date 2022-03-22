@@ -34,7 +34,8 @@ def materialize(config):
     for mapping_partition in mapping_partitions:
         triples = set()
         for i, mapping_rule in mapping_partition.iterrows():
-            triples.update(set(_materialize_mapping_rule(mapping_rule, mappings_df, config)))
+            results_df = _materialize_mapping_rule(mapping_rule, mappings_df, config)
+            triples.update(set(results_df['triple']))
 
             logging.debug(str(len(triples)) + ' triples generated for mapping rule `' + str(mapping_rule['id']) + '`.')
 

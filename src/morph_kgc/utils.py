@@ -197,13 +197,13 @@ def get_delta_time(start_time):
     return "{:.3f}".format((time.time() - start_time))
 
 
-def get_references_in_join_condition(mapping_rule):
+def get_references_in_join_condition(mapping_rule, join_conditions):
     references = list()
     parent_references = list()
 
     # if join_condition is not null and it is not empty
-    if pd.notna(mapping_rule['object_join_conditions']) and mapping_rule['object_join_conditions']:
-        join_conditions = eval(mapping_rule['object_join_conditions'])
+    if pd.notna(mapping_rule[join_conditions]) and mapping_rule[join_conditions]:
+        join_conditions = eval(mapping_rule[join_conditions])
         for join_condition in join_conditions.values():
             references.append(join_condition['child_value'])
             parent_references.append(join_condition['parent_value'])
