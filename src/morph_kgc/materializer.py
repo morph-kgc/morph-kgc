@@ -248,6 +248,7 @@ def _merge_data(data, parent_data, mapping_rule, join_condition):
 
 def _materialize_mapping_rule(mapping_rule, mappings_df, config, quoted_references=set(), nest_level=0):
     references = _get_references_in_mapping_rule(mapping_rule)
+    # TODO: is it correct to add references below here?
     references_join, parent_references_subject_join = get_references_in_join_condition(mapping_rule, 'subject_join_conditions')
     references.update(references_join)
     references_join, parent_references_object_join = get_references_in_join_condition(mapping_rule, 'object_join_conditions')
@@ -292,9 +293,9 @@ def _materialize_mapping_rule(mapping_rule, mappings_df, config, quoted_referenc
                 data = _merge_data(data, parent_data, mapping_rule, 'object_join_conditions')
                 data['object'] = '<< ' + data['parent_triple'] + ' >>'
             else:
+                # TODO: this is wrong
                 data = _materialize_mapping_rule(parent_triples_map_rule, mappings_df, config, quoted_references=references, nest_level=nest_level + 1)
                 data['object'] = '<< ' + data['triple'] + ' >>'
-
         else:
             if pd.notna(mapping_rule['object_template']):
                 data = _materialize_template(data, mapping_rule['object_template'], config, 'object', termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
