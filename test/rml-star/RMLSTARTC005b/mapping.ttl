@@ -8,7 +8,7 @@
 @base <http://example.org/> .
 :firstTM a rml:NonAssertedTriplesMap ;
     rml:logicalSource [
-        rml:source "test/rml-star/RMLSTARTC005b/data.csv";
+        rml:source "test/rml-star/RMLSTARTC005b/data1.csv";
         rml:referenceFormulation ql:CSV
     ];
     rml:subjectMap [
@@ -23,7 +23,7 @@
 
 :secondTM a rr:TriplesMap ;
     rml:logicalSource [
-        rml:source "test/rml-star/RMLSTARTC005b/data.csv";
+        rml:source "test/rml-star/RMLSTARTC005b/data2.csv";
         rml:referenceFormulation ql:CSV
     ];
     rml:subjectMap [

@@ -80,3 +80,27 @@ def materialize_oxigraph(config):
     logging.info('Number of triples generated in total: ' + str(len(graph)) + '.')
 
     return graph
+
+
+def materialize_set(config):
+    config = load_config_from_argument(config)
+
+    setup_oracle(config)
+
+    mappings_df = retrieve_mappings(config)
+
+    # keep only asserted mapping rules
+    asserted_mapping_df = mappings_df.loc[mappings_df['triples_map_type'] == R2RML_TRIPLES_MAP_CLASS]
+    mapping_partitions = [group for _, group in asserted_mapping_df.groupby(by='mapping_partition')]
+
+    triples = set()
+    for mapping_partition in mapping_partitions:
+        for i, mapping_rule in mapping_partition.iterrows():
+            results_df = _materialize_mapping_rule(mapping_rule, mappings_df, config)
+            triples.update(set(results_df['triple']))
+
+            logging.debug(str(len(set(results_df['triple']))) + ' triples generated for mapping rule `' + str(mapping_rule['id']) + '`.')
+
+    logging.info('Number of triples generated in total: ' + str(len(triples)) + '.')
+
+    return triples
