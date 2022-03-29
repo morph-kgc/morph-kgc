@@ -1,5 +1,6 @@
 pandas>=1.3.0
 rdflib>=6.1.1
+pyoxigraph>=0.3.0
 sql_metadata>=2.3.0
 SQLAlchemy>=1.4.0
 pyarrow>=7.0.0
