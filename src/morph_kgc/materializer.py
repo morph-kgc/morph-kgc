@@ -39,9 +39,6 @@ def _retrieve_rdb_integer_references(config, mapping_rule, references):
 
 
 def _preprocess_data(data, mapping_rule, references, config):
-    # keep only reference columns in the dataframe
-    data = data[list(references)]
-
     # deal with ORACLE
     if mapping_rule['source_type'] == RDB:
         if config.get_database_url(mapping_rule['source_name']).lower().startswith(ORACLE.lower()):
@@ -49,7 +46,7 @@ def _preprocess_data(data, mapping_rule, references, config):
 
     # remove NULLS for those data formats that do not allow to remove them at reading time
     if config.apply_na_filter():
-        data = remove_null_values_from_dataframe(data, config)
+        data = remove_null_values_from_dataframe(data, config, references)
 
     if mapping_rule['source_type'] == RDB:
         # deal with integers
@@ -67,6 +64,7 @@ def _get_data(config, mapping_rule, references):
         data = get_sql_data(config, mapping_rule, references)
     elif mapping_rule['source_type'] in FILE_SOURCE_TYPES:
         data = get_file_data(mapping_rule, references)
+
     data = _preprocess_data(data, mapping_rule, references, config)
 
     return data
@@ -246,37 +244,58 @@ def _merge_data(data, parent_data, mapping_rule, join_condition):
     return data.merge(parent_data, how='inner', left_on=child_join_references, right_on=parent_join_references)
 
 
-def _materialize_mapping_rule(mapping_rule, mappings_df, config, quoted_references=set(), nest_level=0):
+def _materialize_mapping_rule(mapping_rule, mappings_df, config, data=None, parent_join_references=set(), nest_level=0):
     references = _get_references_in_mapping_rule(mapping_rule)
-    # TODO: is it correct to add references below here?
-    references_join, parent_references_subject_join = get_references_in_join_condition(mapping_rule, 'subject_join_conditions')
-    references.update(references_join)
-    references_join, parent_references_object_join = get_references_in_join_condition(mapping_rule, 'object_join_conditions')
-    references.update(references_join)
-    if quoted_references:
-        references.update(quoted_references)
+
+    references_subject_join, parent_references_subject_join = get_references_in_join_condition(mapping_rule, 'subject_join_conditions')
+    references_object_join, parent_references_object_join = get_references_in_join_condition(mapping_rule, 'object_join_conditions')
+    references.update(parent_join_references)
 
     if pd.notna(mapping_rule['subject_quoted']) or pd.notna(mapping_rule['object_quoted']):
-        data = _get_data(config, mapping_rule, references)
+        if data is None:
+            data = _get_data(config, mapping_rule, references)
 
         if pd.notna(mapping_rule['subject_quoted']):
-            parent_triples_map_rule = get_mapping_rule(mappings_df, mapping_rule['subject_quoted'])
-
             if pd.notna(mapping_rule['subject_join_conditions']):
-                parent_data = _materialize_mapping_rule(parent_triples_map_rule, mappings_df, config, quoted_references=parent_references_subject_join, nest_level=nest_level + 1)
+                references.update(references_subject_join)
+                parent_triples_map_rule = get_mapping_rule(mappings_df, mapping_rule['subject_quoted'])
+                parent_data = _materialize_mapping_rule(parent_triples_map_rule, mappings_df, config, parent_join_references=parent_references_subject_join, nest_level=nest_level + 1)
                 data = _merge_data(data, parent_data, mapping_rule, 'subject_join_conditions')
                 data['subject'] = '<< ' + data['parent_triple'] + ' >>'
                 data = data.drop(columns=['parent_triple'])
             else:
-                data = _materialize_mapping_rule(parent_triples_map_rule, mappings_df, config, quoted_references=references, nest_level=nest_level + 1)
+                parent_triples_map_rule = get_mapping_rule(mappings_df, mapping_rule['subject_quoted'])
+                data = _materialize_mapping_rule(parent_triples_map_rule, mappings_df, config, data=data, nest_level=nest_level + 1)
                 data['subject'] = '<< ' + data['triple'] + ' >>'
-        else:
-            if pd.notna(mapping_rule['subject_template']):
-                data = _materialize_template(data, mapping_rule['subject_template'], config, 'subject', termtype=mapping_rule['subject_termtype'])
-            elif pd.notna(mapping_rule['subject_constant']):
-                data = _materialize_constant(data, mapping_rule['subject_constant'], 'subject', termtype=mapping_rule['subject_termtype'])
-            elif pd.notna(mapping_rule['subject_reference']):
-                data = _materialize_reference(data, mapping_rule['subject_reference'], config, 'subject', termtype=mapping_rule['subject_termtype'])
+            data['keep_subject'+str(nest_level)] = data['subject']
+        if pd.notna(mapping_rule['object_quoted']):
+            if pd.notna(mapping_rule['object_join_conditions']):
+                references.update(references_object_join)
+                parent_triples_map_rule = get_mapping_rule(mappings_df, mapping_rule['object_quoted'])
+                parent_data = _materialize_mapping_rule(parent_triples_map_rule, mappings_df, config, parent_join_references=parent_references_object_join, nest_level=nest_level + 1)
+                data = _merge_data(data, parent_data, mapping_rule, 'object_join_conditions')
+                data['object'] = '<< ' + data['parent_triple'] + ' >>'
+                data = data.drop(columns=['parent_triple'])
+            else:
+                parent_triples_map_rule = get_mapping_rule(mappings_df, mapping_rule['object_quoted'])
+                data = _materialize_mapping_rule(parent_triples_map_rule, mappings_df, config, data=data, nest_level=nest_level + 1)
+                data['object'] = '<< ' + data['triple'] + ' >>'
+            if pd.notna(mapping_rule['subject_quoted']):
+                data['subject'] = data['keep_subject'+str(nest_level)]
+
+        if pd.notna(mapping_rule['subject_template']):
+            data = _materialize_template(data, mapping_rule['subject_template'], config, 'subject', termtype=mapping_rule['subject_termtype'])
+        elif pd.notna(mapping_rule['subject_constant']):
+            data = _materialize_constant(data, mapping_rule['subject_constant'], 'subject', termtype=mapping_rule['subject_termtype'])
+        elif pd.notna(mapping_rule['subject_reference']):
+            data = _materialize_reference(data, mapping_rule['subject_reference'], config, 'subject', termtype=mapping_rule['subject_termtype'])
+
+        if pd.notna(mapping_rule['object_template']):
+            data = _materialize_template(data, mapping_rule['object_template'], config, 'object', termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
+        elif pd.notna(mapping_rule['object_constant']):
+            data = _materialize_constant(data, mapping_rule['object_constant'], 'object', termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
+        elif pd.notna(mapping_rule['object_reference']):
+            data = _materialize_reference(data, mapping_rule['object_reference'], config, 'object', termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
 
         if pd.notna(mapping_rule['predicate_template']):
             data = _materialize_template(data, mapping_rule['predicate_template'], config, 'predicate')
@@ -285,39 +304,23 @@ def _materialize_mapping_rule(mapping_rule, mappings_df, config, quoted_referenc
         elif pd.notna(mapping_rule['predicate_reference']):
             data = _materialize_reference(data, mapping_rule['predicate_reference'], config, 'predicate', termtype=R2RML_IRI)
 
-        if pd.notna(mapping_rule['object_quoted']):
-            parent_triples_map_rule = get_mapping_rule(mappings_df, mapping_rule['object_quoted'])
-
-            if pd.notna(mapping_rule['object_join_conditions']):
-                parent_data = _materialize_mapping_rule(parent_triples_map_rule, mappings_df, config, quoted_references=parent_references_object_join, nest_level=nest_level + 1)
-                data = _merge_data(data, parent_data, mapping_rule, 'object_join_conditions')
-                data['object'] = '<< ' + data['parent_triple'] + ' >>'
-            else:
-                # TODO: this is wrong
-                data = _materialize_mapping_rule(parent_triples_map_rule, mappings_df, config, quoted_references=references, nest_level=nest_level + 1)
-                data['object'] = '<< ' + data['triple'] + ' >>'
-        else:
-            if pd.notna(mapping_rule['object_template']):
-                data = _materialize_template(data, mapping_rule['object_template'], config, 'object', termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
-            elif pd.notna(mapping_rule['object_constant']):
-                data = _materialize_constant(data, mapping_rule['object_constant'], 'object', termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
-            elif pd.notna(mapping_rule['object_reference']):
-                data = _materialize_reference(data, mapping_rule['object_reference'], config, 'object', termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
-
     elif pd.notna(mapping_rule['object_parent_triples_map']):
+        references.update(references_object_join)
         parent_triples_map_rule = get_mapping_rule(mappings_df, mapping_rule['object_parent_triples_map'])
         parent_references = _get_references_in_mapping_rule(parent_triples_map_rule, only_subject_map=True)
 
         # add references used in the join condition
         references, parent_references = _add_references_in_join_condition(mapping_rule, references, parent_references)
 
-        data = _get_data(config, mapping_rule, references)
+        if data is None:
+            data = _get_data(config, mapping_rule, references)
         parent_data = _get_data(config, parent_triples_map_rule, parent_references)
         merged_data = _merge_data(data, parent_data, mapping_rule, 'object_join_conditions')
 
         data = _materialize_join_mapping_rule_terms(merged_data, mapping_rule, parent_triples_map_rule, config)
     else:
-        data = _get_data(config, mapping_rule, references)
+        if data is None:
+            data = _get_data(config, mapping_rule, references)
         data = _materialize_mapping_rule_terms(data, mapping_rule, config)
 
     data['triple'] = data['subject'] + ' ' + data['predicate'] + ' ' + data['object']
@@ -333,8 +336,7 @@ def _materialize_mapping_rule(mapping_rule, mappings_df, config, quoted_referenc
             data['graph'] = ''
         data['triple'] = data['triple'] + ' ' + data['graph']
 
-    # keep only needed references
-    data = data[list(quoted_references) + ['triple']]
+    data = data.drop(columns=['subject', 'predicate', 'object'], errors='ignore')
 
     return data
 

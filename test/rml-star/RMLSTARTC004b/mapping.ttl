@@ -51,6 +51,6 @@
     rr:predicateObjectMap [
         rr:predicate ex:r ;
         rml:objectMap [
-            rml:template "http://example/{c2-1}"
+            rr:template "http://example/{c2-1}"
         ]
     ] .
