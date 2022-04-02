@@ -70,7 +70,7 @@ def _get_data(config, mapping_rule, references):
     return data
 
 
-def _get_references_in_mapping_rule(mapping_rule, only_subject_map=False):
+def _get_references_in_mapping_rule(mapping_rule, mappings_df, only_subject_map=False):
     references = []
     if pd.notna(mapping_rule['subject_template']):
         references.extend(get_references_in_template(str(mapping_rule['subject_template'])))
@@ -91,7 +91,18 @@ def _get_references_in_mapping_rule(mapping_rule, only_subject_map=False):
         elif pd.notna(mapping_rule['graph_reference']):
             references.append(str(mapping_rule['graph_reference']))
 
-    return set(references)
+    if pd.notna(mapping_rule['subject_quoted']) and pd.isna(mapping_rule['subject_join_conditions']):
+        parent_mapping_rule = get_mapping_rule(mappings_df, mapping_rule['subject_quoted'])
+        references.extend(_get_references_in_mapping_rule(parent_mapping_rule, mappings_df))
+    if pd.notna(mapping_rule['object_quoted']) and pd.isna(mapping_rule['object_join_conditions']):
+        parent_mapping_rule = get_mapping_rule(mappings_df, mapping_rule['object_quoted'])
+        references.extend(_get_references_in_mapping_rule(parent_mapping_rule, mappings_df))
+    references_subject_join, parent_references_subject_join = get_references_in_join_condition(mapping_rule, 'subject_join_conditions')
+    references.extend(references_subject_join)
+    references_object_join, parent_references_object_join = get_references_in_join_condition(mapping_rule, 'object_join_conditions')
+    references.extend(references_object_join)
+
+    return references
 
 
 def _materialize_template(results_df, template, config, position, columns_alias='', termtype=R2RML_IRI, language_tag='', datatype=''):
@@ -245,7 +256,7 @@ def _merge_data(data, parent_data, mapping_rule, join_condition):
 
 
 def _materialize_mapping_rule(mapping_rule, mappings_df, config, data=None, parent_join_references=set(), nest_level=0):
-    references = _get_references_in_mapping_rule(mapping_rule)
+    references = set(_get_references_in_mapping_rule(mapping_rule, mappings_df))
 
     references_subject_join, parent_references_subject_join = get_references_in_join_condition(mapping_rule, 'subject_join_conditions')
     references_object_join, parent_references_object_join = get_references_in_join_condition(mapping_rule, 'object_join_conditions')
@@ -307,7 +318,7 @@ def _materialize_mapping_rule(mapping_rule, mappings_df, config, data=None, pare
     elif pd.notna(mapping_rule['object_parent_triples_map']):
         references.update(references_object_join)
         parent_triples_map_rule = get_mapping_rule(mappings_df, mapping_rule['object_parent_triples_map'])
-        parent_references = _get_references_in_mapping_rule(parent_triples_map_rule, only_subject_map=True)
+        parent_references = set(_get_references_in_mapping_rule(parent_triples_map_rule, mappings_df, only_subject_map=True))
 
         # add references used in the join condition
         references, parent_references = _add_references_in_join_condition(mapping_rule, references, parent_references)
