@@ -8,7 +8,6 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 import re
 import os
-import shutil
 import logging
 import rdflib
 import time
@@ -52,8 +51,8 @@ def get_valid_dir_path(dir_path):
     Checks that a directory exists. If the directory does not exist, it creates the directories in the path.
     """
 
-    dir_path = str(dir_path).strip()
-    if not os.path.exists(dir_path):
+    dir_path = dir_path.strip()
+    if dir_path and not os.path.exists(dir_path):
         os.makedirs(dir_path)
 
     return dir_path
@@ -131,12 +130,12 @@ def get_references_in_template(template):
     return references
 
 
-def triples_to_file(triples, config, mapping_partition=''):
+def triples_to_file(triples, config, mapping_group=None):
     """
     Writes triples to file.
     """
 
-    f = open(config.get_output_file_path(mapping_partition), 'a')
+    f = open(config.get_output_file_path(mapping_group), 'a')
     for triple in triples:
         f.write(f'{triple}.\n')
     f.close()
@@ -150,28 +149,24 @@ def remove_non_printable_characters(string):
     return ''.join(char for char in string if char.isprintable())
 
 
-def clean_output_dir(config):
+def remove_output_files(config, mappings_df):
     """
-    Removes all files and directories within output_dir in config depending on clean_output_dir parameter. The output
-    file, if provided in config, is always deleted.
+    Remove the files that will be used to store the final knowledge graph.
     """
 
     output_dir = config.get_output_dir()
-    output_file = config.get_output_file()
-    if output_file:
-        if os.path.exists(os.path.join(output_dir, output_file)):
+    if output_dir:
+        mapping_groups_names = set(mappings_df['mapping_partition'])
+        for mapping_group_name in mapping_groups_names:
+            mapping_group_file_path = config.get_output_file_path(mapping_group_name)
+            if os.path.exists(mapping_group_file_path):
+                # always delete output file, so that generated triples are not appended to it
+                os.remove(mapping_group_file_path)
+    else:
+        output_file = config.get_output_file_path()
+        if os.path.exists(output_file):
             # always delete output file, so that generated triples are not appended to it
-            os.remove(os.path.join(output_dir, output_file))
-
-    if config.clean_output_dir():
-        for obj in os.listdir(output_dir):
-            obj_path = os.path.join(output_dir, obj)
-            if os.path.isdir(obj_path):
-                shutil.rmtree(obj_path)
-            else:
-                os.remove(obj_path)
-
-        logging.debug('Cleaned output directory.')
+            os.remove(output_file)
 
 
 def replace_predicates_in_graph(graph, predicate_to_remove, predicate_to_add):
