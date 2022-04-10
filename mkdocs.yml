@@ -1,5 +1,52 @@
-site_name: My Docs
+site_url: https://oeg-upm.github.io/morph-kgc/
+
+site_name: Morph-KGC
+
+repo_url: https://github.com/oeg-upm/morph-kgc
+edit_uri: ""
+
+copyright: Copyright &copy; 2020 - 2022 Julián Arenas-Guerrero | Universidad Politécnica de Madrid
 
 theme:
+  icon:
+    repo: fontawesome/brands/github
   name: material
-  logo: logo.png
+  logo: assets/logo.png
+  favicon: assets/logo.png
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: white
+      accent: blue
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: white
+      accent: blue
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+  font: false
+  features:
+      navigation.instant
+      navigation.tracking
+      navigation.sections
+      navigation.expand
+      navigation.indexes
+      toc.integrate
+      toc.follow
+
+extra:
+  social:
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/ArenasGuerreroJ
+      name: Morph-KGC announcements on Twitter
+    - icon: fontawesome/brands/github
+      link: https://github.com/oeg-upm/morph-kgc
+      name: Morph-KGC on GitHub
+    - icon: fontawesome/solid/paper-plane
+      link: mailto:<julian.arenas.guerrero@upm.es>
+      name: Contact email
+  generator: false

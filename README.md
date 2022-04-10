@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://github.com/ArenasGuerreroJulian/morph-kgc/blob/main/docs/logo.png" height="100" alt="morph">
+<img src="https://github.com/ArenasGuerreroJulian/morph-kgc/blob/main/docs/assets/logo.png" height="100" alt="morph">
 </p>
 
 [![License](https://img.shields.io/pypi/l/morph-kgc.svg)](https://github.com/oeg-upm/morph-kgc/blob/main/LICENSE)
