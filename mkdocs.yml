@@ -40,13 +40,15 @@ theme:
 
 extra:
   social:
-    - icon: fontawesome/brands/twitter
-      link: https://twitter.com/ArenasGuerreroJ
-      name: Morph-KGC announcements on Twitter
     - icon: fontawesome/brands/github
       link: https://github.com/oeg-upm/morph-kgc
       name: Morph-KGC on GitHub
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/morph-kgc/
     - icon: fontawesome/solid/paper-plane
       link: mailto:<julian.arenas.guerrero@upm.es>
       name: Contact email
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/ArenasGuerreroJ
+      name: Morph-KGC announcements on Twitter
   generator: false
