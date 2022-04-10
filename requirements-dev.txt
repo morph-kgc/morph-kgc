@@ -2,3 +2,4 @@ rdflib>=6.0.0
 pytest>=6.2.5
 pyarrow>=5.0.0
 odfpy>=1.4.1
+mkdocs-material>=8.2.9
