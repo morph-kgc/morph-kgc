@@ -231,8 +231,9 @@ def remove_null_values_from_dataframe(dataframe, config, references):
     # data to str to be able to perform string replacement
     dataframe = dataframe.astype(str)
 
-    dataframe.replace(config.get_na_values(), np.NaN, inplace=True)
-    dataframe.dropna(axis=0, how='any', subset=references, inplace=True)
+    if config.get_na_values():  # if there is some NULL values to replace
+        dataframe.replace(config.get_na_values(), np.NaN, inplace=True)
+        dataframe.dropna(axis=0, how='any', subset=references, inplace=True)
 
     return dataframe
 

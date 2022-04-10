@@ -25,7 +25,6 @@ CONFIGURATION_SECTION = 'CONFIGURATION'
 ########################   CONFIGURATION PARAMETERS   ########################
 ##############################################################################
 
-NA_FILTER = 'na_filter'
 NA_VALUES = 'na_values'
 
 OUTPUT_DIR = 'output_dir'
@@ -74,7 +73,6 @@ DEFAULT_LOGGING_FILE = ''
 DEFAULT_LOGGING_LEVEL = 'INFO'
 DEFAULT_INFER_SQL_DATATYPES = 'no'
 DEFAULT_NUMBER_OF_PROCESSES = 2 * mp.cpu_count()
-DEFAULT_NA_FILTER = 'yes'
 DEFAULT_NA_VALUES = ',#N/A,N/A,#N/A N/A,n/a,NA,<NA>,#NA,NULL,null,NaN,nan,None'
 DEFAULT_ONLY_PRINTABLE_CHARACTERS = 'no'
 
@@ -112,7 +110,6 @@ CONFIGURATION_OPTIONS_EMPTY_NON_VALID = {
             ONLY_PRINTABLE_CHARACTERS: DEFAULT_ONLY_PRINTABLE_CHARACTERS,
             INFER_SQL_DATATYPES: DEFAULT_INFER_SQL_DATATYPES,
             LOGGING_LEVEL: DEFAULT_LOGGING_LEVEL,
-            NA_FILTER: DEFAULT_NA_FILTER,
             NUMBER_OF_PROCESSES: DEFAULT_NUMBER_OF_PROCESSES
         }
 
@@ -267,14 +264,8 @@ class Config(ConfigParser):
     def get_output_format(self):
         return self.get(self.configuration_section, OUTPUT_FORMAT)
 
-    def apply_na_filter(self):
-        return self.getboolean(self.configuration_section, NA_FILTER)
-
     def get_na_values(self):
-        if self.apply_na_filter():
-            return list(set(self.get(self.configuration_section, NA_VALUES).split(',')))
-        else:
-            return []
+        return list(set(self.get(self.configuration_section, NA_VALUES).split(',')))
 
     def get_safe_percent_encoding(self):
         return self.get(self.configuration_section, SAFE_PERCENT_ENCODING)
