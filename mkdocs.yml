@@ -52,3 +52,7 @@ extra:
       link: https://twitter.com/ArenasGuerreroJ
       name: Morph-KGC announcements on Twitter
   generator: false
+
+markdown_extensions:
+  - md_in_html
+  - attr_list
