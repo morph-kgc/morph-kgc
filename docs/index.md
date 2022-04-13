@@ -17,6 +17,10 @@
 - Runs on Linux, Windows and macOS systems.
 - Compatible with **Python** 3.7 or higher.
 - **Optimized** to materialize large knowledge graphs.
+- Processing of **remote** data files.
+- **Decompression** of data files *on-the-fly*.
+- Filtering of values to be treated as **NULLs**.
+- Inference of **datatypes** for relational databases.
 
 ## Licenses
 

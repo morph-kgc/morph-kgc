@@ -1,1 +1,34 @@
-Compliant with W3C standards
+# Why Morph-KGC
+
+Before creating Morph-KGC, we analysed the performance and features of several knowledge graph construction engines in a **[paper](http://ceur-ws.org/Vol-2873/paper11.pdf)**. Most of these engines presented issues when processing large volumes of data, limited functionality or poor compliance with **[R2RML](https://www.w3.org/TR/r2rml/)** and **[RML](https://rml.io/specs/rml/)**. Morph-KGC has been designed with **performance** in mind, while remaining robust and feature-rich. In addition, it is the only engine that supports **[RML-star](https://kg-construct.github.io/rml-star-spec/)** enabling the generation of the emerging **[RDF-star](https://w3c.github.io/rdf-star/cg-spec/editors_draft.html)** data model.
+
+## Reasons
+
+### Fast & Efficient
+
+Morph-KGC relies on **[mapping partitioning](http://www.semantic-web-journal.net/system/files/swj3090.pdf)** to achieve efficient knowledge graph materialization. This way, Morph-KGC can run mapping rules in **parallel** using the full power of the CPU. In those cases that require to maintain the memory usage low it is possible to use **sequential** processing, preventing the entire knowledge graph to be loaded in memory.
+
+Additional methods are also implemented to increase efficiency: **[redundant self-join elimination](http://www.semantic-web-journal.net/system/files/swj3090.pdf)**, **[vectorized operations](https://en.wikipedia.org/wiki/Array_programming)**, **[index joins](https://en.wikipedia.org/wiki/Nested_loop_join#Index_join_variation)** and more.
+
+### Reliable
+
+### Feature-Rich
+
+### W3C Compliant
+
+### RDF-star
+
+### Well-Documented
+
+### Free & Open Source
+
+Morph-KGC is available under the permissive _**[Apache License 2.0](https://github.com/oeg-upm/morph-kgc/blob/main/LICENSE)**_, which allows commercial use, modification, distribution, patent use and private use.
+
+## Featured In
+- [Practical guide for the publication of linked data from datos.gob](https://datos.gob.es/sites/default/files/doc/file/guia-publicacion-datos-enlazados.pdf).
+- [Loading Data in GraphDB: Best Practices and Tools](https://www.ontotext.com/blog/loading-data-in-graphdb-best-practices-and-tools/).
+- [FAIR Cookbook](https://faircookbook.elixir-europe.org/content/recipes/interoperability/rdf-conversion.html).
+- [RDF, RML, YARRRML: A basic tutorial to create Linked Data from a relational database table](https://katharinabrunner.de/2022/03/rdf-rml-yarrrml-kglab-morph-kgc/).
+
+## Integrated In
+- [kglab - Graph Data Science](https://github.com/DerwenAI/kglab).
