@@ -17,11 +17,16 @@
 - Runs on Linux, Windows and macOS systems.
 - Compatible with **Python** 3.7 or higher.
 - **Optimized** to materialize large knowledge graphs.
-- Available under the **[Apache License 2.0](https://github.com/oeg-upm/Morph-KGC/blob/main/LICENSE)**.
+
+## Licenses
+
+Morph-KGC is available under the **[Apache License 2.0](https://github.com/oeg-upm/Morph-KGC/blob/main/LICENSE)**.
+
+The documentation is licensed under **[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)**.
 
 ## Author
 
-- **[Julián Arenas-Guerrero](https://github.com/ArenasGuerreroJulian/) ([julian.arenas.guerrero@upm.es](mailto:ana.iglesiasm@upm.es))**
+- **[Julián Arenas-Guerrero](https://github.com/ArenasGuerreroJulian/) - [julian.arenas.guerrero@upm.es](mailto:ana.iglesiasm@upm.es)**
 
 ## Contributors
 
