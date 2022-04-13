@@ -34,6 +34,7 @@ theme:
       navigation.tracking
       navigation.sections
       navigation.expand
+      navigation.tabs
       navigation.indexes
       toc.integrate
       toc.follow
@@ -57,3 +58,12 @@ markdown_extensions:
   - md_in_html
   - attr_list
   - pymdownx.critic
+
+
+nav:
+  - Home: index.md
+  - Why Morph-KGC: why-morph-kgc.md
+  - Documentation: documentation.md
+  - Demo: demo.md
+  #- Research: research.md
+  - FAQ: faq.md
