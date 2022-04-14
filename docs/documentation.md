@@ -248,7 +248,7 @@ The supported tabular files formats are **[CSV](https://en.wikipedia.org/wiki/Co
 
 The supported hierarchical files formats are **[XML](https://www.w3.org/TR/xml/)** and **[JSON](https://www.json.org/json-en.html)**.
 
-Morph-KGC uses **[XPath 2.0](https://www.w3.org/TR/xpath20/)** to query XML files and **[JSONPath](https://tools.ietf.org/id/draft-goessner-dispatch-jsonpath-00.html)** to query JSON files.
+Morph-KGC uses **[XPath 3.0](https://www.w3.org/TR/xpath30/)** to query XML files and **[JSONPath](https://goessner.net/articles/JsonPath/)** to query JSON files.
 
 {==
 

@@ -17,14 +17,14 @@ theme:
     - media: "(prefers-color-scheme: light)"
       scheme: default
       primary: white
-      accent: blue
+      accent: red
       toggle:
         icon: material/toggle-switch-off-outline
         name: Switch to dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
       primary: white
-      accent: blue
+      accent: red
       toggle:
         icon: material/toggle-switch
         name: Switch to light mode
@@ -46,6 +46,7 @@ extra:
       name: Morph-KGC on GitHub
     - icon: fontawesome/brands/python
       link: https://pypi.org/project/morph-kgc/
+      name: Morph-KGC on PyPi
     - icon: fontawesome/solid/paper-plane
       link: mailto:<julian.arenas.guerrero@upm.es>
       name: Contact email
@@ -53,6 +54,9 @@ extra:
       link: https://twitter.com/ArenasGuerreroJ
       name: Morph-KGC announcements on Twitter
   generator: false
+
+extra_css:
+  - stylesheets/extra.css
 
 markdown_extensions:
   - md_in_html
