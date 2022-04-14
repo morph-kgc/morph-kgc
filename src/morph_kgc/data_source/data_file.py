@@ -143,7 +143,7 @@ def _read_xml(mapping_rule, references):
     xpath_result = [[[r.text for r in e.findall(reference)] for reference in references] for e in xpath_result]
 
     # IMPORTANT NOTES
-    # XPath 2.0 is used by default (XPath 3.1 is in the roadmap of the elementpath library)
+    # XPath 3.0 is used (XPath 3.1 is in the roadmap of the elementpath library)
     # with XPath 3.1 the above could be achieved using just an XPath expression by including the references in it
     # for instance, the XPath expression: /root/[id,creator/name] obtaining for example ["2479", ["Julián", "Jhon"]]
 
