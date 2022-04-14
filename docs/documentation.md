@@ -2,7 +2,7 @@
 
 ## Installation
 
-In the following we provide different ways to install and run Morph-KGC. Depending of the data sources that you are working with, you may need to install additional libraries, see **[Advanced Setup](https://oeg-upm.github.io/morph-kgc/documentation/#advanced-setup)**.
+In the following we provide different ways to install Morph-KGC. Depending of the data sources that you are working with, you may need to install additional libraries, see **[Advanced Setup](https://oeg-upm.github.io/morph-kgc/documentation/#advanced-setup)**.
 
 ### PyPi
 
@@ -44,9 +44,9 @@ python3 -m morph_kgc path/to/config.ini
 
 ### Library
 
-Morph-KGC can be used as a **library**, providing different methods to materialize the RDF knowledge graph. It integrates with **[RDFlib](https://rdflib.readthedocs.io/en/stable/)** and **[Oxigraph](https://oxigraph.org/pyoxigraph/stable/index.html)** to easily create and work with knowledge graphs in Python.
+Morph-KGC can be used as a **library**, providing different methods to materialize the RDF knowledge graph. It integrates with **[RDFlib](https://rdflib.readthedocs.io/en/stable/)** and **[Oxigraph](https://oxigraph.org/pyoxigraph/stable/index.html)** to easily create and work with knowledge graphs in **Python**.
 
-The methods in the API accept the **config** as a **string** or as the **path** to a file.
+The methods in the **API** accept the **config as a string or as the path to a INI file**.
 
 ```
 import morph_kgc
@@ -67,6 +67,8 @@ config = """
 #### [RDFlib](https://rdflib.readthedocs.io/en/stable/)
 
 **`morph_kgc.materialize(config)`**
+
+Materialize the knowledge graph to **[RDFlib](https://rdflib.readthedocs.io/en/stable/)**.
 
 ```
 # generate the triples and load them to an RDFlib graph
@@ -89,6 +91,8 @@ q_res = graph.query(' SELECT DISTINCT ?classes WHERE { ?s a ?classes } ')
 
 **`morph_kgc.materialize_oxigraph(config)`**
 
+Materialize the knowledge graph to **[Oxigraph](https://oxigraph.org/pyoxigraph/stable/index.html)**.
+
 ```
 # generate the triples and load them to Oxigraph
 
@@ -103,6 +107,8 @@ q_res = graph.query(' SELECT DISTINCT ?classes WHERE { ?s a ?classes } ')
 #### Set of Triples
 
 **`morph_kgc.materialize_set(config)`**
+
+Materialize the knowledge graph to a Python **Set of triples**.
 
 ```
 # create a Python Set with the triples
@@ -121,7 +127,7 @@ The configuration of Morph-KGC is done via an **[INI file](https://en.wikipedia.
 
 **`{++CONFIGURATION++}`**
 
-- Contains the parameters that tune the execution of Morph-KGC, see **[Engine Configuration](https://oeg-upm.github.io/morph-kgc/documentation/#engine-configuration)**.
+- Contains the parameters that **tune** the execution of Morph-KGC, see **[Engine Configuration](https://oeg-upm.github.io/morph-kgc/documentation/#engine-configuration)**.
 
 **One section for each `{++DATA SOURCE++}`**
 
@@ -129,9 +135,9 @@ The configuration of Morph-KGC is done via an **[INI file](https://en.wikipedia.
 
 **`{++DEFAULT++}`**
 
-- It is optional and it declares variables that can be used in all other sections for  convenience. For instance, you can set _main_dir: ../testing_ so that _main_dir_ can be used in the rest of the sections.
+- It is **optional** and it declares variables that can be used in all other sections for  convenience. For instance, you can set _main_dir: ../testing_ so that _main_dir_ can be used in the rest of the sections.
 
-Below is an example configuration file with one input relational source. In this case `DataSource1` is the only data source section, but additional data sources can be considered by including more sections. **[Here](https://github.com/oeg-upm/morph-kgc/blob/main/examples/configuration-file-examples/default_config.ini)** you can find a configuration file which is more complete.
+Below is an example configuration file with one input relational source. In this case `DataSource1` is the only data source section, but other data sources can be considered by including additional sections. **[Here](https://github.com/oeg-upm/morph-kgc/blob/main/examples/configuration-file-examples/default_config.ini)** you can find a configuration file which is more complete.
 
 ```
 [DEFAULT]
@@ -149,19 +155,19 @@ The parameters of the sections in the **[INI file](https://en.wikipedia.org/wiki
 
 ### Engine Configuration
 
-The execution of Morph-KGC can be tuned via the **`CONFIGURATION`** section in the **[INI file](https://en.wikipedia.org/wiki/INI_file)**. This section can be empty, in which case Morph-KGC will use the default property values.
+The execution of Morph-KGC can be **tuned** via the **`CONFIGURATION`** section in the **[INI file](https://en.wikipedia.org/wiki/INI_file)**. This section can be empty, in which case Morph-KGC will use the **default** property values.
 
 |<div style="width:190px">Property</div>|Description|Values|
 |-------|-------|-------|
-|**`output_file`**|File to write the resulting knowledge graph to.|**Default:** knowledge-graph|
-|**`output_dir`**|Directory to write the resulting knowledge graph to. If it is specified, `output_file` will be ignored, and multiple output files will generated, one for each mapping partition.|**Default:**|
-|**`na_values`**|Set of values to be interpreted as _NULL_ when retrieving data from the input sources. The set of values must be separated by commas.|**Default:** ,_#N/A_,_N/A_,_#N/A N/A_,_n/a_,_NA_,_\<NA\>_,_#NA_,_NULL_,_null_,_NaN_,_nan_,_None_|
+|**`output_file`**|File to write the resulting knowledge graph to.|**Default:** _knowledge-graph.nq_|
+|**`output_dir`**|Directory to write the resulting knowledge graph to. If it is specified, `output_file` will be ignored and multiple output files will generated, one for each mapping partition.|**Default:**|
+|**`na_values`**|Set of values to be interpreted as _NULL_ when retrieving data from the input sources. The set of values must be separated by commas.|**Default:** _#N/A_,_N/A_,_#N/A N/A_,_n/a_,_NA_,_<NA\>_,_#NA_,_NULL_,_null_,_NaN_,_nan_,,_None_|
 |**`output_format`**|RDF serialization to use for the resulting knowledge graph.|**Valid:** _[N-TRIPLES](https://www.w3.org/TR/n-triples/)_, _[N-QUADS](https://www.w3.org/TR/n-quads/)_<br>**Default:** _[N-QUADS](https://www.w3.org/TR/n-quads/)_|
 |**`only_printable_characters`**|Remove characters in the genarated RDF that are not printable.|**Valid:** _yes_, _no_, _true_, _false_, _on_, _off_, _1_, _0_<br>**Default:** _no_|
 |**`safe_percent_encoding`**|Set of ASCII characters that should not be percent encoded. All characters are encoded by default.|**Example:** _:/_<br>**Default:**|
 |**`mapping_partition`**|[Mapping partitioning](http://www.semantic-web-journal.net/system/files/swj3090.pdf) algorithm to use. Mapping partitioning can also be disabled.|**Valid:** _PARTIAL-AGGREGATIONS_, _MAXIMAL_, _no_, _false_, _off_, _0_<br>**Default:** _PARTIAL-AGGREGATIONS_|
 |**`infer_sql_datatypes`**|Infer datatypes for relational databases. If a [datatypeable term map](https://www.w3.org/TR/r2rml/#dfn-datatypeable-term-map) has a _[rr:datatype](https://www.w3.org/ns/r2rml#datatype)_ property, then the datatype will not be inferred.|**Valid:** _yes_, _no_, _true_, _false_, _on_, _off_, _1_, _0_<br>**Default:** _no_|
-|**`number_of_processes`**|The number of processes to use. If _1_, Morph-KGC will use sequential processing (minimizing memory consumption), otherwise parallel processing is used (minimizing the execution time).|**Default:** _2 * number of CPUs in the system_|
+|**`number_of_processes`**|The number of processes to use. If _1_, Morph-KGC will use sequential processing (minimizing memory consumption), otherwise parallel processing is used (minimizing execution time).|**Default:** _2 * number of CPUs in the system_|
 |**`logging_level`**|Sets the [level](https://docs.python.org/3/library/logging.html#logging-levels) of the log messages to show.|**Valid:** _DEBUG_, _INFO_, _WARNING_, _ERROR_, _CRITICAL_, _NOTSET_<br>**Default:** _INFO_|
 |**`logging_file`**|If not provided, log messages will be redirected to _stdout_. If a file path is provided, log messages will be written to the file.|**Default:**|
 |**`oracle_client_lib_dir`**|*lib_dir* directory specified in a call to *[cx_Oracle.init_oracle_client()](https://cx-oracle.readthedocs.io/en/latest/api_manual/module.html#cx_Oracle.init_oracle_client)*.|**Default:**|
@@ -169,7 +175,7 @@ The execution of Morph-KGC can be tuned via the **`CONFIGURATION`** section in t
 
 {==
 
-*__Note:__ there are some configuration properties that ignored when using Morph-KGC as a [library](https://oeg-upm.github.io/morph-kgc/documentation/#library), such as `output_file`.*
+*__Note:__ there are some configuration properties that are ignored when using Morph-KGC as a [library](https://oeg-upm.github.io/morph-kgc/documentation/#library), such as `output_file`.*
 
 ==}
 
@@ -179,18 +185,20 @@ One data source section should be included in the **[INI file](https://en.wikipe
 
 {==
 
-*__Note:__ Morph-KGC is case sensitive regarding identifiers. This means that table, column and reference names in the mappings must be the same as those in the data sources (no matter if the mapping uses [delimited identifiers](https://www.w3.org/2001/sw/rdb2rdf/r2rml/#dfn-sql-identifier)).*
+*__Note:__ Morph-KGC is case sensitive regarding identifiers. This means that table, column and reference names in the mappings must be the same as those in the data sources (no matter if the mapping uses [delimited identifiers](https://www.w3.org/TR/r2rml/#dfn-sql-identifier)).*
 
 ==}
 
 #### Relational Databases
+
+The properties to be specified for **relational databases** are listed below. All of the properties are **required**.
 
 |<div style="width:70px">Property</div>|Description|<div style="width:475px">Values</div>|
 |-------|-------|-------|
 |**`mappings`**|Specifies the mapping file(s) for the data source.|**[REQUIRED]**<br>**Valid:**<br>- The path to a mapping file.<br>- The paths to multiple mapping files separated by commas.<br>- The path to a directory containing all the mapping files for that data source.|
 |**`db_url`**|It is a URL that configures the database engine (username, password, hostname, database name). See **[here](https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls)** how to create the database URLs.|**[REQUIRED]**<br>**Example:** _dialect+driver://username:password@host:port/db_name_|
 
-Example **`db_url`** values for the DBAPI drivers recommended in **[Advanced Setup](https://oeg-upm.github.io/morph-kgc/documentation/#advanced-setup)** are:
+Example **`db_url`** values (see **[here](https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls)** all the information) for the **DBAPI drivers** recommended in **[Advanced Setup](https://oeg-upm.github.io/morph-kgc/documentation/#advanced-setup)** are:
 
 - **[MySQL](https://www.mysql.com/):** _mysql+pymysql://username:password@host:port/db_name_
 - **[PostgreSQL](https://www.postgresql.org/):** _postgresql+psycopg2://username:password@host:port/db_name_
@@ -207,7 +215,9 @@ Example **`db_url`** values for the DBAPI drivers recommended in **[Advanced Set
 
 #### Data Files
 
-|<div style="width:70px">Property</div>|Description|Values|
+The properties to be specified for **data files** are listed below. **Remote tabular** data files are supported. The `mappings` property is **required**.
+
+|<div style="width:70px">Property</div>|Description|<div style="width:475px">Values</div>|
 |-------|-------|-------|
 |**`mappings`**|Specifies the mapping file(s) for the data source.|**[REQUIRED]**<br>**Valid:**<br>- The path to one mapping file.<br>- The paths to multiple mapping files separated by commas.<br>- The path to a directory containing all the mapping files for that data source.|
 |**`file_path`**|Specifies the local path or URL of the data file. It is **optional** since it can be provided within the mapping file with _[rml:source](http://semweb.mmlab.be/ns/rml#source)_. If it is provided it will **override** the local path or URL provided in the mapping files.|**Default:**|
@@ -229,9 +239,9 @@ The supported DBMSs are **[MySQL](https://www.mysql.com/)**, **[PostgreSQL](http
 - **[Oracle](https://www.oracle.com/database/):** [cx-Oracle](https://pypi.org/project/cx-Oracle/).
 - **[Microsoft SQL Server](https://www.microsoft.com/sql-server):** [pymssql](https://pypi.org/project/pymssql/).
 - **[MariaDB](https://mariadb.org/):** [PyMySQL](https://pypi.org/project/PyMySQL/).
-- **[SQLite](https://www.sqlite.org/index.html):** does not need any additional DBAPI driver.
+- **[SQLite](https://www.sqlite.org/index.html):** does **not** need any additional DBAPI driver.
 
-Morph-KGC relies on **[SQLAlchemy](https://www.sqlalchemy.org/)**. Many DBAPI drivers are supported, you can check the full list **[here](https://docs.sqlalchemy.org/en/14/dialects/index.html#included-dialects)**.
+Morph-KGC relies on **[SQLAlchemy](https://www.sqlalchemy.org/)**. Additional DBAPI drivers are supported, you can check the full list **[here](https://docs.sqlalchemy.org/en/14/dialects/index.html#included-dialects)**.
 
 ### Tabular Files
 

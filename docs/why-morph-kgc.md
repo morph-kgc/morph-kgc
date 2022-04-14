@@ -16,7 +16,7 @@ Morph-KGC adopts the **[W3C](https://www.w3.org/)** Recommendation **[R2RML](htt
 
 ### Reliability
 
-In the **[Ontology Engineering Group](https://oeg.fi.upm.es/index.php/en/index.html)** we use and deploy Morph-KGC in our own projects. This is why we put strong emphasis in keeping it stable, with solid releases, and for other to adopt it as well. The engine is under **[Continuous Integration](https://github.com/oeg-upm/morph-kgc/actions)** using **[R2RML test cases](https://www.w3.org/2001/sw/rdb2rdf/test-cases/)**, **[RML test cases](https://rml.io/test-cases/)** and **[RML-star test cases](https://github.com/kg-construct/rml-star-test-cases)** in addition to more complex ones.
+In the **[Ontology Engineering Group](https://oeg.fi.upm.es/index.php/en/index.html)** we use and deploy Morph-KGC in our own projects. This is why we put strong emphasis in keeping it **stable**, with **solid** releases, and for other to adopt it as well. The engine is under **[Continuous Integration](https://github.com/oeg-upm/morph-kgc/actions)** using **[R2RML test cases](https://www.w3.org/2001/sw/rdb2rdf/test-cases/)**, **[RML test cases](https://rml.io/test-cases/)** and **[RML-star test cases](https://github.com/kg-construct/rml-star-test-cases)** in addition to more complex ones.
 
 We also test Morph-KGC in scenarios involving large volumes of data the with the **[GTFS-Madrid-Bench](https://github.com/oeg-upm/gtfs-bench)** and **[NPD Benchmark](https://github.com/ontop/npd-benchmark)**.
 
