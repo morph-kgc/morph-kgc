@@ -13,6 +13,7 @@ import elementpath
 import xml.etree.ElementTree as et
 
 from jsonpath import JSONPath
+from elementpath.xpath3 import XPath3Parser
 
 from ..constants import *
 from ..utils import normalize_hierarchical_data
@@ -138,7 +139,7 @@ def _read_xml(mapping_rule, references):
     with open(str(mapping_rule['data_source']), encoding='utf-8') as xml_file:
         xml_root = et.parse(xml_file).getroot()
 
-    xpath_result = elementpath.iter_select(xml_root, mapping_rule['iterator'])  # XPath2Parser by default
+    xpath_result = elementpath.iter_select(xml_root, mapping_rule['iterator'], parser=XPath3Parser)
     xpath_result = [[[r.text for r in e.findall(reference)] for reference in references] for e in xpath_result]
 
     # IMPORTANT NOTES
