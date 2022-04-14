@@ -37,7 +37,7 @@ To run the engine via **command line** you just need to execute the following:
 python3 -m morph_kgc config.ini
 ```
 
-Check the **[documentation](https://oeg-upm.github.io/morph-kgc/documentation/#configuration)** to can see how to generate the configuration **INI file**.
+Check the **[documentation](https://oeg-upm.github.io/morph-kgc/documentation/#configuration)** to can see how to generate the configuration **INI file**. **[Here](https://github.com/oeg-upm/morph-kgc/blob/main/examples/configuration-file-examples/default_config.ini)** you can also see an example INI file.
 
 It is also possible to run Morph-KGC as a **library** with **[RDFlib](https://rdflib.readthedocs.io/en/stable/)** and **[Oxigraph](https://oxigraph.org/pyoxigraph/stable/index.html)**:
 ```python
