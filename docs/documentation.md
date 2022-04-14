@@ -71,7 +71,7 @@ config = """
 ```
 # generate the triples and load them to an RDFlib graph
 
-graph = morph_kgc.materialize('config')
+graph = morph_kgc.materialize(config)
 # or
 graph = morph_kgc.materialize('/path/to/config.ini')
 
@@ -92,7 +92,7 @@ q_res = graph.query(' SELECT DISTINCT ?classes WHERE { ?s a ?classes } ')
 ```
 # generate the triples and load them to Oxigraph
 
-graph = morph_kgc.materialize_oxigraph('config')
+graph = morph_kgc.materialize_oxigraph(config)
 # or
 graph = morph_kgc.materialize_oxigraph('/path/to/config.ini')
 
@@ -107,7 +107,7 @@ q_res = graph.query(' SELECT DISTINCT ?classes WHERE { ?s a ?classes } ')
 ```
 # create a Python Set with the triples
 
-graph = morph_kgc.materialize_set('config')
+graph = morph_kgc.materialize_set(config)
 # or
 graph = morph_kgc.materialize_set('/path/to/config.ini')
 
