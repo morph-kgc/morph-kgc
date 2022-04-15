@@ -367,6 +367,7 @@ def _materialize_mapping_rule(mapping_rule, mappings_df, config, data=None, pare
 def _materialize_mapping_partition(mapping_partition_df, mappings_df, config):
     triples = set()
     for i, mapping_rule in mapping_partition_df.iterrows():
+        start_time = time.time()
         data = _materialize_mapping_rule(mapping_rule, mappings_df, config)
         triples.update(set(data['triple']))
 
