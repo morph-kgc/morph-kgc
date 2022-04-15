@@ -1,10 +1,9 @@
 name: docs
 
 on:
-  push:
-    branches:
-      - main
-      
+  release:
+    types: [created]
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
