@@ -23,6 +23,10 @@
 - Compatible with **Python** 3.7 or higher.
 - **Optimized** to materialize large knowledge graphs.
 
+## Documentation
+
+**[Read the documentation](https://oeg-upm.github.io/morph-kgc/documentation/)**.
+
 ## Getting Started
 
 **[PyPi](https://pypi.org/project/morph-kgc/)** is the fastest way to install Morph-KGC:
@@ -61,10 +65,6 @@ config = """
          """
 g_rdflib = morph_kgc.materialize(config)
 ```
-
-## Documentation
-
-**[Read the documentation](https://oeg-upm.github.io/morph-kgc/documentation/)**.
 
 ## License
 
