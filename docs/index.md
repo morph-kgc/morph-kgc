@@ -18,10 +18,6 @@
 - Compatible with **Python** 3.7 or higher.
 - **Optimized** to materialize large knowledge graphs.
 
-## Documentation
-
-**[Read the documentation](https://oeg-upm.github.io/morph-kgc/documentation/)**.
-
 ## Licenses
 
 **Morph-KGC** is available under the **[Apache License 2.0](https://github.com/oeg-upm/Morph-KGC/blob/main/LICENSE)**.

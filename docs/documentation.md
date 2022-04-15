@@ -46,7 +46,7 @@ python3 -m morph_kgc path/to/config.ini
 
 Morph-KGC can be used as a **library**, providing different methods to materialize the RDF knowledge graph. It integrates with **[RDFlib](https://rdflib.readthedocs.io/en/stable/)** and **[Oxigraph](https://oxigraph.org/pyoxigraph/stable/index.html)** to easily create and work with knowledge graphs in **Python**.
 
-The methods in the **API** accept the **config as a string or as the path to a INI file**.
+The methods in the **API** accept the **config as a string or as the path to an INI file**.
 
 ```
 import morph_kgc
