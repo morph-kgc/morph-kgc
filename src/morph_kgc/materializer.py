@@ -345,6 +345,7 @@ def _materialize_mapping_rule(mapping_rule, mappings_df, config, data=None, pare
             data = _get_data(config, mapping_rule, references)
         data = _materialize_mapping_rule_terms(data, mapping_rule, config)
 
+    # TODO: this is slow reduce the number of vectorized operations
     data['triple'] = data['subject'] + ' ' + data['predicate'] + ' ' + data['object']
 
     if nest_level == 0 and config.get_output_format() == NQUADS:
