@@ -144,7 +144,7 @@ Below is an example configuration file with one input relational source. In this
 main_dir: ../testing
 
 [CONFIGURATION]
-output_file: my-knowledge-graph.nq
+output_file: knowledge-graph.nt
 
 [DataSource1]
 mappings: ${mappings_dir}/mapping_file.rml.ttl
@@ -159,10 +159,10 @@ The execution of Morph-KGC can be **tuned** via the **`CONFIGURATION`** section 
 
 |<div style="width:190px">Property</div>|Description|Values|
 |-------|-------|-------|
-|**`output_file`**|File to write the resulting knowledge graph to.|**Default:** _knowledge-graph.nq_|
+|**`output_file`**|File to write the resulting knowledge graph to.|**Default:** _knowledge-graph.nt_|
 |**`output_dir`**|Directory to write the resulting knowledge graph to. If it is specified, `output_file` will be ignored and multiple output files will generated, one for each mapping partition.|**Default:**|
 |**`na_values`**|Set of values to be interpreted as _NULL_ when retrieving data from the input sources. The set of values must be separated by commas.|**Default:** _#N/A_,_N/A_,_#N/A N/A_,_n/a_,_NA_,_<NA\>_,_#NA_,_NULL_,_null_,_NaN_,_nan_,,_None_|
-|**`output_format`**|RDF serialization to use for the resulting knowledge graph.|**Valid:** _[N-TRIPLES](https://www.w3.org/TR/n-triples/)_, _[N-QUADS](https://www.w3.org/TR/n-quads/)_<br>**Default:** _[N-QUADS](https://www.w3.org/TR/n-quads/)_|
+|**`output_format`**|RDF serialization to use for the resulting knowledge graph.|**Valid:** _[N-TRIPLES](https://www.w3.org/TR/n-triples/)_, _[N-QUADS](https://www.w3.org/TR/n-quads/)_<br>**Default:** _[N-TRIPLES](https://www.w3.org/TR/n-triples/)_|
 |**`only_printable_characters`**|Remove characters in the genarated RDF that are not printable.|**Valid:** _yes_, _no_, _true_, _false_, _on_, _off_, _1_, _0_<br>**Default:** _no_|
 |**`safe_percent_encoding`**|Set of ASCII characters that should not be percent encoded. All characters are encoded by default.|**Example:** _:/_<br>**Default:**|
 |**`mapping_partition`**|[Mapping partitioning](http://www.semantic-web-journal.net/system/files/swj3090.pdf) algorithm to use. Mapping partitioning can also be disabled.|**Valid:** _PARTIAL-AGGREGATIONS_, _MAXIMAL_, _no_, _false_, _off_, _0_<br>**Default:** _PARTIAL-AGGREGATIONS_|

@@ -245,12 +245,25 @@ def _materialize_mapping_rule_terms(results_df, mapping_rule, config):
     return results_df
 
 
+"""
 def _merge_data(data, parent_data, mapping_rule, join_condition):
     parent_data = parent_data.add_prefix('parent_')
     child_join_references, parent_join_references = get_references_in_join_condition(mapping_rule, join_condition)
     parent_join_references = ['parent_' + reference for reference in parent_join_references]
 
     return data.merge(parent_data, how='inner', left_on=child_join_references, right_on=parent_join_references)
+"""
+
+
+def _merge_data(data, parent_data, mapping_rule, join_condition):
+    parent_data = parent_data.add_prefix('parent_')
+    child_join_references, parent_join_references = get_references_in_join_condition(mapping_rule, join_condition)
+    parent_join_references = ['parent_' + reference for reference in parent_join_references]
+
+    data = data.set_index(child_join_references, drop=False)
+    parent_data = parent_data.set_index(parent_join_references, drop=False)
+
+    return data.join(parent_data, how='inner')
 
 
 def _materialize_mapping_rule(mapping_rule, mappings_df, config, data=None, parent_join_references=set(), nest_level=0):
@@ -353,7 +366,6 @@ def _materialize_mapping_rule(mapping_rule, mappings_df, config, data=None, pare
 def _materialize_mapping_partition(mapping_partition_df, mappings_df, config):
     triples = set()
     for i, mapping_rule in mapping_partition_df.iterrows():
-        start_time = time.time()
         data = _materialize_mapping_rule(mapping_rule, mappings_df, config)
         triples.update(set(data['triple']))
 

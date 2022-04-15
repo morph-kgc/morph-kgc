@@ -17,7 +17,7 @@ def test_RMLSTARTC006b():
     g.bulk_load(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'output.nq'), 'application/n-quads')
 
     mapping_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mapping.ttl')
-    config = f'[DataSource]\nmappings={mapping_path}'
+    config = f'[CONFIGURATION]\noutput_format=N-QUADS\n[DataSource]\nmappings={mapping_path}'
 
     g_morph = morph_kgc.materialize_oxigraph(config)
 
