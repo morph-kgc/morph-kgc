@@ -42,7 +42,7 @@ setup(
     author='Julián Arenas-Guerrero',
     author_email='arenas.guerrero.julian@outlook.com',
     license='Apache 2.0',
-    description='Scalable [R2]RML engine to create RDF knowledge graphs from heterogeneous data sources.',
+    description='Powerful [R2]RML engine to create RDF knowledge graphs from heterogeneous data sources.',
     keywords='Morph-KGC, RDF, R2RML, RML, Knowledge Graphs, Data Integration'
     ,
     long_description=readme,
