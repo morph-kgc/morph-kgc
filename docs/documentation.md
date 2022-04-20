@@ -266,4 +266,4 @@ Morph-KGC uses **[XPath 3.0](https://www.w3.org/TR/xpath30/)** to query XML file
 
 ==}
 
-![OEG](assets/logo-oeg.png){ width="184" align=left } ![UPM](assets/logo-upm.png){ width="200" align=right }
+![OEG](assets/logo-oeg.png){ width="150" align=left } ![UPM](assets/logo-upm.png){ width="161" align=right }

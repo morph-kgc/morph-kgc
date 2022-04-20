@@ -24,4 +24,4 @@ Yes! Morph-KGC is distributed under the **[Apache License 2.0](https://github.co
 #### I need commercial support
 You are welcome to **[contact us](mailto:julian.arenas.guerrero@upm.es)**!
 
-![OEG](assets/logo-oeg.png){ width="184" align=left } ![UPM](assets/logo-upm.png){ width="200" align=right }
+![OEG](assets/logo-oeg.png){ width="150" align=left } ![UPM](assets/logo-upm.png){ width="161" align=right }

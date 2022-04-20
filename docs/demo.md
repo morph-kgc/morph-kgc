@@ -11,4 +11,4 @@ You just need to:
 3. Upload your **[YARRRML](https://rml.io/yarrrml/spec/)** mapping and your zipped files.
 4. **Materialize!** and download the **[RDF](https://www.w3.org/TR/rdf11-concepts/)** knowledge graph.
 
-![OEG](assets/logo-oeg.png){ width="184" align=left } ![UPM](assets/logo-upm.png){ width="200" align=right }
+![OEG](assets/logo-oeg.png){ width="150" align=left } ![UPM](assets/logo-upm.png){ width="161" align=right }
