@@ -1,0 +1,39 @@
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ex: <http://example/> .
+@prefix : <http://example.org/> .
+@base <http://example.org/> .
+:firstTM a rr:TriplesMap ;
+    rml:logicalSource [
+        rml:source "test/rml-star/RMLSTARTC002a/data.csv";
+        rml:referenceFormulation ql:CSV
+    ];
+    rml:subjectMap [
+        rr:template "http://example/{c1}"
+    ];
+    rr:predicateObjectMap [
+        rr:predicate ex:p ;
+        rml:objectMap [
+            rml:reference "c2" ;
+            rr:termType rr:BlankNode
+        ]
+    ] .
+
+:secondTM a rr:TriplesMap ;
+    rml:logicalSource [
+        rml:source "test/rml-star/RMLSTARTC002a/data.csv";
+        rml:referenceFormulation ql:CSV
+    ];
+    rml:subjectMap [
+        rml:quotedTriplesMap :firstTM
+    ];
+    rr:predicateObjectMap [
+        rr:predicate ex:q ;
+        rml:objectMap [
+            rml:reference "c3";
+            rr:datatype xsd:integer
+        ]
+    ] .

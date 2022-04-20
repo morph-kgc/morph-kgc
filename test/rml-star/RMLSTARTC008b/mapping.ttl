@@ -1,0 +1,116 @@
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@prefix ex: <http://example/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix : <http://example.org/> .
+@base <http://example.org/> .
+:elementaryTM1 a rml:NonAssertedTriplesMap ;
+    rml:logicalSource [
+        rml:source "test/rml-star/RMLSTARTC008b/data1.csv";
+        rml:referenceFormulation ql:CSV
+    ];
+    rml:subjectMap [
+        rr:template "http://example/{c1-1}"
+    ];
+    rr:predicateObjectMap [
+        rr:predicate ex:p1 ;
+        rml:objectMap [
+            rr:template "http://example/{c1-2}"
+        ]
+    ] .
+
+:firstJoinTM a rml:NonAssertedTriplesMap ;
+    rml:logicalSource [
+        rml:source "test/rml-star/RMLSTARTC008b/data1.csv";
+        rml:referenceFormulation ql:CSV
+    ];
+    rml:subjectMap [
+            rml:quotedTriplesMap :elementaryTM1
+    ];
+    rr:predicateObjectMap [
+        rr:predicate ex:q1; ;
+        rml:objectMap [
+            rml:quotedTriplesMap :elementaryTM2
+        ]
+    ] .
+
+:elementaryTM2 a rml:NonAssertedTriplesMap ;
+    rml:logicalSource [
+        rml:source "test/rml-star/RMLSTARTC008b/data1.csv";
+        rml:referenceFormulation ql:CSV
+    ];
+    rml:subjectMap [
+        rr:template "http://example/{c1-3}"
+    ];
+    rr:predicateObjectMap [
+        rr:predicate ex:p2 ;
+        rml:objectMap [
+            rr:template "http://example/{c1-4}"
+        ]
+    ] .
+
+:centralJoinTM a rr:TriplesMap ;
+    rml:logicalSource [
+        rml:source "test/rml-star/RMLSTARTC008b/data2.csv";
+        rml:referenceFormulation ql:CSV
+    ];
+    rml:subjectMap [
+            rml:quotedTriplesMap :firstJoinTM ;
+            rr:joinCondition [
+              rr:child "c2-5" ;
+              rr:parent "c1-5" ;
+            ];
+    ];
+    rr:predicateObjectMap [
+        rr:predicate ex:q2;
+        rml:objectMap [
+            rml:quotedTriplesMap :secondJoinTM
+        ]
+    ] .
+
+:elementaryTM3 a rml:NonAssertedTriplesMap ;
+    rml:logicalSource [
+        rml:source "test/rml-star/RMLSTARTC008b/data2.csv";
+        rml:referenceFormulation ql:CSV
+    ];
+    rml:subjectMap [
+        rr:template "http://example/{c2-1}"
+    ];
+    rr:predicateObjectMap [
+        rr:predicate ex:p3 ;
+        rml:objectMap [
+            rr:template "http://example/{c2-2}"
+        ]
+    ] .
+
+:secondJoinTM a rml:NonAssertedTriplesMap ;
+    rml:logicalSource [
+        rml:source "test/rml-star/RMLSTARTC008b/data2.csv";
+        rml:referenceFormulation ql:CSV
+    ];
+    rml:subjectMap [
+            rml:quotedTriplesMap :elementaryTM3
+    ];
+    rr:predicateObjectMap [
+        rr:predicate ex:q3; ;
+        rml:objectMap [
+            rml:quotedTriplesMap :elementaryTM4
+        ]
+    ] .
+
+:elementaryTM4 a rml:NonAssertedTriplesMap ;
+    rml:logicalSource [
+        rml:source "test/rml-star/RMLSTARTC008b/data2.csv";
+        rml:referenceFormulation ql:CSV
+    ];
+    rml:subjectMap [
+        rr:template "http://example/{c2-3}"
+    ];
+    rr:predicateObjectMap [
+        rr:predicate ex:p4 ;
+        rml:objectMap [
+            rr:template "http://example/{c2-4}"
+        ]
+    ] .

@@ -195,6 +195,40 @@ def _complete_termtypes(mapping_graph):
     return mapping_graph
 
 
+def _complete_triples_map_class(mapping_graph):
+    """
+    Adds rr:TriplesMap typing for triples maps. For rml:NonAssertedTriplesMap remove rr:TriplesMap typing.
+    Triples maps without predicate object maps are transfored to non asserted triples maps as they do no generate
+    triples (but can be used in join conditions in other triples maps).
+    """
+
+    query = 'SELECT DISTINCT ?triples_map ?logical_source WHERE { ' \
+            f'?triples_map <{RML_LOGICAL_SOURCE}> ?logical_source . ' \
+            f'OPTIONAL {{ ?triples_map a ?triples_map_class . }} . ' \
+            'FILTER ( !bound(?triples_map_class) ) }'
+    for triples_map, _ in mapping_graph.query(query):
+        mapping_graph.add((triples_map, rdflib.term.URIRef(RDF_TYPE), rdflib.term.URIRef(R2RML_TRIPLES_MAP_CLASS)))
+
+    # rr:TriplesMap without predicate object maps to rml:NonAssertedTriplesMaps
+    query = 'SELECT DISTINCT ?triples_map ?logical_source WHERE { ' \
+            f'?triples_map <{RML_LOGICAL_SOURCE}> ?logical_source . ' \
+            f'OPTIONAL {{ ?triples_map <{R2RML_PREDICATE_OBJECT_MAP}> ?pom . }} . ' \
+            'FILTER ( !bound(?pom) ) }'
+    for triples_map, _ in mapping_graph.query(query):
+        mapping_graph.add(
+            (triples_map, rdflib.term.URIRef(RDF_TYPE), rdflib.term.URIRef(RML_STAR_NON_ASSERTED_TRIPLES_MAP_CLASS)))
+
+    # for rml:NonAssertedTriplesMap remove triples typing them as rr:TriplesMap
+    query = 'SELECT DISTINCT ?triples_map ?logical_source WHERE { ' \
+            f'?triples_map <{RML_LOGICAL_SOURCE}> ?logical_source . ' \
+            f'?triples_map a <{R2RML_TRIPLES_MAP_CLASS}> . ' \
+            f'?triples_map a <{RML_STAR_NON_ASSERTED_TRIPLES_MAP_CLASS}> . }}'
+    for triples_map, _ in mapping_graph.query(query):
+        mapping_graph.remove((triples_map, rdflib.term.URIRef(RDF_TYPE), rdflib.term.URIRef(R2RML_TRIPLES_MAP_CLASS)))
+
+    return mapping_graph
+
+
 def _remove_string_datatypes(mapping_graph):
     """
     Removes xsd:string data types. xsd:string is equivalent to not specifying any data type.
@@ -257,6 +291,12 @@ def _transform_mappings_into_dataframe(mapping_graph, section_name):
     source_mappings_df['subject_join_conditions'] = source_mappings_df['subject_join_conditions'].astype(str)
     # object_map and subject_map columns no longer needed, remove them
     source_mappings_df = source_mappings_df.drop(['subject_map', 'object_map'], axis=1)
+
+    # convert all values to string
+    for i, row in source_mappings_df.iterrows():
+        for col in source_mappings_df.columns:
+            if pd.notna(row[col]):
+                source_mappings_df.at[i, col] = str(row[col])
 
     # link the mapping rules to their data source name
     source_mappings_df['source_name'] = section_name
@@ -417,6 +457,8 @@ class MappingParser:
         mapping_graph = _complete_termtypes(mapping_graph)
         # remove xsd:string data types as it is equivalent to not specifying any data type
         mapping_graph = _remove_string_datatypes(mapping_graph)
+        # add rr:TriplesMap typing
+        mapping_graph = _complete_triples_map_class(mapping_graph)
         # check termtypes are correct
         _validate_termtypes(mapping_graph)
 
@@ -440,12 +482,6 @@ class MappingParser:
         self.mappings_df.insert(0, 'id', self.mappings_df.reset_index(drop=True).index)
 
         self._remove_self_joins_from_mappings()
-
-        # TODO: this is not correct as this rules could be referenced by a join with join conditions
-        # remove mapping rules with no predicate or object (subject map is conserved because rdf class was added as POM)
-        self.mappings_df = self.mappings_df.dropna(subset=['predicate_constant', 'predicate_template',
-                                                           'predicate_reference', 'object_constant', 'object_template',
-                                                           'object_reference'], how='all')
 
     def _complete_source_types(self):
         """
@@ -516,8 +552,7 @@ class MappingParser:
 
         for i, mapping_rule in self.mappings_df.iterrows():
             if pd.notna(mapping_rule['object_parent_triples_map']):
-                parent_triples_map_rule = get_mapping_rule_from_triples_map_id(self.mappings_df, mapping_rule[
-                    'object_parent_triples_map'])
+                parent_triples_map_rule = get_mapping_rule(self.mappings_df, mapping_rule['object_parent_triples_map'])
 
                 # str() is to be able to compare np.nan
                 if str(mapping_rule['data_source']) == str(parent_triples_map_rule['data_source']) and \

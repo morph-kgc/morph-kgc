@@ -25,13 +25,11 @@ CONFIGURATION_SECTION = 'CONFIGURATION'
 ########################   CONFIGURATION PARAMETERS   ########################
 ##############################################################################
 
-NA_FILTER = 'na_filter'
 NA_VALUES = 'na_values'
 
 OUTPUT_DIR = 'output_dir'
 OUTPUT_FILE = 'output_file'
 OUTPUT_FORMAT = 'output_format'
-CLEAN_OUTPUT_DIR = 'clean_output_dir'
 ONLY_PRINTABLE_CHARACTERS = 'only_printable_characters'
 SAFE_PERCENT_ENCODING = 'safe_percent_encoding'
 
@@ -65,16 +63,14 @@ DATABASE_URL = 'db_url'
 ########################   ARGUMENTS DEFAULT VALUES   ########################
 ##############################################################################
 
-DEFAULT_OUTPUT_DIR = 'output'
-DEFAULT_OUTPUT_FILE = 'result'
-DEFAULT_OUTPUT_FORMAT = NQUADS
-DEFAULT_CLEAN_OUTPUT_DIR = 'no'
+DEFAULT_OUTPUT_FILE = 'knowledge-graph'
+DEFAULT_OUTPUT_DIR = ''
+DEFAULT_OUTPUT_FORMAT = NTRIPLES
 DEFAULT_SAFE_PERCENT_ENCODING = ''
 DEFAULT_LOGGING_FILE = ''
 DEFAULT_LOGGING_LEVEL = 'INFO'
 DEFAULT_INFER_SQL_DATATYPES = 'no'
 DEFAULT_NUMBER_OF_PROCESSES = 2 * mp.cpu_count()
-DEFAULT_NA_FILTER = 'yes'
 DEFAULT_NA_VALUES = ',#N/A,N/A,#N/A N/A,n/a,NA,<NA>,#NA,NULL,null,NaN,nan,None'
 DEFAULT_ONLY_PRINTABLE_CHARACTERS = 'no'
 
@@ -108,11 +104,9 @@ CONFIGURATION_OPTIONS_EMPTY_VALID = {
 CONFIGURATION_OPTIONS_EMPTY_NON_VALID = {
             OUTPUT_DIR: DEFAULT_OUTPUT_DIR,
             OUTPUT_FORMAT: DEFAULT_OUTPUT_FORMAT,
-            CLEAN_OUTPUT_DIR: DEFAULT_CLEAN_OUTPUT_DIR,
             ONLY_PRINTABLE_CHARACTERS: DEFAULT_ONLY_PRINTABLE_CHARACTERS,
             INFER_SQL_DATATYPES: DEFAULT_INFER_SQL_DATATYPES,
             LOGGING_LEVEL: DEFAULT_LOGGING_LEVEL,
-            NA_FILTER: DEFAULT_NA_FILTER,
             NUMBER_OF_PROCESSES: DEFAULT_NUMBER_OF_PROCESSES
         }
 
@@ -225,9 +219,6 @@ class Config(ConfigParser):
     def enforce_sql_filter_null(self):
         return self.getboolean(self.configuration_section, ENFORCE_SQL_QUERY_FILTER_NULL)
 
-    def clean_output_dir(self):
-        return self.getboolean(self.configuration_section, CLEAN_OUTPUT_DIR)
-
     def only_write_printable_characters(self):
         return self.getboolean(self.configuration_section, ONLY_PRINTABLE_CHARACTERS)
 
@@ -267,31 +258,26 @@ class Config(ConfigParser):
     def get_output_format(self):
         return self.get(self.configuration_section, OUTPUT_FORMAT)
 
-    def apply_na_filter(self):
-        return self.getboolean(self.configuration_section, NA_FILTER)
-
     def get_na_values(self):
-        if self.apply_na_filter():
-            return list(set(self.get(self.configuration_section, NA_VALUES).split(',')))
-        else:
-            return []
+        return list(set(self.get(self.configuration_section, NA_VALUES).split(',')))
 
     def get_safe_percent_encoding(self):
         return self.get(self.configuration_section, SAFE_PERCENT_ENCODING)
 
-    def get_output_file_path(self, mapping_partition=None):
-        if self.get_output_file():
-            file_name = self.get_output_file()
-        elif mapping_partition:
-            file_name = mapping_partition
-        else:
-            # neither output_file was specified nor mapping partition are used. Use default output_file.
-            file_name = OUTPUT_FILE
-
+    def get_output_file_path(self, mapping_group=None):
         file_extension = OUTPUT_FORMAT_FILE_EXTENSION[self.get_output_format()]
 
         # if filename already has a suffix, with_suffix() will replace it with the new suffix
-        file_path = Path(self.get_output_dir(), file_name).with_suffix(file_extension)
+        if self.get_output_dir():
+            file_name = mapping_group
+            file_path = Path(self.get_output_dir(), file_name).with_suffix(file_extension)
+        elif self.get_output_file():
+            file_name = self.get_output_file()
+            file_path = Path(file_name).with_suffix(file_extension)
+        else:
+            # neither output_file was specified nor mapping partition are used. Use default output_file.
+            file_name = OUTPUT_FILE
+            file_path = Path(file_name).with_suffix(file_extension)
 
         return file_path.as_posix()
 

@@ -10,9 +10,10 @@ import json
 import pandas as pd
 import numpy as np
 import elementpath
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as et
 
 from jsonpath import JSONPath
+from elementpath.xpath3 import XPath3Parser
 
 from ..constants import *
 from ..utils import normalize_hierarchical_data
@@ -37,7 +38,7 @@ def get_file_data(mapping_rule, references):
     elif file_source_type == STATA:
         return _read_stata(mapping_rule, references)
     elif file_source_type in SAS:
-        return _read_sas(mapping_rule, references)
+        return _read_sas(mapping_rule)
     elif file_source_type == SPSS:
         return _read_spss(mapping_rule, references)
     elif file_source_type == JSON:
@@ -68,7 +69,7 @@ def _read_parquet(mapping_rule, references):
 
 
 def _read_feather(mapping_rule, references):
-    return pd.read_feather(str(mapping_rule['data_source']), use_threads=True, columns=references)
+    return pd.read_feather(str(mapping_rule['data_source']), use_threads=False, columns=references)
 
 
 def _read_orc(mapping_rule, references):
@@ -85,7 +86,7 @@ def _read_stata(mapping_rule, references):
                          order_categoricals=False)
 
 
-def _read_sas(mapping_rule, references):
+def _read_sas(mapping_rule):
     return pd.read_sas(str(mapping_rule['data_source']), encoding='utf-8')
 
 
@@ -136,13 +137,13 @@ def _read_json(mapping_rule, references):
 
 def _read_xml(mapping_rule, references):
     with open(str(mapping_rule['data_source']), encoding='utf-8') as xml_file:
-        xml_root = ET.parse(xml_file).getroot()
+        xml_root = et.parse(xml_file).getroot()
 
-    xpath_result = elementpath.iter_select(xml_root, mapping_rule['iterator'])  # XPath2Parser by default
+    xpath_result = elementpath.iter_select(xml_root, mapping_rule['iterator'], parser=XPath3Parser)
     xpath_result = [[[r.text for r in e.findall(reference)] for reference in references] for e in xpath_result]
 
     # IMPORTANT NOTES
-    # XPath 2.0 is used by default (XPath 3.1 is in the roadmap of the elementpath library)
+    # XPath 3.0 is used (XPath 3.1 is in the roadmap of the elementpath library)
     # with XPath 3.1 the above could be achieved using just an XPath expression by including the references in it
     # for instance, the XPath expression: /root/[id,creator/name] obtaining for example ["2479", ["Julián", "Jhon"]]
 
