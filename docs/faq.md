@@ -10,7 +10,7 @@ The best start point is the **[R2RML Recommendation](https://www.w3.org/TR/r2rml
 The best place to get the answer is at **[Discussions for RML questions](https://github.com/kg-construct/rml-questions/discussions)**.
 
 #### I installed Morph-KGC but I get an error saying some dependency is missing
-To use relational databases and some data files it is required to install additional libraries. You can see which one you need to install in **[Advanced Setup](https://oeg-upm.github.io/morph-kgc/documentation/#advanced-setup)**.
+To use relational databases and some data files it is required to install additional libraries. You can see which one you need to install in **[Advanced Setup](https://morph-kgc.readthedocs.io/en/latest/documentation/#advanced-setup)**.
 
 #### How do I submit a bug report?
 Please, [open an issue](https://github.com/oeg-upm/morph-kgc/issues/new/choose) with a clear description of the bug. We will try to solve it as soon as possible.

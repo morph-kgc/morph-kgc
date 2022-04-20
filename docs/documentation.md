@@ -2,7 +2,7 @@
 
 ## Installation
 
-In the following we provide different ways to install Morph-KGC. Depending of the data sources that you are working with, you may need to install additional libraries, see **[Advanced Setup](https://oeg-upm.github.io/morph-kgc/documentation/#advanced-setup)**.
+In the following we provide different ways to install Morph-KGC. Depending of the data sources that you are working with, you may need to install additional libraries, see **[Advanced Setup](https://morph-kgc.readthedocs.io/en/latest/documentation/#advanced-setup)**.
 
 ### PyPi
 
@@ -32,7 +32,7 @@ pip3 install .
 
 ## Usage
 
-Morph-KGC uses an **[INI file](https://en.wikipedia.org/wiki/INI_file)** to configure the materialization process, see **[Configuration](https://oeg-upm.github.io/morph-kgc/documentation/#configuration)**.
+Morph-KGC uses an **[INI file](https://en.wikipedia.org/wiki/INI_file)** to configure the materialization process, see **[Configuration](https://morph-kgc.readthedocs.io/en/latest/documentation/#configuration)**.
 
 ### Command Line
 
@@ -60,7 +60,7 @@ config = """
 
 {==
 
-*__Note:__ Morph-KGC does not parallelize when running as a [library](https://oeg-upm.github.io/morph-kgc/documentation/#library).*
+*__Note:__ Morph-KGC does not parallelize when running as a [library](https://morph-kgc.readthedocs.io/en/latest/documentation/#library).*
 
 ==}
 
@@ -127,11 +127,11 @@ The configuration of Morph-KGC is done via an **[INI file](https://en.wikipedia.
 
 **`{++CONFIGURATION++}`**
 
-- Contains the parameters that **tune** the execution of Morph-KGC, see **[Engine Configuration](https://oeg-upm.github.io/morph-kgc/documentation/#engine-configuration)**.
+- Contains the parameters that **tune** the execution of Morph-KGC, see **[Engine Configuration](https://morph-kgc.readthedocs.io/en/latest/documentation/#engine-configuration)**.
 
 **One section for each `{++DATA SOURCE++}`**
 
-- Each input data source has its own section, see **[Data Sources](https://oeg-upm.github.io/morph-kgc/documentation/#data-sources)**.
+- Each input data source has its own section, see **[Data Sources](https://morph-kgc.readthedocs.io/en/latest/documentation/#data-sources)**.
 
 **`{++DEFAULT++}`**
 
@@ -175,7 +175,7 @@ The execution of Morph-KGC can be **tuned** via the **`CONFIGURATION`** section 
 
 {==
 
-*__Note:__ there are some configuration properties that are ignored when using Morph-KGC as a [library](https://oeg-upm.github.io/morph-kgc/documentation/#library), such as `output_file`.*
+*__Note:__ there are some configuration properties that are ignored when using Morph-KGC as a [library](https://morph-kgc.readthedocs.io/en/latest/documentation/#library), such as `output_file`.*
 
 ==}
 
@@ -198,7 +198,7 @@ The properties to be specified for **relational databases** are listed below. Al
 |**`mappings`**|Specifies the mapping file(s) for the data source.|**[REQUIRED]**<br>**Valid:**<br>- The path to a mapping file.<br>- The paths to multiple mapping files separated by commas.<br>- The path to a directory containing all the mapping files for that data source.|
 |**`db_url`**|It is a URL that configures the database engine (username, password, hostname, database name). See **[here](https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls)** how to create the database URLs.|**[REQUIRED]**<br>**Example:** _dialect+driver://username:password@host:port/db_name_|
 
-Example **`db_url`** values (see **[here](https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls)** all the information) for the **DBAPI drivers** recommended in **[Advanced Setup](https://oeg-upm.github.io/morph-kgc/documentation/#advanced-setup)** are:
+Example **`db_url`** values (see **[here](https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls)** all the information) for the **DBAPI drivers** recommended in **[Advanced Setup](https://morph-kgc.readthedocs.io/en/latest/documentation/#advanced-setup)** are:
 
 - **[MySQL](https://www.mysql.com/):** _mysql+pymysql://username:password@host:port/db_name_
 - **[PostgreSQL](https://www.postgresql.org/):** _postgresql+psycopg2://username:password@host:port/db_name_
@@ -209,7 +209,7 @@ Example **`db_url`** values (see **[here](https://docs.sqlalchemy.org/en/14/core
 
 {==
 
-*__Note:__ to run Morph-KGC with [Oracle](https://www.oracle.com/database/), the libraries of the [Oracle Client](https://www.oracle.com/database/technologies/instant-client/downloads.html) need to be loaded. See [cx_Oracle Installation](https://cx-oracle.readthedocs.io/en/latest/user_guide/installation.html) to install these libraries. See [cx_Oracle Initialization](https://cx-oracle.readthedocs.io/en/latest/user_guide/initialization.html) to setup the initialization of [Oracle](https://www.oracle.com/database/). Depending on the selected option, provide the properties `oracle_client_lib_dir` and `oracle_client_config_dir` in the [`CONFIGURATION`](https://oeg-upm.github.io/morph-kgc/documentation/#engine-configuration) section accordingly.*
+*__Note:__ to run Morph-KGC with [Oracle](https://www.oracle.com/database/), the libraries of the [Oracle Client](https://www.oracle.com/database/technologies/instant-client/downloads.html) need to be loaded. See [cx_Oracle Installation](https://cx-oracle.readthedocs.io/en/latest/user_guide/installation.html) to install these libraries. See [cx_Oracle Initialization](https://cx-oracle.readthedocs.io/en/latest/user_guide/initialization.html) to setup the initialization of [Oracle](https://www.oracle.com/database/). Depending on the selected option, provide the properties `oracle_client_lib_dir` and `oracle_client_config_dir` in the [`CONFIGURATION`](https://morph-kgc.readthedocs.io/en/latest/documentation/#engine-configuration) section accordingly.*
 
 ==}
 
