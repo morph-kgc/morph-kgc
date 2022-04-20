@@ -36,3 +36,5 @@ Morph-KGC is available under the permissive **[Apache License 2.0](https://githu
 
 ## Integrated In
 - [**kglab** - Graph Data Science](https://github.com/DerwenAI/kglab).
+
+![OEG](assets/logo-oeg.png){ width="184" align=left } ![UPM](assets/logo-upm.png){ width="200" align=right }

@@ -33,3 +33,5 @@ The **documentation** is licensed under **[CC BY-SA 4.0](https://creativecommons
 ## Contributors
 
 See the full list of contributors in **[GitHub](https://github.com/oeg-upm/morph-kgc/graphs/contributors)**.
+
+![OEG](assets/logo-oeg.png){ width="184" align=left } ![UPM](assets/logo-upm.png){ width="200" align=right }
