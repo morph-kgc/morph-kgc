@@ -1,7 +1,5 @@
 site_url: https://oeg-upm.github.io/morph-kgc/
 
-docs_dir: docs
-
 site_name: Morph-KGC
 
 repo_url: https://github.com/oeg-upm/morph-kgc
@@ -67,9 +65,9 @@ markdown_extensions:
 
 
 nav:
-  - Home: https://oeg-upm.github.io/morph-kgc/
-  - Why Morph-KGC: https://oeg-upm.github.io/morph-kgc/why-morph-kgc
-  - Documentation: https://oeg-upm.github.io/morph-kgc/documentation
-  - Demo: https://oeg-upm.github.io/morph-kgc/demo
+  - Home: index.md
+  - Why Morph-KGC: why-morph-kgc.md
+  - Documentation: documentation.md
+  - Demo: demo.md
   #- Research: research.md
-  - FAQ: https://oeg-upm.github.io/morph-kgc/faq
+  - FAQ: faq.md
