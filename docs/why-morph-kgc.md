@@ -2,7 +2,7 @@
 
 Before starting with the development of **Morph-KGC**, we analysed the performance and features of several knowledge graph construction engines, as described in this **[paper](http://ceur-ws.org/Vol-2873/paper11.pdf)**. Most of these engines presented issues when processing large volumes of data, as well as limited functionality or poor compliance with **[R2RML](https://www.w3.org/TR/r2rml/)** and **[RML](https://rml.io/specs/rml/)**. Morph-KGC has been designed with **performance** in mind, while remaining robust and feature-rich. In addition, it is currently the only engine that supports **[RML-star](https://kg-construct.github.io/rml-star-spec/)**, enabling the generation of the emerging **[RDF-star](https://w3c.github.io/rdf-star/cg-spec/editors_draft.html)** data model.
 
-## Our reasons to recommend you to use Morph-KGC
+## Our Reasons to Recommend You to Use Morph-KGC
 
 ### Performance
 
@@ -16,7 +16,7 @@ Morph-KGC adopts the **[W3C](https://www.w3.org/)** Recommendation **[R2RML](htt
 
 ### Reliability
 
-Morph-KGC is being now used for all our Knowledge Graph construction projects at the **[Ontology Engineering Group](https://oeg.fi.upm.es/)**, and other organisations are starting adopting it as well for their RDF data materialisation pipelines. This is why we put strong emphasis in keeping it **stable**, with **solid** releases. The engine is under **[Continuous Integration](https://github.com/oeg-upm/morph-kgc/actions)** using **[R2RML test cases](https://www.w3.org/2001/sw/rdb2rdf/test-cases/)**, **[RML test cases](https://rml.io/test-cases/)** and **[RML-star test cases](https://github.com/kg-construct/rml-star-test-cases)**, in addition to more complex ones.
+Morph-KGC is being now used for all our knowledge graph construction projects at the **[Ontology Engineering Group](https://oeg.fi.upm.es/)**, and other organizations are starting to adopt it as well for their RDF data materialization pipelines. This is why we put strong emphasis in keeping it **stable**, with **solid** releases. The engine is under **[Continuous Integration](https://github.com/oeg-upm/morph-kgc/actions)** using **[R2RML test cases](https://www.w3.org/2001/sw/rdb2rdf/test-cases/)**, **[RML test cases](https://rml.io/test-cases/)** and **[RML-star test cases](https://github.com/kg-construct/rml-star-test-cases)**, in addition to more complex ones.
 
 We also frequently test Morph-KGC in scenarios involving large volumes of data the with the **[GTFS-Madrid-Bench](https://github.com/oeg-upm/gtfs-bench)** and **[NPD Benchmark](https://github.com/ontop/npd-benchmark)**.
 

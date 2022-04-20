@@ -16,7 +16,7 @@
 - Output **[RDF](https://www.w3.org/TR/rdf11-concepts/)** serializations: **[N-Triples](https://www.w3.org/TR/n-triples/)**, **[N-Quads](https://www.w3.org/TR/n-quads/)**.
 - Runs on **Linux**, **Windows** and **macOS** operating systems.
 - Compatible with **Python** 3.7 or higher.
-- **Optimized** to materialise large knowledge graphs.
+- **Optimized** to materialize large knowledge graphs.
 
 ## Licenses
 
