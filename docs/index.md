@@ -1,5 +1,5 @@
 <figure markdown>
-  ![Morph-KGC](https://oeg-upm.github.io/morph-kgc/morph-kgc/assets/logo.png){ width="300" }
+  ![Morph-KGC](https://oeg-upm.github.io/morph-kgc/assets/logo.png){ width="300" }
 </figure>
 
 #
