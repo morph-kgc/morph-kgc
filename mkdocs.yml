@@ -65,9 +65,9 @@ markdown_extensions:
 
 
 nav:
-  - Home: index.md
-  - Why Morph-KGC: why-morph-kgc.md
-  - Documentation: documentation.md
-  - Demo: demo.md
+  - Home: https://oeg-upm.github.io/morph-kgc/morph-kgc/
+  - Why Morph-KGC: https://oeg-upm.github.io/morph-kgc/morph-kgc/why-morph-kgc
+  - Documentation: https://oeg-upm.github.io/morph-kgc/morph-kgc/documentation
+  - Demo: https://oeg-upm.github.io/morph-kgc/morph-kgc/demo
   #- Research: research.md
-  - FAQ: faq.md
+  - FAQ: https://oeg-upm.github.io/morph-kgc/morph-kgc/faq
