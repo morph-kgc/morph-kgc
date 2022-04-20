@@ -2,7 +2,7 @@
 
 ## Installation
 
-In the following we provide different ways to install Morph-KGC. Depending of the data sources that you are working with, you may need to install additional libraries, see **[Advanced Setup](https://morph-kgc.readthedocs.io/en/latest/documentation/#advanced-setup)**.
+In the following we describe different ways in which you can install and use Morph-KGC. Depending on the data sources that you need to work with, you may need to install additional libraries, see **[Advanced Setup](https://morph-kgc.readthedocs.io/en/latest/documentation/#advanced-setup)**.
 
 ### PyPi
 
