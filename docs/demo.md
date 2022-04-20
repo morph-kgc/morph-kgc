@@ -1,8 +1,8 @@
 # Demo
 
-Get started without having to install **Morph-KGC** with the **[`ONLINE DEMO`](https://morph.oeg.fi.upm.es/demo/morph-kgc)**.
+Get started without having to install **Morph-KGC** with our **[`ONLINE DEMO`](https://morph.oeg.fi.upm.es/demo/morph-kgc)**.
 
-The demo allows to create **[RDF](https://www.w3.org/TR/rdf11-concepts/)** knowledge graphs from data files (**[CSV](https://en.wikipedia.org/wiki/Comma-separated_values)**, **[XML](https://www.w3.org/TR/xml/)**, **[JSON](https://www.json.org/json-en.html)**) using the **[YARRRML](https://rml.io/yarrrml/spec/)** mapping syntax via a web service.
+This demo allows creating **[RDF](https://www.w3.org/TR/rdf11-concepts/)** knowledge graphs from data files (**[CSV](https://en.wikipedia.org/wiki/Comma-separated_values)**, **[XML](https://www.w3.org/TR/xml/)**, **[JSON](https://www.json.org/json-en.html)**) using the **[YARRRML](https://rml.io/yarrrml/spec/)** mapping syntax via a web service.
 
 You just need to:
 
