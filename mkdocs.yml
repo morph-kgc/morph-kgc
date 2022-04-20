@@ -1,5 +1,7 @@
 site_url: https://oeg-upm.github.io/morph-kgc/
 
+docs_dir: docs
+
 site_name: Morph-KGC
 
 repo_url: https://github.com/oeg-upm/morph-kgc
