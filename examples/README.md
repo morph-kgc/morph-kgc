@@ -10,7 +10,7 @@ To start a docker container with the MySQL instance containing the data, run the
 docker run --name mysql-gtfs1 -p 3306:3306 -d -e MYSQL_ROOT_PASSWORD=gtfs oegdataintegration/mysql-gtfs1:1.0
 ```
 
-Note that the MySQL driver needs to be installed, as detailed in the [Documentation](https://morph-kgc.readthedocs.io/en/latest/documentation/#relational-databases_1). You just need to run the following:
+Note that the MySQL driver needs to be installed, as detailed in the **[documentation](https://morph-kgc.readthedocs.io/en/latest/documentation/#relational-databases_1)**. You just need to run the following:
 ```
 pip install pymysql
 pip install cryptography
@@ -35,4 +35,4 @@ An example for _CSV_ can be found in the [`csv-example`](https://github.com/oeg-
 Note that the **_paths_ parameters in the configuration file need to be updated** accordingly. Given that this example involves multiple CSV files, the paths to these files are provided in the mapping file with the `rml:source` property. The values of this property have to be updated with the correct _paths_ to the CSV files in your system.
 
 ### Configuration Files
-The directory [`configuration-file-examples`](https://github.com/oeg-upm/morph-kgc/tree/main/examples/configuration-file-examples) contains some configuration files to run Morph-KGC with. [default_config.ini](https://github.com/oeg-upm/Morph-KGC/blob/main/examples/configuration-file-examples/default_config.ini) contains all possible configuration options along with their default values. Options that are not provided in the `CONFIGURATION` section will use the default values. You can see all the information about configuration files in the [Documentation](https://morph-kgc.readthedocs.io/en/latest/documentation/#configuration).
+The directory [`configuration-file-examples`](https://github.com/oeg-upm/morph-kgc/tree/main/examples/configuration-file-examples) contains some configuration files to run Morph-KGC with. [default_config.ini](https://github.com/oeg-upm/Morph-KGC/blob/main/examples/configuration-file-examples/default_config.ini) contains all possible configuration options along with their default values. Options that are not provided in the `CONFIGURATION` section will use the default values. You can see all the information about configuration files in the **[documentation](https://morph-kgc.readthedocs.io/en/latest/documentation/#configuration)**.
