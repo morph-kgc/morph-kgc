@@ -10,10 +10,11 @@
 
 - Supports several declarative mapping languages: **[R2RML](https://www.w3.org/TR/r2rml/)**, **[RML](https://rml.io/specs/rml/)** and **[RML-star](https://kg-construct.github.io/rml-star-spec/)**.
 - Input data formats:
-    - **Relational databases**: **[MySQL](https://www.mysql.com/)**, **[PostgreSQL](https://www.postgresql.org/)**, **[Oracle](https://www.oracle.com/database/)**, **[Microsoft SQL Server](https://www.microsoft.com/sql-server)**, **[MariaDB](https://mariadb.org/)**, **[SQLite](https://www.sqlite.org/index.html)**.
+    - **Relational databases**: **[MySQL](https://www.mysql.com/)**, **[PostgreSQL](https://www.postgresql.org/)**, **[Oracle](https://www.oracle.com/database/)**, **[Microsoft SQL Server](https://www.microsoft.com/sql-server)**, **[MariaDB](https://mariadb.org/)**, **[SQLite](https://www.sqlite.org)**.
     - **Tabular files**: **[CSV](https://en.wikipedia.org/wiki/Comma-separated_values)**, **[TSV](https://en.wikipedia.org/wiki/Tab-separated_values)**, **[Excel](https://www.microsoft.com/en-us/microsoft-365/excel)**, **[Parquet](https://parquet.apache.org/documentation/latest/)**, **[Feather](https://arrow.apache.org/docs/python/feather.html)**, **[ORC](https://orc.apache.org/)**, **[Stata](https://www.stata.com/)**, **[SAS](https://www.sas.com)**, **[SPSS](https://www.ibm.com/analytics/spss-statistics-software)**, **[ODS](https://en.wikipedia.org/wiki/OpenDocument)**.
-    - **Hierarchical files**: **[JSON](https://www.json.org/json-en.html)**, **[XML](https://www.w3.org/TR/xml/)**.
+    - **Hierarchical files**: **[JSON](https://www.json.org)**, **[XML](https://www.w3.org/TR/xml/)**.
 - Output **[RDF](https://www.w3.org/TR/rdf11-concepts/)** serializations: **[N-Triples](https://www.w3.org/TR/n-triples/)**, **[N-Quads](https://www.w3.org/TR/n-quads/)**.
+- Integration with **[RDFlib](https://rdflib.readthedocs.io)** and **[Oxigraph](https://oxigraph.org/pyoxigraph)**.
 - Runs on **Linux**, **Windows** and **macOS** operating systems.
 - Compatible with **Python** 3.7 or higher.
 - **Optimized** to materialize large knowledge graphs.
