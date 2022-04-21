@@ -31,7 +31,7 @@ Morph-KGC is available under the permissive **[Apache License 2.0](https://githu
 ## Featured In
 - [Practical guide for the publication of linked data from **datos.gob.es**](https://datos.gob.es/sites/default/files/doc/file/guia-publicacion-datos-enlazados.pdf).
 - [Loading Data in **GraphDB**: Best Practices and Tools](https://www.ontotext.com/blog/loading-data-in-graphdb-best-practices-and-tools/).
-- [**FAIR Cookbook**](https://faircookbook.elixir-europe.org/content/recipes/interoperability/rdf-conversion.html).
+- **[FAIR Cookbook](https://faircookbook.elixir-europe.org/content/recipes/interoperability/rdf-conversion.html)**.
 - [RDF, RML, YARRRML: A basic tutorial to create Linked Data from a relational database table](https://katharinabrunner.de/2022/03/rdf-rml-yarrrml-kglab-morph-kgc/).
 
 ## Integrated In

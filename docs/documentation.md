@@ -44,7 +44,7 @@ python3 -m morph_kgc path/to/config.ini
 
 ### Library
 
-Morph-KGC can be used as a **library**, providing different methods to materialize the RDF knowledge graph. It integrates with **[RDFlib](https://rdflib.readthedocs.io/en/stable/)** and **[Oxigraph](https://oxigraph.org/pyoxigraph/stable/index.html)** to easily create and work with knowledge graphs in **Python**.
+Morph-KGC can be used as a **library**, providing different methods to materialize the RDF knowledge graph. It integrates with **[RDFlib](https://rdflib.readthedocs.io/en/stable/)** and **[Oxigraph](https://oxigraph.org/pyoxigraph)** to easily create and work with knowledge graphs in **Python**.
 
 The methods in the **API** accept the **config as a string or as the path to an INI file**.
 
@@ -87,11 +87,11 @@ q_res = graph.query(' SELECT DISTINCT ?classes WHERE { ?s a ?classes } ')
 
 ==}
 
-#### [Oxigraph](https://oxigraph.org/pyoxigraph/stable/index.html)
+#### [Oxigraph](https://oxigraph.org/pyoxigraph)
 
 **`morph_kgc.materialize_oxigraph(config)`**
 
-Materialize the knowledge graph to **[Oxigraph](https://oxigraph.org/pyoxigraph/stable/index.html)**.
+Materialize the knowledge graph to **[Oxigraph](https://oxigraph.org/pyoxigraph)**.
 
 ```
 # generate the triples and load them to Oxigraph
@@ -205,7 +205,7 @@ Example **`db_url`** values (see **[here](https://docs.sqlalchemy.org/en/14/core
 - **[Oracle](https://www.oracle.com/database/):** _oracle+cx_oracle://username:password@host:port/db_name_
 - **[Microsoft SQL Server](https://www.microsoft.com/sql-server):** _mssql+pymssql://username:password@host:port/db_name_
 - **[MariaDB](https://mariadb.org/):** _mariadb+pymysql://username:password@host:port/db_name_
-- **[SQLite](https://www.sqlite.org/index.html):** _sqlite:///db_name.db_
+- **[SQLite](https://www.sqlite.org):** _sqlite:///db_name.db_
 
 {==
 
@@ -232,14 +232,14 @@ The properties to be specified for **data files** are listed below. **Remote tab
 
 ### Relational Databases
 
-The supported DBMSs are **[MySQL](https://www.mysql.com/)**, **[PostgreSQL](https://www.postgresql.org/)**, **[Oracle](https://www.oracle.com/database/)**, **[Microsoft SQL Server](https://www.microsoft.com/sql-server)**, **[MariaDB](https://mariadb.org/)** and **[SQLite](https://www.sqlite.org/index.html)**. To use relational databases it is neccessary to first **install the DBAPI driver**. We recommend the following ones:
+The supported DBMSs are **[MySQL](https://www.mysql.com/)**, **[PostgreSQL](https://www.postgresql.org/)**, **[Oracle](https://www.oracle.com/database/)**, **[Microsoft SQL Server](https://www.microsoft.com/sql-server)**, **[MariaDB](https://mariadb.org/)** and **[SQLite](https://www.sqlite.org)**. To use relational databases it is neccessary to first **install the DBAPI driver**. We recommend the following ones:
 
 - **[MySQL](https://www.mysql.com/):** [PyMySQL](https://pypi.org/project/PyMySQL/).
 - **[PostgreSQL](https://www.postgresql.org/):** [psycopg2](https://pypi.org/project/psycopg2/).
 - **[Oracle](https://www.oracle.com/database/):** [cx-Oracle](https://pypi.org/project/cx-Oracle/).
 - **[Microsoft SQL Server](https://www.microsoft.com/sql-server):** [pymssql](https://pypi.org/project/pymssql/).
 - **[MariaDB](https://mariadb.org/):** [PyMySQL](https://pypi.org/project/PyMySQL/).
-- **[SQLite](https://www.sqlite.org/index.html):** does **not** need any additional DBAPI driver.
+- **[SQLite](https://www.sqlite.org):** does **not** need any additional DBAPI driver.
 
 Morph-KGC relies on **[SQLAlchemy](https://www.sqlalchemy.org/)**. Additional DBAPI drivers are supported, you can check the full list **[here](https://docs.sqlalchemy.org/en/14/dialects/index.html#included-dialects)**.
 
@@ -256,7 +256,7 @@ The supported tabular files formats are **[CSV](https://en.wikipedia.org/wiki/Co
 
 ### Hierarchical Files
 
-The supported hierarchical files formats are **[XML](https://www.w3.org/TR/xml/)** and **[JSON](https://www.json.org/json-en.html)**.
+The supported hierarchical files formats are **[XML](https://www.w3.org/TR/xml/)** and **[JSON](https://www.json.org)**.
 
 Morph-KGC uses **[XPath 3.0](https://www.w3.org/TR/xpath30/)** to query XML files and **[JSONPath](https://goessner.net/articles/JsonPath/)** to query JSON files.
 
