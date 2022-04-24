@@ -245,16 +245,6 @@ def _materialize_mapping_rule_terms(results_df, mapping_rule, config):
     return results_df
 
 
-"""
-def _merge_data(data, parent_data, mapping_rule, join_condition):
-    parent_data = parent_data.add_prefix('parent_')
-    child_join_references, parent_join_references = get_references_in_join_condition(mapping_rule, join_condition)
-    parent_join_references = ['parent_' + reference for reference in parent_join_references]
-
-    return data.merge(parent_data, how='inner', left_on=child_join_references, right_on=parent_join_references)
-"""
-
-
 def _merge_data(data, parent_data, mapping_rule, join_condition):
     parent_data = parent_data.add_prefix('parent_')
     child_join_references, parent_join_references = get_references_in_join_condition(mapping_rule, join_condition)
