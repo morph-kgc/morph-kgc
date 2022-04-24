@@ -54,6 +54,9 @@ def _preprocess_data(data, mapping_rule, references, config):
     # data to str
     data = data.astype(str)
 
+    # remove duplicates
+    data = data.drop_duplicates()
+
     return data
 
 
