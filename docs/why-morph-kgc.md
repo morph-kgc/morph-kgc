@@ -8,7 +8,7 @@ Before starting with the development of **Morph-KGC**, we analyzed the performan
 
 Morph-KGC relies on the usage of **[mapping partitioning](http://www.semantic-web-journal.net/system/files/swj3090.pdf)** to achieve efficient knowledge graph materialization. Morph-KGC can run mapping rules in **parallel** using the full power of the CPU. For scenarios that require to maintain the memory usage low, it is possible to use **sequential** processing, preventing the entire knowledge graph to be loaded in memory.
 
-Additional optimizations are also implemented to increase efficiency: **[redundant self-join elimination](http://www.semantic-web-journal.net/system/files/swj3090.pdf)**, **[vectorized operations](https://en.wikipedia.org/wiki/Array_programming)**, **[index joins](https://en.wikipedia.org/wiki/Nested_loop_join#Index_join_variation)** and more.
+Additional optimizations are also implemented to increase efficiency: **[redundant self-join elimination](http://www.semantic-web-journal.net/system/files/swj3090.pdf)**, **[vectorized operations](https://en.wikipedia.org/wiki/Array_programming)**, **[hash joins](https://en.wikipedia.org/wiki/Hash_join)** and more.
 
 ### W3C Compliance
 
