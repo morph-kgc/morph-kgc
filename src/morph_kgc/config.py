@@ -15,7 +15,7 @@ from configparser import ConfigParser
 from pathlib import Path
 
 from .constants import *
-from .utils import get_valid_file_name, get_valid_file_path
+from .utils import get_valid_file_path
 
 
 CONFIGURATION_SECTION = 'CONFIGURATION'
@@ -155,7 +155,6 @@ class Config(ConfigParser):
 
     def validate_configuration_section(self):
         # OUTPUT FILE, WRITE PARSED MAPPINGS FILE, LOGS FILE
-        self.set_output_file(get_valid_file_name(self.get_output_file()))
         self.set_parsed_mappings_write_path(get_valid_file_path(self.get_parsed_mappings_write_path()))
         self.set_logging_file(get_valid_file_path(self.get_logging_file()))
 

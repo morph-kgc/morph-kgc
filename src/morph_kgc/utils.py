@@ -69,21 +69,9 @@ def get_valid_file_path(file_path):
         if os.path.dirname(file_path):
             os.makedirs(os.path.dirname(file_path))
 
-    file_path = os.path.join(os.path.dirname(file_path), get_valid_file_name(os.path.basename(file_path)))
+    file_path = os.path.join(os.path.dirname(file_path), os.path.basename(file_path))
 
     return file_path
-
-
-def get_valid_file_name(file_name):
-    """
-    Generates a valid file name from an input file name.
-    """
-
-    file_name = str(file_name).strip()
-    file_name.replace(' ', '_')
-    file_name = re.sub(r'(?u)[^-\w.]', '', file_name)
-
-    return file_name
 
 
 def get_repeated_elements_in_list(input_list):
