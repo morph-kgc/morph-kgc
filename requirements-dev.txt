@@ -1,4 +1,3 @@
-rdflib>=6.0.0
 pytest>=6.2.5
 odfpy>=1.4.1
 pyarrow>=7.0.0
