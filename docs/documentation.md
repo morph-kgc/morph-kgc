@@ -241,7 +241,7 @@ The supported DBMSs are **[MySQL](https://www.mysql.com/)**, **[PostgreSQL](http
 - **[MariaDB](https://mariadb.org/):** [PyMySQL](https://pypi.org/project/PyMySQL/).
 - **[SQLite](https://www.sqlite.org):** does **not** need any additional DBAPI driver.
 
-Morph-KGC relies on **[SQLAlchemy](https://www.sqlalchemy.org/)**. Additional DBAPI drivers are supported, you can check the full list **[here](https://docs.sqlalchemy.org/en/14/dialects/index.html#included-dialects)**.
+Morph-KGC relies on **[SQLAlchemy](https://www.sqlalchemy.org/)**. Additional DBAPI drivers are supported, you can check the full list **[here](https://docs.sqlalchemy.org/en/14/dialects/index.html#included-dialects)**. For **[MySQL](https://www.mysql.com/)** and **[MariaDB](https://mariadb.org/)** you may also need to install **[cryptography](https://pypi.org/project/cryptography/)**.
 
 ### Tabular Files
 
