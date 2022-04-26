@@ -105,9 +105,10 @@ def _generate_maximal_partition_for_a_position_ordering(mappings_df, position_or
                 if mapping_rule['object_termtype'] == R2RML_BLANK_NODE:
                     mappings_df.at[i, 'mapping_partition'] = f"{mappings_df.at[i, 'mapping_partition']}-0"
                 elif mapping_rule['object_termtype'] == R2RML_LITERAL:
-                    if mapping_rule['literal_type'] != current_literal_type:
+                    # str() is necessary for NULL literal types
+                    if str(mapping_rule['literal_type']) != current_literal_type:
                         current_group += 1
-                        current_literal_type = mapping_rule['literal_type']
+                        current_literal_type = str(mapping_rule['literal_type'])
                     mappings_df.at[i, 'mapping_partition'] = f"{mappings_df.at[i, 'mapping_partition']}-{current_group}"
                 elif mapping_rule['object_invariant'].startswith(current_invariant):
                     mappings_df.at[i, 'mapping_partition'] = f"{mappings_df.at[i, 'mapping_partition']}-{current_group}"
@@ -313,9 +314,10 @@ class MappingPartitioner:
             if mapping_rule['object_termtype'] == R2RML_BLANK_NODE:
                 self.mappings_df.at[i, 'object_partition'] = '0'
             elif mapping_rule['object_termtype'] == R2RML_LITERAL:
-                if mapping_rule['literal_type'] != current_literal_type:
+                # str() is necessary for NULL literal types
+                if str(mapping_rule['literal_type']) != current_literal_type:
                     current_group += 1
-                    current_literal_type = mapping_rule['literal_type']
+                    current_literal_type = str(mapping_rule['literal_type'])
                 self.mappings_df.at[i, 'object_partition'] = str(current_group)
             elif mapping_rule['object_invariant'].startswith(current_invariant):
                 self.mappings_df.at[i, 'object_partition'] = str(current_group)
