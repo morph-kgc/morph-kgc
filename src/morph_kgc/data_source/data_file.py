@@ -141,7 +141,7 @@ def _read_xml(mapping_rule, references):
 
     xpath_result = elementpath.iter_select(xml_root, mapping_rule['iterator'], parser=XPath3Parser)
 
-    # we need to take into account both elements and attributes in the XML
+    # we need to retrieve both ELEMENTS and ATTRIBUTES in the XML
     data_records = []
     for e in xpath_result:
         data_record = []
