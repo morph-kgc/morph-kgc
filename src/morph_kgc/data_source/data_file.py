@@ -140,14 +140,42 @@ def _read_xml(mapping_rule, references):
         xml_root = et.parse(xml_file).getroot()
 
     xpath_result = elementpath.iter_select(xml_root, mapping_rule['iterator'], parser=XPath3Parser)
-    xpath_result = [[[r.text for r in e.findall(reference)] for reference in references] for e in xpath_result]
+
+    # we need to take into account both elements and attributes in the XML
+    data_records = []
+    for e in xpath_result:
+        data_record = []
+        for reference in references:
+            data_value = []
+
+            if reference.startswith('@'):
+                element = None
+                attribute = reference
+            elif '@' in reference:
+                element = reference.split('@')[0]
+                attribute = reference.split('@')[1]
+            else:
+                element = reference
+                attribute = None
+
+            if element:
+                for r in e.findall(element):
+                    if attribute:
+                        data_value.append(r.get(attribute))
+                    else:
+                        data_value.append(r.text)
+            else:
+                attribute = attribute[1:]   # do not use the starting @ from the attribute
+                data_value.append(e.attrib[attribute])
+            data_record.append(data_value)
+        data_records.append(data_record)
 
     # IMPORTANT NOTES
     # XPath 3.0 is used (XPath 3.1 is in the roadmap of the elementpath library)
     # with XPath 3.1 the above could be achieved using just an XPath expression by including the references in it
     # for instance, the XPath expression: /root/[id,creator/name] obtaining for example ["2479", ["Julián", "Jhon"]]
 
-    xml_df = pd.DataFrame.from_records(xpath_result, columns=references)
+    xml_df = pd.DataFrame.from_records(data_records, columns=references)
 
     # add columns with null values for those references in the mapping rule that are not present in the data file
     missing_references_in_df = list(set(references).difference(set(xml_df.columns)))
