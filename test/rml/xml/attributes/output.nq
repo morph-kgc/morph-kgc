@@ -1,0 +1,20 @@
+<http://example.com/Singapore> <http://example.com/ns#rank> "1".
+<http://example.com/Singapore> <http://example.com/ns#rank> "4".
+<http://example.com/Singapore> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/ns#Country>.
+<http://example.com/Liechtenstein> <http://example.com/ns#neighbor> "Austria".
+<http://example.com/Panama> <http://example.com/ns#neighbor> "Colombia".
+<http://example.com/Liechtenstein> <http://example.com/ns#rank> "4".
+<http://example.com/Singapore> <http://example.com/ns#gdppc> "59900".
+<http://example.com/Singapore> <http://example.com/ns#neighbor> "Malaysia".
+<http://example.com/Liechtenstein> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/ns#Country>.
+<http://example.com/Panama> <http://example.com/ns#rank> "68".
+<http://example.com/Panama> <http://example.com/ns#rank> "4".
+<http://example.com/Panama> <http://example.com/ns#gdppc> "13600".
+<http://example.com/Liechtenstein> <http://example.com/ns#gdppc> "141100".
+<http://example.com/Panama> <http://example.com/ns#neighbor> "Costa Rica".
+<http://example.com/Panama> <http://example.com/ns#rank> "1".
+<http://example.com/Liechtenstein> <http://example.com/ns#rank> "68".
+<http://example.com/Singapore> <http://example.com/ns#rank> "68".
+<http://example.com/Panama> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/ns#Country>.
+<http://example.com/Liechtenstein> <http://example.com/ns#neighbor> "Switzerland".
+<http://example.com/Liechtenstein> <http://example.com/ns#rank> "1".

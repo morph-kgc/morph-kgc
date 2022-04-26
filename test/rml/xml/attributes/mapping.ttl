@@ -1,0 +1,54 @@
+@prefix rr: <http://www.w3.org/ns/r2rml#>.
+@prefix rml: <http://semweb.mmlab.be/ns/rml#>.
+@prefix ql: <http://semweb.mmlab.be/ns/ql#>.
+@prefix ex: <http://example.com/ns#>.
+
+<#Mapping1> a rr:TriplesMap;
+    rml:logicalSource [
+        rml:source "test/rml/xml/attributes/data.xml" ;
+        rml:iterator "/*";
+        rml:referenceFormulation ql:XPath;
+    ];
+    rr:subjectMap [
+        rr:template "http://example.com/{country@name}";
+    ];
+    rr:predicateObjectMap [
+        rr:predicate ex:rank;
+        rr:objectMap [
+            rml:reference "country/rank";
+        ];
+    ].
+
+<#Mapping2> a rr:TriplesMap;
+    rml:logicalSource [
+        rml:source "test/rml/xml/attributes/data.xml" ;
+        rml:iterator "country";
+        rml:referenceFormulation ql:XPath;
+    ];
+    rr:subjectMap [
+        rr:template "http://example.com/{@name}";
+        rr:class ex:Country;
+    ];
+    rr:predicateObjectMap [
+        rr:predicate ex:gdppc;
+        rr:objectMap [
+            rml:reference "gdppc";
+        ];
+    ].
+
+<#Mapping3> a rr:TriplesMap;
+    rml:logicalSource [
+        rml:source "test/rml/xml/attributes/data.xml" ;
+        rml:iterator "country";
+        rml:referenceFormulation ql:XPath;
+    ];
+    rr:subjectMap [
+        rr:template "http://example.com/{@name}";
+        rr:class ex:Country;
+    ];
+    rr:predicateObjectMap [
+        rr:predicate ex:neighbor;
+        rr:objectMap [
+            rml:reference "neighbor@name";
+        ];
+    ].
