@@ -207,12 +207,6 @@ Example **`db_url`** values (see **[here](https://docs.sqlalchemy.org/en/14/core
 - **[MariaDB](https://mariadb.org/):** _mariadb+pymysql://username:password@host:port/db_name_
 - **[SQLite](https://www.sqlite.org):** _sqlite:///db_name.db_
 
-{==
-
-*__Note:__ to run Morph-KGC with [Oracle](https://www.oracle.com/database/), the libraries of the [Oracle Client](https://www.oracle.com/database/technologies/instant-client/downloads.html) need to be loaded. See [cx_Oracle Installation](https://cx-oracle.readthedocs.io/en/latest/user_guide/installation.html) to install these libraries. See [cx_Oracle Initialization](https://cx-oracle.readthedocs.io/en/latest/user_guide/initialization.html) to setup the initialization of [Oracle](https://www.oracle.com/database/). Depending on the selected option, provide the properties `oracle_client_lib_dir` and `oracle_client_config_dir` in the [`CONFIGURATION`](https://morph-kgc.readthedocs.io/en/latest/documentation/#engine-configuration) section accordingly.*
-
-==}
-
 #### Data Files
 
 The properties to be specified for **data files** are listed below. **Remote tabular** data files are supported. The `mappings` property is **required**.
@@ -242,6 +236,12 @@ The supported DBMSs are **[MySQL](https://www.mysql.com/)**, **[PostgreSQL](http
 - **[SQLite](https://www.sqlite.org):** does **not** need any additional DBAPI driver.
 
 Morph-KGC relies on **[SQLAlchemy](https://www.sqlalchemy.org/)**. Additional DBAPI drivers are supported, you can check the full list **[here](https://docs.sqlalchemy.org/en/14/dialects/index.html#included-dialects)**. For **[MySQL](https://www.mysql.com/)** and **[MariaDB](https://mariadb.org/)** you may also need to install **[cryptography](https://pypi.org/project/cryptography/)**.
+
+{==
+
+*__Note:__ to run Morph-KGC with [Oracle](https://www.oracle.com/database/), the libraries of the [Oracle Client](https://www.oracle.com/database/technologies/instant-client/downloads.html) need to be loaded. See [cx_Oracle Installation](https://cx-oracle.readthedocs.io/en/latest/user_guide/installation.html) to install these libraries. See [cx_Oracle Initialization](https://cx-oracle.readthedocs.io/en/latest/user_guide/initialization.html) to setup the initialization of [Oracle](https://www.oracle.com/database/). Depending on the selected option, provide the properties `oracle_client_lib_dir` and `oracle_client_config_dir` in the [`CONFIGURATION`](https://morph-kgc.readthedocs.io/en/latest/documentation/#engine-configuration) section accordingly.*
+
+==}
 
 ### Tabular Files
 
