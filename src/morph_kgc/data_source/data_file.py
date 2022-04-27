@@ -147,6 +147,7 @@ def _read_xml(mapping_rule, references):
         data_record = []
         for reference in references:
             data_value = []
+            reference = reference.replace('/@', '@')    # deals with `route/stop/@id`
 
             if reference.startswith('@'):
                 element = None
