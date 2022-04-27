@@ -1,0 +1,20 @@
+<transport>
+  <bus id="25" type="SingleDecker">
+    <route>
+      <stop id="645">Airport</stop>
+      <stop id="651">Conference center</stop>
+    </route>
+    <aircondition>
+      false
+    </aircondition>
+  </bus>
+  <bus id="47" type="DoubleDecker">
+    <route>
+      <stop id="873">Central Park</stop>
+      <stop id="651">Conference center</stop>
+    </route>
+    <aircondition>
+      true
+    </aircondition>
+  </bus>
+</transport>

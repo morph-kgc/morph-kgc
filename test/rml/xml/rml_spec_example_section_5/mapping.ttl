@@ -1,0 +1,27 @@
+@prefix rr: <http://www.w3.org/ns/r2rml#>.
+@prefix rml: <http://semweb.mmlab.be/ns/rml#>.
+@prefix ex: <http://example.com/ns#>.
+@prefix ql: <http://semweb.mmlab.be/ns/ql#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@base <http://example.com/ns#>.
+
+<#TransportMapping> a rr:TriplesMap;
+  rml:logicalSource [
+    rml:source "test/rml/xml/rml_spec_example_section_5/Transport.xml" ;
+    rml:iterator "/transport/bus/route/stop";
+    rml:referenceFormulation ql:XPath;
+  ];
+
+  rr:subjectMap [
+    rr:template
+      "http://trans.example.com/stop/{@id}";
+    rr:class ex:Stop
+  ];
+
+  rr:predicateObjectMap [
+    rr:predicate rdfs:label;
+    rr:objectMap [
+      rml:reference "."
+    ]
+  ].

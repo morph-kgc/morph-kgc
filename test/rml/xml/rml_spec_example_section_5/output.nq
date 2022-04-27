@@ -1,0 +1,6 @@
+<http://trans.example.com/stop/651> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/ns#Stop>.
+<http://trans.example.com/stop/873> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/ns#Stop>.
+<http://trans.example.com/stop/645> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/ns#Stop>.
+<http://trans.example.com/stop/873> <http://www.w3.org/2000/01/rdf-schema#label> "Central Park".
+<http://trans.example.com/stop/651> <http://www.w3.org/2000/01/rdf-schema#label> "Conference center".
+<http://trans.example.com/stop/645> <http://www.w3.org/2000/01/rdf-schema#label> "Airport".
