@@ -137,7 +137,7 @@ The configuration of Morph-KGC is done via an **[INI file](https://en.wikipedia.
 
 - It is **optional** and it declares variables that can be used in all other sections for  convenience. For instance, you can set _main_dir: ../testing_ so that _main_dir_ can be used in the rest of the sections.
 
-Below is an example configuration file with one input relational source. In this case `DataSource1` is the only data source section, but other data sources can be considered by including additional sections. **[Here](https://github.com/oeg-upm/morph-kgc/blob/main/examples/configuration-file-examples/default_config.ini)** you can find a configuration file which is more complete.
+Below is an example configuration file with one input relational source. In this case `DataSource1` is the only data source section, but other data sources can be considered by including additional sections. **[Here](https://github.com/oeg-upm/morph-kgc/blob/main/examples/configuration-file/default_config.ini)** you can find a configuration file which is more complete.
 
 ```
 [DEFAULT]

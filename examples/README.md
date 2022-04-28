@@ -1,7 +1,7 @@
 ## Examples
 
 ### Relational Databases
-An example with _MySQL_ using [GTFS-Madrid-Bench](https://github.com/oeg-upm/gtfs-bench) data can be found in the [`rdb-example`](https://github.com/oeg-upm/morph-kgc/tree/main/examples/rdb-example) directory. The directory contains:
+An example with _MySQL_ using [GTFS-Madrid-Bench](https://github.com/oeg-upm/gtfs-bench) data can be found in the [`rdb`](https://github.com/oeg-upm/morph-kgc/tree/main/examples/rdb) directory. The directory contains:
 - The `mapping` file.
 - The `configuration` file that has to be provided to Morph-KGC.
 
@@ -18,7 +18,7 @@ pip install cryptography
 Also, **update the _paths_ parameters in the configuration file** accordingly.
 
 ### JSON and XML
-Examples for _JSON_ and _XML_ can be found in [`json-example`](https://github.com/oeg-upm/morph-kgc/tree/main/examples/json-example) and [`xml-example`](https://github.com/oeg-upm/morph-kgc/tree/main/examples/xml-example) directories. The directories contain:
+Examples for _JSON_ and _XML_ can be found in [`json`](https://github.com/oeg-upm/morph-kgc/tree/main/examples/json) and [`xml`](https://github.com/oeg-upm/morph-kgc/tree/main/examples/xml) directories. The directories contain:
 - The `data` file.
 - The `mapping` file.
 - The `configuration` file that has to be provided to Morph-KGC.
@@ -27,7 +27,7 @@ Examples for _JSON_ and _XML_ can be found in [`json-example`](https://github.co
 Note that the **_paths_ parameters in the configuration file need to be updated** accordingly.
 
 ### CSV
-An example for _CSV_ can be found in the [`csv-example`](https://github.com/oeg-upm/morph-kgc/tree/main/examples/csv-example) directory. The directory contains:
+An example for _CSV_ can be found in the [`csv`](https://github.com/oeg-upm/morph-kgc/tree/main/examples/csv) directory. The directory contains:
 - The `data` directory with several CSV files.
 - The `mapping` file.
 - The `configuration` file that has to be provided to Morph-KGC.
@@ -35,4 +35,4 @@ An example for _CSV_ can be found in the [`csv-example`](https://github.com/oeg-
 Note that the **_paths_ parameters in the configuration file need to be updated** accordingly. Given that this example involves multiple CSV files, the paths to these files are provided in the mapping file with the `rml:source` property. The values of this property have to be updated with the correct _paths_ to the CSV files in your system.
 
 ### Configuration Files
-The directory [`configuration-file-examples`](https://github.com/oeg-upm/morph-kgc/tree/main/examples/configuration-file-examples) contains some configuration files to run Morph-KGC with. [default_config.ini](https://github.com/oeg-upm/Morph-KGC/blob/main/examples/configuration-file-examples/default_config.ini) contains all possible configuration options along with their default values. Options that are not provided in the `CONFIGURATION` section will use the default values. You can see all the information about configuration files in the **[documentation](https://morph-kgc.readthedocs.io/en/latest/documentation/#configuration)**.
+The directory [`configuration-file`](https://github.com/oeg-upm/morph-kgc/tree/main/examples/configuration-file) contains some configuration files to run Morph-KGC with. [default_config.ini](https://github.com/oeg-upm/Morph-KGC/blob/main/examples/configuration-file/default_config.ini) contains all possible configuration options along with their default values. Options that are not provided in the `CONFIGURATION` section will use the default values. You can see all the information about configuration files in the **[documentation](https://morph-kgc.readthedocs.io/en/latest/documentation/#configuration)**.
