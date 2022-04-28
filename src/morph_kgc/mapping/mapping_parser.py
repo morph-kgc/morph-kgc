@@ -437,7 +437,7 @@ class MappingParser:
         mapping_file_paths = self.config.get_mappings_files(section_name)
         try:
             # load mapping rules to the graph
-            [mapping_graph.parse(f, format=rdflib.util.guess_format(f)) for f in mapping_file_paths]
+            [mapping_graph.parse(f, format=os.path.splitext(f)[1][1:].strip()) for f in mapping_file_paths]
         except Exception as n3_mapping_parse_exception:
             raise Exception(n3_mapping_parse_exception)
 
