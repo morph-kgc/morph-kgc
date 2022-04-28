@@ -53,8 +53,8 @@ import morph_kgc
 
 config = """
             [DataSource1]
-            mappings=/path/to/mapping/mapping_file.rml.ttl
-            db_url=mysql+pymysql://user:password@localhost:3306/db_name
+            mappings: /path/to/mapping/mapping_file.rml.ttl
+            db_url: mysql+pymysql://user:password@localhost:3306/db_name
          """
 ```
 

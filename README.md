@@ -62,8 +62,8 @@ q_res = graph.query(' SELECT DISTINCT ?classes WHERE { ?s a ?classes } ')
 # the methods above also accept the config as a string
 config = """
             [DataSource1]
-            mappings=/path/to/mapping/mapping_file.rml.ttl
-            db_url=mysql+pymysql://user:password@localhost:3306/db_name
+            mappings: /path/to/mapping/mapping_file.rml.ttl
+            db_url: mysql+pymysql://user:password@localhost:3306/db_name
          """
 g_rdflib = morph_kgc.materialize(config)
 ```
