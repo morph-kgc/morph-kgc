@@ -54,7 +54,7 @@ def get_file_data(mapping_rule, references):
 def _read_csv(mapping_rule, references, file_source_type):
     delimiter = ',' if file_source_type == 'CSV' else '\t'
 
-    return pd.read_table(str(mapping_rule['data_source']),
+    return pd.read_table(mapping_rule['data_source'],
                          delimiter=delimiter,
                          index_col=False,
                          encoding='utf-8',
@@ -67,19 +67,19 @@ def _read_csv(mapping_rule, references, file_source_type):
 
 
 def _read_parquet(mapping_rule, references):
-    return pd.read_parquet(str(mapping_rule['data_source']), engine='pyarrow', columns=references)
+    return pd.read_parquet(mapping_rule['data_source'], engine='pyarrow', columns=references)
 
 
 def _read_feather(mapping_rule, references):
-    return pd.read_feather(str(mapping_rule['data_source']), use_threads=False, columns=references)
+    return pd.read_feather(mapping_rule['data_source'], use_threads=False, columns=references)
 
 
 def _read_orc(mapping_rule, references):
-    return pd.read_orc(str(mapping_rule['data_source']), encoding='utf-8', columns=references)
+    return pd.read_orc(mapping_rule['data_source'], encoding='utf-8', columns=references)
 
 
 def _read_stata(mapping_rule, references):
-    return pd.read_stata(str(mapping_rule['data_source']),
+    return pd.read_stata(mapping_rule['data_source'],
                          columns=references,
                          convert_dates=False,
                          convert_categoricals=False,
@@ -89,15 +89,15 @@ def _read_stata(mapping_rule, references):
 
 
 def _read_sas(mapping_rule):
-    return pd.read_sas(str(mapping_rule['data_source']), encoding='utf-8')
+    return pd.read_sas(mapping_rule['data_source'], encoding='utf-8')
 
 
 def _read_spss(mapping_rule, references):
-    return pd.read_spss(str(mapping_rule['data_source']), usecols=references, convert_categoricals=False)
+    return pd.read_spss(mapping_rule['data_source'], usecols=references, convert_categoricals=False)
 
 
 def _read_excel(mapping_rule, references):
-    return pd.read_excel(str(mapping_rule['data_source']),
+    return pd.read_excel(mapping_rule['data_source'],
                          sheet_name=0,
                          engine='openpyxl',
                          usecols=references,
@@ -107,7 +107,7 @@ def _read_excel(mapping_rule, references):
 
 
 def _read_ods(mapping_rule, references):
-    return pd.read_excel(str(mapping_rule['data_source']),
+    return pd.read_excel(mapping_rule['data_source'],
                          sheet_name=0,
                          engine='odf',
                          usecols=references,

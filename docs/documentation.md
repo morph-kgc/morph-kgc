@@ -181,7 +181,7 @@ The execution of Morph-KGC can be **tuned** via the **`CONFIGURATION`** section 
 
 ### Data Sources
 
-One data source section should be included in the **[INI file](https://en.wikipedia.org/wiki/INI_file)** for each data source to be materialized. The properties in the data source section vary depending on the data source type (relational database or data file). **Remote mapping** files are supported.
+One data source section should be included in the **[INI file](https://en.wikipedia.org/wiki/INI_file)** for each data source to be materialized. The properties in the data source section vary depending on the data source type (relational database or data file). **Remote** mapping files are supported.
 
 {==
 
@@ -209,7 +209,7 @@ Example **`db_url`** values (see **[here](https://docs.sqlalchemy.org/en/14/core
 
 #### Data Files
 
-The properties to be specified for **data files** are listed below. **Remote tabular** data files are supported. The `mappings` property is **required**.
+The properties to be specified for **data files** are listed below. **Remote** data files are supported. The `mappings` property is **required**.
 
 |<div style="width:70px">Property</div>|Description|<div style="width:475px">Values</div>|
 |-------|-------|-------|
