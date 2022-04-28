@@ -181,7 +181,7 @@ The execution of Morph-KGC can be **tuned** via the **`CONFIGURATION`** section 
 
 ### Data Sources
 
-One data source section should be included in the **[INI file](https://en.wikipedia.org/wiki/INI_file)** for each data source to be materialized. The properties in the data source section vary depending on the data source type (relational database or data file).
+One data source section should be included in the **[INI file](https://en.wikipedia.org/wiki/INI_file)** for each data source to be materialized. The properties in the data source section vary depending on the data source type (relational database or data file). **Remote mapping** files are supported.
 
 {==
 
@@ -195,7 +195,7 @@ The properties to be specified for **relational databases** are listed below. Al
 
 |<div style="width:70px">Property</div>|Description|<div style="width:475px">Values</div>|
 |-------|-------|-------|
-|**`mappings`**|Specifies the mapping file(s) for the data source.|**[REQUIRED]**<br>**Valid:**<br>- The path to a mapping file.<br>- The paths to multiple mapping files separated by commas.<br>- The path to a directory containing all the mapping files for that data source.|
+|**`mappings`**|Specifies the mapping file(s) or URL(s) for the relational database.|**[REQUIRED]**<br>**Valid:**<br>- The path to a mapping file or URL.<br>- The paths to multiple mapping files or URLs separated by commas.<br>- The path to a directory containing all the mapping files.|
 |**`db_url`**|It is a URL that configures the database engine (username, password, hostname, database name). See **[here](https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls)** how to create the database URLs.|**[REQUIRED]**<br>**Example:** _dialect+driver://username:password@host:port/db_name_|
 
 Example **`db_url`** values (see **[here](https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls)** all the information) for the **DBAPI drivers** recommended in **[Advanced Setup](https://morph-kgc.readthedocs.io/en/latest/documentation/#advanced-setup)** are:
@@ -213,7 +213,7 @@ The properties to be specified for **data files** are listed below. **Remote tab
 
 |<div style="width:70px">Property</div>|Description|<div style="width:475px">Values</div>|
 |-------|-------|-------|
-|**`mappings`**|Specifies the mapping file(s) for the data source.|**[REQUIRED]**<br>**Valid:**<br>- The path to one mapping file.<br>- The paths to multiple mapping files separated by commas.<br>- The path to a directory containing all the mapping files for that data source.|
+|**`mappings`**|Specifies the mapping file(s) or URL(s) for the data file.|**[REQUIRED]**<br>**Valid:**<br>- The path to a mapping file or URL.<br>- The paths to multiple mapping files or URLs separated by commas.<br>- The path to a directory containing all the mapping files.|
 |**`file_path`**|Specifies the local path or URL of the data file. It is **optional** since it can be provided within the mapping file with _[rml:source](http://semweb.mmlab.be/ns/rml#source)_. If it is provided it will **override** the local path or URL provided in the mapping files.|**Default:**|
 
 {==
