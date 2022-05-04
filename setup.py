@@ -48,7 +48,7 @@ setup(
     long_description_content_type='text/markdown',
     url='https://github.com/oeg-upm/morph-kgc',
     project_urls={
-        'Documentation': 'https://oeg-upm.github.io/morph-kgc/documentation/',
+        'Documentation': 'https://morph-kgc.readthedocs.io/en/latest/documentation/',
         'Source code': 'https://github.com/oeg-upm/morph-kgc',
         'Issue tracker': 'https://github.com/oeg-upm/morph-kgc/issues',
     },
