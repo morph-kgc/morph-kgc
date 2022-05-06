@@ -253,10 +253,13 @@ def _merge_data(data, parent_data, mapping_rule, join_condition):
     child_join_references, parent_join_references = get_references_in_join_condition(mapping_rule, join_condition)
     parent_join_references = ['parent_' + reference for reference in parent_join_references]
 
-    data = data.set_index(child_join_references, drop=False)
-    parent_data = parent_data.set_index(parent_join_references, drop=False)
-
-    return data.join(parent_data, how='inner')
+    # if there is only one join condition use join, otherwise use merge
+    if len(child_join_references) == 1:
+        data = data.set_index(child_join_references, drop=False)
+        parent_data = parent_data.set_index(parent_join_references, drop=False)
+        return data.join(parent_data, how='inner')
+    else:
+        return data.merge(parent_data, how='inner', left_on=child_join_references, right_on=parent_join_references)
 
 
 def _materialize_mapping_rule(mapping_rule, mappings_df, config, data=None, parent_join_references=set(), nest_level=0):
