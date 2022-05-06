@@ -1,0 +1,38 @@
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@prefix schema: <http://schema.org/> .
+@prefix ex: <http://www.example.com/> .
+
+<#TriplesMap1>
+    a rr:TriplesMap;
+    rml:logicalSource [ rml:source "test/rml/csv/doubleJoinCondition/data1.csv";
+                rml:referenceFormulation ql:CSV
+                ];
+    rr:subjectMap [
+        rr:template "http://example.com/{id}";
+        rr:class ex:Example
+    ];
+    rr:predicateObjectMap [
+        rr:predicate ex:relation;
+        rr:objectMap [
+        rr:parentTriplesMap <#TriplesMap2>;
+        rr:joinCondition [
+            rr:child "column1";
+            rr:parent "column1";
+            ];
+        rr:joinCondition [
+            rr:child "column2";
+            rr:parent "column2";
+            ];
+        ];
+    ].
+
+<#TriplesMap2>
+    a rr:TriplesMap;
+    rml:logicalSource [ rml:source "test/rml/csv/doubleJoinCondition/data2.csv";
+                rml:referenceFormulation ql:CSV
+            ];
+    rr:subjectMap [
+        rr:template "http://second-example.com/{id}"
+    ].

@@ -1,0 +1,6 @@
+<http://example.com/1> <http://www.example.com/relation> <http://second-example.com/1>.
+<http://example.com/2> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.example.com/Example>.
+<http://example.com/3> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.example.com/Example>.
+<http://example.com/1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.example.com/Example>.
+<http://example.com/3> <http://www.example.com/relation> <http://second-example.com/3>.
+<http://example.com/2> <http://www.example.com/relation> <http://second-example.com/2>.
