@@ -385,7 +385,7 @@ class Materializer:
         asserted_mapping_df = mappings_df.loc[mappings_df['triples_map_type'] == R2RML_TRIPLES_MAP_CLASS]
         self.mapping_partitions = [group for _, group in asserted_mapping_df.groupby(by='mapping_partition')]
 
-        remove_output_files(config, self.mappings_df)
+        prepare_output_files(config, self.mappings_df)
 
     def __str__(self):
         return str(self.mappings_df)

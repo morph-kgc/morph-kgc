@@ -15,7 +15,7 @@ from configparser import ConfigParser
 from pathlib import Path
 
 from .constants import *
-from .utils import get_valid_file_path
+from .utils import create_dirs_in_path
 
 
 CONFIGURATION_SECTION = 'CONFIGURATION'
@@ -155,8 +155,8 @@ class Config(ConfigParser):
 
     def validate_configuration_section(self):
         # OUTPUT FILE, WRITE PARSED MAPPINGS FILE, LOGS FILE
-        self.set_parsed_mappings_write_path(get_valid_file_path(self.get_parsed_mappings_write_path()))
-        self.set_logging_file(get_valid_file_path(self.get_logging_file()))
+        create_dirs_in_path(self.get_parsed_mappings_write_path())
+        create_dirs_in_path(self.get_logging_file())
 
         # OUTPUT FORMAT
         output_format = str(self.get_output_format()).upper()
@@ -282,18 +282,6 @@ class Config(ConfigParser):
 
     def set_mapping_partition(self, mapping_partitioning):
         self.set(self.configuration_section, MAPPING_PARTITION, mapping_partitioning.upper())
-
-    def set_output_dir(self, output_dir):
-        self.set(self.configuration_section, OUTPUT_DIR, output_dir)
-
-    def set_output_file(self, output_file):
-        self.set(self.configuration_section, OUTPUT_FILE, output_file)
-
-    def set_parsed_mappings_write_path(self, parsed_mappings_write_path):
-        self.set(self.configuration_section, WRITE_PARSED_MAPPINGS_PATH, parsed_mappings_write_path)
-
-    def set_logging_file(self, logging_file):
-        self.set(self.configuration_section, LOGGING_FILE, logging_file)
 
     def set_logging_level(self, logging_level):
         self.set(self.configuration_section, LOGGING_LEVEL, logging_level)

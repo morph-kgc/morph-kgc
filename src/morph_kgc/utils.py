@@ -46,32 +46,15 @@ def configure_logger(logging_level, logging_file):
     logging.getLogger('jsonpath').setLevel(logging.CRITICAL)
 
 
-def get_valid_dir_path(dir_path):
+def create_dirs_in_path(file_path):
     """
-    Checks that a directory exists. If the directory does not exist, it creates the directories in the path.
-    """
-
-    dir_path = dir_path.strip()
-    if dir_path and not os.path.exists(dir_path):
-        os.makedirs(dir_path)
-
-    return dir_path
-
-
-def get_valid_file_path(file_path):
-    """
-    Checks that directories in a file path exist. If they do not exist, it creates the directories. Also generates
-    a valid file name.
+    Checks that directories in a file path exist. If they do not exist, it creates the directories.
     """
 
     file_path = str(file_path).strip()
     if not os.path.exists(os.path.dirname(file_path)):
         if os.path.dirname(file_path):
             os.makedirs(os.path.dirname(file_path))
-
-    file_path = os.path.join(os.path.dirname(file_path), os.path.basename(file_path))
-
-    return file_path
 
 
 def get_repeated_elements_in_list(input_list):
@@ -137,13 +120,17 @@ def remove_non_printable_characters(string):
     return ''.join(char for char in string if char.isprintable())
 
 
-def remove_output_files(config, mappings_df):
+def prepare_output_files(config, mappings_df):
     """
-    Remove the files that will be used to store the final knowledge graph.
+    Remove the files that will be used to store the final knowledge graph. If a file path contains directories that do
+    not exist, they are created.
     """
 
     output_dir = config.get_output_dir()
     if output_dir:
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+
         mapping_groups_names = set(mappings_df['mapping_partition'])
         for mapping_group_name in mapping_groups_names:
             mapping_group_file_path = config.get_output_file_path(mapping_group_name)
@@ -152,6 +139,8 @@ def remove_output_files(config, mappings_df):
                 os.remove(mapping_group_file_path)
     else:
         output_file = config.get_output_file_path()
+        create_dirs_in_path(output_file)
+
         if os.path.exists(output_file):
             # always delete output file, so that generated triples are not appended to it
             os.remove(output_file)
