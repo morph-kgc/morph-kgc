@@ -44,7 +44,7 @@ python3 -m morph_kgc path/to/config.ini
 
 ### Library
 
-Morph-KGC can be used as a **library**, providing different methods to materialize the **[RDF](https://www.w3.org/TR/rdf11-concepts/)** or **[RDF-star](https://w3c.github.io/rdf-star/cg-spec/2021-12-17.html)** knowledge graph. It integrates with **[RDFlib](https://rdflib.readthedocs.io/en/stable/)** and **[Oxigraph](https://oxigraph.org/pyoxigraph)** to easily create and work with knowledge graphs in **[Python](https://www.python.org/)**.
+Morph-KGC can be used as a **library**, providing different methods to materialize the **[RDF](https://www.w3.org/TR/rdf11-concepts/)** or **[RDF-star](https://w3c.github.io/rdf-star/cg-spec/2021-12-17.html)** knowledge graph. It integrates with **[RDFLib](https://rdflib.readthedocs.io/en/stable/)** and **[Oxigraph](https://oxigraph.org/pyoxigraph)** to easily create and work with knowledge graphs in **[Python](https://www.python.org/)**.
 
 The methods in the **API** accept the **config as a string or as the path to an INI file**.
 
@@ -64,26 +64,26 @@ config = """
 
 ==}
 
-#### [RDFlib](https://rdflib.readthedocs.io/en/stable/)
+#### [RDFLib](https://rdflib.readthedocs.io/en/stable/)
 
 **`morph_kgc.materialize(config)`**
 
-Materialize the knowledge graph to **[RDFlib](https://rdflib.readthedocs.io/en/stable/)**.
+Materialize the knowledge graph to **[RDFLib](https://rdflib.readthedocs.io/en/stable/)**.
 
 ```
-# generate the triples and load them to an RDFlib graph
+# generate the triples and load them to an RDFLib graph
 
 graph = morph_kgc.materialize(config)
 # or
 graph = morph_kgc.materialize('/path/to/config.ini')
 
-# work with the RDFlib graph
+# work with the RDFLib graph
 q_res = graph.query(' SELECT DISTINCT ?classes WHERE { ?s a ?classes } ')
 ```
 
 {==
 
-*__Note:__ [RDFlib](https://rdflib.readthedocs.io/en/stable/) does not support [RDF-star](https://w3c.github.io/rdf-star/cg-spec/editors_draft.html), hence `materialize` does not support [RML-star](https://kg-construct.github.io/rml-star-spec/).*
+*__Note:__ [RDFLib](https://rdflib.readthedocs.io/en/stable/) does not support [RDF-star](https://w3c.github.io/rdf-star/cg-spec/editors_draft.html), hence `materialize` does not support [RML-star](https://kg-construct.github.io/rml-star-spec/).*
 
 ==}
 
