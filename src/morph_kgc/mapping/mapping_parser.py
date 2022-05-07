@@ -19,7 +19,7 @@ from ..mapping.mapping_partitioner import MappingPartitioner
 from ..data_source.relational_database import get_rdb_reference_datatype
 
 
-def _mapping_to_rml(mapping_graph):
+def _mapping_to_rml_star(mapping_graph):
     """
     Replaces R2RML rules in the graph with the corresponding RML rules.
     """
@@ -47,30 +47,24 @@ def _mapping_to_rml(mapping_graph):
     mapping_graph.remove((None, rdflib.term.URIRef(R2RML_R2RML_VIEW_CLASS), None))
     mapping_graph.remove((None, rdflib.term.URIRef(R2RML_LOGICAL_TABLE_CLASS), None))
 
-    return mapping_graph
-
-
-def _mapping_to_rml_star(mapping_graph):
-    """
-        Replaces RML rules in the graph with the corresponding RML-star rules.
-    """
-
     # replace RML properties with the equivalent RML-star properties
     mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_SUBJECT_MAP, RML_STAR_SUBJECT_MAP)
+    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_SUBJECT_CONSTANT_SHORTCUT, RML_STAR_SUBJECT_CONSTANT_SHORTCUT)
     mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_OBJECT_MAP, RML_STAR_OBJECT_MAP)
+    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_OBJECT_CONSTANT_SHORTCUT, RML_STAR_OBJECT_CONSTANT_SHORTCUT)
 
     return mapping_graph
 
 
 def _expand_constant_shortcut_properties(mapping_graph):
     """
-    Expand constant shortcut properties rr:subject, rr:predicate, rr:object and rr:graph.
+    Expand constant shortcut properties rml:subject, rr:predicate, rml:object and rr:graph.
     See R2RML specification (https://www.w3.org/2001/sw/rdb2rdf/r2rml/#constant).
     """
 
     constant_properties = [RML_STAR_SUBJECT_MAP, R2RML_PREDICATE_MAP, RML_STAR_OBJECT_MAP, R2RML_GRAPH_MAP]
-    constant_shortcuts = [R2RML_SUBJECT_CONSTANT_SHORTCUT, R2RML_PREDICATE_CONSTANT_SHORTCUT,
-                          R2RML_OBJECT_CONSTANT_SHORTCUT, R2RML_GRAPH_CONSTANT_SHORTCUT]
+    constant_shortcuts = [RML_STAR_SUBJECT_CONSTANT_SHORTCUT, R2RML_PREDICATE_CONSTANT_SHORTCUT,
+                          RML_STAR_OBJECT_CONSTANT_SHORTCUT, R2RML_GRAPH_CONSTANT_SHORTCUT]
 
     for constant_property, constant_shortcut in zip(constant_properties, constant_shortcuts):
         for s, o in mapping_graph.query(f'SELECT ?s ?o WHERE {{?s <{constant_shortcut}> ?o .}}'):
@@ -95,7 +89,7 @@ def _rdf_class_to_pom(mapping_graph):
         blanknode = rdflib.BNode()
         mapping_graph.add((tm, rdflib.term.URIRef(R2RML_PREDICATE_OBJECT_MAP), blanknode))
         mapping_graph.add((blanknode, rdflib.term.URIRef(R2RML_PREDICATE_CONSTANT_SHORTCUT), rdflib.RDF.type))
-        mapping_graph.add((blanknode, rdflib.term.URIRef(R2RML_OBJECT_CONSTANT_SHORTCUT), c))
+        mapping_graph.add((blanknode, rdflib.term.URIRef(RML_STAR_OBJECT_CONSTANT_SHORTCUT), c))
 
     mapping_graph.remove((None, rdflib.term.URIRef(R2RML_CLASS), None))
 
@@ -441,9 +435,7 @@ class MappingParser:
         except Exception as n3_mapping_parse_exception:
             raise Exception(n3_mapping_parse_exception)
 
-        # convert R2RML rules to RML, so that we can assume RML for parsing
-        mapping_graph = _mapping_to_rml(mapping_graph)
-        # convert RML rules to RML-star, so that we can assume RML-star for parsing
+        # convert R2RML and RML rules to RML-star, so that we can assume RML-star for parsing
         mapping_graph = _mapping_to_rml_star(mapping_graph)
         # convert rr:class to new POMs
         mapping_graph = _rdf_class_to_pom(mapping_graph)
