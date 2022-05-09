@@ -229,7 +229,7 @@ The properties to be specified for **data files** are listed below. **Remote** d
 The supported DBMSs are **[MySQL](https://www.mysql.com/)**, **[PostgreSQL](https://www.postgresql.org/)**, **[Oracle](https://www.oracle.com/database/)**, **[Microsoft SQL Server](https://www.microsoft.com/sql-server)**, **[MariaDB](https://mariadb.org/)** and **[SQLite](https://www.sqlite.org)**. To use relational databases it is neccessary to first **install the DBAPI driver**. We recommend the following ones:
 
 - **[MySQL](https://www.mysql.com/):** [PyMySQL](https://pypi.org/project/PyMySQL/).
-- **[PostgreSQL](https://www.postgresql.org/):** [psycopg2](https://pypi.org/project/psycopg2/).
+- **[PostgreSQL](https://www.postgresql.org/):** [psycopg2](https://pypi.org/project/psycopg2-binary/).
 - **[Oracle](https://www.oracle.com/database/):** [cx-Oracle](https://pypi.org/project/cx-Oracle/).
 - **[Microsoft SQL Server](https://www.microsoft.com/sql-server):** [pymssql](https://pypi.org/project/pymssql/).
 - **[MariaDB](https://mariadb.org/):** [PyMySQL](https://pypi.org/project/PyMySQL/).
