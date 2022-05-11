@@ -12,7 +12,6 @@ import numpy as np
 import elementpath
 import xml.etree.ElementTree as et
 import urllib.request
-import os
 
 from jsonpath import JSONPath
 from elementpath.xpath3 import XPath3Parser
@@ -117,12 +116,12 @@ def _read_ods(mapping_rule, references):
 
 
 def _read_json(mapping_rule, references):
-    if os.path.isfile(mapping_rule['data_source']):
-        with open(mapping_rule['data_source'], encoding='utf-8') as json_file:
-            json_data = json.load(json_file)
-    else:
+    if mapping_rule['data_source'].startswith('http'):
         with urllib.request.urlopen(mapping_rule['data_source']) as json_url:
             json_data = json.loads(json_url.read().decode())
+    else:
+        with open(mapping_rule['data_source'], encoding='utf-8') as json_file:
+            json_data = json.load(json_file)
 
     jsonpath_expression = mapping_rule['iterator'] + '.('
     # add top level object of the references to reduce intermediate results (THIS IS NOT STRICTLY NECESSARY)
@@ -142,12 +141,12 @@ def _read_json(mapping_rule, references):
 
 
 def _read_xml(mapping_rule, references):
-    if os.path.isfile(mapping_rule['data_source']):
-        with open(mapping_rule['data_source'], encoding='utf-8') as xml_file:
-            xml_root = et.parse(xml_file).getroot()
-    else:
+    if mapping_rule['data_source'].startswith('http'):
         with urllib.request.urlopen(mapping_rule['data_source']) as xml_url:
             xml_root = et.ElementTree(et.fromstring(xml_url.read().decode())).getroot()
+    else:
+        with open(mapping_rule['data_source'], encoding='utf-8') as xml_file:
+            xml_root = et.parse(xml_file).getroot()
 
     xpath_result = elementpath.iter_select(xml_root, mapping_rule['iterator'], parser=XPath3Parser)
 
