@@ -788,7 +788,7 @@
 :rules_000 void:exampleResource :map_shapePoints_000.
 :map_shapePoints_000 rml:logicalSource :source_011.
 :source_011 a rml:LogicalSource;
-    rml:source "https://raw.githubusercontent.com/oeg-upm/morph-kgc/main/examples/csv/data/SHAPES.csv;
+    rml:source "https://raw.githubusercontent.com/oeg-upm/morph-kgc/main/examples/csv/data/SHAPES.csv";
     rml:referenceFormulation ql:CSV.
 :map_shapePoints_000 a rr:TriplesMap;
     rdfs:label "shapePoints".
