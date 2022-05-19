@@ -11,7 +11,7 @@
 @base <http://example.org/> .
 
 :ls a rml:LogicalSource ;
-  rml:source "https://raw.githubusercontent.com/oeg-upm/morph-kgc/main/examples/rml-star/oeg-upm_morph-kgc.json";
+  rml:source "https://raw.githubusercontent.com/oeg-upm/morph-kgc/main/examples/tutorial/oeg-upm_morph-kgc.json";
   rml:referenceFormulation ql:JSONPath ;
   rml:iterator "$" .
 
