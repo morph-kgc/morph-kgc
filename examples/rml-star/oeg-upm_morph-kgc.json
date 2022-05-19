@@ -1,0 +1,488 @@
+{
+    "description": [
+        {
+            "excerpt": "Scalable RDF Knowledge Graph Construction with [R2]RML Mappings",
+            "confidence": [
+                1.0
+            ],
+            "technique": "GitHub API"
+        }
+    ],
+    "installation": [
+        {
+            "originalHeader": "Installation and Usage",
+            "excerpt": "[PyPi](https://pypi.org/project/morph-kgc/) is the fastest way to install Morph-KGC:\n```\npip install morph-kgc\n```\n\nTo run the engine you just need to execute the following:\n```\npython3 -m morph_kgc config.ini\n```\n\n[Here](https://github.com/oeg-upm/Morph-KGC/wiki/Configuration) you can see how to generate the configuration file. It is also possible to run Morph-KGC as a library with [RDFlib](https://rdflib.readthedocs.io/en/stable/):\n```python\nimport morph_kgc\n\n# generate the triples and load them to an RDFlib graph\ngraph = morph_kgc.materialize('/path/to/config.ini')\n\n# work with the graph\ngraph.query(' SELECT DISTINCT ?classes WHERE { ?s a ?classes } ')\n```\n",
+            "confidence": [
+                1
+            ],
+            "technique": "Header extraction"
+        }
+    ],
+    "identifier": [
+        {
+            "excerpt": "https://zenodo.org/badge/latestdoi/311956260",
+            "confidence": [
+                1.0
+            ],
+            "technique": "Regular expression"
+        }
+    ],
+    "logo": {
+        "excerpt": "https://github.com/oeg-upm/morph-kgc/blob/main/logo.png",
+        "confidence": [
+            1.0
+        ],
+        "technique": "Regular expression"
+    },
+    "image": [
+        {
+            "excerpt": "https://github.com/oeg-upm/morph-kgc/actions/workflows/continuous-integration.yml/badge.svg",
+            "confidence": [
+                1.0
+            ],
+            "technique": "Regular expression"
+        },
+        {
+            "excerpt": "https://img.shields.io:/pypi/status/morph-kgc?",
+            "confidence": [
+                1.0
+            ],
+            "technique": "Regular expression"
+        },
+        {
+            "excerpt": "https://img.shields.io/pypi/pyversions/morph-kgc.svg",
+            "confidence": [
+                1.0
+            ],
+            "technique": "Regular expression"
+        },
+        {
+            "excerpt": "https://img.shields.io/pypi/v/morph-kgc?style=flat",
+            "confidence": [
+                1.0
+            ],
+            "technique": "Regular expression"
+        },
+        {
+            "excerpt": "https://zenodo.org/badge/311956260.svg?style=flat",
+            "confidence": [
+                1.0
+            ],
+            "technique": "Regular expression"
+        },
+        {
+            "excerpt": "https://img.shields.io/pypi/l/morph-kgc.svg",
+            "confidence": [
+                1.0
+            ],
+            "technique": "Regular expression"
+        }
+    ],
+    "documentation": [
+        {
+            "originalHeader": "Documentation",
+            "excerpt": "Check the **[wiki](https://github.com/oeg-upm/Morph-KGC/wiki)** with all the information:\n\n**[Getting Started](https://github.com/oeg-upm/Morph-KGC/wiki/Getting-Started)**\n\n**[Usage](https://github.com/oeg-upm/Morph-KGC/wiki/Usage)**\n\n**[Configuration](https://github.com/oeg-upm/Morph-KGC/wiki/Configuration)**\n- **[Engine](https://github.com/oeg-upm/Morph-KGC/wiki/Engine-Configuration)**\n- **[Data Sources](https://github.com/oeg-upm/Morph-KGC/wiki/Data-Source-Configuration)**\n  - [Relational Databases](https://github.com/oeg-upm/Morph-KGC/wiki/Relational-Databases)\n  - [Data Files](https://github.com/oeg-upm/Morph-KGC/wiki/Data-Files)\n\n**[Features](https://github.com/oeg-upm/Morph-KGC/wiki/Features)**\n\n**[Academic Publications](https://github.com/oeg-upm/Morph-KGC/wiki/Academic-Publications)**\n\n**[License](https://github.com/oeg-upm/Morph-KGC/wiki/License)**\n\n**[FAQ](https://github.com/oeg-upm/Morph-KGC/wiki/FAQ)**\n",
+            "confidence": [
+                1
+            ],
+            "technique": "Header extraction"
+        },
+        {
+            "excerpt": "https://rdflib.readthedocs.io/",
+            "confidence": [
+                1.0
+            ],
+            "technique": "Regular expression"
+        }
+    ],
+    "contact": [
+        {
+            "originalHeader": "Contact",
+            "excerpt": "- **Juli\u00e1n Arenas-Guerrero (julian.arenas.guerrero@upm.es)**\n\n*Ontology Engineering Group, Universidad Polit\u00e9cnica de Madrid | 2020 - Present*\n",
+            "confidence": [
+                1
+            ],
+            "technique": "Header extraction"
+        }
+    ],
+    "usage": [
+        {
+            "originalHeader": "Installation and Usage",
+            "excerpt": "[PyPi](https://pypi.org/project/morph-kgc/) is the fastest way to install Morph-KGC:\n```\npip install morph-kgc\n```\n\nTo run the engine you just need to execute the following:\n```\npython3 -m morph_kgc config.ini\n```\n\n[Here](https://github.com/oeg-upm/Morph-KGC/wiki/Configuration) you can see how to generate the configuration file. It is also possible to run Morph-KGC as a library with [RDFlib](https://rdflib.readthedocs.io/en/stable/):\n```python\nimport morph_kgc\n\n# generate the triples and load them to an RDFlib graph\ngraph = morph_kgc.materialize('/path/to/config.ini')\n\n# work with the graph\ngraph.query(' SELECT DISTINCT ?classes WHERE { ?s a ?classes } ')\n```\n",
+            "confidence": [
+                1
+            ],
+            "technique": "Header extraction"
+        }
+    ],
+    "codeRepository": {
+        "excerpt": "https://github.com/oeg-upm/morph-kgc",
+        "confidence": [
+            1.0
+        ],
+        "technique": "GitHub API"
+    },
+    "owner": {
+        "excerpt": "oeg-upm",
+        "confidence": [
+            1.0
+        ],
+        "technique": "GitHub API"
+    },
+    "ownerType": {
+        "excerpt": "Organization",
+        "confidence": [
+            1.0
+        ],
+        "technique": "GitHub API"
+    },
+    "dateCreated": {
+        "excerpt": "2020-11-11T11:54:10Z",
+        "confidence": [
+            1.0
+        ],
+        "technique": "GitHub API"
+    },
+    "dateModified": {
+        "excerpt": "2022-03-21T22:41:11Z",
+        "confidence": [
+            1.0
+        ],
+        "technique": "GitHub API"
+    },
+    "license": {
+        "excerpt": {
+            "name": "Apache License 2.0",
+            "url": "https://api.github.com/licenses/apache-2.0"
+        },
+        "confidence": [
+            1.0
+        ],
+        "technique": "GitHub API"
+    },
+    "name": {
+        "excerpt": "morph-kgc",
+        "confidence": [
+            1.0
+        ],
+        "technique": "GitHub API"
+    },
+    "fullName": {
+        "excerpt": "oeg-upm/morph-kgc",
+        "confidence": [
+            1.0
+        ],
+        "technique": "GitHub API"
+    },
+    "issueTracker": {
+        "excerpt": "https://api.github.com/repos/oeg-upm/morph-kgc/issues{/number}",
+        "confidence": [
+            1.0
+        ],
+        "technique": "GitHub API"
+    },
+    "forksUrl": {
+        "excerpt": "https://api.github.com/repos/oeg-upm/morph-kgc/forks",
+        "confidence": [
+            1.0
+        ],
+        "technique": "GitHub API"
+    },
+    "downloadUrl": {
+        "excerpt": "https://github.com/oeg-upm/morph-kgc/releases",
+        "confidence": [
+            1.0
+        ],
+        "technique": "GitHub API"
+    },
+    "topics": {
+        "excerpt": [
+            "data-integration",
+            "database",
+            "knowledge-graph",
+            "python",
+            "r2rml",
+            "rdf",
+            "rml"
+        ],
+        "confidence": [
+            1.0
+        ],
+        "technique": "GitHub API"
+    },
+    "stargazersCount": {
+        "excerpt": {
+            "count": 39,
+            "date": "Tue, 05 Apr 2022 09:22:22 GMT"
+        },
+        "confidence": [
+            1.0
+        ],
+        "technique": "GitHub API"
+    },
+    "forksCount": {
+        "excerpt": {
+            "count": 3,
+            "date": "Tue, 05 Apr 2022 09:22:22 GMT"
+        },
+        "confidence": [
+            1.0
+        ],
+        "technique": "GitHub API"
+    },
+    "languages": {
+        "excerpt": [
+            "Python"
+        ],
+        "confidence": [
+            1.0
+        ],
+        "technique": "GitHub API"
+    },
+    "licenseText": {
+        "excerpt": "b'                                 Apache License\\n                           Version 2.0, January 2004\\n                        http://www.apache.org/licenses/\\n\\n   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION\\n\\n   1. Definitions.\\n\\n      \"License\" shall mean the terms and conditions for use, reproduction,\\n      and distribution as defined by Sections 1 through 9 of this document.\\n\\n      \"Licensor\" shall mean the copyright owner or entity authorized by\\n      the copyright owner that is granting the License.\\n\\n      \"Legal Entity\" shall mean the union of the acting entity and all\\n      other entities that control, are controlled by, or are under common\\n      control with that entity. For the purposes of this definition,\\n      \"control\" means (i) the power, direct or indirect, to cause the\\n      direction or management of such entity, whether by contract or\\n      otherwise, or (ii) ownership of fifty percent (50%) or more of the\\n      outstanding shares, or (iii) beneficial ownership of such entity.\\n\\n      \"You\" (or \"Your\") shall mean an individual or Legal Entity\\n      exercising permissions granted by this License.\\n\\n      \"Source\" form shall mean the preferred form for making modifications,\\n      including but not limited to software source code, documentation\\n      source, and configuration files.\\n\\n      \"Object\" form shall mean any form resulting from mechanical\\n      transformation or translation of a Source form, including but\\n      not limited to compiled object code, generated documentation,\\n      and conversions to other media types.\\n\\n      \"Work\" shall mean the work of authorship, whether in Source or\\n      Object form, made available under the License, as indicated by a\\n      copyright notice that is included in or attached to the work\\n      (an example is provided in the Appendix below).\\n\\n      \"Derivative Works\" shall mean any work, whether in Source or Object\\n      form, that is based on (or derived from) the Work and for which the\\n      editorial revisions, annotations, elaborations, or other modifications\\n      represent, as a whole, an original work of authorship. For the purposes\\n      of this License, Derivative Works shall not include works that remain\\n      separable from, or merely link (or bind by name) to the interfaces of,\\n      the Work and Derivative Works thereof.\\n\\n      \"Contribution\" shall mean any work of authorship, including\\n      the original version of the Work and any modifications or additions\\n      to that Work or Derivative Works thereof, that is intentionally\\n      submitted to Licensor for inclusion in the Work by the copyright owner\\n      or by an individual or Legal Entity authorized to submit on behalf of\\n      the copyright owner. For the purposes of this definition, \"submitted\"\\n      means any form of electronic, verbal, or written communication sent\\n      to the Licensor or its representatives, including but not limited to\\n      communication on electronic mailing lists, source code control systems,\\n      and issue tracking systems that are managed by, or on behalf of, the\\n      Licensor for the purpose of discussing and improving the Work, but\\n      excluding communication that is conspicuously marked or otherwise\\n      designated in writing by the copyright owner as \"Not a Contribution.\"\\n\\n      \"Contributor\" shall mean Licensor and any individual or Legal Entity\\n      on behalf of whom a Contribution has been received by Licensor and\\n      subsequently incorporated within the Work.\\n\\n   2. Grant of Copyright License. Subject to the terms and conditions of\\n      this License, each Contributor hereby grants to You a perpetual,\\n      worldwide, non-exclusive, no-charge, royalty-free, irrevocable\\n      copyright license to reproduce, prepare Derivative Works of,\\n      publicly display, publicly perform, sublicense, and distribute the\\n      Work and such Derivative Works in Source or Object form.\\n\\n   3. Grant of Patent License. Subject to the terms and conditions of\\n      this License, each Contributor hereby grants to You a perpetual,\\n      worldwide, non-exclusive, no-charge, royalty-free, irrevocable\\n      (except as stated in this section) patent license to make, have made,\\n      use, offer to sell, sell, import, and otherwise transfer the Work,\\n      where such license applies only to those patent claims licensable\\n      by such Contributor that are necessarily infringed by their\\n      Contribution(s) alone or by combination of their Contribution(s)\\n      with the Work to which such Contribution(s) was submitted. If You\\n      institute patent litigation against any entity (including a\\n      cross-claim or counterclaim in a lawsuit) alleging that the Work\\n      or a Contribution incorporated within the Work constitutes direct\\n      or contributory patent infringement, then any patent licenses\\n      granted to You under this License for that Work shall terminate\\n      as of the date such litigation is filed.\\n\\n   4. Redistribution. You may reproduce and distribute copies of the\\n      Work or Derivative Works thereof in any medium, with or without\\n      modifications, and in Source or Object form, provided that You\\n      meet the following conditions:\\n\\n      (a) You must give any other recipients of the Work or\\n          Derivative Works a copy of this License; and\\n\\n      (b) You must cause any modified files to carry prominent notices\\n          stating that You changed the files; and\\n\\n      (c) You must retain, in the Source form of any Derivative Works\\n          that You distribute, all copyright, patent, trademark, and\\n          attribution notices from the Source form of the Work,\\n          excluding those notices that do not pertain to any part of\\n          the Derivative Works; and\\n\\n      (d) If the Work includes a \"NOTICE\" text file as part of its\\n          distribution, then any Derivative Works that You distribute must\\n          include a readable copy of the attribution notices contained\\n          within such NOTICE file, excluding those notices that do not\\n          pertain to any part of the Derivative Works, in at least one\\n          of the following places: within a NOTICE text file distributed\\n          as part of the Derivative Works; within the Source form or\\n          documentation, if provided along with the Derivative Works; or,\\n          within a display generated by the Derivative Works, if and\\n          wherever such third-party notices normally appear. The contents\\n          of the NOTICE file are for informational purposes only and\\n          do not modify the License. You may add Your own attribution\\n          notices within Derivative Works that You distribute, alongside\\n          or as an addendum to the NOTICE text from the Work, provided\\n          that such additional attribution notices cannot be construed\\n          as modifying the License.\\n\\n      You may add Your own copyright statement to Your modifications and\\n      may provide additional or different license terms and conditions\\n      for use, reproduction, or distribution of Your modifications, or\\n      for any such Derivative Works as a whole, provided Your use,\\n      reproduction, and distribution of the Work otherwise complies with\\n      the conditions stated in this License.\\n\\n   5. Submission of Contributions. Unless You explicitly state otherwise,\\n      any Contribution intentionally submitted for inclusion in the Work\\n      by You to the Licensor shall be under the terms and conditions of\\n      this License, without any additional terms or conditions.\\n      Notwithstanding the above, nothing herein shall supersede or modify\\n      the terms of any separate license agreement you may have executed\\n      with Licensor regarding such Contributions.\\n\\n   6. Trademarks. This License does not grant permission to use the trade\\n      names, trademarks, service marks, or product names of the Licensor,\\n      except as required for reasonable and customary use in describing the\\n      origin of the Work and reproducing the content of the NOTICE file.\\n\\n   7. Disclaimer of Warranty. Unless required by applicable law or\\n      agreed to in writing, Licensor provides the Work (and each\\n      Contributor provides its Contributions) on an \"AS IS\" BASIS,\\n      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or\\n      implied, including, without limitation, any warranties or conditions\\n      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A\\n      PARTICULAR PURPOSE. You are solely responsible for determining the\\n      appropriateness of using or redistributing the Work and assume any\\n      risks associated with Your exercise of permissions under this License.\\n\\n   8. Limitation of Liability. In no event and under no legal theory,\\n      whether in tort (including negligence), contract, or otherwise,\\n      unless required by applicable law (such as deliberate and grossly\\n      negligent acts) or agreed to in writing, shall any Contributor be\\n      liable to You for damages, including any direct, indirect, special,\\n      incidental, or consequential damages of any character arising as a\\n      result of this License or out of the use or inability to use the\\n      Work (including but not limited to damages for loss of goodwill,\\n      work stoppage, computer failure or malfunction, or any and all\\n      other commercial damages or losses), even if such Contributor\\n      has been advised of the possibility of such damages.\\n\\n   9. Accepting Warranty or Additional Liability. While redistributing\\n      the Work or Derivative Works thereof, You may choose to offer,\\n      and charge a fee for, acceptance of support, warranty, indemnity,\\n      or other liability obligations and/or rights consistent with this\\n      License. However, in accepting such obligations, You may act only\\n      on Your own behalf and on Your sole responsibility, not on behalf\\n      of any other Contributor, and only if You agree to indemnify,\\n      defend, and hold each Contributor harmless for any liability\\n      incurred by, or claims asserted against, such Contributor by reason\\n      of your accepting any such warranty or additional liability.\\n\\n   END OF TERMS AND CONDITIONS\\n\\n   APPENDIX: How to apply the Apache License to your work.\\n\\n      To apply the Apache License to your work, attach the following\\n      boilerplate notice, with the fields enclosed by brackets \"[]\"\\n      replaced with your own identifying information. (Don\\'t include\\n      the brackets!)  The text should be enclosed in the appropriate\\n      comment syntax for the file format. We also recommend that a\\n      file or class name and description of purpose be included on the\\n      same \"printed page\" as the copyright notice for easier\\n      identification within third-party archives.\\n\\n   Copyright [yyyy] [name of copyright owner]\\n\\n   Licensed under the Apache License, Version 2.0 (the \"License\");\\n   you may not use this file except in compliance with the License.\\n   You may obtain a copy of the License at\\n\\n       http://www.apache.org/licenses/LICENSE-2.0\\n\\n   Unless required by applicable law or agreed to in writing, software\\n   distributed under the License is distributed on an \"AS IS\" BASIS,\\n   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\\n   See the License for the specific language governing permissions and\\n   limitations under the License.\\n'",
+        "confidence": [
+            1.0
+        ],
+        "technique": "File Exploration"
+    },
+    "readmeUrl": {
+        "excerpt": "https://github.com/oeg-upm/morph-kgc/README.md",
+        "confidence": [
+            1.0
+        ],
+        "technique": "GitHub API"
+    },
+    "releases": {
+        "excerpt": [
+            {
+                "tagName": "1.6.0",
+                "name": "1.6.0",
+                "authorName": "ArenasGuerreroJulian",
+                "authorType": "User",
+                "body": "- Datatype inference for _SQLite_.\r\n- Handling curly braces in string templates according to [R2RML spec](https://www.w3.org/TR/r2rml/#dfn-template-valued-term-map).\r\n- Do not generate output dir when executing as a library.\r\n- Fixed bug regarding the generation of integers values as float for _JSON_ files with _NULL_ values.",
+                "tarballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/tarball/1.6.0",
+                "zipballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/zipball/1.6.0",
+                "htmlUrl": "https://github.com/oeg-upm/morph-kgc/releases/tag/1.6.0",
+                "url": "https://api.github.com/repos/oeg-upm/morph-kgc/releases/60494063",
+                "dateCreated": "2022-02-25T15:30:33Z",
+                "datePublished": "2022-02-25T15:36:26Z"
+            },
+            {
+                "tagName": "1.5.0",
+                "name": "1.5.0",
+                "authorName": "ArenasGuerreroJulian",
+                "authorType": "User",
+                "body": "- Added `safe_percent_encoding` option to avoid percent encoding of specific characters.\r\n- The default value of `clean_output_dir` has changed to *false*.\r\n- Several changes regarding **hierarchical** data sources (JSON and XML):\r\n  - Migration from `lxml` to `elementpath` library. This entails that from this version, Morph-KGC uses **XPath 2.0**.\r\n  - References in the mapping rules can access elements in lower levels of the tree (e.g. *author.name* in JSONPath or *author/name* in XPath).\r\n  - Minor bugs fixed.",
+                "tarballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/tarball/1.5.0",
+                "zipballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/zipball/1.5.0",
+                "htmlUrl": "https://github.com/oeg-upm/morph-kgc/releases/tag/1.5.0",
+                "url": "https://api.github.com/repos/oeg-upm/morph-kgc/releases/56155751",
+                "dateCreated": "2021-12-29T18:59:45Z",
+                "datePublished": "2021-12-29T19:15:38Z"
+            },
+            {
+                "tagName": "1.4.1",
+                "name": "1.4.1",
+                "authorName": "ArenasGuerreroJulian",
+                "authorType": "User",
+                "body": "- Automatic inference of file data format. It is no longer needed to specify the data format in the configuration file.\r\n- Handling [escape sequences](https://www.w3.org/TR/turtle/#sec-escapes).",
+                "tarballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/tarball/1.4.1",
+                "zipballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/zipball/1.4.1",
+                "htmlUrl": "https://github.com/oeg-upm/morph-kgc/releases/tag/1.4.1",
+                "url": "https://api.github.com/repos/oeg-upm/morph-kgc/releases/53867970",
+                "dateCreated": "2021-11-22T20:06:51Z",
+                "datePublished": "2021-11-22T20:13:50Z"
+            },
+            {
+                "tagName": "1.4.0",
+                "name": "1.4.0",
+                "authorName": "ArenasGuerreroJulian",
+                "authorType": "User",
+                "body": "- Full compatibility for _JSONPath_ supported.\r\n- Full compatibility for _XPath_ supported.\r\n- Minor bugs fixed.",
+                "tarballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/tarball/1.4.0",
+                "zipballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/zipball/1.4.0",
+                "htmlUrl": "https://github.com/oeg-upm/morph-kgc/releases/tag/1.4.0",
+                "url": "https://api.github.com/repos/oeg-upm/morph-kgc/releases/52400652",
+                "dateCreated": "2021-10-31T14:39:48Z",
+                "datePublished": "2021-10-31T14:43:28Z"
+            },
+            {
+                "tagName": "1.3.8",
+                "name": "1.3.8",
+                "authorName": "ArenasGuerreroJulian",
+                "authorType": "User",
+                "body": "- No longer generates `xsd:string` data types, as it is equivalent to not specifying a data type.\r\n- Fixed bug where integer RDB columns with _NULLs_ where generating float values #35.",
+                "tarballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/tarball/1.3.8",
+                "zipballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/zipball/1.3.8",
+                "htmlUrl": "https://github.com/oeg-upm/morph-kgc/releases/tag/1.3.8",
+                "url": "https://api.github.com/repos/oeg-upm/morph-kgc/releases/52166026",
+                "dateCreated": "2021-10-27T17:52:45Z",
+                "datePublished": "2021-10-27T17:58:01Z"
+            },
+            {
+                "tagName": "1.3.7",
+                "name": "1.3.7",
+                "authorName": "ArenasGuerreroJulian",
+                "authorType": "User",
+                "body": "- Updated dependencies versions.\r\n- Minor bugs fixed.",
+                "tarballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/tarball/1.3.7",
+                "zipballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/zipball/1.3.7",
+                "htmlUrl": "https://github.com/oeg-upm/morph-kgc/releases/tag/1.3.7",
+                "url": "https://api.github.com/repos/oeg-upm/morph-kgc/releases/52127645",
+                "dateCreated": "2021-10-27T10:32:56Z",
+                "datePublished": "2021-10-27T10:33:59Z"
+            },
+            {
+                "tagName": "1.3.6",
+                "name": "1.3.6",
+                "authorName": "ArenasGuerreroJulian",
+                "authorType": "User",
+                "body": "- Data type inference for Oracle.\r\n- Fixed bug with `rr:sqlQuery` generating _NULL_ values, #35.\r\n- Fixed bug for JSON.",
+                "tarballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/tarball/1.3.6",
+                "zipballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/zipball/1.3.6",
+                "htmlUrl": "https://github.com/oeg-upm/morph-kgc/releases/tag/1.3.6",
+                "url": "https://api.github.com/repos/oeg-upm/morph-kgc/releases/52115635",
+                "dateCreated": "2021-10-27T07:50:41Z",
+                "datePublished": "2021-10-27T07:55:09Z"
+            },
+            {
+                "tagName": "1.3.5",
+                "name": "1.3.5",
+                "authorName": "ArenasGuerreroJulian",
+                "authorType": "User",
+                "body": "- Data type inference for MySQL and PostgreSQL.\r\n- Bugs fixed.",
+                "tarballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/tarball/1.3.5",
+                "zipballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/zipball/1.3.5",
+                "htmlUrl": "https://github.com/oeg-upm/morph-kgc/releases/tag/1.3.5",
+                "url": "https://api.github.com/repos/oeg-upm/morph-kgc/releases/51972168",
+                "dateCreated": "2021-10-25T12:21:58Z",
+                "datePublished": "2021-10-25T12:25:48Z"
+            },
+            {
+                "tagName": "1.3.4",
+                "name": "1.3.4",
+                "authorName": "ArenasGuerreroJulian",
+                "authorType": "User",
+                "body": "- `na_filter` now also applies to relational databases.\r\n- `materialize_default_graph` is no longer supported.\r\n- Bugs fixed.",
+                "tarballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/tarball/1.3.4",
+                "zipballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/zipball/1.3.4",
+                "htmlUrl": "https://github.com/oeg-upm/morph-kgc/releases/tag/1.3.4",
+                "url": "https://api.github.com/repos/oeg-upm/morph-kgc/releases/51283474",
+                "dateCreated": "2021-10-13T13:06:32Z",
+                "datePublished": "2021-10-13T13:08:20Z"
+            },
+            {
+                "tagName": "1.3.2",
+                "name": "1.3.2",
+                "authorName": "ArenasGuerreroJulian",
+                "authorType": "User",
+                "body": "- Bugs fixed.",
+                "tarballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/tarball/1.3.2",
+                "zipballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/zipball/1.3.2",
+                "htmlUrl": "https://github.com/oeg-upm/morph-kgc/releases/tag/1.3.2",
+                "url": "https://api.github.com/repos/oeg-upm/morph-kgc/releases/51197739",
+                "dateCreated": "2021-10-12T10:09:52Z",
+                "datePublished": "2021-10-12T10:10:54Z"
+            },
+            {
+                "tagName": "1.3.0",
+                "name": "1.3.0",
+                "authorName": "ArenasGuerreroJulian",
+                "authorType": "User",
+                "body": "- Support for Blank Nodes.\r\n- Filtering of NULL values supported for all data formats.\r\n- Solved bug with identifier casing in Oracle.",
+                "tarballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/tarball/1.3.0",
+                "zipballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/zipball/1.3.0",
+                "htmlUrl": "https://github.com/oeg-upm/morph-kgc/releases/tag/1.3.0",
+                "url": "https://api.github.com/repos/oeg-upm/morph-kgc/releases/51172321",
+                "dateCreated": "2021-10-11T22:52:04Z",
+                "datePublished": "2021-10-11T22:54:58Z"
+            },
+            {
+                "tagName": "1.2.2",
+                "name": "1.2.2",
+                "authorName": "ArenasGuerreroJulian",
+                "authorType": "User",
+                "body": "- Setup options to connect to Oracle databases.",
+                "tarballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/tarball/1.2.2",
+                "zipballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/zipball/1.2.2",
+                "htmlUrl": "https://github.com/oeg-upm/morph-kgc/releases/tag/1.2.2",
+                "url": "https://api.github.com/repos/oeg-upm/morph-kgc/releases/51131612",
+                "dateCreated": "2021-10-11T10:22:01Z",
+                "datePublished": "2021-10-11T10:23:53Z"
+            },
+            {
+                "tagName": "1.2.1",
+                "name": "1.2.1",
+                "authorName": "ArenasGuerreroJulian",
+                "authorType": "User",
+                "body": "Support for running Morph-KGC as a library.",
+                "tarballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/tarball/1.2.1",
+                "zipballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/zipball/1.2.1",
+                "htmlUrl": "https://github.com/oeg-upm/morph-kgc/releases/tag/1.2.1",
+                "url": "https://api.github.com/repos/oeg-upm/morph-kgc/releases/51048791",
+                "dateCreated": "2021-10-08T16:38:45Z",
+                "datePublished": "2021-10-08T16:41:52Z"
+            },
+            {
+                "tagName": "1.2.0",
+                "name": "1.2.0",
+                "authorName": "ArenasGuerreroJulian",
+                "authorType": "User",
+                "body": "Support for hierarchical data formats:\r\n- JSON\r\n- XML",
+                "tarballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/tarball/1.2.0",
+                "zipballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/zipball/1.2.0",
+                "htmlUrl": "https://github.com/oeg-upm/morph-kgc/releases/tag/1.2.0",
+                "url": "https://api.github.com/repos/oeg-upm/morph-kgc/releases/51025740",
+                "dateCreated": "2021-10-08T10:32:04Z",
+                "datePublished": "2021-10-08T10:37:43Z"
+            },
+            {
+                "tagName": "1.1.4",
+                "name": "1.1.4",
+                "authorName": "ArenasGuerreroJulian",
+                "authorType": "User",
+                "body": "- Support for Excel file format.\r\n- Enabled parentTriplesMap without join conditions.\r\n- Faster percent encoding.\r\n- Correction of bugs.",
+                "tarballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/tarball/1.1.4",
+                "zipballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/zipball/1.1.4",
+                "htmlUrl": "https://github.com/oeg-upm/morph-kgc/releases/tag/1.1.4",
+                "url": "https://api.github.com/repos/oeg-upm/morph-kgc/releases/50978505",
+                "dateCreated": "2021-10-07T16:12:48Z",
+                "datePublished": "2021-10-07T16:13:44Z"
+            },
+            {
+                "tagName": "1.1.0",
+                "name": "1.1.0",
+                "authorName": "ArenasGuerreroJulian",
+                "authorType": "User",
+                "body": "- Connection to relational databases are now handled with SQLAlchemy. MySQL, PostgreSQL, Oracle, SQL Server, MariaDB and SQLlite are now supported.\r\n- Several tabular data formats are now supported: CSV, TSV, PARQUET, FEATHER, ORC, STATA, SAS, SPSS.\r\n- MAXIMAL partitioning algorithm implemented.\r\n- Correction of minor bugs.",
+                "tarballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/tarball/1.1.0",
+                "zipballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/zipball/1.1.0",
+                "htmlUrl": "https://github.com/oeg-upm/morph-kgc/releases/tag/1.1.0",
+                "url": "https://api.github.com/repos/oeg-upm/morph-kgc/releases/50807237",
+                "dateCreated": "2021-10-05T11:18:46Z",
+                "datePublished": "2021-10-05T11:21:12Z"
+            },
+            {
+                "tagName": "1.0.0",
+                "name": "1.0.0",
+                "authorName": "ArenasGuerreroJulian",
+                "authorType": "User",
+                "body": "Scalable Knowledge Graph Construction with [R2]RML Mappings",
+                "tarballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/tarball/1.0.0",
+                "zipballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/zipball/1.0.0",
+                "htmlUrl": "https://github.com/oeg-upm/morph-kgc/releases/tag/1.0.0",
+                "url": "https://api.github.com/repos/oeg-upm/morph-kgc/releases/50806985",
+                "dateCreated": "2021-10-05T11:08:29Z",
+                "datePublished": "2021-10-05T11:16:58Z"
+            }
+        ],
+        "confidence": [
+            1.0
+        ],
+        "technique": "GitHub API"
+    },
+    "inspect4py": {
+        "software_type": "library"
+    }
+}
