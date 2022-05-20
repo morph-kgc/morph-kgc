@@ -30,6 +30,10 @@
 
 **[Read the documentation](https://morph-kgc.readthedocs.io/en/latest/documentation/)**.
 
+## Tutorial
+
+Learn quickly with the tutorial in **[Google Colaboratory](https://colab.research.google.com/drive/1ByFx_NOEfTZeaJ1Wtw3UwTH3H3-Sye2O?usp=sharing)**!
+
 ## Getting Started
 
 **[PyPi](https://pypi.org/project/morph-kgc/)** is the fastest way to install Morph-KGC:

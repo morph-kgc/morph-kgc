@@ -1,4 +1,10 @@
-# Demo
+# Tutorial & Demo
+
+## Tutorial
+
+Learn quickly with the tutorial in **[Google Colaboratory](https://colab.research.google.com/drive/1ByFx_NOEfTZeaJ1Wtw3UwTH3H3-Sye2O?usp=sharing)**!
+
+## Demo
 
 Get started without having to install **Morph-KGC** with our **[`ONLINE DEMO`](https://morph.oeg.fi.upm.es/demo/morph-kgc)**.
 
