@@ -18,7 +18,7 @@ Morph-KGC adopts the **[W3C](https://www.w3.org/)** Recommendation **[R2RML](htt
 
 Morph-KGC is being now used for all our knowledge graph construction projects at the **[Ontology Engineering Group](https://oeg.fi.upm.es/)**, and other organizations are starting to adopt it as well for their **[RDF](https://www.w3.org/TR/rdf11-concepts/)** and **[RDF-star](https://w3c.github.io/rdf-star/cg-spec/2021-12-17.html)** data materialization pipelines. This is why we put strong emphasis in keeping it **stable**, with **solid** releases. The engine is under **[Continuous Integration](https://github.com/oeg-upm/morph-kgc/actions)** using **[R2RML test cases](https://www.w3.org/2001/sw/rdb2rdf/test-cases/)**, **[RML test cases](https://rml.io/test-cases/)** and **[RML-star test cases](https://github.com/kg-construct/rml-star-test-cases)**, in addition to more complex ones.
 
-We also frequently test Morph-KGC in scenarios involving large volumes of data the with the **[GTFS-Madrid-Bench](https://github.com/oeg-upm/gtfs-bench)** and **[NPD Benchmark](https://github.com/ontop/npd-benchmark)**.
+We also frequently test Morph-KGC in scenarios involving large volumes of data the with the **[LUBM4OBDA](https://github.com/oeg-upm/lubm4obda)**, **[NPD](https://github.com/ontop/npd-benchmark)** and **[GTFS-Madrid](https://github.com/oeg-upm/gtfs-bench)** benchmarks.
 
 ### RDF-star
 
