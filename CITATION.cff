@@ -1,23 +1,24 @@
 cff-version: 1.2.0
 message: "If you use Morph-KGC, please cite the SWJ paper."
-type: article
-title: "Morph-KGC: Scalable Knowledge Graph Materialization with Mapping Partitions"
-authors:
-  - family-names: "Arenas-Guerrero"
-    given-names: "Julián"
-    orcid: "https://orcid.org/0000-0002-3029-6469"
-  - family-names: "Chaves-Fraga"
-    given-names: "David"
-    orcid: "https://orcid.org/0000-0003-3236-2789"
-  - family-names: "Toledo"
-    given-names: "Jhon"
-    orcid: "https://orcid.org/0000-0002-2924-7272"
-  - family-names: "Pérez"
-    given-names: "María S."
-    orcid: "https://orcid.org/0000-0003-2949-3307"
-  - family-names: "Corcho"
-    given-names: "Oscar"
-    orcid: "https://orcid.org/0000-0002-9260-0753"
-year: 2022
-journal: "Semantic Web (accepted)"
-url: "http://www.semantic-web-journal.net/system/files/swj3135.pdf"
+references:
+  type: article
+  title: "Morph-KGC: Scalable Knowledge Graph Materialization with Mapping Partitions"
+  authors:
+    - family-names: "Arenas-Guerrero"
+      given-names: "Julián"
+      orcid: "https://orcid.org/0000-0002-3029-6469"
+    - family-names: "Chaves-Fraga"
+      given-names: "David"
+      orcid: "https://orcid.org/0000-0003-3236-2789"
+    - family-names: "Toledo"
+      given-names: "Jhon"
+      orcid: "https://orcid.org/0000-0002-2924-7272"
+    - family-names: "Pérez"
+      given-names: "María S."
+      orcid: "https://orcid.org/0000-0003-2949-3307"
+    - family-names: "Corcho"
+      given-names: "Oscar"
+      orcid: "https://orcid.org/0000-0002-9260-0753"
+  year: 2022
+  journal: "Semantic Web (accepted)"
+  url: "http://www.semantic-web-journal.net/system/files/swj3135.pdf"
