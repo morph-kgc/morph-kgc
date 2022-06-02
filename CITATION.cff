@@ -1,3 +1,5 @@
+cff-version: 1.2.0
+message: "If you use Morph-KGC, please cite the SWJ paper."
 type: article
 title: "Morph-KGC: Scalable Knowledge Graph Materialization with Mapping Partitions"
 authors:
