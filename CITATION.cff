@@ -1,4 +1,6 @@
-type: "article"
+cff-version: 1.2.0
+message: "If you use Morph-KGC, please cite the SWJ paper."
+type: article
 title: "Morph-KGC: Scalable Knowledge Graph Materialization with Mapping Partitions"
 authors:
 - family-names: "Arenas-Guerrero"
@@ -16,6 +18,6 @@ authors:
 - family-names: "Corcho"
   given-names: "Oscar"
   orcid: "https://orcid.org/0000-0002-9260-0753"
-year: "2022"
-journal: "Semantic Web (accepted)"
-url: "http://www.semantic-web-journal.net/system/files/swj3135.pdf"
+year: 2022
+journal: Semantic Web (accepted)
+url: http://www.semantic-web-journal.net/system/files/swj3135.pdf
