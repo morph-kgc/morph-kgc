@@ -18,7 +18,7 @@
 @article{arenas2022morph,
   title   = {{Morph-KGC: Scalable Knowledge Graph Materialization with Mapping Partitions}},
   author  = {Arenas-Guerrero, Julián and Chaves-Fraga, David and Toledo, Jhon and Pérez, María S. and Corcho, Oscar},
-  journal = {Semantic Web (accepted)},
+  journal = {Semantic Web},
   year    = {2022},
   url     = {http://www.semantic-web-journal.net/system/files/swj3135.pdf}
 }
