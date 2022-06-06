@@ -13,6 +13,7 @@ preferred-citation:
   title: "Morph-KGC: Scalable Knowledge Graph Materialization with Mapping Partitions"
   type: article
   journal: Semantic Web
+  url: http://www.semantic-web-journal.net/system/files/swj3135.pdf
   year: 2022
 identifiers:
   - description: "Collection of archived snapshots for Morph-KGC"
