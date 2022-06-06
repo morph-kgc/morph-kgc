@@ -12,6 +12,7 @@ preferred-citation:
       given-names: Julián
   title: "Morph-KGC: Scalable Knowledge Graph Materialization with Mapping Partitions"
   type: article
+  journal: Semantic Web
   year: 2022
 identifiers:
   - description: "Collection of archived snapshots for Morph-KGC"
