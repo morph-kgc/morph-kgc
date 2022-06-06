@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: article
+journal: "Semantic Web"
+authors:
+- family-names: "Arenas-Guerrero"
+  given-names: "Julián"
+  orcid: "0000-0002-3029-6469"
+title: "Morph-KGC: Scalable Knowledge Graph Materialization with Mapping Partitions"
+url: "http://www.semantic-web-journal.net/system/files/swj3135.pdf"
