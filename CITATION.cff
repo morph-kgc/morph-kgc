@@ -2,8 +2,8 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite both the article from preferred-citation and the software itself."
 authors:
-  - family-names: Arenas-Guerrero
-    given-names: Julián
+- family-names: Arenas-Guerrero
+  given-names: Julián
 title: "Morph-KGC: Scalable Knowledge Graph Materialization with Mapping Partitions"
 type: article
 year: 2022
