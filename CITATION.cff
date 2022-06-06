@@ -1,15 +1,15 @@
 title: "Morph-KGC: Scalable Knowledge Graph Materialization with Mapping Partitions"
 license: Apache-2.0
 authors:
-  - family-names: "Arenas-Guerrero"
-    given-names: "Julián"
-    orcid: "0000-0002-3029-6469
+  - family-names: Arenas-Guerrero
+    given-names: Julián
+    orcid: "http://orcid.org/0000-0002-3029-6469"
 cff-version: 1.2.0
 message: "If you use this software, please cite both the article from preferred-citation and the software itself."
 preferred-citation:
   authors:
-    - family-names: "Arenas-Guerrero"
-      given-names: "Julián"
+    - family-names: Arenas-Guerrero
+      given-names: Julián
   title: "Morph-KGC: Scalable Knowledge Graph Materialization with Mapping Partitions"
   type: article
   year: 2022
