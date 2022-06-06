@@ -5,11 +5,18 @@ authors:
     given-names: Julián
     orcid: "http://orcid.org/0000-0002-3029-6469"
 cff-version: 1.2.0
-message: "If you use this software, please cite both the article from preferred-citation and the software itself."
 preferred-citation:
   authors:
     - family-names: Arenas-Guerrero
       given-names: Julián
+    - family-names: Chaves-Fraga
+      given-names: David
+    - family-names: Toledo
+      given-names: Jhon
+    - family-names: Pérez
+      given-names: María S.
+    - family-names: Corcho
+      given-names: Oscar
   title: "Morph-KGC: Scalable Knowledge Graph Materialization with Mapping Partitions"
   type: article
   journal: Semantic Web
