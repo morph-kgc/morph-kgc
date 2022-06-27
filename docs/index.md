@@ -20,6 +20,20 @@
 - Compatible with **[Python](https://www.python.org/)** 3.7 or higher.
 - **Optimized** to materialize large knowledge graphs.
 
+## Citing
+
+If you used Morph-KGC in your work, please cite the **[SWJ paper](http://www.semantic-web-journal.net/system/files/swj3135.pdf)**:
+
+```bib
+@article{arenas2022morph,
+  title   = {{Morph-KGC: Scalable Knowledge Graph Materialization with Mapping Partitions}},
+  author  = {Arenas-Guerrero, Julián and Chaves-Fraga, David and Toledo, Jhon and Pérez, María S. and Corcho, Oscar},
+  journal = {Semantic Web},
+  year    = {2022},
+  url     = {http://www.semantic-web-journal.net/system/files/swj3135.pdf}
+}
+```
+
 ## Licenses
 
 **Morph-KGC** is available under the **[Apache License 2.0](https://github.com/oeg-upm/Morph-KGC/blob/main/LICENSE)**.
