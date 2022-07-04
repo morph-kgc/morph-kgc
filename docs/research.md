@@ -8,7 +8,7 @@ Morph-KGC is a project created by **[Julián Arenas-Guerrero](https://orcid.org/
 - **[Oscar Corcho](https://orcid.org/0000-0002-9260-0753)**
 - **[María S. Pérez](https://www.datsi.fi.upm.es/~mperez/)**
 - **[David Chaves-Fraga](https://davidchavesfraga.com/)**
-- **[Jhon Toledo]**
+- **Jhon Toledo**
 
 ## Publications
 
