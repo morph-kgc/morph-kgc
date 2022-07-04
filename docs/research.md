@@ -18,7 +18,7 @@ Morph-KGC is a project created by **[Julián Arenas-Guerrero](https://orcid.org/
 
 ### Conferences
 
-- **[RML-star: A Declarative Mapping Language for RDF-star Generation](http://ceur-ws.org/Vol-2980/paper374.pdf)**. Thomas Delva, Julián Arenas-Guerrero, Ana Iglesias-Molina, Oscar Corcho, David Chaves-Fraga, Anastasia Dimou. International Semantic Web Conference (ISWC), 2021
+- **[RML-star: A Declarative Mapping Language for RDF-star Generation](http://ceur-ws.org/Vol-2980/paper374.pdf)**. Thomas Delva, Julián Arenas-Guerrero, Ana Iglesias-Molina, Oscar Corcho, David Chaves-Fraga, Anastasia Dimou. International Semantic Web Conference (ISWC), 2021.
 
 ### Workshops
 
