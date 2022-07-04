@@ -6,7 +6,7 @@ Morph-KGC is a project created by **[Julián Arenas-Guerrero](https://orcid.org/
 
 ### Journals
 
-- **[Morph-KGC: Scalable Knowledge Graph Materialization with Mapping Partitions](http://www.semantic-web-journal.net/system/files/swj3135.pdf)**. Julián Arenas-Guerrero, David Chaves-Fraga, Jhon Toledo, María S Pérez, Oscar Corcho. Semantic Web Journal, 2022.
+- **[Morph-KGC: Scalable Knowledge Graph Materialization with Mapping Partitions](http://www.semantic-web-journal.net/system/files/swj3135.pdf)**. Julián Arenas-Guerrero, David Chaves-Fraga, Jhon Toledo, María S. Pérez, Oscar Corcho. Semantic Web Journal, 2022.
 
 ### Conferences
 
@@ -19,3 +19,10 @@ Morph-KGC is a project created by **[Julián Arenas-Guerrero](https://orcid.org/
 ### Tutorials
 
 - **[The Knowledge Graph Construction Tutorial](https://w3id.org/kg-construct/costdkg-eswc-tutorial)**. Julián Arenas-Guerrero. European Semantic Web Conference (ESWC), 2022.
+
+
+{==
+
+    The development of Morph-KGC and associated research is the result of public funding of science and the work of many people.
+
+==}
