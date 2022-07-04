@@ -19,10 +19,3 @@ Morph-KGC is a project created by **[Julián Arenas-Guerrero](https://orcid.org/
 ### Tutorials
 
 - **[The Knowledge Graph Construction Tutorial](https://w3id.org/kg-construct/costdkg-eswc-tutorial)**. Julián Arenas-Guerrero. European Semantic Web Conference (ESWC), 2022.
-
-
-{==
-
-*The development of Morph-KGC and associated research is the result of public funding of science and the work of many people.*
-
-==}
