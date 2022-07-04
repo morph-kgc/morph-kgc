@@ -23,6 +23,6 @@ Morph-KGC is a project created by **[Julián Arenas-Guerrero](https://orcid.org/
 
 {==
 
-    *The development of Morph-KGC and associated research is the result of public funding of science and the work of many people.*
+*The development of Morph-KGC and associated research is the result of public funding of science and the work of many people.*
 
 ==}
