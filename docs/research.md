@@ -2,6 +2,14 @@
 
 Morph-KGC is a project created by **[Julián Arenas-Guerrero](https://orcid.org/0000-0002-3029-6469)** in the context of his PhD thesis under the supervision of **[Oscar Corcho](https://orcid.org/0000-0002-9260-0753)** and **[María S. Pérez](https://www.datsi.fi.upm.es/~mperez/)** in the **[Ontology Engineering Group](https://oeg.fi.upm.es/)**.
 
+## Team
+
+- **[Julián Arenas-Guerrero](https://orcid.org/0000-0002-3029-6469)**
+- **[Oscar Corcho](https://orcid.org/0000-0002-9260-0753)**
+- **[María S. Pérez](https://www.datsi.fi.upm.es/~mperez/)**
+- **[David Chaves-Fraga](https://davidchavesfraga.com/)**
+- **[Jhon Toledo]**
+
 ## Publications
 
 ### Journals
