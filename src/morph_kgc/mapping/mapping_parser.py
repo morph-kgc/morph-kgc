@@ -488,7 +488,7 @@ class MappingParser:
                 file_extension = os.path.splitext(str(mapping_rule['data_source']))[1][1:].strip()
                 self.mappings_df.at[i, 'source_type'] = file_extension.upper()
             else:
-                raise Exception('No source type could be retrieved for mapping rule some mapping rules.')
+                raise Exception('No source type could be retrieved for some mapping rules.')
 
     def _complete_rml_source_with_config_file_paths(self):
         """
