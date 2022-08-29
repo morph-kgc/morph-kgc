@@ -22,15 +22,15 @@
 
 ## Citing
 
-If you used Morph-KGC in your work, please cite the **[SWJ paper](http://www.semantic-web-journal.net/system/files/swj3135.pdf)**:
+If you used Morph-KGC in your work, please cite the **[SWJ paper](https://content.iospress.com/download/semantic-web/sw223098?id=semantic-web%2Fsw223098)**:
 
 ```bib
 @article{arenas2022morph,
-  title   = {{Morph-KGC: Scalable Knowledge Graph Materialization with Mapping Partitions}},
+  title   = {{Morph-KGC: Scalable knowledge graph materialization with mapping partitions}},
   author  = {Arenas-Guerrero, Julián and Chaves-Fraga, David and Toledo, Jhon and Pérez, María S. and Corcho, Oscar},
   journal = {Semantic Web},
   year    = {2022},
-  url     = {http://www.semantic-web-journal.net/system/files/swj3135.pdf}
+  doi     = {10.3233/SW-223135}
 }
 ```
 
