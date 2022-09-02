@@ -6,9 +6,9 @@ Before starting with the development of **Morph-KGC**, we analyzed the performan
 
 ### Performance
 
-Morph-KGC relies on the usage of **[mapping partitioning](https://content.iospress.com/download/semantic-web/sw223098?id=semantic-web%2Fsw223098)** to achieve efficient knowledge graph materialization. Morph-KGC can run mapping rules in **parallel** using the full power of the CPU. For scenarios that require to maintain the memory usage low, it is possible to use **sequential** processing, preventing the entire knowledge graph to be loaded in memory.
+Morph-KGC relies on the usage of **[mapping partitioning](https://content.iospress.com/download/semantic-web/sw223135?id=semantic-web%2Fsw223135)** to achieve efficient knowledge graph materialization. Morph-KGC can run mapping rules in **parallel** using the full power of the CPU. For scenarios that require to maintain the memory usage low, it is possible to use **sequential** processing, preventing the entire knowledge graph to be loaded in memory.
 
-Additional optimizations are also implemented to increase efficiency: **[redundant self-join elimination](https://content.iospress.com/download/semantic-web/sw223098?id=semantic-web%2Fsw223098)**, **[vectorized operations](https://en.wikipedia.org/wiki/Array_programming)**, **[hash joins](https://en.wikipedia.org/wiki/Hash_join)** and more.
+Additional optimizations are also implemented to increase efficiency: **[redundant self-join elimination](https://content.iospress.com/download/semantic-web/sw223135?id=semantic-web%2Fsw223135)**, **[vectorized operations](https://en.wikipedia.org/wiki/Array_programming)**, **[hash joins](https://en.wikipedia.org/wiki/Hash_join)** and more.
 
 ### W3C Compliance
 

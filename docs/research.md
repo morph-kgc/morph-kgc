@@ -14,7 +14,7 @@
 
 ### Journals
 
-- **[Morph-KGC: Scalable Knowledge Graph Materialization with Mapping Partitions](https://content.iospress.com/download/semantic-web/sw223098?id=semantic-web%2Fsw223098)**. Julián Arenas-Guerrero, David Chaves-Fraga, Jhon Toledo, María S. Pérez, Oscar Corcho. Semantic Web Journal, 2022.
+- **[Morph-KGC: Scalable Knowledge Graph Materialization with Mapping Partitions](https://content.iospress.com/download/semantic-web/sw223135?id=semantic-web%2Fsw223135)**. Julián Arenas-Guerrero, David Chaves-Fraga, Jhon Toledo, María S. Pérez, Oscar Corcho. Semantic Web Journal, 2022.
 
 ### Conferences
 

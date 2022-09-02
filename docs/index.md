@@ -22,7 +22,7 @@
 
 ## Citing
 
-If you used Morph-KGC in your work, please cite the **[SWJ paper](https://content.iospress.com/download/semantic-web/sw223098?id=semantic-web%2Fsw223098)**:
+If you used Morph-KGC in your work, please cite the **[SWJ paper](https://content.iospress.com/download/semantic-web/sw223135?id=semantic-web%2Fsw223135)**:
 
 ```bib
 @article{arenas2022morph,
