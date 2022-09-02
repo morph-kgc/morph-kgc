@@ -1,5 +1,8 @@
 {
+    "title": "Powerful RDF knowledge graph generation with [R2]RML mappings",
     "license": "Apache License 2.0",
+    "upload_type": "software",
+    "access_right": "open",
     "keywords": [
         "Python",
         "database",
