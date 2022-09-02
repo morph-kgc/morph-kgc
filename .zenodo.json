@@ -1,0 +1,29 @@
+{
+    "license": "Apache License 2.0",
+    "keywords": [
+        "Python",
+        "database",
+        "RDF",
+        "knowledge graph",
+        "data integration",
+        "R2RML",
+        "RML",
+        "RML-star",
+        "RDF-star"
+    ],
+    "communities": [
+        {
+            "identifier": "linkeddata"
+        },
+        {
+            "identifier": "semantic-web"
+        }
+    ],
+    "creators": [
+        {
+            "orcid": "0000-0002-3029-6469",
+            "affiliation": "Universidad Politécnica de Madrid",
+            "name": "Julián Arenas-Guerrero"
+        }
+    ],
+}
