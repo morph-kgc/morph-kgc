@@ -45,8 +45,7 @@
 :pom_001 rr:objectMap :om_001.
 :om_001 a rr:ObjectMap;
     rml:reference "arrival_time";
-    rr:termType rr:Literal;
-    rr:datatype xsd:duration.
+    rr:termType rr:Literal.
 :pom_002 a rr:PredicateObjectMap.
 :map_stoptimes_000 rr:predicateObjectMap :pom_002.
 :pm_002 a rr:PredicateMap.
@@ -55,8 +54,7 @@
 :pom_002 rr:objectMap :om_002.
 :om_002 a rr:ObjectMap;
     rml:reference "departure_time";
-    rr:termType rr:Literal;
-    rr:datatype xsd:duration.
+    rr:termType rr:Literal.
 :pom_003 a rr:PredicateObjectMap.
 :map_stoptimes_000 rr:predicateObjectMap :pom_003.
 :pm_003 a rr:PredicateMap.
