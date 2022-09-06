@@ -29,15 +29,6 @@ def _add_references_in_join_condition(mapping_rule, references, parent_reference
     return references, parent_references
 
 
-def _retrieve_rdb_integer_references(config, mapping_rule, references):
-    integer_references = []
-    for reference in references:
-        if XSD_INTEGER == get_rdb_reference_datatype(config, mapping_rule, reference):
-            integer_references.append(reference)
-
-    return integer_references
-
-
 def _preprocess_data(data, mapping_rule, references, config):
     # deal with ORACLE
     if mapping_rule['source_type'] == RDB:
@@ -45,11 +36,7 @@ def _preprocess_data(data, mapping_rule, references, config):
             data = normalize_oracle_identifier_casing(data, references)
 
     data = remove_null_values_from_dataframe(data, config, references)
-
-    if mapping_rule['source_type'] == RDB:
-        # deal with integers
-        integer_references = _retrieve_rdb_integer_references(config, mapping_rule, references)
-        data[integer_references] = data[integer_references].astype(float).astype(int)
+    data = data.convert_dtypes(convert_boolean=False)
 
     # data to str
     data = data.astype(str)
@@ -163,6 +150,15 @@ def _materialize_reference(results_df, reference, config, position, columns_alia
         results_df['reference_results'] = results_df['reference_results'].apply(lambda x: remove_non_printable_characters(x))
 
     if str(termtype).strip() == R2RML_LITERAL:
+        # Natural Mapping of SQL Values (https://www.w3.org/TR/r2rml/#natural-mapping)
+        if datatype == XSD_BOOLEAN:
+            results_df['reference_results'] = results_df['reference_results'].str.lower()
+        elif datatype == XSD_DATETIME:
+            results_df['reference_results'] = results_df['reference_results'].str.replace(' ', 'T', regex=False)
+        # Make integers not end with .0
+        elif datatype == XSD_INTEGER:
+            results_df['reference_results'] = results_df['reference_results'].astype(int).astype(str)
+
         results_df['reference_results'] = results_df['reference_results'].str.replace('\\', '\\\\', regex=False).str.replace('\n', '\\n', regex=False).str.replace('\t', '\\t', regex=False).str.replace('\b', '\\b', regex=False).str.replace('\f', '\\f', regex=False).str.replace('\r', '\\r', regex=False).str.replace('"', '\\"', regex=False).str.replace("'", "\\'", regex=False)
         results_df[position] = '"' + results_df['reference_results'] + '"'
         if pd.notna(language_tag):
