@@ -88,7 +88,7 @@ g_rdflib = morph_kgc.materialize(config)
 
 ## License
 
-Morph-KGC is available under the permissive **[Apache License 2.0](https://github.com/oeg-upm/Morph-KGC/blob/main/LICENSE)**.
+Morph-KGC is available under the **[Apache License 2.0](https://github.com/oeg-upm/Morph-KGC/blob/main/LICENSE)**.
 
 ## Author
 
