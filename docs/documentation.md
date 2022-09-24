@@ -218,7 +218,7 @@ The properties to be specified for **data files** are listed below. **Remote** d
 
 {==
 
-*__Note:__ [CSV](https://en.wikipedia.org/wiki/Comma-separated_values), [TSV](https://en.wikipedia.org/wiki/Tab-separated_values) and [Stata](https://www.stata.com/) support compressed files (gzip, bz2, zip, xz). Files are decompressed _on-the-fly_ and compression format is automatically inferred.*
+*__Note:__ [CSV](https://en.wikipedia.org/wiki/Comma-separated_values), [TSV](https://en.wikipedia.org/wiki/Tab-separated_values) and [Stata](https://www.stata.com/) support compressed files (gzip, bz2, zip, xz, tar). Files are decompressed _on-the-fly_ and compression format is automatically inferred.*
 
 ==}
 
