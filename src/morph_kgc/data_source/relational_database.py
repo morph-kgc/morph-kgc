@@ -170,7 +170,7 @@ def get_sql_data(config, mapping_rule, references):
     sql_query = _build_sql_query(mapping_rule, references)
     if sql_query is None:
         # in case all term maps are constants e.g. R2RML test case R2RMLTC0006a
-        return pd.DataFrame(columns=references)
+        return pd.DataFrame(columns=list(references))
 
     db_connection, db_dialect = _relational_db_connection(config, mapping_rule['source_name'])
     sql_query = _replace_query_enclosing_characters(sql_query, db_dialect)
