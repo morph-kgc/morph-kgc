@@ -108,7 +108,7 @@ def triples_to_file(triples, config, mapping_group=None):
 
     f = open(config.get_output_file_path(mapping_group), 'a', encoding='utf-8')
     for triple in triples:
-        f.write(f'{triple} .\n')
+        f.write(f'{triple}.\n')
     f.flush()
     os.fsync(f.fileno())
     f.close()
