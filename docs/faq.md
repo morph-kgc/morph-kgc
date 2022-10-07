@@ -19,7 +19,7 @@ Please, [open an issue](https://github.com/oeg-upm/morph-kgc/issues/new/choose) 
 Please, [open an issue](https://github.com/oeg-upm/morph-kgc/issues/new/choose) providing a description of what documentation you believe needs to be fixed/improved and your suggestion. You can also contribute with a pull request to the **[GitHub repository](https://github.com/oeg-upm/morph-kgc/tree/main/docs)**.
 
 #### Can I use Morph-KGC in a commercial project?
-Yes! Morph-KGC is distributed under the **[Apache License 2.0](https://github.com/oeg-upm/Morph-KGC/blob/main/LICENSE)** which allows  commercial use, modification, distribution, patent use and private use. Of course, we will appreciate it if you tell us that you are using Morph-KGC and can give us some details on how it is being used (as much as you can given confidentiality constraints). This would allow creating a database of projects where Morph-KGC is being used that could help us to request additional funding in the future, if needed.
+Yes! Morph-KGC is distributed under the **[Apache License 2.0](https://github.com/oeg-upm/morph-kgc/blob/main/LICENSE)** which allows  commercial use, modification, distribution, patent use and private use. Of course, we will appreciate it if you tell us that you are using Morph-KGC and can give us some details on how it is being used (as much as you can given confidentiality constraints). This would allow creating a database of projects where Morph-KGC is being used that could help us to request additional funding in the future, if needed.
 
 #### I need commercial support
 You are welcome to **[contact us](mailto:julian.arenas.guerrero@upm.es)**!
