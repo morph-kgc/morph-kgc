@@ -44,7 +44,7 @@ python3 -m morph_kgc path/to/config.ini
 
 ### Library
 
-Morph-KGC can be used as a **library**, providing different methods to materialize the **[RDF](https://www.w3.org/TR/rdf11-concepts/)** or **[RDF-star](https://w3c.github.io/rdf-star/cg-spec/2021-12-17.html)** knowledge graph. It integrates with **[RDFLib](https://rdflib.readthedocs.io/en/stable/)** and **[Oxigraph](https://oxigraph.org/pyoxigraph)** to easily create and work with knowledge graphs in **[Python](https://www.python.org/)**.
+Morph-KGC can be used as a **library**, providing different methods to materialize the **[RDF](https://www.w3.org/TR/rdf11-concepts/)** or **[RDF-star](https://w3c.github.io/rdf-star/cg-spec/2021-12-17.html)** knowledge graph. It integrates with **[RDFLib](https://rdflib.readthedocs.io/en/stable/)** and **[Oxigraph](https://pyoxigraph.readthedocs.io/en/latest/)** to easily create and work with knowledge graphs in **[Python](https://www.python.org/)**.
 
 The methods in the **API** accept the **config as a string or as the path to an INI file**.
 
@@ -87,11 +87,11 @@ q_res = graph.query(' SELECT DISTINCT ?classes WHERE { ?s a ?classes } ')
 
 ==}
 
-#### [Oxigraph](https://oxigraph.org/pyoxigraph)
+#### [Oxigraph](https://pyoxigraph.readthedocs.io/en/latest/)
 
 **`morph_kgc.materialize_oxigraph(config)`**
 
-Materialize the knowledge graph to **[Oxigraph](https://oxigraph.org/pyoxigraph)**.
+Materialize the knowledge graph to **[Oxigraph](https://pyoxigraph.readthedocs.io/en/latest/)**.
 
 ```
 # generate the triples and load them to Oxigraph
