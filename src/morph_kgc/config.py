@@ -67,7 +67,6 @@ DEFAULT_OUTPUT_FILE = 'knowledge-graph'
 DEFAULT_OUTPUT_DIR = ''
 DEFAULT_OUTPUT_FORMAT = NTRIPLES
 DEFAULT_SAFE_PERCENT_ENCODING = ''
-DEFAULT_MAPPING_PARTITIONING = 'yes'
 DEFAULT_LOGGING_FILE = ''
 DEFAULT_LOGGING_LEVEL = 'INFO'
 DEFAULT_INFER_SQL_DATATYPES = 'no'
@@ -95,7 +94,7 @@ CONFIGURATION_OPTIONS_EMPTY_VALID = {
             SAFE_PERCENT_ENCODING: DEFAULT_SAFE_PERCENT_ENCODING,
             READ_PARSED_MAPPINGS_PATH: DEFAULT_READ_PARSED_MAPPINGS_PATH,
             WRITE_PARSED_MAPPINGS_PATH: DEFAULT_WRITE_PARSED_MAPPINGS_PATH,
-            MAPPING_PARTITIONING: DEFAULT_MAPPING_PARTITIONING,
+            MAPPING_PARTITIONING: PARTIAL_AGGREGATIONS_PARTITIONING,
             LOGGING_FILE: DEFAULT_LOGGING_FILE,
             ORACLE_CLIENT_LIB_DIR: DEFAULT_ORACLE_CLIENT_LIB_DIR,
             ORACLE_CLIENT_CONFIG_DIR: DEFAULT_ORACLE_CLIENT_LIB_DIR,
@@ -173,6 +172,15 @@ class Config(ConfigParser):
             raise ValueError(f'{LOGGING_LEVEL} value `{self.get_logging_level()}` is not valid. '
                              f'It must be in: {VALID_LOGGING_LEVEL}.')
 
+        # MAPPING PARTITIONING
+        mapping_partitioning = str(self.get_mapping_partitioning()).upper()
+        self.set_mapping_partitioning(mapping_partitioning)
+        if mapping_partitioning not in NO_PARTITIONING + [PARTIAL_AGGREGATIONS_PARTITIONING] + [
+                MAXIMAL_PARTITIONING]:
+            raise ValueError(
+                f'{MAPPING_PARTITIONING} value `{self.get_mapping_partitioning()}` is not valid. '
+                f'It must be in: {[MAXIMAL_PARTITIONING] + [PARTIAL_AGGREGATIONS_PARTITIONING] + NO_PARTITIONING}.')
+
     def log_config_info(self):
         logging.debug(f'CONFIGURATION: {dict(self.items(self.configuration_section))}')
 
@@ -238,7 +246,7 @@ class Config(ConfigParser):
         return self.get(self.configuration_section, ORACLE_CLIENT_CONFIG_DIR)
 
     def get_mapping_partitioning(self):
-        return self.getboolean(self.configuration_section, MAPPING_PARTITIONING)
+        return self.get(self.configuration_section, MAPPING_PARTITIONING)
 
     def get_output_dir(self):
         return self.get(self.configuration_section, OUTPUT_DIR)
@@ -271,6 +279,9 @@ class Config(ConfigParser):
             file_path = Path(file_name).with_suffix(file_extension)
 
         return file_path.as_posix()
+
+    def set_mapping_partitioning(self, mapping_partitioning):
+        self.set(self.configuration_section, MAPPING_PARTITIONING, mapping_partitioning.upper())
 
     def set_logging_level(self, logging_level):
         self.set(self.configuration_section, LOGGING_LEVEL, logging_level)
