@@ -175,17 +175,12 @@ class MappingPartitioner:
 
             return self.mappings_df
 
-        if self.config.get_mapping_partition() == PARTIAL_AGGREGATIONS_PARTITIONING:
-            self._get_term_invariants()
-            self._generate_partial_aggregations_partition()
-        elif self.config.get_mapping_partition() == MAXIMAL_PARTITIONING:
+        if self.config.get_mapping_partitioning():
             self._get_term_invariants()
             self._generate_maximal_partition()
-        elif self.config.get_mapping_partition() in NO_PARTITIONING:
+        else:
             # assign empty partition
             self.mappings_df['mapping_partition'] = '0-0-0-0'
-        else:
-            logging.error('Selected mapping partitioning algorithm is not valid.')
 
         logging.info(f"Mapping partition with {len(set(self.mappings_df['mapping_partition']))} groups generated.")
         logging.info('Maximum number of rules within mapping group: '
@@ -240,6 +235,59 @@ class MappingPartitioner:
 
         self.mappings_df = maximal_partition
 
+    def _get_term_invariants(self):
+        """
+        Adds in the input DataFrame new columns for the invariants of mapping rules. Columns for the invariants of
+        subjects, predicates and graphs are added, and they are completed based on the provided mapping
+        partitioning criteria.
+        """
+
+        # initialize empty invariants for all terms
+        self.mappings_df['subject_invariant'] = ''
+        self.mappings_df['predicate_invariant'] = ''
+        self.mappings_df['object_invariant'] = ''
+        self.mappings_df['graph_invariant'] = ''
+
+        for i, mapping_rule in self.mappings_df.iterrows():
+            # SUBJECT
+            if pd.notna(mapping_rule['subject_template']):
+                self.mappings_df.at[i, 'subject_invariant'] = \
+                    get_invariant_of_template(str(mapping_rule['subject_template']))
+            elif pd.notna(mapping_rule['subject_constant']):
+                self.mappings_df.at[i, 'subject_invariant'] = str(mapping_rule['subject_constant'])
+
+            # PREDICATE
+            if pd.notna(mapping_rule['predicate_constant']):
+                self.mappings_df.at[i, 'predicate_invariant'] = str(mapping_rule['predicate_constant'])
+            elif pd.notna(mapping_rule['predicate_template']):
+                self.mappings_df.at[i, 'predicate_invariant'] = \
+                    get_invariant_of_template(str(mapping_rule['predicate_template']))
+
+            # OBJECT
+            if pd.notna(mapping_rule['object_constant']):
+                self.mappings_df.at[i, 'object_invariant'] = str(mapping_rule['object_constant'])
+            elif pd.notna(mapping_rule['object_template']):
+                self.mappings_df.at[i, 'object_invariant'] = \
+                    get_invariant_of_template(str(mapping_rule['object_template']))
+            elif pd.notna(mapping_rule['object_parent_triples_map']):
+                # get the invariant for referencing object maps
+                parent_mapping_rule = get_mapping_rule(self.mappings_df, mapping_rule['object_parent_triples_map'])
+                if pd.notna(parent_mapping_rule['subject_constant']):
+                    self.mappings_df.at[i, 'object_invariant'] = str(parent_mapping_rule['subject_constant'])
+                elif pd.notna(parent_mapping_rule['subject_template']):
+                    self.mappings_df.at[i, 'object_invariant'] = \
+                        get_invariant_of_template(str(parent_mapping_rule['subject_template']))
+
+            # GRAPH
+            if pd.notna(mapping_rule['graph_constant']):
+                self.mappings_df.at[i, 'graph_invariant'] = str(mapping_rule['graph_constant'])
+            elif pd.notna(mapping_rule['graph_template']):
+                self.mappings_df.at[i, 'graph_invariant'] = \
+                    get_invariant_of_template(str(mapping_rule['graph_template']))
+
+    '''
+    # DEPRECATED, maximal partitioning is now the default
+    
     def _generate_partial_aggregations_partition(self):
         """
         Generates a mapping partition by independently partitioning by Subject, Predicate, Object and Graph, and
@@ -366,53 +414,4 @@ class MappingPartitioner:
             'graph_invariant',
             'literal_type'],
             axis=1, inplace=True)
-
-    def _get_term_invariants(self):
-        """
-        Adds in the input DataFrame new columns for the invariants of mapping rules. Columns for the invariants of
-        subjects, predicates and graphs are added, and they are completed based on the provided mapping
-        partitioning criteria.
-        """
-
-        # initialize empty invariants for all terms
-        self.mappings_df['subject_invariant'] = ''
-        self.mappings_df['predicate_invariant'] = ''
-        self.mappings_df['object_invariant'] = ''
-        self.mappings_df['graph_invariant'] = ''
-
-        for i, mapping_rule in self.mappings_df.iterrows():
-            # SUBJECT
-            if pd.notna(mapping_rule['subject_template']):
-                self.mappings_df.at[i, 'subject_invariant'] = \
-                    get_invariant_of_template(str(mapping_rule['subject_template']))
-            elif pd.notna(mapping_rule['subject_constant']):
-                self.mappings_df.at[i, 'subject_invariant'] = str(mapping_rule['subject_constant'])
-
-            # PREDICATE
-            if pd.notna(mapping_rule['predicate_constant']):
-                self.mappings_df.at[i, 'predicate_invariant'] = str(mapping_rule['predicate_constant'])
-            elif pd.notna(mapping_rule['predicate_template']):
-                self.mappings_df.at[i, 'predicate_invariant'] = \
-                    get_invariant_of_template(str(mapping_rule['predicate_template']))
-
-            # OBJECT
-            if pd.notna(mapping_rule['object_constant']):
-                self.mappings_df.at[i, 'object_invariant'] = str(mapping_rule['object_constant'])
-            elif pd.notna(mapping_rule['object_template']):
-                self.mappings_df.at[i, 'object_invariant'] = \
-                    get_invariant_of_template(str(mapping_rule['object_template']))
-            elif pd.notna(mapping_rule['object_parent_triples_map']):
-                # get the invariant for referencing object maps
-                parent_mapping_rule = get_mapping_rule(self.mappings_df, mapping_rule['object_parent_triples_map'])
-                if pd.notna(parent_mapping_rule['subject_constant']):
-                    self.mappings_df.at[i, 'object_invariant'] = str(parent_mapping_rule['subject_constant'])
-                elif pd.notna(parent_mapping_rule['subject_template']):
-                    self.mappings_df.at[i, 'object_invariant'] = \
-                        get_invariant_of_template(str(parent_mapping_rule['subject_template']))
-
-            # GRAPH
-            if pd.notna(mapping_rule['graph_constant']):
-                self.mappings_df.at[i, 'graph_invariant'] = str(mapping_rule['graph_constant'])
-            elif pd.notna(mapping_rule['graph_template']):
-                self.mappings_df.at[i, 'graph_invariant'] = \
-                    get_invariant_of_template(str(mapping_rule['graph_template']))
+    '''
