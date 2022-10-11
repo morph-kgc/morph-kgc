@@ -6,7 +6,7 @@
 
 <#TriplesMap1>
     a rr:TriplesMap;
-    rml:logicalSource [ rml:source "test/rml/csv/doubleJoinCondition/data1.csv";
+    rml:logicalSource [ rml:source "test/issues/issue_62/data1.csv";
                 rml:referenceFormulation ql:CSV
                 ];
     rr:subjectMap [
@@ -30,7 +30,7 @@
 
 <#TriplesMap2>
     a rr:TriplesMap;
-    rml:logicalSource [ rml:source "test/rml/csv/doubleJoinCondition/data2.csv";
+    rml:logicalSource [ rml:source "test/issues/issue_62/data2.csv";
                 rml:referenceFormulation ql:CSV
             ];
     rr:subjectMap [
