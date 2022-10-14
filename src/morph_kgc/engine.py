@@ -19,7 +19,7 @@ from .materializer import Materializer
 def retrieve_mappings(config):
     if config.is_read_parsed_mappings_file_provided():
         # retrieve parsed mapping from file and finish mapping processing
-        mappings = pd.read_csv(config.get_parsed_mappings_read_path(), keep_default_na=False)
+        mappings = pd.read_csv(config.get_parsed_mappings_read_path())
         logging.info(f'{len(mappings)} mappings rules loaded from file.')
     else:
         mappings_parser = MappingParser(config)
