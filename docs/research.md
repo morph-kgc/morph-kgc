@@ -8,6 +8,7 @@
 - **[Oscar Corcho](https://orcid.org/0000-0002-9260-0753)**
 - **[María S. Pérez](https://www.datsi.fi.upm.es/~mperez/)**
 - **[David Chaves-Fraga](https://davidchavesfraga.com/)**
+- **[Ahmad Alobaid](https://orcid.org/0000-0001-8637-6313)**
 - **Jhon Toledo**
 
 ## Publications
