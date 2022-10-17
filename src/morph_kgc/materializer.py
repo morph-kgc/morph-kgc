@@ -157,7 +157,7 @@ def _materialize_reference(results_df, reference, config, position, columns_alia
             results_df['reference_results'] = results_df['reference_results'].str.replace(' ', 'T', regex=False)
         # Make integers not end with .0
         elif datatype == XSD_INTEGER:
-            results_df['reference_results'] = results_df['reference_results'].astype(int).astype(str)
+            results_df['reference_results'] = results_df['reference_results'].astype(float).astype(int).astype(str)
 
         results_df['reference_results'] = results_df['reference_results'].str.replace('\\', '\\\\', regex=False).str.replace('\n', '\\n', regex=False).str.replace('\t', '\\t', regex=False).str.replace('\b', '\\b', regex=False).str.replace('\f', '\\f', regex=False).str.replace('\r', '\\r', regex=False).str.replace('"', '\\"', regex=False).str.replace("'", "\\'", regex=False)
         results_df[position] = '"' + results_df['reference_results'] + '"'

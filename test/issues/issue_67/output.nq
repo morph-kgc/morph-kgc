@@ -1,2 +1,3 @@
-<http://example.com/1> <http://www.example.com/date> "2022-01-01T00:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
-<http://example.com/1> <http://www.example.com/date> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<http://example.com/1> <http://www.example.com/boolean> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<http://example.com/1> <http://www.example.com/dateTime> "2022-01-01T00:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+<http://example.com/1> <http://www.example.com/integer> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .

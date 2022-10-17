@@ -14,16 +14,23 @@
         rr:template "http://example.com/{id}";
     ];
     rr:predicateObjectMap [
-        rr:predicate ex:date;
+        rr:predicate ex:boolean;
         rr:objectMap [
             rr:column "column1";
             rr:datatype xsd:boolean
         ];
     ];
     rr:predicateObjectMap [
-        rr:predicate ex:date;
+        rr:predicate ex:dateTime;
         rr:objectMap [
             rr:column "column2";
             rr:datatype xsd:dateTime
+        ];
+    ];
+    rr:predicateObjectMap [
+        rr:predicate ex:integer;
+        rr:objectMap [
+            rr:column "column3";
+            rr:datatype xsd:integer
         ];
     ].
