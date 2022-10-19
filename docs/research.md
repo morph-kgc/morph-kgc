@@ -27,6 +27,6 @@
 
 ### Tutorials
 
-- **[The Knowledge Graph Construction Tutorial](https://w3id.org/kg-construct/costdkg-eswc-tutorial)**. Julián Arenas-Guerrero. **European Semantic Web Conference (ESWC)**, 2022.
+- **[The Knowledge Graph Construction Tutorial](https://w3id.org/kg-construct/costdkg-eswc-tutorial)**. Julián Arenas-Guerrero. **Extended Semantic Web Conference (ESWC)**, 2022.
 
 ![OEG](assets/logo-oeg.png){ width="150" align=left } ![UPM](assets/logo-upm.png){ width="161" align=right }
