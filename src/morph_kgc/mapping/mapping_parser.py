@@ -429,11 +429,16 @@ class MappingParser:
         mapping_graph = rdflib.Graph()
 
         mapping_file_paths = self.config.get_mappings_files(section_name)
-        try:
-            # load mapping rules to the graph
-            [mapping_graph.parse(f, format=os.path.splitext(f)[1][1:].strip()) for f in mapping_file_paths]
-        except Exception as n3_mapping_parse_exception:
-            raise Exception(n3_mapping_parse_exception)
+        # load mapping rules to the graph
+        for f in mapping_file_paths:
+            try:
+                mapping_graph.parse(f, format=os.path.splitext(f)[1][1:].strip())
+            except:
+                # if a file extension such as .rml or .r2rml is usedm assume it is turtle (issue #80)
+                try:
+                    mapping_graph.parse(f)
+                except Exception as n3_mapping_parse_exception:
+                    raise Exception(n3_mapping_parse_exception)
 
         # convert R2RML and RML rules to RML-star, so that we can assume RML-star for parsing
         mapping_graph = _mapping_to_rml_star(mapping_graph)
