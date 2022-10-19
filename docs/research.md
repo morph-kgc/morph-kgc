@@ -15,18 +15,18 @@
 
 ### Journals
 
-- **[Morph-KGC: Scalable Knowledge Graph Materialization with Mapping Partitions](https://content.iospress.com/download/semantic-web/sw223135?id=semantic-web%2Fsw223135)**. Julián Arenas-Guerrero, David Chaves-Fraga, Jhon Toledo, María S. Pérez, Oscar Corcho. Semantic Web Journal, 2022.
+- **[Morph-KGC: Scalable Knowledge Graph Materialization with Mapping Partitions](https://content.iospress.com/download/semantic-web/sw223135?id=semantic-web%2Fsw223135)**. Julián Arenas-Guerrero, David Chaves-Fraga, Jhon Toledo, María S. Pérez, Oscar Corcho. **Semantic Web Journal**, 2022.
 
 ### Conferences
 
-- **[RML-star: A Declarative Mapping Language for RDF-star Generation](http://ceur-ws.org/Vol-2980/paper374.pdf)**. Thomas Delva, Julián Arenas-Guerrero, Ana Iglesias-Molina, Oscar Corcho, David Chaves-Fraga, Anastasia Dimou. International Semantic Web Conference (ISWC), 2021.
+- **[RML-star: A Declarative Mapping Language for RDF-star Generation](http://ceur-ws.org/Vol-2980/paper374.pdf)**. Thomas Delva, Julián Arenas-Guerrero, Ana Iglesias-Molina, Oscar Corcho, David Chaves-Fraga, Anastasia Dimou. **International Semantic Web Conference (ISWC)**, 2021.
 
 ### Workshops
 
-- **[Knowledge Graph Construction with R2RML and RML: An ETL System-based Overview](http://ceur-ws.org/Vol-2873/paper11.pdf)**. Julián Arenas-Guerrero, Mario Scrocca, Ana Iglesias-Molina, Jhon Toledo, Luis Pozo-Gilo, Daniel Doña, Oscar Corcho, David Chaves-Fraga. Knowledge Graph Construction Workshop, 2021.
+- **[Knowledge Graph Construction with R2RML and RML: An ETL System-based Overview](http://ceur-ws.org/Vol-2873/paper11.pdf)**. Julián Arenas-Guerrero, Mario Scrocca, Ana Iglesias-Molina, Jhon Toledo, Luis Pozo-Gilo, Daniel Doña, Oscar Corcho, David Chaves-Fraga. **Knowledge Graph Construction Workshop**, 2021.
 
 ### Tutorials
 
-- **[The Knowledge Graph Construction Tutorial](https://w3id.org/kg-construct/costdkg-eswc-tutorial)**. Julián Arenas-Guerrero. European Semantic Web Conference (ESWC), 2022.
+- **[The Knowledge Graph Construction Tutorial](https://w3id.org/kg-construct/costdkg-eswc-tutorial)**. Julián Arenas-Guerrero. **European Semantic Web Conference (ESWC)**, 2022.
 
 ![OEG](assets/logo-oeg.png){ width="150" align=left } ![UPM](assets/logo-upm.png){ width="161" align=right }
