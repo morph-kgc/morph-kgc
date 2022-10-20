@@ -53,16 +53,28 @@ def get_file_data(mapping_rule, references):
 def _read_csv(mapping_rule, references, file_source_type):
     delimiter = ',' if file_source_type == 'CSV' else '\t'
 
-    return pd.read_table(mapping_rule['data_source'],
-                         delimiter=delimiter,
-                         index_col=False,
-                         encoding='utf-8',
-                         encoding_errors='strict',
-                         usecols=references,
-                         engine='c',
-                         dtype=str,
-                         keep_default_na=False,
-                         na_filter=False)
+    try :
+        return pd.read_table(mapping_rule['data_source'],
+                             sep=delimiter,
+                             index_col=False,
+                             encoding='utf-8',
+                             encoding_errors='strict',
+                             usecols=references,
+                             engine='c',
+                             dtype=str,
+                             keep_default_na=False,
+                             na_filter=False)
+    except:
+        # if delimiter is other than comma or tab, infer it (issue #81)
+        return pd.read_table(mapping_rule['data_source'],
+                             index_col=False,
+                             encoding='utf-8',
+                             encoding_errors='strict',
+                             usecols=references,
+                             engine='python',
+                             dtype=str,
+                             keep_default_na=False,
+                             na_filter=False)
 
 
 def _read_parquet(mapping_rule, references):
