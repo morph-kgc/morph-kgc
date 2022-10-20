@@ -65,9 +65,10 @@ def _read_csv(mapping_rule, references, file_source_type):
                              keep_default_na=False,
                              na_filter=False)
     except:
-        # if delimiter is other than comma or tab, infer it (issue #81)
+        # if delimiter is other than comma or tab, then infer it (issue #81)
         return pd.read_table(mapping_rule['data_source'],
                              index_col=False,
+                             sep=None,
                              encoding='utf-8',
                              encoding_errors='strict',
                              usecols=references,
