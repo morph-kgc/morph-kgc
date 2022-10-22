@@ -15,19 +15,9 @@ We recommend to use **[virtual environments](https://docs.python.org/3/library/v
 
 ### From Source
 
-You can also grab the latest source code from the **[GitHub repository](https://github.com/oeg-upm/morph-kgc)**. Clone the repository:
+You can also grab the latest source code from the **[GitHub repository](https://github.com/oeg-upm/morph-kgc)**:
 ```
-git clone https://github.com/oeg-upm/morph-kgc.git
-```
-
-Access the root directory of the repository:
-```
-cd morph-kgc
-```
-
-Install Morph-KGC:
-```
-pip3 install .
+pip install git+https://github.com/oeg-upm/morph-kgc.git
 ```
 
 ## Usage
