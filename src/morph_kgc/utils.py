@@ -107,7 +107,7 @@ def triples_to_file(triples, config, mapping_group=None):
     Writes triples to file.
     """
 
-    lock = mp.Lock()
+    lock = mp.Lock()    # necessary for issue #65
     with lock:
         f = open(config.get_output_file_path(mapping_group), 'a', encoding='utf-8')
         for triple in triples:
