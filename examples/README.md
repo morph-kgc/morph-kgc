@@ -1,5 +1,12 @@
 ## Examples
 
+### Tutorial
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1ByFx_NOEfTZeaJ1Wtw3UwTH3H3-Sye2O?usp=sharing)
+
+The tutorial in **[Google Colaboratory](https://colab.research.google.com/drive/1ByFx_NOEfTZeaJ1Wtw3UwTH3H3-Sye2O?usp=sharing)** is the easiest way to learn how to use Morph-KGC. Some relevant files for the tutorial can be found in the [`tutorial`](https://github.com/oeg-upm/morph-kgc/tree/main/examples/tutorial) directory.
+
+
 ### Relational Databases
 An example with _MySQL_ using [GTFS-Madrid-Bench](https://github.com/oeg-upm/gtfs-bench) data can be found in the [`rdb`](https://github.com/oeg-upm/morph-kgc/tree/main/examples/rdb) directory. The directory contains:
 - The `mapping` file.
