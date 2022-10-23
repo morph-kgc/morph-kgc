@@ -13,6 +13,7 @@ import rdflib
 import time
 import numpy as np
 import pandas as pd
+import multiprocessing as mp
 
 from itertools import product
 from .constants import AUXILIAR_UNIQUE_REPLACING_STRING
@@ -106,12 +107,14 @@ def triples_to_file(triples, config, mapping_group=None):
     Writes triples to file.
     """
 
-    f = open(config.get_output_file_path(mapping_group), 'a', encoding='utf-8')
-    for triple in triples:
-        f.write(f'{triple} .\n')
-    f.flush()
-    os.fsync(f.fileno())
-    f.close()
+    lock = mp.Lock()
+    with lock:
+        f = open(config.get_output_file_path(mapping_group), 'a', encoding='utf-8')
+        for triple in triples:
+            f.write(f'{triple} .\n')
+        f.flush()
+        os.fsync(f.fileno())
+        f.close()
 
 
 def remove_non_printable_characters(string):
