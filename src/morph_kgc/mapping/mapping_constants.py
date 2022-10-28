@@ -53,7 +53,7 @@ MAPPING_PARSING_QUERY = """
     # Subject -------------------------------------------------------------------------
         ?triples_map_id rml:subjectMap ?subject_map .
         ?subject_map ?subject_map_type ?subject_map_value .
-        FILTER ( ?subject_map_type != <http://www.w3.org/ns/r2rml#termType> ) .
+        FILTER ( ?subject_map_type IN ( rr:constant, rr:template, rml:reference ) ) .
         OPTIONAL { ?subject_map rml:quotedTriplesMap ?subject_quoted . }
         OPTIONAL { ?subject_map rr:termType ?subject_termtype . }
 
@@ -62,8 +62,8 @@ MAPPING_PARSING_QUERY = """
             ?triples_map_id rr:predicateObjectMap ?_predicate_object_map .
             
             ?_predicate_object_map rr:predicateMap ?_predicate_map .
-            ?_predicate_map ?predicate_map_type ?predicate_map_value.
-            FILTER ( ?predicate_map_type != <http://www.w3.org/ns/r2rml#termType> ) .
+            ?_predicate_map ?predicate_map_type ?predicate_map_value .
+            FILTER ( ?predicate_map_type IN ( rr:constant, rr:template, rml:reference ) ) .
 
     # Object --------------------------------------------------------------------------
             OPTIONAL {
@@ -74,7 +74,7 @@ MAPPING_PARSING_QUERY = """
             OPTIONAL {
                 ?_predicate_object_map rml:objectMap ?object_map .
                 ?object_map ?object_map_type ?object_map_value .
-                FILTER ( ?object_map_type != <http://www.w3.org/ns/r2rml#termType> ) .
+                FILTER ( ?object_map_type IN ( rr:constant, rr:template, rml:reference ) ) .
                 OPTIONAL { ?object_map rr:termType ?object_termtype . }
                 OPTIONAL { ?object_map rr:datatype ?object_datatype . }
                 OPTIONAL { ?object_map rr:language ?object_language . }
@@ -87,7 +87,7 @@ MAPPING_PARSING_QUERY = """
             OPTIONAL {
                 ?_predicate_object_map rr:graphMap ?graph_map .
                 ?graph_map ?graph_map_type ?graph_map_value .
-                FILTER ( ?graph_map_type != <http://www.w3.org/ns/r2rml#termType> ) .
+                FILTER ( ?graph_map_type IN ( rr:constant, rr:template, rml:reference ) ) .
             }
         }
     }
@@ -100,7 +100,6 @@ JOIN_CONDITION_PARSING_QUERY = """
     SELECT DISTINCT ?term_map ?join_condition ?child_value ?parent_value
     WHERE {
         ?term_map rr:joinCondition ?join_condition .
-        ?join_condition rr:child ?child_value;
-                        rr:parent ?parent_value.
+        ?join_condition rr:child ?child_value; rr:parent ?parent_value .
     }
 """
