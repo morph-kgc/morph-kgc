@@ -287,7 +287,8 @@ class MappingPartitioner:
         current_invariant = AUXILIAR_UNIQUE_REPLACING_STRING
 
         # if all predicates are constant terms we can use full string comparison instead of startswith
-        enforce_invariant_non_subset = self.mappings_df['predicate_constant'].notna().all()
+        # enforce_invariant_non_subset = self.mappings_df['predicate_constant'].notna().all()
+        enforce_invariant_non_subset = self.mappings_df[self.mappings_df['predicate_map_type']=="http://www.w3.org/ns/r2rml#constant"]['predicate_map_value'].notna().all()
         if enforce_invariant_non_subset:
             logging.debug('All predicate maps are constant-valued, invariant subset is not enforced.')
 
@@ -382,33 +383,48 @@ class MappingPartitioner:
 
         for i, mapping_rule in self.mappings_df.iterrows():
             # SUBJECT
-            if pd.notna(mapping_rule['subject_template']):
+            if mapping_rule['subject_map_type'] == 'http://www.w3.org/ns/r2rml#template':
+            # if pd.notna(mapping_rule['subject_template']):
                 self.mappings_df.at[i, 'subject_invariant'] = \
-                    get_invariant_of_template(str(mapping_rule['subject_template']))
-            elif pd.notna(mapping_rule['subject_constant']):
+                    get_invariant_of_template(str(mapping_rule['subject_map_value']))
+            elif mapping_rule['subject_map_type'] == 'http://www.w3.org/ns/r2rml#constant':
+            # elif pd.notna(mapping_rule['subject_constant']):
                 self.mappings_df.at[i, 'subject_invariant'] = str(mapping_rule['subject_constant'])
-
             # PREDICATE
-            if pd.notna(mapping_rule['predicate_constant']):
-                self.mappings_df.at[i, 'predicate_invariant'] = str(mapping_rule['predicate_constant'])
-            elif pd.notna(mapping_rule['predicate_template']):
+            if mapping_rule['predicate_map_type'] == 'http://www.w3.org/ns/r2rml#constant':
+            # if pd.notna(mapping_rule['predicate_constant']):
+                self.mappings_df.at[i, 'predicate_invariant'] = str(mapping_rule['predicate_map_value'])
+            elif mapping_rule['predicate_map_type'] == 'http://www.w3.org/ns/r2rml#template':
+            # elif pd.notna(mapping_rule['predicate_template']):
                 self.mappings_df.at[i, 'predicate_invariant'] = \
-                    get_invariant_of_template(str(mapping_rule['predicate_template']))
+                    get_invariant_of_template(str(mapping_rule['predicate_map_value']))
 
             # OBJECT
-            if pd.notna(mapping_rule['object_constant']):
-                self.mappings_df.at[i, 'object_invariant'] = str(mapping_rule['object_constant'])
-            elif pd.notna(mapping_rule['object_template']):
+            # if pd.notna(mapping_rule['object_constant']):
+            #     self.mappings_df.at[i, 'object_invariant'] = str(mapping_rule['object_constant'])
+            # elif pd.notna(mapping_rule['object_template']):
+            #     self.mappings_df.at[i, 'object_invariant'] = \
+            #         get_invariant_of_template(str(mapping_rule['object_template']))
+            if mapping_rule['object_map_type'] == 'http://www.w3.org/ns/r2rml#constant':
+                self.mappings_df.at[i, 'object_invariant'] = str(mapping_rule['object_map_value'])
+            elif mapping_rule['object_map_type'] == 'http://www.w3.org/ns/r2rml#template':
                 self.mappings_df.at[i, 'object_invariant'] = \
-                    get_invariant_of_template(str(mapping_rule['object_template']))
+                    get_invariant_of_template(str(mapping_rule['object_map_value']))
             elif pd.notna(mapping_rule['object_parent_triples_map']):
                 # get the invariant for referencing object maps
                 parent_mapping_rule = get_mapping_rule(self.mappings_df, mapping_rule['object_parent_triples_map'])
-                if pd.notna(parent_mapping_rule['subject_constant']):
-                    self.mappings_df.at[i, 'object_invariant'] = str(parent_mapping_rule['subject_constant'])
-                elif pd.notna(parent_mapping_rule['subject_template']):
+
+                # if pd.notna(parent_mapping_rule['subject_constant']):
+                #     self.mappings_df.at[i, 'object_invariant'] = str(parent_mapping_rule['subject_constant'])
+                # elif pd.notna(parent_mapping_rule['subject_template']):
+                #     self.mappings_df.at[i, 'object_invariant'] = \
+                #         get_invariant_of_template(str(parent_mapping_rule['subject_template']))
+                if mapping_rule['subject_map_type'] == 'http://www.w3.org/ns/r2rml#constant':
+                    self.mappings_df.at[i, 'object_invariant'] = str(parent_mapping_rule['subject_map_value'])
+
+                if mapping_rule['subject_map_type'] == 'http://www.w3.org/ns/r2rml#template':
                     self.mappings_df.at[i, 'object_invariant'] = \
-                        get_invariant_of_template(str(parent_mapping_rule['subject_template']))
+                        get_invariant_of_template(str(parent_mapping_rule['subject_map_value']))
 
             # GRAPH
             if pd.notna(mapping_rule['graph_constant']):

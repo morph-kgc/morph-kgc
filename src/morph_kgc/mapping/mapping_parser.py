@@ -262,6 +262,20 @@ def _transform_mappings_into_dataframe(mapping_graph, section_name):
 
     # parse the mappings with the parsing queries
     mapping_query_results = mapping_graph.query(MAPPING_PARSING_QUERY)
+
+    # DEBUG
+    print("\nmapping results: ")
+    for r in mapping_query_results:
+        print(r)
+    print("\nbindings:")
+    # print(mapping_query_results.bindings)
+    for b in mapping_query_results.bindings:
+        for k in b:
+            v = b[k]
+            # print(v)
+            # print("\n")
+            print("%s\t%s" % (str(k), str(v)))
+
     join_query_results = mapping_graph.query(JOIN_CONDITION_PARSING_QUERY)
 
     # mapping rules in graph to DataFrame
@@ -405,13 +419,15 @@ class MappingParser:
         common DataFrame for all data sources. If parallelization is enabled and multiple data sources are provided,
         each mapping file is parsed in parallel.
         """
-
+        # print("\n\n\n_get_from_r2_rml=======================")
         if self.config.is_multiprocessing_enabled() and self.config.has_multiple_data_sources():
+            print("_get_from_r2_rml> is_multiprocessing_enabled")
             pool = mp.Pool(self.config.get_number_of_processes())
             mappings_dfs = pool.map(self._parse_data_source_mapping_files, self.config.get_data_sources_sections())
             self.mappings_df = pd.concat([self.mappings_df, pd.concat(mappings_dfs)])
         else:
             for section_name in self.config.get_data_sources_sections():
+                print("_get_from_r2_rml> section name: %s" % section_name)
                 data_source_mappings_df = self._parse_data_source_mapping_files(section_name)
                 self.mappings_df = pd.concat([self.mappings_df, data_source_mappings_df])
 
@@ -434,11 +450,18 @@ class MappingParser:
             try:
                 mapping_graph.parse(f, format=os.path.splitext(f)[1][1:].strip())
             except:
-                # if a file extension such as .rml or .r2rml is usedm assume it is turtle (issue #80)
+                # if a file extension such as .rml or .r2rml is used assume it is turtle (issue #80)
                 try:
                     mapping_graph.parse(f)
                 except Exception as n3_mapping_parse_exception:
                     raise Exception(n3_mapping_parse_exception)
+
+        # DEBUG
+        print("\nParsed Mappings: ")
+        res = mapping_graph.query("select * where {?s ?p ?o}")
+        for r in res:
+            print(str(r["s"])+", "+str(r["p"])+ ", "+str(r["o"]))
+
 
         # convert R2RML and RML rules to RML-star, so that we can assume RML-star for parsing
         mapping_graph = _mapping_to_rml_star(mapping_graph)
@@ -513,22 +536,30 @@ class MappingParser:
 
         for i, mapping_rule in self.mappings_df.iterrows():
             self.mappings_df.at[i, 'tablename'] = _get_undelimited_identifier(mapping_rule['tablename'])
-            self.mappings_df.at[i, 'subject_template'] = _get_valid_template_identifiers(
-                mapping_rule['subject_template'])
-            self.mappings_df.at[i, 'subject_reference'] = _get_undelimited_identifier(
-                mapping_rule['subject_reference'])
+            if self.mappings_df.at[i, 'subject_map_type'] == "http://www.w3.org/ns/r2rml#template":
+                self.mappings_df.at[i, 'subject_map_value'] = _get_valid_template_identifiers(
+                    mapping_rule['subject_map_value'])
+            elif self.mappings_df.at[i, 'subject_map_type'] == "http://semweb.mmlab.be/ns/rml#reference":
+                self.mappings_df.at[i, 'subject_map_value'] = _get_undelimited_identifier(
+                    mapping_rule['subject_map_value'])
             self.mappings_df.at[i, 'graph_reference'] = _get_undelimited_identifier(
                 mapping_rule['graph_reference'])
             self.mappings_df.at[i, 'graph_template'] = _get_valid_template_identifiers(
                 mapping_rule['graph_template'])
-            self.mappings_df.at[i, 'predicate_template'] = _get_valid_template_identifiers(
-                mapping_rule['predicate_template'])
-            self.mappings_df.at[i, 'predicate_reference'] = _get_undelimited_identifier(
-                mapping_rule['predicate_reference'])
-            self.mappings_df.at[i, 'object_template'] = _get_valid_template_identifiers(
-                mapping_rule['object_template'])
-            self.mappings_df.at[i, 'object_reference'] = _get_undelimited_identifier(
-                mapping_rule['object_reference'])
+
+            if self.mappings_df.at[i, 'predicate_map_type'] == "http://www.w3.org/ns/r2rml#template":
+                self.mappings_df.at[i, 'predicate_map_value'] = _get_valid_template_identifiers(
+                    mapping_rule['predicate_map_value'])
+            elif self.mappings_df.at[i, 'predicate_map_type'] == "http://semweb.mmlab.be/ns/rml#reference":
+                self.mappings_df.at[i, 'predicate_map_value'] = _get_undelimited_identifier(
+                    mapping_rule['predicate_map_value'])
+
+            if self.mappings_df.at[i, 'object_map_type'] == "http://www.w3.org/ns/r2rml#template":
+                self.mappings_df.at[i, 'object_map_value'] = _get_valid_template_identifiers(
+                    mapping_rule['object_map_value'])
+            elif self.mappings_df.at[i, 'object_map_type'] == "http://semweb.mmlab.be/ns/rml#reference":
+                self.mappings_df.at[i, 'object_map_value'] = _get_undelimited_identifier(
+                    mapping_rule['object_map_value'])
 
             # if join_condition is not null and it is not empty
             for join_conditions_pos in ['subject_join_conditions', 'object_join_conditions']:
