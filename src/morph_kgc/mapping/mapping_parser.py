@@ -400,15 +400,13 @@ class MappingParser:
         common DataFrame for all data sources. If parallelization is enabled and multiple data sources are provided,
         each mapping file is parsed in parallel.
         """
-        # print("\n\n\n_get_from_r2_rml=======================")
+
         if self.config.is_multiprocessing_enabled() and self.config.has_multiple_data_sources():
-            print("_get_from_r2_rml> is_multiprocessing_enabled")
             pool = mp.Pool(self.config.get_number_of_processes())
             mappings_dfs = pool.map(self._parse_data_source_mapping_files, self.config.get_data_sources_sections())
             self.mappings_df = pd.concat([self.mappings_df, pd.concat(mappings_dfs)])
         else:
             for section_name in self.config.get_data_sources_sections():
-                print("_get_from_r2_rml> section name: %s" % section_name)
                 data_source_mappings_df = self._parse_data_source_mapping_files(section_name)
                 self.mappings_df = pd.concat([self.mappings_df, data_source_mappings_df])
 
@@ -436,13 +434,6 @@ class MappingParser:
                     mapping_graph.parse(f)
                 except Exception as n3_mapping_parse_exception:
                     raise Exception(n3_mapping_parse_exception)
-
-        # DEBUG
-        print("\nParsed Mappings: ")
-        res = mapping_graph.query("select * where {?s ?p ?o}")
-        for r in res:
-            print(str(r["s"])+", "+str(r["p"])+ ", "+str(r["o"]))
-
 
         # convert R2RML and RML rules to RML-star, so that we can assume RML-star for parsing
         mapping_graph = _mapping_to_rml_star(mapping_graph)
