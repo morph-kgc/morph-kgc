@@ -536,22 +536,30 @@ class MappingParser:
 
         for i, mapping_rule in self.mappings_df.iterrows():
             self.mappings_df.at[i, 'tablename'] = _get_undelimited_identifier(mapping_rule['tablename'])
-            self.mappings_df.at[i, 'subject_template'] = _get_valid_template_identifiers(
-                mapping_rule['subject_template'])
-            self.mappings_df.at[i, 'subject_reference'] = _get_undelimited_identifier(
-                mapping_rule['subject_reference'])
+            if self.mappings_df.at[i, 'subject_map_type'] == "http://www.w3.org/ns/r2rml#template":
+                self.mappings_df.at[i, 'subject_map_value'] = _get_valid_template_identifiers(
+                    mapping_rule['subject_map_value'])
+            elif self.mappings_df.at[i, 'subject_map_type'] == "http://semweb.mmlab.be/ns/rml#reference":
+                self.mappings_df.at[i, 'subject_map_value'] = _get_undelimited_identifier(
+                    mapping_rule['subject_map_value'])
             self.mappings_df.at[i, 'graph_reference'] = _get_undelimited_identifier(
                 mapping_rule['graph_reference'])
             self.mappings_df.at[i, 'graph_template'] = _get_valid_template_identifiers(
                 mapping_rule['graph_template'])
-            self.mappings_df.at[i, 'predicate_template'] = _get_valid_template_identifiers(
-                mapping_rule['predicate_template'])
-            self.mappings_df.at[i, 'predicate_reference'] = _get_undelimited_identifier(
-                mapping_rule['predicate_reference'])
-            self.mappings_df.at[i, 'object_template'] = _get_valid_template_identifiers(
-                mapping_rule['object_template'])
-            self.mappings_df.at[i, 'object_reference'] = _get_undelimited_identifier(
-                mapping_rule['object_reference'])
+
+            if self.mappings_df.at[i, 'predicate_map_type'] == "http://www.w3.org/ns/r2rml#template":
+                self.mappings_df.at[i, 'predicate_map_value'] = _get_valid_template_identifiers(
+                    mapping_rule['predicate_map_value'])
+            elif self.mappings_df.at[i, 'predicate_map_type'] == "http://semweb.mmlab.be/ns/rml#reference":
+                self.mappings_df.at[i, 'predicate_map_value'] = _get_undelimited_identifier(
+                    mapping_rule['predicate_map_value'])
+
+            if self.mappings_df.at[i, 'object_map_type'] == "http://www.w3.org/ns/r2rml#template":
+                self.mappings_df.at[i, 'object_map_value'] = _get_valid_template_identifiers(
+                    mapping_rule['object_map_value'])
+            elif self.mappings_df.at[i, 'object_map_type'] == "http://semweb.mmlab.be/ns/rml#reference":
+                self.mappings_df.at[i, 'object_map_value'] = _get_undelimited_identifier(
+                    mapping_rule['object_map_value'])
 
             # if join_condition is not null and it is not empty
             for join_conditions_pos in ['subject_join_conditions', 'object_join_conditions']:

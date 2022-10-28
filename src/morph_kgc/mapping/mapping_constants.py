@@ -12,14 +12,14 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 MAPPINGS_DATAFRAME_COLUMNS = [
     'subject_map_type', 'subject_map_value',
-
+    'predicate_map_type', 'predicate_map_value',
+    'object_map_type', 'object_map_value',
     'source_name', 'triples_map_id', 'triples_map_type', 'data_source',
     'subject_map', 'object_map', 'iterator', 'tablename', 'query',
-    'subject_template', 'subject_reference', 'subject_constant', 'subject_quoted', 'subject_termtype',
+    'subject_quoted', 'subject_termtype',
     'graph_constant', 'graph_reference', 'graph_template',
-    'predicate_constant', 'predicate_template', 'predicate_reference',
     'object_termtype', 'object_datatype', 'object_language',
-    'object_constant', 'object_template', 'object_reference', 'object_quoted',
+    'object_quoted',
     'object_parent_triples_map', 'subject_join_conditions', 'object_join_conditions'
 ]
 
@@ -70,7 +70,7 @@ MAPPING_PARSING_QUERY = """
             ?triples_map_id rr:predicateObjectMap ?_predicate_object_map .
             
             ?_predicate_object_map rr:predicateMap ?_predicate_map .
-            ?_predicate_map ?predicate_map_type ?predicate_map_value.
+             ?_predicate_map ?predicate_map_type ?predicate_map_value.
             FILTER (?predicate_map_type!=<http://www.w3.org/ns/r2rml#termType>).
 
     # Object --------------------------------------------------------------------------
