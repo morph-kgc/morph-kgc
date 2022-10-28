@@ -482,7 +482,7 @@ class MappingParser:
         # create a unique id for each mapping rule
         self.mappings_df.insert(0, 'id', self.mappings_df.reset_index(drop=True).index)
 
-        self._remove_self_joins_from_mappings()
+        #self._remove_self_joins_from_mappings()
 
     def _complete_source_types(self):
         """
@@ -555,43 +555,6 @@ class MappingParser:
                         join_conditions[key]['parent_value'] = _get_undelimited_identifier(
                             join_conditions[key]['parent_value'])
                         self.mappings_df.at[i, join_conditions_pos] = str(join_conditions)
-
-    def _remove_self_joins_from_mappings(self):
-        # TODO: remove (when possible) join conditions in quoted triples maps
-
-        # because RDB has no rml:source, use source_name for rml:source to facilitate self-join elimination
-        self.mappings_df.loc[self.mappings_df['source_type'] == RDB, 'data_source'] = self.mappings_df['source_name']
-
-        for i, mapping_rule in self.mappings_df.iterrows():
-            if pd.notna(mapping_rule['object_parent_triples_map']):
-                parent_triples_map_rule = get_mapping_rule(self.mappings_df, mapping_rule['object_parent_triples_map'])
-
-                # str() is to be able to compare np.nan
-                if str(mapping_rule['data_source']) == str(parent_triples_map_rule['data_source']) and \
-                        str(mapping_rule['tablename']) == str(parent_triples_map_rule['tablename']) and \
-                        str(mapping_rule['iterator']) == str(parent_triples_map_rule['iterator']) and \
-                        str(mapping_rule['query']) == str(parent_triples_map_rule['query']):
-
-                    remove_join = True
-                    # check that all conditions in the join condition have the same references
-                    try:
-                        join_conditions = eval(mapping_rule['object_join_conditions'])
-                        for key, join_condition in join_conditions.items():
-                            if join_condition['child_value'] != join_condition['parent_value']:
-                                remove_join = False
-                    except:
-                        # eval() has failed because the are no join conditions, the join can be removed
-                        remove_join = True
-
-                    if remove_join:
-                        self.mappings_df.at[i, 'object_parent_triples_map'] = ''
-                        self.mappings_df.at[i, 'object_join_conditions'] = ''
-                        self.mappings_df.at[i, 'object_constant'] = parent_triples_map_rule.at['subject_constant']
-                        self.mappings_df.at[i, 'object_template'] = parent_triples_map_rule.at['subject_template']
-                        self.mappings_df.at[i, 'object_reference'] = parent_triples_map_rule.at['subject_reference']
-                        self.mappings_df.at[i, 'object_termtype'] = parent_triples_map_rule.at['subject_termtype']
-
-                        logging.debug(f"Removed self-join from mapping rule `{mapping_rule['id']}`.")
 
     def _infer_datatypes(self):
         """
@@ -671,3 +634,41 @@ class MappingParser:
             raise Exception('The following triples maps appear in more than one data source: '
                             f'{repeated_triples_map_ids}. '
                             'Check the mapping files, one triple map cannot be repeated in different data sources.')
+
+    # TODO: deprecate
+    """
+    def _remove_self_joins_from_mappings(self):
+        # because RDB has no rml:source, use source_name for rml:source to facilitate self-join elimination
+        self.mappings_df.loc[self.mappings_df['source_type'] == RDB, 'data_source'] = self.mappings_df['source_name']
+
+        for i, mapping_rule in self.mappings_df.iterrows():
+            if pd.notna(mapping_rule['object_parent_triples_map']):
+                parent_triples_map_rule = get_mapping_rule(self.mappings_df, mapping_rule['object_parent_triples_map'])
+
+                # str() is to be able to compare np.nan
+                if str(mapping_rule['data_source']) == str(parent_triples_map_rule['data_source']) and \
+                        str(mapping_rule['tablename']) == str(parent_triples_map_rule['tablename']) and \
+                        str(mapping_rule['iterator']) == str(parent_triples_map_rule['iterator']) and \
+                        str(mapping_rule['query']) == str(parent_triples_map_rule['query']):
+
+                    remove_join = True
+                    # check that all conditions in the join condition have the same references
+                    try:
+                        join_conditions = eval(mapping_rule['object_join_conditions'])
+                        for key, join_condition in join_conditions.items():
+                            if join_condition['child_value'] != join_condition['parent_value']:
+                                remove_join = False
+                    except:
+                        # eval() has failed because the are no join conditions, the join can be removed
+                        remove_join = True
+
+                    if remove_join:
+                        self.mappings_df.at[i, 'object_parent_triples_map'] = ''
+                        self.mappings_df.at[i, 'object_join_conditions'] = ''
+                        self.mappings_df.at[i, 'object_constant'] = parent_triples_map_rule.at['subject_constant']
+                        self.mappings_df.at[i, 'object_template'] = parent_triples_map_rule.at['subject_template']
+                        self.mappings_df.at[i, 'object_reference'] = parent_triples_map_rule.at['subject_reference']
+                        self.mappings_df.at[i, 'object_termtype'] = parent_triples_map_rule.at['subject_termtype']
+
+                        logging.debug(f"Removed self-join from mapping rule `{mapping_rule['id']}`.")
+    """
