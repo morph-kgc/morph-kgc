@@ -86,7 +86,7 @@ MAPPING_PARSING_QUERY = """
                 OPTIONAL { ?object_map rr:termType ?object_termtype . }
                 OPTIONAL { ?object_map rr:datatype ?object_datatype . }
                 OPTIONAL { ?object_map rr:language ?object_language . }
-            }            
+            } 
             OPTIONAL {
                 ?_predicate_object_map rml:objectMap ?object_map .
                 ?object_map rr:parentTriplesMap ?object_parent_triples_map .
