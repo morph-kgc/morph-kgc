@@ -575,9 +575,9 @@ class MappingParser:
                     # if the literal has a language tag or an overridden datatype, datatype inference does not apply
                     pd.isna(mapping_rule['object_datatype']) and pd.isna(mapping_rule['object_language'])):
 
-                if pd.notna(mapping_rule['object_reference']):
+                if mapping_rule['object_map_type'] == RML_REFERENCE:
                     inferred_data_type = get_rdb_reference_datatype(self.config, mapping_rule,
-                                                                    mapping_rule['object_reference'])
+                                                                    mapping_rule['object_map_value'])
 
                     if not inferred_data_type:
                         # no data type was inferred
@@ -586,11 +586,11 @@ class MappingParser:
                     self.mappings_df.at[i, 'object_datatype'] = inferred_data_type
                     if pd.notna(mapping_rule['tablename']):
                         logging.debug(f"`{inferred_data_type}` datatype inferred for column "
-                                      f"`{mapping_rule['object_reference']}` of table `{mapping_rule['tablename']}` "
+                                      f"`{mapping_rule['object_map_value']}` of table `{mapping_rule['tablename']}` "
                                       f"in data source `{mapping_rule['source_name']}`.")
                     elif pd.notna(mapping_rule['query']):
                         logging.debug(f"`{inferred_data_type}` datatype inferred for reference "
-                                      f"`{mapping_rule['object_reference']}` in query [{mapping_rule['query']}] "
+                                      f"`{mapping_rule['object_map_value']}` in query [{mapping_rule['query']}] "
                                       f"in data source `{mapping_rule['source_name']}`.")
 
     def validate_mappings(self):
