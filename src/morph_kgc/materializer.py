@@ -60,24 +60,24 @@ def _get_data(config, mapping_rule, references):
 
 def _get_references_in_mapping_rule(mapping_rule, mappings_df, only_subject_map=False):
     references = []
-    if pd.notna(mapping_rule['subject_template']):
-        references.extend(get_references_in_template(str(mapping_rule['subject_template'])))
-    elif pd.notna(mapping_rule['subject_reference']):
-        references.append(str(mapping_rule['subject_reference']))
+    if mapping_rule['subject_map_type'] == R2RML_TEMPLATE:
+        references.extend(get_references_in_template(str(mapping_rule['subject_map_value'])))
+    elif mapping_rule['subject_map_type'] == RML_REFERENCE:
+        references.append(str(mapping_rule['subject_map_value']))
 
     if not only_subject_map:
-        if pd.notna(mapping_rule['predicate_template']):
-            references.extend(get_references_in_template(str(mapping_rule['predicate_template'])))
-        elif pd.notna(mapping_rule['predicate_reference']):
-            references.append(str(mapping_rule['predicate_reference']))
-        if pd.notna(mapping_rule['object_template']):
-            references.extend(get_references_in_template(str(mapping_rule['object_template'])))
-        elif pd.notna(mapping_rule['object_reference']):
-            references.append(str(mapping_rule['object_reference']))
-        if pd.notna(mapping_rule['graph_template']):
-            references.extend(get_references_in_template(str(mapping_rule['graph_template'])))
-        elif pd.notna(mapping_rule['graph_reference']):
-            references.append(str(mapping_rule['graph_reference']))
+        if mapping_rule['predicate_map_type'] == R2RML_TEMPLATE:
+            references.extend(get_references_in_template(str(mapping_rule['predicate_map_value'])))
+        elif mapping_rule['predicate_map_type'] == RML_REFERENCE:
+            references.append(str(mapping_rule['predicate_map_value']))
+        if mapping_rule['object_map_type'] == R2RML_TEMPLATE:
+            references.extend(get_references_in_template(str(mapping_rule['object_map_value'])))
+        elif mapping_rule['object_map_type'] == RML_REFERENCE:
+            references.append(str(mapping_rule['object_map_value']))
+        if mapping_rule['graph_map_type'] == R2RML_TEMPLATE:
+            references.extend(get_references_in_template(str(mapping_rule['graph_map_value'])))
+        elif mapping_rule['graph_map_type'] == RML_REFERENCE:
+            references.append(str(mapping_rule['graph_map_value']))
 
     if pd.notna(mapping_rule['subject_quoted']) and pd.isna(mapping_rule['subject_join_conditions']):
         parent_mapping_rule = get_mapping_rule(mappings_df, mapping_rule['subject_quoted'])
@@ -199,47 +199,47 @@ def _materialize_constant(results_df, constant, position, termtype=R2RML_IRI, la
 
 
 def _materialize_join_mapping_rule_terms(results_df, mapping_rule, parent_triples_map_rule, config):
-    if pd.notna(mapping_rule['subject_template']):
-        results_df = _materialize_template(results_df, mapping_rule['subject_template'], config, 'subject', termtype=mapping_rule['subject_termtype'])
-    elif pd.notna(mapping_rule['subject_constant']):
-        results_df = _materialize_constant(results_df, mapping_rule['subject_constant'], 'subject', termtype=mapping_rule['subject_termtype'])
-    elif pd.notna(mapping_rule['subject_reference']):
-        results_df = _materialize_reference(results_df, mapping_rule['subject_reference'], config, 'subject', termtype=mapping_rule['subject_termtype'])
-    if pd.notna(mapping_rule['predicate_template']):
-        results_df = _materialize_template(results_df, mapping_rule['predicate_template'], config, 'predicate')
-    elif pd.notna(mapping_rule['predicate_constant']):
-        results_df = _materialize_constant(results_df, mapping_rule['predicate_constant'], 'predicate')
-    elif pd.notna(mapping_rule['predicate_reference']):
-        results_df = _materialize_reference(results_df, mapping_rule['predicate_reference'], config, 'predicate', termtype=R2RML_IRI)
-    if pd.notna(parent_triples_map_rule['subject_template']):
-        results_df = _materialize_template(results_df, parent_triples_map_rule['subject_template'], config, 'object', termtype=parent_triples_map_rule['subject_termtype'], columns_alias='parent_')
-    elif pd.notna(parent_triples_map_rule['subject_constant']):
-        results_df = _materialize_constant(results_df, parent_triples_map_rule['subject_constant'], 'object', termtype=parent_triples_map_rule['subject_termtype'])
-    elif pd.notna(parent_triples_map_rule['subject_reference']):
-        results_df = _materialize_reference(results_df, parent_triples_map_rule['subject_reference'], config, 'object', termtype=parent_triples_map_rule['subject_termtype'], columns_alias='parent_')
+    if mapping_rule['subject_map_type'] == R2RML_TEMPLATE:
+        results_df = _materialize_template(results_df, mapping_rule['subject_map_value'], config, 'subject', termtype=mapping_rule['subject_termtype'])
+    elif mapping_rule['subject_map_type'] == R2RML_CONSTANT:
+        results_df = _materialize_constant(results_df, mapping_rule['subject_map_value'], 'subject', termtype=mapping_rule['subject_termtype'])
+    elif mapping_rule['subject_map_type'] == RML_REFERENCE:
+        results_df = _materialize_reference(results_df, mapping_rule['subject_map_value'], config, 'subject', termtype=mapping_rule['subject_termtype'])
+    if mapping_rule['predicate_map_type'] == R2RML_TEMPLATE:
+        results_df = _materialize_template(results_df, mapping_rule['predicate_map_value'], config, 'predicate')
+    elif mapping_rule['predicate_map_type'] == R2RML_CONSTANT:
+        results_df = _materialize_constant(results_df, mapping_rule['predicate_map_value'], 'predicate')
+    elif mapping_rule['predicate_map_type'] == RML_REFERENCE:
+        results_df = _materialize_reference(results_df, mapping_rule['predicate_map_value'], config, 'predicate', termtype=R2RML_IRI)
+    if parent_triples_map_rule['subject_map_type'] == R2RML_TEMPLATE:
+        results_df = _materialize_template(results_df, parent_triples_map_rule['subject_map_value'], config, 'object', termtype=parent_triples_map_rule['subject_termtype'], columns_alias='parent_')
+    elif parent_triples_map_rule['subject_map_type'] == R2RML_CONSTANT:
+        results_df = _materialize_constant(results_df, parent_triples_map_rule['subject_map_value'], 'object', termtype=parent_triples_map_rule['subject_termtype'])
+    elif parent_triples_map_rule['subject_map_type'] == RML_REFERENCE:
+        results_df = _materialize_reference(results_df, parent_triples_map_rule['subject_map_value'], config, 'object', termtype=parent_triples_map_rule['subject_termtype'], columns_alias='parent_')
 
     return results_df
 
 
 def _materialize_mapping_rule_terms(results_df, mapping_rule, config):
-    if pd.notna(mapping_rule['subject_template']):
-        results_df = _materialize_template(results_df, mapping_rule['subject_template'], config, 'subject', termtype=mapping_rule['subject_termtype'])
-    elif pd.notna(mapping_rule['subject_constant']):
-        results_df = _materialize_constant(results_df, mapping_rule['subject_constant'], 'subject', termtype=mapping_rule['subject_termtype'])
-    elif pd.notna(mapping_rule['subject_reference']):
-        results_df = _materialize_reference(results_df, mapping_rule['subject_reference'], config, 'subject', termtype=mapping_rule['subject_termtype'])
-    if pd.notna(mapping_rule['predicate_template']):
-        results_df = _materialize_template(results_df, mapping_rule['predicate_template'], config, 'predicate')
-    elif pd.notna(mapping_rule['predicate_constant']):
-        results_df = _materialize_constant(results_df, mapping_rule['predicate_constant'], 'predicate')
-    elif pd.notna(mapping_rule['predicate_reference']):
-        results_df = _materialize_reference(results_df, mapping_rule['predicate_reference'], config, 'predicate', termtype=R2RML_IRI)
-    if pd.notna(mapping_rule['object_template']):
-        results_df = _materialize_template(results_df, mapping_rule['object_template'], config, 'object', termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
-    elif pd.notna(mapping_rule['object_constant']):
-        results_df = _materialize_constant(results_df, mapping_rule['object_constant'], 'object', termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
-    elif pd.notna(mapping_rule['object_reference']):
-        results_df = _materialize_reference(results_df, mapping_rule['object_reference'], config, 'object', termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
+    if mapping_rule['subject_map_type'] == R2RML_TEMPLATE:
+        results_df = _materialize_template(results_df, mapping_rule['subject_map_value'], config, 'subject', termtype=mapping_rule['subject_termtype'])
+    elif mapping_rule['subject_map_type'] == R2RML_CONSTANT:
+        results_df = _materialize_constant(results_df, mapping_rule['subject_map_value'], 'subject', termtype=mapping_rule['subject_termtype'])
+    elif mapping_rule['subject_map_type'] == RML_REFERENCE:
+        results_df = _materialize_reference(results_df, mapping_rule['subject_map_value'], config, 'subject', termtype=mapping_rule['subject_termtype'])
+    if mapping_rule['predicate_map_type'] == R2RML_TEMPLATE:
+        results_df = _materialize_template(results_df, mapping_rule['predicate_map_value'], config, 'predicate')
+    elif mapping_rule['predicate_map_type'] == R2RML_CONSTANT:
+        results_df = _materialize_constant(results_df, mapping_rule['predicate_map_value'], 'predicate')
+    elif mapping_rule['predicate_map_type'] == RML_REFERENCE:
+        results_df = _materialize_reference(results_df, mapping_rule['predicate_map_value'], config, 'predicate', termtype=R2RML_IRI)
+    if mapping_rule['object_map_type'] == R2RML_TEMPLATE:
+        results_df = _materialize_template(results_df, mapping_rule['object_map_value'], config, 'object', termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
+    elif mapping_rule['object_map_type'] == R2RML_CONSTANT:
+        results_df = _materialize_constant(results_df, mapping_rule['object_map_value'], 'object', termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
+    elif mapping_rule['object_map_type'] == RML_REFERENCE:
+        results_df = _materialize_reference(results_df, mapping_rule['object_map_value'], config, 'object', termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
 
     return results_df
 
@@ -297,26 +297,26 @@ def _materialize_mapping_rule(mapping_rule, mappings_df, config, data=None, pare
             if pd.notna(mapping_rule['subject_quoted']):
                 data['subject'] = data['keep_subject'+str(nest_level)]
 
-        if pd.notna(mapping_rule['subject_template']):
-            data = _materialize_template(data, mapping_rule['subject_template'], config, 'subject', termtype=mapping_rule['subject_termtype'])
-        elif pd.notna(mapping_rule['subject_constant']):
-            data = _materialize_constant(data, mapping_rule['subject_constant'], 'subject', termtype=mapping_rule['subject_termtype'])
-        elif pd.notna(mapping_rule['subject_reference']):
-            data = _materialize_reference(data, mapping_rule['subject_reference'], config, 'subject', termtype=mapping_rule['subject_termtype'])
+        if mapping_rule['subject_map_type'] == R2RML_TEMPLATE:
+            data = _materialize_template(data, mapping_rule['subject_map_value'], config, 'subject', termtype=mapping_rule['subject_termtype'])
+        elif mapping_rule['subject_map_type'] == R2RML_CONSTANT:
+            data = _materialize_constant(data, mapping_rule['subject_map_value'], 'subject', termtype=mapping_rule['subject_termtype'])
+        elif mapping_rule['subject_map_type'] == RML_REFERENCE:
+            data = _materialize_reference(data, mapping_rule['subject_map_value'], config, 'subject', termtype=mapping_rule['subject_termtype'])
 
-        if pd.notna(mapping_rule['object_template']):
-            data = _materialize_template(data, mapping_rule['object_template'], config, 'object', termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
-        elif pd.notna(mapping_rule['object_constant']):
-            data = _materialize_constant(data, mapping_rule['object_constant'], 'object', termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
-        elif pd.notna(mapping_rule['object_reference']):
-            data = _materialize_reference(data, mapping_rule['object_reference'], config, 'object', termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
+        if mapping_rule['object_map_type'] == R2RML_TEMPLATE:
+            data = _materialize_template(data, mapping_rule['object_map_value'], config, 'object', termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
+        elif mapping_rule['object_map_type'] == R2RML_CONSTANT:
+            data = _materialize_constant(data, mapping_rule['object_map_value'], 'object', termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
+        elif mapping_rule['object_map_type'] == RML_REFERENCE:
+            data = _materialize_reference(data, mapping_rule['object_map_value'], config, 'object', termtype=mapping_rule['object_termtype'], language_tag=mapping_rule['object_language'], datatype=mapping_rule['object_datatype'])
 
-        if pd.notna(mapping_rule['predicate_template']):
-            data = _materialize_template(data, mapping_rule['predicate_template'], config, 'predicate')
-        elif pd.notna(mapping_rule['predicate_constant']):
-            data = _materialize_constant(data, mapping_rule['predicate_constant'], 'predicate')
-        elif pd.notna(mapping_rule['predicate_reference']):
-            data = _materialize_reference(data, mapping_rule['predicate_reference'], config, 'predicate', termtype=R2RML_IRI)
+        if mapping_rule['predicate_map_type'] == R2RML_TEMPLATE:
+            data = _materialize_template(data, mapping_rule['predicate_map_value'], config, 'predicate')
+        elif mapping_rule['predicate_map_type'] == R2RML_CONSTANT:
+            data = _materialize_constant(data, mapping_rule['predicate_map_value'], 'predicate')
+        elif mapping_rule['predicate_map_type'] == RML_REFERENCE:
+            data = _materialize_reference(data, mapping_rule['predicate_map_value'], config, 'predicate', termtype=R2RML_IRI)
 
     elif pd.notna(mapping_rule['object_parent_triples_map']):
         references.update(references_object_join)
@@ -341,12 +341,12 @@ def _materialize_mapping_rule(mapping_rule, mappings_df, config, data=None, pare
     data['triple'] = data['subject'] + ' ' + data['predicate'] + ' ' + data['object']
 
     if nest_level == 0 and config.get_output_format() == NQUADS:
-        if pd.notna(mapping_rule['graph_template']):
-            data = _materialize_template(data, mapping_rule['graph_template'], config, 'graph')
-        elif pd.notna(mapping_rule['graph_constant']) and str(mapping_rule['graph_constant']) != R2RML_DEFAULT_GRAPH:
-            data = _materialize_constant(data, mapping_rule['graph_constant'], 'graph')
-        elif pd.notna(mapping_rule['graph_reference']):
-            data = _materialize_reference(data, mapping_rule['graph_reference'], config, 'graph', termtype=R2RML_IRI)
+        if mapping_rule['graph_map_type'] == R2RML_TEMPLATE:
+            data = _materialize_template(data, mapping_rule['graph_map_value'], config, 'graph')
+        elif mapping_rule['graph_map_type'] == R2RML_CONSTANT and str(mapping_rule['graph_map_value']) != R2RML_DEFAULT_GRAPH:
+            data = _materialize_constant(data, mapping_rule['graph_map_value'], 'graph')
+        elif mapping_rule['graph_map_type'] == RML_REFERENCE:
+            data = _materialize_reference(data, mapping_rule['graph_map_value'], config, 'graph', termtype=R2RML_IRI)
         else:
             data['graph'] = ''
         data['triple'] = data['triple'] + ' ' + data['graph']

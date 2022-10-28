@@ -14,10 +14,10 @@ MAPPINGS_DATAFRAME_COLUMNS = [
     'subject_map_type', 'subject_map_value',
     'predicate_map_type', 'predicate_map_value',
     'object_map_type', 'object_map_value',
+    'graph_map_type', 'graph_map_value',
     'source_name', 'triples_map_id', 'triples_map_type', 'data_source',
     'subject_map', 'object_map', 'iterator', 'tablename', 'query',
     'subject_quoted', 'subject_termtype',
-    'graph_constant', 'graph_reference', 'graph_template',
     'object_termtype', 'object_datatype', 'object_language',
     'object_quoted',
     'object_parent_triples_map', 'subject_join_conditions', 'object_join_conditions'
@@ -29,26 +29,18 @@ MAPPINGS_DATAFRAME_COLUMNS = [
 ##############################################################################
 
 MAPPING_PARSING_QUERY = """
-    # This query has been reused from SDM-RDFizer (https://github.com/SDM-TIB/SDM-RDFizer). SDM-RDFizer has been
-    # developed by members of the Scientific Data Management Group at TIB. Its development has been coordinated and
-    # supervised by Maria-Esther Vidal. The implementation has been done by Enrique Iglesias and Guillermo Betancourt
-    # under the supervision of David Chaves-Fraga, Samaneh Jozashoori, and Kemele Endris.
-    # It has been modified by Julián Arenas-Guerrero, PhD student at the Ontology Engineering Group (OEG)
-    # in Universidad Politécnica de Madrid (UPM).
-
     prefix rr: <http://www.w3.org/ns/r2rml#>
     prefix rml: <http://semweb.mmlab.be/ns/rml#>
 
     SELECT DISTINCT
         ?triples_map_id ?triples_map_type ?data_source ?iterator ?tablename ?query ?subject_map ?object_map
-           ?subject_quoted ?subject_termtype
-        ?graph_constant ?graph_reference ?graph_template
-           ?object_quoted
+        ?subject_quoted ?subject_termtype ?object_quoted
         ?object_termtype ?object_datatype ?object_language
         ?object_parent_triples_map
         ?subject_map_type ?subject_map_value
         ?predicate_map_type ?predicate_map_value
         ?object_map_type ?object_map_value
+        ?graph_map_type ?graph_map_value
         
     WHERE {
         ?triples_map_id rml:logicalSource ?_source .
@@ -60,8 +52,8 @@ MAPPING_PARSING_QUERY = """
 
     # Subject -------------------------------------------------------------------------
         ?triples_map_id rml:subjectMap ?subject_map .
-        ?subject_map ?subject_map_type ?subject_map_value.
-        FILTER (?subject_map_type!=<http://www.w3.org/ns/r2rml#termType>).
+        ?subject_map ?subject_map_type ?subject_map_value .
+        FILTER ( ?subject_map_type != <http://www.w3.org/ns/r2rml#termType> ) .
         OPTIONAL { ?subject_map rml:quotedTriplesMap ?subject_quoted . }
         OPTIONAL { ?subject_map rr:termType ?subject_termtype . }
 
@@ -70,8 +62,8 @@ MAPPING_PARSING_QUERY = """
             ?triples_map_id rr:predicateObjectMap ?_predicate_object_map .
             
             ?_predicate_object_map rr:predicateMap ?_predicate_map .
-             ?_predicate_map ?predicate_map_type ?predicate_map_value.
-            FILTER (?predicate_map_type!=<http://www.w3.org/ns/r2rml#termType>).
+            ?_predicate_map ?predicate_map_type ?predicate_map_value.
+            FILTER ( ?predicate_map_type != <http://www.w3.org/ns/r2rml#termType> ) .
 
     # Object --------------------------------------------------------------------------
             OPTIONAL {
@@ -81,8 +73,8 @@ MAPPING_PARSING_QUERY = """
             }
             OPTIONAL {
                 ?_predicate_object_map rml:objectMap ?object_map .
-                ?object_map ?object_map_type ?object_map_value.
-                FILTER (?object_map_type!=<http://www.w3.org/ns/r2rml#termType>).
+                ?object_map ?object_map_type ?object_map_value .
+                FILTER ( ?object_map_type != <http://www.w3.org/ns/r2rml#termType> ) .
                 OPTIONAL { ?object_map rr:termType ?object_termtype . }
                 OPTIONAL { ?object_map rr:datatype ?object_datatype . }
                 OPTIONAL { ?object_map rr:language ?object_language . }
@@ -93,16 +85,9 @@ MAPPING_PARSING_QUERY = """
                 OPTIONAL { ?object_map rr:termType ?object_termtype . }
             }
             OPTIONAL {
-                ?_predicate_object_map rr:graphMap ?_graph_structure .
-                ?_graph_structure rr:constant ?graph_constant .
-            }
-            OPTIONAL {
-                ?_predicate_object_map rr:graphMap ?_graph_structure .
-                ?_graph_structure rr:template ?graph_template .
-            }
-            OPTIONAL {
-                ?_predicate_object_map rr:graphMap ?_graph_structure .
-                ?_graph_structure rr:reference ?graph_reference .
+                ?_predicate_object_map rr:graphMap ?graph_map .
+                ?graph_map ?graph_map_type ?graph_map_value .
+                FILTER ( ?graph_map_type != <http://www.w3.org/ns/r2rml#termType> ) .
             }
         }
     }

@@ -72,7 +72,7 @@ def _generate_maximal_partition_for_a_position_ordering(mappings_df, position_or
             mappings_df.sort_values(by=['mapping_partition', 'predicate_invariant'], inplace=True, ascending=True)
 
             # if all predicates are constant terms we can use full string comparison instead of startswith
-            enforce_invariant_non_subset = mappings_df['predicate_constant'].notna().all()
+            enforce_invariant_non_subset = set(mappings_df['predicate_map_value']) == set(R2RML_CONSTANT)
 
             for i, mapping_rule in mappings_df.iterrows():
                 if current_global_group != mapping_rule['mapping_partition']:
@@ -123,7 +123,7 @@ def _generate_maximal_partition_for_a_position_ordering(mappings_df, position_or
             mappings_df.sort_values(by=['mapping_partition', 'graph_invariant'], inplace=True, ascending=True)
 
             # if all graph are constant terms we can use full string comparison instead of startswith
-            enforce_invariant_non_subset = mappings_df['graph_constant'].notna().all()
+            enforce_invariant_non_subset = set(mappings_df['graph_map_value']) == set(R2RML_CONSTANT)
 
             for i, mapping_rule in mappings_df.iterrows():
                 if current_global_group != mapping_rule['mapping_partition']:
@@ -287,8 +287,8 @@ class MappingPartitioner:
         current_invariant = AUXILIAR_UNIQUE_REPLACING_STRING
 
         # if all predicates are constant terms we can use full string comparison instead of startswith
-        # enforce_invariant_non_subset = self.mappings_df['predicate_constant'].notna().all()
-        enforce_invariant_non_subset = self.mappings_df[self.mappings_df['predicate_map_type']=="http://www.w3.org/ns/r2rml#constant"]['predicate_map_value'].notna().all()
+        enforce_invariant_non_subset = set(self.mappings_df['predicate_map_value']) == set(R2RML_CONSTANT)
+
         if enforce_invariant_non_subset:
             logging.debug('All predicate maps are constant-valued, invariant subset is not enforced.')
 
@@ -335,7 +335,8 @@ class MappingPartitioner:
         current_invariant = AUXILIAR_UNIQUE_REPLACING_STRING
 
         # if all graph are constant terms we can use full string comparison instead of startswith
-        enforce_invariant_non_subset = self.mappings_df['graph_constant'].notna().all()
+        enforce_invariant_non_subset = set(self.mappings_df['graph_map_value']) == set(R2RML_CONSTANT)
+
         if enforce_invariant_non_subset:
             logging.debug('All graph maps are constant-valued, invariant subset is not enforced.')
 
@@ -427,8 +428,8 @@ class MappingPartitioner:
                         get_invariant_of_template(str(parent_mapping_rule['subject_map_value']))
 
             # GRAPH
-            if pd.notna(mapping_rule['graph_constant']):
-                self.mappings_df.at[i, 'graph_invariant'] = str(mapping_rule['graph_constant'])
-            elif pd.notna(mapping_rule['graph_template']):
+            if mapping_rule['graph_map_type'] == R2RML_CONSTANT:
+                self.mappings_df.at[i, 'graph_invariant'] = str(mapping_rule['graph_map_value'])
+            elif mapping_rule['graph_map_type'] == R2RML_TEMPLATE:
                 self.mappings_df.at[i, 'graph_invariant'] = \
-                    get_invariant_of_template(str(mapping_rule['graph_template']))
+                    get_invariant_of_template(str(mapping_rule['graph_map_value']))
