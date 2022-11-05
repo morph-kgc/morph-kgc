@@ -22,3 +22,4 @@ def test_RMLFNOTC0001_CSV():
     g_morph = morph_kgc.materialize(config)
 
     assert compare.isomorphic(g, g_morph)
+

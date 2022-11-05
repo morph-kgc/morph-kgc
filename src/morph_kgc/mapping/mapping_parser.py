@@ -256,6 +256,13 @@ def _transform_mappings_into_dataframe(mapping_graph, section_name):
 
     # parse the mappings with the parsing queries
     mapping_query_results = mapping_graph.query(MAPPING_PARSING_QUERY)
+    print("\n\n\nFor res in results: ")
+    for res in mapping_query_results:
+        print("=====>")
+        print(res['triples_map_id'])
+        print(res['object_map_type'])
+        print(res['object_map_value'])
+
 
     join_query_results = mapping_graph.query(JOIN_CONDITION_PARSING_QUERY)
 
@@ -378,6 +385,10 @@ class MappingParser:
 
     def parse_mappings(self):
         self._get_from_r2_rml()
+        print("\n\n\n\n")
+        for col in self.mappings_df.columns:
+            print("")
+            print(self.mappings_df[col])
         self._preprocess_mappings()
         self._infer_datatypes()
 
@@ -407,7 +418,13 @@ class MappingParser:
             self.mappings_df = pd.concat([self.mappings_df, pd.concat(mappings_dfs)])
         else:
             for section_name in self.config.get_data_sources_sections():
+                print("\nsection_name: %s" % section_name)
                 data_source_mappings_df = self._parse_data_source_mapping_files(section_name)
+
+                for col in data_source_mappings_df.columns:
+                    print("*")
+                    print(data_source_mappings_df[col])
+                print("\n=========================\n==========================")
                 self.mappings_df = pd.concat([self.mappings_df, data_source_mappings_df])
 
         self.mappings_df = self.mappings_df.reset_index(drop=True)
@@ -419,7 +436,6 @@ class MappingParser:
         It performs queries MAPPING_PARSING_QUERY and JOIN_CONDITION_PARSING_QUERY and process the results to build a
         DataFrame with the mapping rules. Also verifies that there are not repeated triples maps in the mappings.
         """
-
         # create an empty graph
         mapping_graph = rdflib.Graph()
 
