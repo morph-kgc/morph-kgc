@@ -255,18 +255,18 @@ def _merge_data(data, parent_data, mapping_rule, join_condition):
         parent_data = parent_data.set_index(parent_join_references, drop=False)
         return data.join(parent_data, how='inner')
     else:
-        print("\n\n\n parent data: ")
-        print(parent_data)
-        print("child join ref: ")
-        print(child_join_references)
-        print("parent_join_references: ")
-        print(parent_join_references)
+        # print("\n\n\n parent data: ")
+        # print(parent_data)
+        # print("child join ref: ")
+        # print(child_join_references)
+        # print("parent_join_references: ")
+        # print(parent_join_references)
         return data.merge(parent_data, how='inner', left_on=child_join_references, right_on=parent_join_references)
 
 
 def _materialize_mapping_rule(mapping_rule, mappings_df, config, data=None, parent_join_references=set(), nest_level=0):
 
-    print(mapping_rule)
+    # print(mapping_rule)
 
     references = set(_get_references_in_mapping_rule(mapping_rule, mappings_df))
 

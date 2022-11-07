@@ -256,13 +256,24 @@ def _transform_mappings_into_dataframe(mapping_graph, section_name):
 
     # parse the mappings with the parsing queries
     mapping_query_results = mapping_graph.query(MAPPING_PARSING_QUERY)
+
+    atts = ['triples_map_id','triples_map_type','data_source','iterator','tablename','query','subject_map',
+            'object_map','subject_quoted','subject_termtype','object_quoted','object_termtype','object_datatype',
+            'object_language','object_parent_triples_map','subject_map_type','subject_map_value','predicate_map_type',
+            'predicate_map_value','object_map_type','object_map_value','graph_map_type','graph_map_value']
     print("\n\n\nFor res in results: ")
     for res in mapping_query_results:
+        # print(res)
         print("=====>")
-        print(res['triples_map_id'])
-        print(res['object_map_type'])
-        print(res['object_map_value'])
-
+        for a in atts:
+            if res[a]:
+                print("%s\t%s" % (a, res[a]))
+        # for r in res:
+        #     print(r)
+        # print("map id: %s" % str(res['triples_map_id']))
+        # print("object map type: %s" % str(res['object_map_type']))
+        # print("object map value: %s" % str(res['object_map_value']))
+        # print("object quoted: %s" % str(res['object_quoted']))
 
     join_query_results = mapping_graph.query(JOIN_CONDITION_PARSING_QUERY)
 
@@ -385,10 +396,10 @@ class MappingParser:
 
     def parse_mappings(self):
         self._get_from_r2_rml()
-        print("\n\n\n\n")
-        for col in self.mappings_df.columns:
-            print("")
-            print(self.mappings_df[col])
+        # print("\n\n\n\n")
+        # for col in self.mappings_df.columns:
+        #     print("")
+        #     print(self.mappings_df[col])
         self._preprocess_mappings()
         self._infer_datatypes()
 
@@ -421,10 +432,10 @@ class MappingParser:
                 print("\nsection_name: %s" % section_name)
                 data_source_mappings_df = self._parse_data_source_mapping_files(section_name)
 
-                for col in data_source_mappings_df.columns:
-                    print("*")
-                    print(data_source_mappings_df[col])
-                print("\n=========================\n==========================")
+                # for col in data_source_mappings_df.columns:
+                #     print("*")
+                #     print(data_source_mappings_df[col])
+                # print("\n=========================\n==========================")
                 self.mappings_df = pd.concat([self.mappings_df, data_source_mappings_df])
 
         self.mappings_df = self.mappings_df.reset_index(drop=True)

@@ -74,7 +74,7 @@ MAPPING_PARSING_QUERY = """
             OPTIONAL {
                 ?_predicate_object_map rml:objectMap ?object_map .
                 ?object_map ?object_map_type ?object_map_value .
-                FILTER ( ?object_map_type IN ( rr:constant, rr:template, rml:reference, rr:parentTriplesMap) ) .
+                FILTER ( ?object_map_type IN ( rr:constant, rr:template, rml:reference) ) .
                 OPTIONAL { ?object_map rr:termType ?object_termtype . }
                 OPTIONAL { ?object_map rr:datatype ?object_datatype . }
                 OPTIONAL { ?object_map rr:language ?object_language . }
