@@ -53,7 +53,7 @@ MAPPING_PARSING_QUERY = """
     # Subject -------------------------------------------------------------------------
         ?triples_map_id rml:subjectMap ?subject_map .
         ?subject_map ?subject_map_type ?subject_map_value .
-        FILTER ( ?subject_map_type IN ( rr:constant, rr:template, rml:reference) ) .
+        FILTER ( ?subject_map_type IN ( rr:constant, rr:template, rml:reference, rml:quotedTriplesMap) ) .
         OPTIONAL { ?subject_map rml:quotedTriplesMap ?subject_quoted . }
         OPTIONAL { ?subject_map rr:termType ?subject_termtype . }
 
@@ -74,7 +74,7 @@ MAPPING_PARSING_QUERY = """
             OPTIONAL {
                 ?_predicate_object_map rml:objectMap ?object_map .
                 ?object_map ?object_map_type ?object_map_value .
-                FILTER ( ?object_map_type IN ( rr:constant, rr:template, rml:reference) ) .
+                FILTER ( ?object_map_type IN ( rr:constant, rr:template, rml:reference, rml:quotedTriplesMap) ) .
                 OPTIONAL { ?object_map rr:termType ?object_termtype . }
                 OPTIONAL { ?object_map rr:datatype ?object_datatype . }
                 OPTIONAL { ?object_map rr:language ?object_language . }
