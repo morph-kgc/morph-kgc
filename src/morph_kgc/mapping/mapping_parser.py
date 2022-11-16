@@ -535,7 +535,7 @@ class MappingParser:
         # create a unique id for each mapping rule
         self.mappings_df.insert(0, 'id', self.mappings_df.reset_index(drop=True).index)
 
-        self._remove_self_joins_from_mappings()
+        # self._remove_self_joins_from_mappings()
 
     def _complete_source_types(self):
         """
