@@ -82,19 +82,7 @@ def get_mapping_rule(mappings_df, triples_map_id):
     """
     Retrieves mapping rule from mapping rules in the input DataFrame by its triples map id.
     """
-    # DEBUG
-    print("\n\nget_mapping_rule: ")
-    print(triples_map_id)
-    print(mappings_df['triples_map_id'])
-    # print(mappings_df)
-    # for col in mappings_df.columns:
-    #     print(col)
-
     mapping_rule = mappings_df[mappings_df['triples_map_id'] == triples_map_id].iloc[0]
-
-    # DEBUG
-    print("\n\nreturn: ")
-
     return mapping_rule
 
 
@@ -102,10 +90,6 @@ def get_references_in_template(template):
     """
     Retrieves all reference identifiers in a template-valued term map. References are returned in order of appearance
     """
-
-    # DEBUG
-    print("get_references_in_template> template: ")
-    print(template)
 
     # Curly braces that do not enclose column names MUST be escaped by a backslash character (“\”).
     # This also applies to curly braces within column names.
