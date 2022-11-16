@@ -27,6 +27,32 @@ def materialize(config):
 
     mappings_df = retrieve_mappings(config)
 
+    # DEBUG
+    print("\n\nmaterialize> ")
+    atts = ['triples_map_id','triples_map_type','data_source','iterator','tablename','query','subject_map',
+            'object_map','subject_quoted','subject_termtype','object_quoted','object_termtype','object_datatype',
+            'object_language','object_parent_triples_map','subject_map_type','subject_map_value','predicate_map_type',
+            'predicate_map_value','object_map_type','object_map_value','graph_map_type','graph_map_value']
+
+    print("For res in results: ")
+    for idx, res in mappings_df.iterrows():
+        print(">>>>>>>")
+        for a in atts:
+            if res[a]:
+                print("%s\t%s" % (a, res[a]))
+    print("==<END>==")
+    # for col in mappings_df:
+    #     # print("%s" % (col))
+    #     # print(mappings_df[col])
+    #     # # # print(res)
+    #     # # print("=====>")
+    #     for a in atts:
+    #     if mappings_df[col]:
+    #         print("%s\t%s" % (col, mappings_df[col]))
+
+
+
+
     # keep only asserted mapping rules
     asserted_mapping_df = mappings_df.loc[mappings_df['triples_map_type'] == R2RML_TRIPLES_MAP_CLASS]
     mapping_partitions = [group for _, group in asserted_mapping_df.groupby(by='mapping_partition')]
