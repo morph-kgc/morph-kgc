@@ -53,7 +53,7 @@ def get_file_data(mapping_rule, references):
 def _read_csv(mapping_rule, references, file_source_type):
     delimiter = ',' if file_source_type == 'CSV' else '\t'
 
-    try :
+    try:
         return pd.read_table(mapping_rule['data_source'],
                              sep=delimiter,
                              index_col=False,

@@ -82,9 +82,7 @@ def get_mapping_rule(mappings_df, triples_map_id):
     """
     Retrieves mapping rule from mapping rules in the input DataFrame by its triples map id.
     """
-
     mapping_rule = mappings_df[mappings_df['triples_map_id'] == triples_map_id].iloc[0]
-
     return mapping_rule
 
 

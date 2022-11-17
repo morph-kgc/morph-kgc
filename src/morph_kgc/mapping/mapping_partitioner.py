@@ -397,9 +397,13 @@ class MappingPartitioner:
             elif mapping_rule['object_map_type'] == R2RML_TEMPLATE:
                 self.mappings_df.at[i, 'object_invariant'] = \
                     get_invariant_of_template(str(mapping_rule['object_map_value']))
-            elif pd.notna(mapping_rule['object_parent_triples_map']):
+            # elif pd.notna(mapping_rule['object_parent_triples_map']) and mapping_rule['object_parent_triples_map']!="":
+            elif mapping_rule['object_map_type'] == R2RML_PARENT_TRIPLES_MAP:
+
                 # get the invariant for referencing object maps
-                parent_mapping_rule = get_mapping_rule(self.mappings_df, mapping_rule['object_parent_triples_map'])
+                # parent_mapping_rule = get_mapping_rule(self.mappings_df, mapping_rule['object_parent_triples_map'])
+                parent_mapping_rule = get_mapping_rule(self.mappings_df, mapping_rule['object_map_value'])
+
 
                 if mapping_rule['subject_map_type'] == R2RML_CONSTANT:
                     self.mappings_df.at[i, 'object_invariant'] = str(parent_mapping_rule['subject_map_value'])
