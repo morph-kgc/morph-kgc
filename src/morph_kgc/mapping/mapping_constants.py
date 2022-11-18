@@ -17,9 +17,8 @@ MAPPINGS_DATAFRAME_COLUMNS = [
     'graph_map_type', 'graph_map_value',
     'source_name', 'triples_map_id', 'triples_map_type', 'data_source',
     'subject_map', 'object_map', 'iterator', 'tablename', 'query',
-    'subject_quoted', 'subject_termtype',
+     'subject_termtype',
     'object_termtype', 'object_datatype', 'object_language',
-    'object_quoted',
     'subject_join_conditions', 'object_join_conditions'
 ]
 
@@ -34,7 +33,7 @@ MAPPING_PARSING_QUERY = """
 
     SELECT DISTINCT
         ?triples_map_id ?triples_map_type ?data_source ?iterator ?tablename ?query ?subject_map ?object_map
-        ?subject_quoted ?subject_termtype ?object_quoted
+         ?subject_termtype
         ?object_termtype ?object_datatype ?object_language
         ?subject_map_type ?subject_map_value
         ?predicate_map_type ?predicate_map_value
@@ -53,23 +52,16 @@ MAPPING_PARSING_QUERY = """
         ?triples_map_id rml:subjectMap ?subject_map .
         ?subject_map ?subject_map_type ?subject_map_value .
         FILTER ( ?subject_map_type IN ( rr:constant, rr:template, rml:reference, rml:quotedTriplesMap) ) .
-        OPTIONAL { ?subject_map rml:quotedTriplesMap ?subject_quoted . }
         OPTIONAL { ?subject_map rr:termType ?subject_termtype . }
 
     # Predicate -----------------------------------------------------------------------
         OPTIONAL {
             ?triples_map_id rr:predicateObjectMap ?_predicate_object_map .
-            
             ?_predicate_object_map rr:predicateMap ?_predicate_map .
             ?_predicate_map ?predicate_map_type ?predicate_map_value .
             FILTER ( ?predicate_map_type IN ( rr:constant, rr:template, rml:reference) ) .
 
     # Object --------------------------------------------------------------------------
-            OPTIONAL {
-                ?_predicate_object_map rml:objectMap ?object_map .
-                ?object_map rml:quotedTriplesMap ?object_quoted .
-                OPTIONAL { ?object_map rr:termType ?object_termtype . }
-            } 
             OPTIONAL {
                 ?_predicate_object_map rml:objectMap ?object_map .
                 ?object_map ?object_map_type ?object_map_value .
