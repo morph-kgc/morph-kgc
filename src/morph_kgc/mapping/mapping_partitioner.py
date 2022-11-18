@@ -167,14 +167,10 @@ class MappingPartitioner:
 
         self.mappings_df = self.mappings_df.reset_index(drop=True)
 
-        # DEBUG
-        print("\n\n\nXxxxxxxxxxxxxxxxxxxxxxxxxxx")
-        print(self.mappings_df)
-        print(type(self.mappings_df))
         # if RML-star or TMs without POMs (rml:NonAssertedTriplesMap) do not partition mappings (assign empty partition)
-        # if self.mappings_df['subject_quoted'].notnull().any() or self.mappings_df['object_quoted'].notnull().any() or RML_STAR_NON_ASSERTED_TRIPLES_MAP_CLASS in set(self.mappings_df['triples_map_type']):
-        # if  self.mappings_df[self.mappings_df['subject_map_type'] == RML_STAR_QUOTED_TRIPLES_MAP].any() or self.mappings_df[self.mappings_df['object_map_type'] == RML_STAR_QUOTED_TRIPLES_MAP].any() or RML_STAR_NON_ASSERTED_TRIPLES_MAP_CLASS in set(self.mappings_df['triples_map_type']):
-        if RML_STAR_QUOTED_TRIPLES_MAP in self.mappings_df['subject_map_type'].values  or RML_STAR_QUOTED_TRIPLES_MAP in self.mappings_df['object_map_type'] or RML_STAR_NON_ASSERTED_TRIPLES_MAP_CLASS in set(self.mappings_df['triples_map_type']):
+        if RML_STAR_QUOTED_TRIPLES_MAP in self.mappings_df['subject_map_type'].values or \
+            RML_STAR_QUOTED_TRIPLES_MAP in self.mappings_df['object_map_type'] or \
+            RML_STAR_NON_ASSERTED_TRIPLES_MAP_CLASS in set(self.mappings_df['triples_map_type']):
 
             # TODO: enable mapping partitioning for these cases
             self.mappings_df['mapping_partition'] = '0-0-0-0'
