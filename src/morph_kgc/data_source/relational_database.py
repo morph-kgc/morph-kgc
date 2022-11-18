@@ -146,19 +146,19 @@ def get_rdb_reference_datatype(config, mapping_rule, reference):
 def _build_sql_query(mapping_rule, references):
     """
     Build a query for MYSQL using backticks '`' as enclosing character. This character will later be replaced with the
-    one corresponding one to the dialect that applies.
+    one corresponding one to the dialect that applies. It also takes care of schema-qualified names.
     """
 
     if pd.notna(mapping_rule['query']):
         query = mapping_rule['query']
     elif len(references) > 0:
-        query = 'SELECT '
-        # query = query + 'DISTINCT ' # TODO: is this more efficient?
+        query = 'SELECT ' # + 'DISTINCT ' # TODO: is this more efficient?
+        # replacements of `.` to deal with schema-qualified names (see issue #89)
         for reference in references:
-            query = f"{query}`{reference}`, "
-        query = f"{query[:-2]} FROM `{mapping_rule['tablename']}` WHERE "
+            query = f"{query}`{reference.replace('.', '`.`')}`, "
+        query = f"{query[:-2]} FROM `{mapping_rule['tablename'].replace('.', '`.`')}` WHERE "
         for reference in references:
-            query = f"{query}`{reference}` IS NOT NULL AND "
+            query = f"{query}`{reference.replace('.', '`.`')}` IS NOT NULL AND "
         query = query[:-5]
     else:
         query = None
