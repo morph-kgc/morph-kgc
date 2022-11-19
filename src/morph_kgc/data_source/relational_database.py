@@ -122,12 +122,12 @@ def _get_column_table_datatype(config, source_name, table_name, column_name):
 def get_rdb_reference_datatype(config, mapping_rule, reference):
     inferred_data_type = ''
 
-    if pd.notna(mapping_rule['tablename']):
+    if mapping_rule['logical_source_type'] == R2RML_TABLE_NAME:
         inferred_data_type = _get_column_table_datatype(config, mapping_rule['source_name'],
-                                                        mapping_rule['tablename'], reference)
-    elif pd.notna(mapping_rule['query']):
+                                                        mapping_rule['logical_source_value'], reference)
+    elif mapping_rule['logical_source_type'] == RML_QUERY:
         # if mapping rule has a query, get the table names in the query
-        table_names = sql_metadata.Parser(mapping_rule['query']).tables
+        table_names = sql_metadata.Parser(mapping_rule['logical_source_value']).tables
         for table_name in table_names:
             # for each table in the query get the datatype of the object reference in that table if an
             # exception is thrown, then the reference is not a column in that table, and nothing is done
@@ -149,14 +149,14 @@ def _build_sql_query(mapping_rule, references):
     one corresponding one to the dialect that applies. It also takes care of schema-qualified names.
     """
 
-    if pd.notna(mapping_rule['query']):
-        query = mapping_rule['query']
-    elif len(references) > 0:
+    if mapping_rule['logical_source_type'] == RML_QUERY:
+        query = mapping_rule['logical_source_value']
+    elif mapping_rule['logical_source_type'] == R2RML_TABLE_NAME and len(references) > 0:
         query = 'SELECT ' # + 'DISTINCT ' # TODO: is this more efficient?
         # replacements of `.` to deal with schema-qualified names (see issue #89)
         for reference in references:
             query = f"{query}`{reference.replace('.', '`.`')}`, "
-        query = f"{query[:-2]} FROM `{mapping_rule['tablename'].replace('.', '`.`')}` WHERE "
+        query = f"{query[:-2]} FROM `{mapping_rule['logical_source_value'].replace('.', '`.`')}` WHERE "
         for reference in references:
             query = f"{query}`{reference.replace('.', '`.`')}` IS NOT NULL AND "
         query = query[:-5]

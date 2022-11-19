@@ -5,12 +5,8 @@ __license__ = "Apache-2.0"
 __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"
 
-
-import pandas as pd
 import numpy as np
-import multiprocessing as mp
-import rdflib
-import logging
+import pandas as pd
 
 from ..constants import *
 from ..utils import *
@@ -267,7 +263,6 @@ def _transform_mappings_into_dataframe(mapping_graph, section_name):
     # mapping rules in graph to DataFrame
     source_mappings_df = pd.DataFrame(mapping_query_results.bindings)
     source_mappings_df.columns = source_mappings_df.columns.map(str)
-    source_mappings_df = source_mappings_df.reindex(columns=MAPPINGS_DATAFRAME_COLUMNS)
 
     # process mapping rules with joins
     # create a dict with child triples maps in the keys and its join conditions in the values
@@ -283,8 +278,6 @@ def _transform_mappings_into_dataframe(mapping_graph, section_name):
     # convert the join condition dicts to string (can later be converted back to dict)
     source_mappings_df['object_join_conditions'] = source_mappings_df['object_join_conditions'].astype(str)
     source_mappings_df['subject_join_conditions'] = source_mappings_df['subject_join_conditions'].astype(str)
-    # object_map and subject_map columns no longer needed, remove them
-    source_mappings_df = source_mappings_df.drop(['subject_map', 'object_map'], axis=1)
 
     # convert all values to string
     for i, row in source_mappings_df.iterrows():
@@ -314,10 +307,9 @@ def _get_undelimited_identifier(identifier):
     Removes delimiters from the identifier if it is delimited.
     """
 
-    if pd.notna(identifier):
-        identifier = str(identifier)
-        if _is_delimited_identifier(identifier):
-            return identifier[1:-1]
+    identifier = identifier
+    if _is_delimited_identifier(identifier):
+        return identifier[1:-1]
     return identifier
 
 
@@ -326,9 +318,7 @@ def _get_valid_template_identifiers(template):
     Removes delimiters from delimited identifiers in a template.
     """
 
-    if pd.notna(template):
-        return template.replace('{"', '{').replace('"}', '}')
-    return template
+    return template.replace('{"', '{').replace('"}', '}')
 
 
 def _validate_termtypes(mapping_graph):
@@ -384,8 +374,8 @@ class MappingParser:
     def parse_mappings(self):
         self._get_from_r2_rml()
         self._preprocess_mappings()
-        self._infer_datatypes()
 
+        self._infer_datatypes()
         self.validate_mappings()
 
         logging.info(f'{len(self.mappings_df)} mapping rules retrieved.')
@@ -416,6 +406,8 @@ class MappingParser:
                 self.mappings_df = pd.concat([self.mappings_df, data_source_mappings_df])
 
         self.mappings_df = self.mappings_df.reset_index(drop=True)
+        # subject_map and object_map columns were used to handle join conditions, no longer needed
+        self.mappings_df = self.mappings_df.drop(columns=['subject_map', 'object_map'])
 
     def _parse_data_source_mapping_files(self, section_name):
         """
@@ -424,7 +416,6 @@ class MappingParser:
         It performs queries MAPPING_PARSING_QUERY and JOIN_CONDITION_PARSING_QUERY and process the results to build a
         DataFrame with the mapping rules. Also verifies that there are not repeated triples maps in the mappings.
         """
-
         # create an empty graph
         mapping_graph = rdflib.Graph()
 
@@ -434,7 +425,7 @@ class MappingParser:
             try:
                 mapping_graph.parse(f, format=os.path.splitext(f)[1][1:].strip())
             except:
-                # if a file extension such as .rml or .r2rml is usedm assume it is turtle (issue #80)
+                # if a file extension such as .rml or .r2rml is used assume it is turtle (issue #80)
                 try:
                     mapping_graph.parse(f)
                 except Exception as n3_mapping_parse_exception:
@@ -478,19 +469,19 @@ class MappingParser:
         # create a unique id for each mapping rule
         self.mappings_df.insert(0, 'id', self.mappings_df.reset_index(drop=True).index)
 
-        self._remove_self_joins_from_mappings()
+        self._remove_self_joins_no_condition()
 
     def _complete_source_types(self):
         """
         Adds a column with the source type. The source type is inferred for RDB through the parameter db_url provided
         in the mapping file. For data files the source type is inferred from the file extension.
         """
-
+        self.mappings_df.to_csv('a.csv', index=False)
         for i, mapping_rule in self.mappings_df.iterrows():
             if self.config.has_database_url(mapping_rule['source_name']):
                 self.mappings_df.at[i, 'source_type'] = RDB
-            elif pd.notna(mapping_rule['data_source']):
-                file_extension = os.path.splitext(str(mapping_rule['data_source']))[1][1:].strip()
+            elif self.mappings_df.at[i, 'logical_source_type'] == RML_SOURCE:
+                file_extension = os.path.splitext(str(mapping_rule['logical_source_value']))[1][1:].strip()
                 self.mappings_df.at[i, 'source_type'] = file_extension.upper()
             else:
                 raise Exception('No source type could be retrieved for some mapping rules.')
@@ -503,7 +494,9 @@ class MappingParser:
 
         for section_name in self.config.get_data_sources_sections():
             if self.config.has_file_path(section_name):
-                self.mappings_df.loc[self.mappings_df['source_name'] == section_name, 'data_source'] = \
+                self.mappings_df.loc[
+                    self.mappings_df['source_name'] == section_name, 'logical_source_type'] = RML_SOURCE
+                self.mappings_df.loc[self.mappings_df['source_name'] == section_name, 'logical_source_value'] = \
                     self.config.get_file_path(section_name)
 
     def _remove_delimiters_from_mappings(self):
@@ -512,23 +505,37 @@ class MappingParser:
         """
 
         for i, mapping_rule in self.mappings_df.iterrows():
-            self.mappings_df.at[i, 'tablename'] = _get_undelimited_identifier(mapping_rule['tablename'])
-            self.mappings_df.at[i, 'subject_template'] = _get_valid_template_identifiers(
-                mapping_rule['subject_template'])
-            self.mappings_df.at[i, 'subject_reference'] = _get_undelimited_identifier(
-                mapping_rule['subject_reference'])
-            self.mappings_df.at[i, 'graph_reference'] = _get_undelimited_identifier(
-                mapping_rule['graph_reference'])
-            self.mappings_df.at[i, 'graph_template'] = _get_valid_template_identifiers(
-                mapping_rule['graph_template'])
-            self.mappings_df.at[i, 'predicate_template'] = _get_valid_template_identifiers(
-                mapping_rule['predicate_template'])
-            self.mappings_df.at[i, 'predicate_reference'] = _get_undelimited_identifier(
-                mapping_rule['predicate_reference'])
-            self.mappings_df.at[i, 'object_template'] = _get_valid_template_identifiers(
-                mapping_rule['object_template'])
-            self.mappings_df.at[i, 'object_reference'] = _get_undelimited_identifier(
-                mapping_rule['object_reference'])
+            if self.mappings_df.at[i, 'logical_source_type'] == R2RML_TABLE_NAME:
+                self.mappings_df.at[i, 'logical_source_value'] = _get_undelimited_identifier(
+                    mapping_rule['logical_source_value'])
+
+            if self.mappings_df.at[i, 'subject_map_type'] == R2RML_TEMPLATE:
+                self.mappings_df.at[i, 'subject_map_value'] = _get_valid_template_identifiers(
+                    mapping_rule['subject_map_value'])
+            elif self.mappings_df.at[i, 'subject_map_type'] == RML_REFERENCE:
+                self.mappings_df.at[i, 'subject_map_value'] = _get_undelimited_identifier(
+                    mapping_rule['subject_map_value'])
+
+            if self.mappings_df.at[i, 'predicate_map_type'] == R2RML_TEMPLATE:
+                self.mappings_df.at[i, 'predicate_map_value'] = _get_valid_template_identifiers(
+                    mapping_rule['predicate_map_value'])
+            elif self.mappings_df.at[i, 'predicate_map_type'] == RML_REFERENCE:
+                self.mappings_df.at[i, 'predicate_map_value'] = _get_undelimited_identifier(
+                    mapping_rule['predicate_map_value'])
+
+            if self.mappings_df.at[i, 'object_map_type'] == R2RML_TEMPLATE:
+                self.mappings_df.at[i, 'object_map_value'] = _get_valid_template_identifiers(
+                    mapping_rule['object_map_value'])
+            elif self.mappings_df.at[i, 'object_map_type'] == RML_REFERENCE:
+                self.mappings_df.at[i, 'object_map_value'] = _get_undelimited_identifier(
+                    mapping_rule['object_map_value'])
+
+            if self.mappings_df.at[i, 'graph_map_type'] == R2RML_TEMPLATE:
+                self.mappings_df.at[i, 'graph_map_value'] = _get_valid_template_identifiers(
+                    mapping_rule['graph_map_value'])
+            elif self.mappings_df.at[i, 'graph_map_type'] == RML_REFERENCE:
+                self.mappings_df.at[i, 'graph_map_value'] = _get_undelimited_identifier(
+                    mapping_rule['graph_map_value'])
 
             # if join_condition is not null and it is not empty
             for join_conditions_pos in ['subject_join_conditions', 'object_join_conditions']:
@@ -540,43 +547,6 @@ class MappingParser:
                         join_conditions[key]['parent_value'] = _get_undelimited_identifier(
                             join_conditions[key]['parent_value'])
                         self.mappings_df.at[i, join_conditions_pos] = str(join_conditions)
-
-    def _remove_self_joins_from_mappings(self):
-        # TODO: remove (when possible) join conditions in quoted triples maps
-
-        # because RDB has no rml:source, use source_name for rml:source to facilitate self-join elimination
-        self.mappings_df.loc[self.mappings_df['source_type'] == RDB, 'data_source'] = self.mappings_df['source_name']
-
-        for i, mapping_rule in self.mappings_df.iterrows():
-            if pd.notna(mapping_rule['object_parent_triples_map']):
-                parent_triples_map_rule = get_mapping_rule(self.mappings_df, mapping_rule['object_parent_triples_map'])
-
-                # str() is to be able to compare np.nan
-                if str(mapping_rule['data_source']) == str(parent_triples_map_rule['data_source']) and \
-                        str(mapping_rule['tablename']) == str(parent_triples_map_rule['tablename']) and \
-                        str(mapping_rule['iterator']) == str(parent_triples_map_rule['iterator']) and \
-                        str(mapping_rule['query']) == str(parent_triples_map_rule['query']):
-
-                    remove_join = True
-                    # check that all conditions in the join condition have the same references
-                    try:
-                        join_conditions = eval(mapping_rule['object_join_conditions'])
-                        for key, join_condition in join_conditions.items():
-                            if join_condition['child_value'] != join_condition['parent_value']:
-                                remove_join = False
-                    except:
-                        # eval() has failed because the are no join conditions, the join can be removed
-                        remove_join = True
-
-                    if remove_join:
-                        self.mappings_df.at[i, 'object_parent_triples_map'] = ''
-                        self.mappings_df.at[i, 'object_join_conditions'] = ''
-                        self.mappings_df.at[i, 'object_constant'] = parent_triples_map_rule.at['subject_constant']
-                        self.mappings_df.at[i, 'object_template'] = parent_triples_map_rule.at['subject_template']
-                        self.mappings_df.at[i, 'object_reference'] = parent_triples_map_rule.at['subject_reference']
-                        self.mappings_df.at[i, 'object_termtype'] = parent_triples_map_rule.at['subject_termtype']
-
-                        logging.debug(f"Removed self-join from mapping rule `{mapping_rule['id']}`.")
 
     def _infer_datatypes(self):
         """
@@ -597,22 +567,24 @@ class MappingParser:
                     # if the literal has a language tag or an overridden datatype, datatype inference does not apply
                     pd.isna(mapping_rule['object_datatype']) and pd.isna(mapping_rule['object_language'])):
 
-                if pd.notna(mapping_rule['object_reference']):
+                if mapping_rule['object_map_type'] == RML_REFERENCE:
                     inferred_data_type = get_rdb_reference_datatype(self.config, mapping_rule,
-                                                                    mapping_rule['object_reference'])
+                                                                    mapping_rule['object_map_value'])
 
                     if not inferred_data_type:
                         # no data type was inferred
                         continue
 
                     self.mappings_df.at[i, 'object_datatype'] = inferred_data_type
-                    if pd.notna(mapping_rule['tablename']):
+                    if self.mappings_df.at[i, 'logical_source_type'] == R2RML_TABLE_NAME:
                         logging.debug(f"`{inferred_data_type}` datatype inferred for column "
-                                      f"`{mapping_rule['object_reference']}` of table `{mapping_rule['tablename']}` "
+                                      f"`{mapping_rule['object_map_value']}` of table "
+                                      f"`{mapping_rule['logical_source_value']}` "
                                       f"in data source `{mapping_rule['source_name']}`.")
-                    elif pd.notna(mapping_rule['query']):
+                    elif self.mappings_df.at[i, 'logical_source_type'] == RML_QUERY:
                         logging.debug(f"`{inferred_data_type}` datatype inferred for reference "
-                                      f"`{mapping_rule['object_reference']}` in query [{mapping_rule['query']}] "
+                                      f"`{mapping_rule['object_map_value']}` in query "
+                                      f"[{mapping_rule['logical_source_value']}] "
                                       f"in data source `{mapping_rule['source_name']}`.")
 
     def validate_mappings(self):
@@ -656,3 +628,30 @@ class MappingParser:
             raise Exception('The following triples maps appear in more than one data source: '
                             f'{repeated_triples_map_ids}. '
                             'Check the mapping files, one triple map cannot be repeated in different data sources.')
+
+    # TODO: deprecate
+    def _remove_self_joins_no_condition(self):
+        for i, mapping_rule in self.mappings_df.iterrows():
+            if mapping_rule['object_map_type'] == R2RML_PARENT_TRIPLES_MAP:
+                parent_triples_map_rule = get_mapping_rule(self.mappings_df, mapping_rule['object_map_value'])
+                if mapping_rule['logical_source_value'] == parent_triples_map_rule['logical_source_value'] and str(
+                        # str() is to be able to compare np.nan
+                        mapping_rule['iterator']) == str(parent_triples_map_rule['iterator']):
+
+                    remove_join = True
+                    # check that all conditions in the join condition have the same references
+                    try:
+                        join_conditions = eval(mapping_rule['object_join_conditions'])
+                        for key, join_condition in join_conditions.items():
+                            if join_condition['child_value'] != join_condition['parent_value']:
+                                remove_join = False
+                    except:
+                        # eval() has failed because there are no join conditions, the join can be removed
+                        remove_join = True
+
+                    if remove_join and pd.notna(mapping_rule['object_join_conditions']):
+                        self.mappings_df.at[i, 'object_map_type'] = parent_triples_map_rule.at['subject_map_type']
+                        self.mappings_df.at[i, 'object_map_value'] = parent_triples_map_rule.at['subject_map_value']
+                        self.mappings_df.at[i, 'object_termtype'] = parent_triples_map_rule.at['subject_termtype']
+                        self.mappings_df.at[i, 'object_join_conditions'] = np.nan
+                        logging.debug(f"Removed self-join from mapping rule `{mapping_rule['id']}`.")

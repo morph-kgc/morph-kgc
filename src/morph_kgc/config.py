@@ -315,7 +315,7 @@ class Config(ConfigParser):
                     mapping_file = os.path.join(mapping_path, mapping_file_name)
                     if os.path.isfile(mapping_file):
                         mapping_file_paths.append(mapping_file)
-            # if it is an URL
+            # if it is a URL
             elif mapping_path.startswith('http'):
                 mapping_file_paths.append(mapping_path)
             else:

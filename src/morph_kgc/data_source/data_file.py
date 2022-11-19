@@ -53,8 +53,8 @@ def get_file_data(mapping_rule, references):
 def _read_csv(mapping_rule, references, file_source_type):
     delimiter = ',' if file_source_type == 'CSV' else '\t'
 
-    try :
-        return pd.read_table(mapping_rule['data_source'],
+    try:
+        return pd.read_table(mapping_rule['logical_source_value'],
                              sep=delimiter,
                              index_col=False,
                              encoding='utf-8',
@@ -66,7 +66,7 @@ def _read_csv(mapping_rule, references, file_source_type):
                              na_filter=False)
     except:
         # if delimiter is other than comma or tab, then infer it (issue #81)
-        return pd.read_table(mapping_rule['data_source'],
+        return pd.read_table(mapping_rule['logical_source_value'],
                              index_col=False,
                              sep=None,
                              encoding='utf-8',
@@ -79,19 +79,19 @@ def _read_csv(mapping_rule, references, file_source_type):
 
 
 def _read_parquet(mapping_rule, references):
-    return pd.read_parquet(mapping_rule['data_source'], engine='pyarrow', columns=references)
+    return pd.read_parquet(mapping_rule['logical_source_value'], engine='pyarrow', columns=references)
 
 
 def _read_feather(mapping_rule, references):
-    return pd.read_feather(mapping_rule['data_source'], use_threads=False, columns=references)
+    return pd.read_feather(mapping_rule['logical_source_value'], use_threads=False, columns=references)
 
 
 def _read_orc(mapping_rule, references):
-    return pd.read_orc(mapping_rule['data_source'], encoding='utf-8', columns=references)
+    return pd.read_orc(mapping_rule['logical_source_value'], encoding='utf-8', columns=references)
 
 
 def _read_stata(mapping_rule, references):
-    return pd.read_stata(mapping_rule['data_source'],
+    return pd.read_stata(mapping_rule['logical_source_value'],
                          columns=references,
                          convert_dates=False,
                          convert_categoricals=False,
@@ -101,15 +101,15 @@ def _read_stata(mapping_rule, references):
 
 
 def _read_sas(mapping_rule):
-    return pd.read_sas(mapping_rule['data_source'], encoding='utf-8')
+    return pd.read_sas(mapping_rule['logical_source_value'], encoding='utf-8')
 
 
 def _read_spss(mapping_rule, references):
-    return pd.read_spss(mapping_rule['data_source'], usecols=references, convert_categoricals=False)
+    return pd.read_spss(mapping_rule['logical_source_value'], usecols=references, convert_categoricals=False)
 
 
 def _read_excel(mapping_rule, references):
-    return pd.read_excel(mapping_rule['data_source'],
+    return pd.read_excel(mapping_rule['logical_source_value'],
                          sheet_name=0,
                          engine='openpyxl',
                          usecols=references,
@@ -119,7 +119,7 @@ def _read_excel(mapping_rule, references):
 
 
 def _read_ods(mapping_rule, references):
-    return pd.read_excel(mapping_rule['data_source'],
+    return pd.read_excel(mapping_rule['logical_source_value'],
                          sheet_name=0,
                          engine='odf',
                          usecols=references,
@@ -129,11 +129,11 @@ def _read_ods(mapping_rule, references):
 
 
 def _read_json(mapping_rule, references):
-    if mapping_rule['data_source'].startswith('http'):
-        with urllib.request.urlopen(mapping_rule['data_source']) as json_url:
+    if mapping_rule['logical_source_value'].startswith('http'):
+        with urllib.request.urlopen(mapping_rule['logical_source_value']) as json_url:
             json_data = json.loads(json_url.read().decode())
     else:
-        with open(mapping_rule['data_source'], encoding='utf-8') as json_file:
+        with open(mapping_rule['logical_source_value'], encoding='utf-8') as json_file:
             json_data = json.load(json_file)
 
     jsonpath_expression = mapping_rule['iterator'] + '.('
@@ -154,11 +154,11 @@ def _read_json(mapping_rule, references):
 
 
 def _read_xml(mapping_rule, references):
-    if mapping_rule['data_source'].startswith('http'):
-        with urllib.request.urlopen(mapping_rule['data_source']) as xml_url:
+    if mapping_rule['logical_source_value'].startswith('http'):
+        with urllib.request.urlopen(mapping_rule['logical_source_value']) as xml_url:
             xml_root = et.ElementTree(et.fromstring(xml_url.read().decode())).getroot()
     else:
-        with open(mapping_rule['data_source'], encoding='utf-8') as xml_file:
+        with open(mapping_rule['logical_source_value'], encoding='utf-8') as xml_file:
             xml_root = et.parse(xml_file).getroot()
 
     xpath_result = elementpath.iter_select(xml_root, mapping_rule['iterator'], parser=XPath3Parser)
