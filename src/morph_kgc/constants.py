@@ -139,6 +139,7 @@ RML_NAMESPACE = 'http://semweb.mmlab.be/ns/rml#'
 
 # properties
 RML_LOGICAL_SOURCE = f'{RML_NAMESPACE}logicalSource'
+RML_SOURCE = f'{RML_NAMESPACE}source'
 RML_QUERY = f'{RML_NAMESPACE}query'
 RML_ITERATOR = f'{RML_NAMESPACE}iterator'
 RML_REFERENCE = f'{RML_NAMESPACE}reference'
