@@ -7,6 +7,7 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 
 import json
+import duckdb
 import pandas as pd
 import numpy as np
 import elementpath
@@ -24,7 +25,9 @@ def get_file_data(mapping_rule, references):
     references = list(references)
     file_source_type = mapping_rule['source_type']
 
-    if file_source_type in [CSV, TSV]:
+    if file_source_type == TV:
+        return _read_tabular_view(mapping_rule)
+    elif file_source_type in [CSV, TSV]:
         return _read_csv(mapping_rule, references, file_source_type)
     elif file_source_type in EXCEL:
         return _read_excel(mapping_rule, references)
@@ -48,6 +51,10 @@ def get_file_data(mapping_rule, references):
         return _read_xml(mapping_rule, references)
     else:
         raise ValueError(f'Found an invalid source type. Found value `{file_source_type}`.')
+
+
+def _read_tabular_view(mapping_rule):
+    return duckdb.query(mapping_rule['logical_source_value']).df()
 
 
 def _read_csv(mapping_rule, references, file_source_type):
