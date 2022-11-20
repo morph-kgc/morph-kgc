@@ -1,0 +1,21 @@
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+
+<TriplesMap1>
+   a rr:TriplesMap;
+
+   rml:logicalSource [ rml:query """
+        SELECT "Name", COUNT("Sport")
+        FROM 'test/rmltv/RMLTVTC0009c/student.csv'
+        GROUP BY "Name"
+        """ ];
+
+    rr:subjectMap [ rr:template "http://example.com/resource/student_{Name}"; ];
+
+    rr:predicateObjectMap
+    [
+      rr:predicate	foaf:name ;
+      rr:objectMap	[ rml:reference "Name"; ];
+    ];
+  .

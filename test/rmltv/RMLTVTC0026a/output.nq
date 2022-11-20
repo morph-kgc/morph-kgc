@@ -1,0 +1,5 @@
+_:1 <http://example.com/col> "a" .
+_:2 <http://example.com/col> "b" .
+_:4 <http://example.com/col> "e" .
+_:2 <http://example.com/col> "c" .
+_:2 <http://example.com/col> "d" .

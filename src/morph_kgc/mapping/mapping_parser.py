@@ -416,6 +416,7 @@ class MappingParser:
         It performs queries MAPPING_PARSING_QUERY and JOIN_CONDITION_PARSING_QUERY and process the results to build a
         DataFrame with the mapping rules. Also verifies that there are not repeated triples maps in the mappings.
         """
+        
         # create an empty graph
         mapping_graph = rdflib.Graph()
 
@@ -454,6 +455,7 @@ class MappingParser:
         return _transform_mappings_into_dataframe(mapping_graph, section_name)
 
     def _preprocess_mappings(self):
+
         # start by removing duplicated triples
         self.mappings_df = self.mappings_df.drop_duplicates()
 
@@ -476,7 +478,7 @@ class MappingParser:
         Adds a column with the source type. The source type is inferred for RDB through the parameter db_url provided
         in the mapping file. For data files the source type is inferred from the file extension.
         """
-        self.mappings_df.to_csv('a.csv', index=False)
+
         for i, mapping_rule in self.mappings_df.iterrows():
             if self.config.has_database_url(mapping_rule['source_name']):
                 self.mappings_df.at[i, 'source_type'] = RDB

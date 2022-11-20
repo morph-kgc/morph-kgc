@@ -1,0 +1,2 @@
+<http://www.department0.university0.edu/graduateCourse44> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://swat.cse.lehigh.edu/onto/univ-bench.owl#GraduateCourse> .
+<http://www.department0.university0.edu/graduateCourse44> <http://swat.cse.lehigh.edu/onto/univ-bench.owl#name> "graduateCourse44" .
