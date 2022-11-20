@@ -1,0 +1,40 @@
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+
+
+<TriplesMap1>
+    a rr:TriplesMap;
+
+	rml:logicalSource [  rml:query """
+                       SELECT "Code", "Name", "Lan"
+                       FROM 'test/rmltv/RMLTVTC0015b/country.csv'
+					   WHERE "Lan" = 'EN';
+                       """ ] ;
+
+    rr:subjectMap [ rr:template "http://example.com/{Code}" ];
+
+    rr:predicateObjectMap
+    [
+      rr:predicate		rdfs:label;
+      rr:objectMap		[ rml:reference "Name"; rr:language "english" ]
+    ]
+    .
+
+<TriplesMap2>
+    a rr:TriplesMap;
+
+	rml:logicalSource [  rml:query """
+                       SELECT "Code", "Name", "Lan"
+                       FROM 'test/rmltv/RMLTVTC0015b/country.csv'
+					   WHERE "Lan" = 'ES';
+                       """ ] ;
+
+    rr:subjectMap [ rr:template "http://example.com/{Code}" ];
+
+    rr:predicateObjectMap
+    [
+      rr:predicate		rdfs:label;
+      rr:objectMap		[ rml:reference "Name"; rr:language "spanish" ]
+    ]
+    .

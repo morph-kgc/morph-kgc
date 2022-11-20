@@ -416,6 +416,7 @@ class MappingParser:
         It performs queries MAPPING_PARSING_QUERY and JOIN_CONDITION_PARSING_QUERY and process the results to build a
         DataFrame with the mapping rules. Also verifies that there are not repeated triples maps in the mappings.
         """
+        
         # create an empty graph
         mapping_graph = rdflib.Graph()
 
@@ -454,6 +455,7 @@ class MappingParser:
         return _transform_mappings_into_dataframe(mapping_graph, section_name)
 
     def _preprocess_mappings(self):
+
         # start by removing duplicated triples
         self.mappings_df = self.mappings_df.drop_duplicates()
 
@@ -474,12 +476,16 @@ class MappingParser:
     def _complete_source_types(self):
         """
         Adds a column with the source type. The source type is inferred for RDB through the parameter db_url provided
-        in the mapping file. For data files the source type is inferred from the file extension.
+        in the mapping file. If db_url is not provided but the logical source is rml:query, then it is an RML tabular
+        view. For data files the source type is inferred from the file extension.
         """
-        self.mappings_df.to_csv('a.csv', index=False)
+
         for i, mapping_rule in self.mappings_df.iterrows():
             if self.config.has_database_url(mapping_rule['source_name']):
                 self.mappings_df.at[i, 'source_type'] = RDB
+            elif self.mappings_df.at[i, 'logical_source_type'] == RML_QUERY:
+                # it is a query, but it is not an RDB, hence it is a tabular view
+                self.mappings_df.at[i, 'source_type'] = TV
             elif self.mappings_df.at[i, 'logical_source_type'] == RML_SOURCE:
                 file_extension = os.path.splitext(str(mapping_rule['logical_source_value']))[1][1:].strip()
                 self.mappings_df.at[i, 'source_type'] = file_extension.upper()
