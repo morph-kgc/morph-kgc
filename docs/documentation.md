@@ -48,12 +48,6 @@ config = """
          """
 ```
 
-{==
-
-*__Note:__ Morph-KGC does not parallelize when running as a [library](https://morph-kgc.readthedocs.io/en/latest/documentation/#library).*
-
-==}
-
 #### [RDFLib](https://rdflib.readthedocs.io/en/stable/)
 
 **`morph_kgc.materialize(config)`**
@@ -195,7 +189,7 @@ Example **`db_url`** values (see **[here](https://docs.sqlalchemy.org/en/14/core
 - **[Oracle](https://www.oracle.com/database/):** _oracle+cx_oracle://username:password@host:port/db_name_
 - **[Microsoft SQL Server](https://www.microsoft.com/sql-server):** _mssql+pymssql://username:password@host:port/db_name_
 - **[MariaDB](https://mariadb.org/):** _mariadb+pymysql://username:password@host:port/db_name_
-- **[SQLite](https://www.sqlite.org):** _sqlite:///db_name.db_
+- **[SQLite](https://www.sqlite.org):** _sqlite:///db_path/db_name.db_
 
 #### Data Files
 

@@ -369,6 +369,11 @@ def _materialize_mapping_rule(mapping_rule, mappings_df, config, data=None, pare
 
 
 def _materialize_mapping_partition(mapping_partition_df, mappings_df, config):
+    """
+    Generates the triples of a mapping partition. If `to_file` is True, then the triples will be writen to disk and the
+    number of triples generated will be returned, otherwise a set with the triples is returned.
+    """
+
     triples = set()
     for i, mapping_rule in mapping_partition_df.iterrows():
         start_time = time.time()
@@ -378,9 +383,7 @@ def _materialize_mapping_partition(mapping_partition_df, mappings_df, config):
         logging.debug(f"{len(triples)} triples generated for mapping rule `{mapping_rule['id']}` "
                       f"in {get_delta_time(start_time)} seconds.")
 
-    triples_to_file(triples, config, mapping_partition_df.iloc[0]['mapping_partition'])
-
-    return len(triples)
+    return triples
 
 
 class Materializer:
@@ -404,19 +407,30 @@ class Materializer:
     def __len__(self):
         return len(self.mappings_df)
 
-    def materialize(self):
-        num_triples = 0
+    def materialize(self, to_file=True):
+        triples = set()
         for mapping_partition in self.mapping_partitions:
-            num_triples += _materialize_mapping_partition(mapping_partition, self.mappings_df, self.config)
+            triples.update(_materialize_mapping_partition(mapping_partition, self.mappings_df, self.config))
 
-        logging.info(f'Number of triples generated in total: {num_triples}.')
+        logging.info(f'Number of triples generated in total: {len(triples)}.')
 
-    def materialize_concurrently(self):
+        if to_file:
+            triples_to_file(triples, self.config, self.mapping_partitions.iloc[0]['mapping_partition'])
+        else:
+            return triples
+
+    def materialize_concurrently(self, to_file=True):
         logging.debug(f'Parallelizing with {self.config.get_number_of_processes()} cores.')
+
         pool = mp.Pool(self.config.get_number_of_processes())
-        num_triples = sum(pool.starmap(_materialize_mapping_partition,
-                                       zip(self.mapping_partitions, repeat(self.mappings_df), repeat(self.config))))
+        triples = set().union(*pool.starmap(_materialize_mapping_partition,
+                                            zip(self.mapping_partitions, repeat(self.mappings_df),
+                                                repeat(self.config))))
         pool.close()
         pool.join()
+        logging.info(f'Number of triples generated in total: {len(triples)}.')
 
-        logging.info(f'Number of triples generated in total: {num_triples}.')
+        if to_file:
+            triples_to_file(triples, self.config, self.mapping_partitions.iloc[0]['mapping_partition'])
+        else:
+            return triples

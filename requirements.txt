@@ -6,3 +6,4 @@ SQLAlchemy>=1.4.0
 jsonpath-python>=1.0.5
 elementpath>=2.4.0
 falcon>=3.0.0
+duckdb>=0.5.0

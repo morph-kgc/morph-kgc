@@ -1,0 +1,4 @@
+<http://data.example.com/movie/1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/Movie> .
+<http://data.example.com/movie/1> <http://example.com/title> "Una joven prometedora" .
+<http://data.example.com/movie/1> <http://example.com/title> "Promising Young Woman" .
+<http://data.example.com/movie/1> <http://example.com/title> "Bela Vingança" .

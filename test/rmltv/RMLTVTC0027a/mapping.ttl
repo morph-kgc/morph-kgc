@@ -1,0 +1,24 @@
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix ex: <http://example.com/> .
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+
+<TriplesMap1>
+    a rr:TriplesMap;
+ 	rml:logicalSource [
+                     rml:query """
+                       SELECT ID, json_extract_string(COL, '$.field1') AS FIELD1, UNNEST(json_extract_string(COL, '$.field2')::VARCHAR[])[2:-1] AS FIELD2
+                       FROM 'test/rmltv/RMLTVTC0027a/mixed_content_json.csv'
+                       """
+                       ];
+
+	rr:subjectMap [ rr:template "http://example.com/{ID}" ];
+	rr:predicateObjectMap
+    [
+      rr:predicate		ex:field1;
+      rr:objectMap		[ rml:reference "FIELD1" ];
+    ];
+    rr:predicateObjectMap [
+      rr:predicate		ex:field2;
+      rr:objectMap		[ rml:reference "FIELD2" ];
+    ];
+.

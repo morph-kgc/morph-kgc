@@ -36,13 +36,15 @@ def retrieve_mappings(config):
     return mappings
 
 
-def process_materialization(mappings, config):
+def process_materialization(mappings, config, to_file=True):
     materializer = Materializer(mappings, config)
 
     start_time = time.time()
     if config.is_multiprocessing_enabled():
-        materializer.materialize_concurrently()
+        triples = materializer.materialize_concurrently(to_file)
     else:
-        materializer.materialize()
+        triples = materializer.materialize(to_file)
 
     logging.info(f'Materialization finished in {get_delta_time(start_time)} seconds.')
+
+    return triples  # when executing via command line the number of triples is returned
