@@ -28,7 +28,7 @@ def materialize_set(config):
         logging.info(
             f'Parallelization is not supported for {sys.platform} when running as a library. '
             f'If you need to speed up your data integration pipeline, please run through the command line.')
-        config.set_number_of_processes(1)
+        config.set_number_of_processes('1')
 
     setup_oracle(config)
 
