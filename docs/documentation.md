@@ -48,12 +48,6 @@ config = """
          """
 ```
 
-{==
-
-*__Note:__ Morph-KGC does not parallelize when running as a [library](https://morph-kgc.readthedocs.io/en/latest/documentation/#library).*
-
-==}
-
 #### [RDFLib](https://rdflib.readthedocs.io/en/stable/)
 
 **`morph_kgc.materialize(config)`**
