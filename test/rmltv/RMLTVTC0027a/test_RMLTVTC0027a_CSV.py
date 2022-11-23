@@ -20,6 +20,5 @@ def test_RMLTVTC0027a():
     mapping_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mapping.ttl')
     config = f'[DataSource]\nmappings={mapping_path}'
     g_morph = morph_kgc.materialize(config)
-    g_morph.serialize('a.nt')
 
     assert compare.isomorphic(g, g_morph)
