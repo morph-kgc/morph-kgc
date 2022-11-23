@@ -7,6 +7,7 @@ __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"
 
 
+import sys
 import logging
 
 from rdflib import Graph
@@ -21,6 +22,13 @@ from .args_parser import load_config_from_argument
 
 def materialize_set(config):
     config = load_config_from_argument(config)
+
+    # parallelization when running as a library is only enabled for Linux see #94
+    if 'linux' not in sys.platform:
+        logging.info(
+            f'Parallelization is not supported for {sys.platform} when running as a library. '
+            f'If you need to speed up your data integration pipeline, please run through the command line.')
+        config.set_number_of_processes(1)
 
     setup_oracle(config)
 

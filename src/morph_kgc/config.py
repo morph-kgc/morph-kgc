@@ -289,6 +289,9 @@ class Config(ConfigParser):
     def set_output_format(self, output_format):
         self.set(self.configuration_section, OUTPUT_FORMAT, output_format)
 
+    def set_number_of_processes(self, number_of_processes):
+        self.set(self.configuration_section, NUMBER_OF_PROCESSES, number_of_processes)
+
     ################################################################################
     #######################   DATA SOURCE SECTIONS METHODS   #######################
     ################################################################################
