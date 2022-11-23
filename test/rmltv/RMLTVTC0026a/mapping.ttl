@@ -6,12 +6,12 @@
     a rr:TriplesMap;
  	rml:logicalSource [
                      rml:query """
-                       SELECT ID, UNNEST(string_split(COL[2:-1], ',')) AS COL
-                       FROM 'test/rmltv/RMLTVTC0026a/mixed_content.csv'
+                       SELECT ID, UNNEST(COL::VARCHAR[]) AS COL
+                       FROM 'test/rmltv/RMLTVTC0026a/mixed_content_list.csv'
                        """
                        ];
 
-	rr:subjectMap [ rml:reference "ID"; rr:termType rr:BlankNode; ];
+	rr:subjectMap [ rr:template "http://example.com/{ID}" ];
 	rr:predicateObjectMap
     [
       rr:predicate		ex:col;

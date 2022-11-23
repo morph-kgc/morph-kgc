@@ -1,4 +1,6 @@
-<http://data.example.com/movie/1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/Movie> .
-<http://data.example.com/movie/1> <http://example.com/title> "Una joven prometedora" .
-<http://data.example.com/movie/1> <http://example.com/title> "Promising Young Woman" .
-<http://data.example.com/movie/1> <http://example.com/title> "Bela Vingança" .
+<http://example.com/2> <http://example.com/field1> "b" .
+<http://example.com/1> <http://example.com/field1> "a" .
+<http://example.com/2> <http://example.com/field2> "z" .
+<http://example.com/1> <http://example.com/field2> "x" .
+<http://example.com/2> <http://example.com/field2> "y" .
+<http://example.com/1> <http://example.com/field2> "w" .

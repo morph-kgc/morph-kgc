@@ -1,0 +1,18 @@
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix ub: <http://swat.cse.lehigh.edu/onto/univ-bench.owl#>.
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+
+<#GraduateCourse>
+    rml:logicalSource [ rml:query """
+        SELECT subOrganizationOf AS universitynr, graduateCourse.name AS graduatecoursename, department.nr AS departmentnr
+        FROM 'test/rmltv/RMLTVTC0029a/graduatecourse.csv' AS graduateCourse INNER JOIN 'test/rmltv/RMLTVTC0029a/faculty.csv' AS faculty ON graduateCourse.teacher=faculty.nr INNER JOIN 'test/rmltv/RMLTVTC0029a/department.csv' AS department ON faculty.worksFor=department.nr """ ;
+        rml:referenceFormulation rr:SQL2008 ;
+    ];
+    rr:subjectMap [
+        rr:template "http://www.department{departmentnr}.university{universitynr}.edu/{graduatecoursename}";
+        rr:class ub:GraduateCourse;
+    ];
+    rr:predicateObjectMap [
+        rr:predicate ub:name;
+        rr:objectMap [ rml:reference "graduatecoursename" ];
+    ].

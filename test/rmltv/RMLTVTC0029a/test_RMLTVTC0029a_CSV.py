@@ -13,13 +13,12 @@ from rdflib.graph import Graph
 from rdflib import compare
 
 
-def test_RMLTVTC0027a():
+def test_RMLTVTC0029a():
     g = Graph()
     g.parse(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'output.nq'))
 
     mapping_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mapping.ttl')
     config = f'[DataSource]\nmappings={mapping_path}'
     g_morph = morph_kgc.materialize(config)
-    g_morph.serialize('a.nt')
 
     assert compare.isomorphic(g, g_morph)
