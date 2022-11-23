@@ -1,0 +1,10 @@
+@prefix ns1: <http://example.com/> .
+
+ns1:1 ns1:field1 "a" ;
+    ns1:field2 "w",
+        "x" .
+
+ns1:2 ns1:field1 "b" ;
+    ns1:field2 "y",
+        "z" .
+
