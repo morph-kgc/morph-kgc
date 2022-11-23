@@ -455,7 +455,6 @@ class MappingParser:
         return _transform_mappings_into_dataframe(mapping_graph, section_name)
 
     def _preprocess_mappings(self):
-
         # start by removing duplicated triples
         self.mappings_df = self.mappings_df.drop_duplicates()
 
@@ -479,7 +478,7 @@ class MappingParser:
         in the mapping file. If db_url is not provided but the logical source is rml:query, then it is an RML tabular
         view. For data files the source type is inferred from the file extension.
         """
-
+        
         for i, mapping_rule in self.mappings_df.iterrows():
             if self.config.has_database_url(mapping_rule['source_name']):
                 self.mappings_df.at[i, 'source_type'] = RDB
