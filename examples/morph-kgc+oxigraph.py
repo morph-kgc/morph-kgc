@@ -12,11 +12,11 @@ VERSION = '0.0.1'
 
 
 def execute(config_file, query_file, results_file):
-    # Run MorphKGC
+    # run Morph-KGC
     start_time = time()
     g = morph_kgc.materialize_oxigraph(config_file)
 
-    # Execute query on materialized graph
+    # execute query on materialized graph
     with open(query_file, 'r') as f:
         query = f.read()
     results = g.query(query)
@@ -25,7 +25,7 @@ def execute(config_file, query_file, results_file):
         print('No results!', file=sys.stderr)
         sys.exit(EXIT_CODE_NO_RESULTS)
 
-    # Write results
+    # write result set
     with open(results_file, 'w') as f:
         for r in results:
             f.write(f'{r}\n')
@@ -34,24 +34,24 @@ def execute(config_file, query_file, results_file):
     print(f'Finished in {round(end_time - start_time, 2)}s!')
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(prog = 'Morph-KGC-Optimized',
-                                     description = 'Optimized MorphKGC '
-                                                   'version with Oxidegraph',
+    parser = argparse.ArgumentParser(prog = 'Morph-KGC+Oxigraph',
+                                     description = 'Query heterogeneous data  '
+                                                   'with Morph-KGC and Oxigraph',
                                      epilog='Please cite our paper if you use '
                                             'this. Thanks!')
-    parser.add_argument('config_file', help='Path to MorphKGC\'s config file')
+    parser.add_argument('config_file', help='Path to Morph-KGC\'s config file')
     parser.add_argument('query_file', help='Path to the query file to execute')
     parser.add_argument('results_file',
-                        help='Path of the file to store results')
+                        help='Path to the file to store results')
     parser.add_argument('--version', action='version',
-                        version = f'Morph-KGC-Optimized v{VERSION}')
+                        version = f'Morph-KGC+Oxigraph v{VERSION}')
     args = parser.parse_args()
 
     config_file = os.path.abspath(args.config_file)
     query_file = os.path.abspath(args.query_file)
     results_file = os.path.abspath(args.results_file)
 
-    print(f'MorphKGC Optimized v{VERSION}')
+    print(f'Morph-KGC+Oxigraph v{VERSION}')
     print('Arguments:')
     print(f'Config file: {config_file}')
     print(f'Query file: {query_file}')
