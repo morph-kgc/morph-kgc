@@ -426,7 +426,7 @@ class MappingParser:
             try:
                 mapping_graph.parse(f, format=os.path.splitext(f)[1][1:].strip())
             except:
-                # if a file extension such as .rml or .r2rml is used assume it is turtle (issue #80)
+                # if a file extension such as .rml or .r2rml is used, assume it is turtle (issue #80)
                 try:
                     mapping_graph.parse(f)
                 except Exception as n3_mapping_parse_exception:
