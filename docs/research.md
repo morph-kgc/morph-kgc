@@ -31,6 +31,8 @@
 ### Tutorials
 
 - **[The Knowledge Graph Construction Tutorial](https://w3id.org/kg-construct/costdkg-eswc-tutorial)**  
-**ESWC** | **2022** | Julián Arenas-Guerrero et al.
+**ESWC** | **2022** | Julián Arenas-Guerrero
+- **[Knowledge Graphs For Data Integration](https://w3id.org/kg4di)**  
+**FWO Scientific Research Network** | **2022** | David Chaves-Fraga
 
 ![OEG](assets/logo-oeg.png){ width="150" align=left } ![UPM](assets/logo-upm.png){ width="161" align=right }
