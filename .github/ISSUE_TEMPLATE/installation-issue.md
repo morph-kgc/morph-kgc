@@ -3,7 +3,6 @@ name: Installation Issue
 about: Report issues installing Morph-KGC on your system
 title: 'BUILD: '
 labels: build
-assignees: ArenasGuerreroJulian
 
 ---
 
