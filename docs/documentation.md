@@ -262,9 +262,9 @@ In addition to **[R2RML views](https://www.w3.org/TR/r2rml/#r2rml-views)**, Morp
 <#TM1>
 	rml:logicalSource [
         rml:query """
-			SELECT "Code", "Name", "Lan"
-			FROM 'country.csv'
-		    WHERE "Lan" = 'EN';
+            SELECT "Code", "Name", "Lan"
+            FROM 'country.csv'
+            WHERE "Lan" = 'EN';
         """
     ];
     rr:subjectMap [
