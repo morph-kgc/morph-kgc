@@ -283,7 +283,7 @@ Morph-KGC uses **[DuckDB](duckdb.org/)** to evaluate queries over tabular source
 
 ### RML-star
 
-![RML-star](assets/rml-star.svg){ width="700" }
+![RML-star](assets/rml-star.png){ width="700" }
 
 Morph-KGC supports the new **[RML-star](https://kg-construct.github.io/rml-star-spec/)** mapping language to generate **[RDF-star](https://w3c.github.io/rdf-star/cg-spec/2021-12-17.html)** knowledge graphs. **[RML-star](https://kg-construct.github.io/rml-star-spec/)** introduces the **star map** class to generate **[RDF-star](https://w3c.github.io/rdf-star/cg-spec/2021-12-17.html)** triples. A star map can be either at the place of a subject map or an object map, generating quoted triples in either the subject or object positions. The _rml:embeddedTriplesMap_ property connects the star maps to the triples map that defines how the quoted triples will be generated. Triples map can be declared as _rml:NonAssertedTriplesMap_ if they are to be referenced from an embedded triples map, but are not supposed to generate asserted triples in the output **[RDF-star](https://w3c.github.io/rdf-star/cg-spec/2021-12-17.html)** graph. The following example from the **[RML-star specification](https://kg-construct.github.io/rml-star-spec/)** uses a non-asserted triples map to generate quoted triples.
 
