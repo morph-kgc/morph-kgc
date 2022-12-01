@@ -252,7 +252,7 @@ Morph-KGC uses **[XPath 3.0](https://www.w3.org/TR/xpath30/)** to query XML file
 
 ## Mappings
 
-Morph-KGC is compliant with the W3C Recommendation **[RDB to RDF Mapping Language (R2RML)](https://www.w3.org/TR/r2rml/)** and the **[RDF Mapping Language (RML)](https://rml.io/specs/rml/)**. You can refer to their associated specifications to consult the syntax of these mapping languages.
+Morph-KGC is compliant with the W3C Recommendation **[RDB to RDF Mapping Language (R2RML)](https://www.w3.org/TR/r2rml/)** and the **[RDF Mapping Language (RML)](https://rml.io/specs/rml/)**. You can refer to their associated specifications to consult the syntaxes.
 
 ### RML Views
 
@@ -262,9 +262,9 @@ In addition to **[R2RML views](https://www.w3.org/TR/r2rml/#r2rml-views)**, Morp
 <#TM1>
 	rml:logicalSource [
         rml:query """
-				SELECT "Code", "Name", "Lan"
-				FROM 'country.csv'
-				WHERE "Lan" = 'EN';
+			SELECT "Code", "Name", "Lan"
+			FROM 'country.csv'
+		    WHERE "Lan" = 'EN';
         """
     ];
     rr:subjectMap [
@@ -283,9 +283,7 @@ Morph-KGC uses **[DuckDB](duckdb.org/)** to evaluate queries over tabular source
 
 ### RML-star
 
-<figure markdown>
-  ![RML-star](assets/rml-star.svg)
-</figure>
+![OEG](assets/rml-star.png){ width="700" }
 
 Morph-KGC supports the new **[RML-star](https://kg-construct.github.io/rml-star-spec/)** mapping language to generate **[RDF-star](https://w3c.github.io/rdf-star/cg-spec/2021-12-17.html)** knowledge graphs. **[RML-star](https://kg-construct.github.io/rml-star-spec/)** introduces the **star map** class to generate **[RDF-star](https://w3c.github.io/rdf-star/cg-spec/2021-12-17.html)** triples. A star map can be either at the place of a subject map or an object map, generating quoted triples in either the subject or object positions. The _rml:embeddedTriplesMap_ property connects the star maps to the triples map that defines how the quoted triples will be generated. Triples map can be declared as _rml:NonAssertedTriplesMap_ if they are to be referenced from an embedded triples map, but are not supposed to generate asserted triples in the output **[RDF-star](https://w3c.github.io/rdf-star/cg-spec/2021-12-17.html)** graph. The following example from the **[RML-star specification](https://kg-construct.github.io/rml-star-spec/)** uses a non-asserted triples map to generate quoted triples.
 
@@ -317,7 +315,7 @@ Morph-KGC supports the new **[RML-star](https://kg-construct.github.io/rml-star-
 
 ### YARRRML
 
-YARRRML is a human-friendly serialization of RML using YAML. This serialization results in more compact mapping files which are easier to maintain. You can write your mappings in YARRRML and use an external tool such as Matey or yarrrml-translator to convert your mapping to RML. Once the mapping are in RML you can use Morph-KGC for RDF generation.
+**[YARRRML](https://rml.io/yarrrml/spec/)** is a human-friendly serialization of **[RML](https://rml.io/specs/rml/)** using **[YAML](https://yaml.org/)**. This serialization results in more compact mapping files which are easier to maintain. You can write your mappings in **[YARRRML](https://rml.io/yarrrml/spec/)** and use an external tool such as [Matey](https://rml.io/yarrrml/matey/) or [yarrrml-translator](https://github.com/oeg-upm/yarrrml-translator) to generate the **[RML](https://rml.io/specs/rml/)** mapping. Once the mappings are in **[RML](https://rml.io/specs/rml/)** you can use Morph-KGC to materialize the knowledge graph.
 
 
 ![OEG](assets/logo-oeg.png){ width="150" align=left } ![UPM](assets/logo-upm.png){ width="161" align=right }
