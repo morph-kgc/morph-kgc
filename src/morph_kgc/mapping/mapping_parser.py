@@ -5,14 +5,34 @@ __license__ = "Apache-2.0"
 __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"
 
-import numpy as np
-import pandas as pd
+
+import sys
 
 from ..constants import *
 from ..utils import *
 from ..mapping.mapping_constants import MAPPINGS_DATAFRAME_COLUMNS, MAPPING_PARSING_QUERY, JOIN_CONDITION_PARSING_QUERY
 from ..mapping.mapping_partitioner import MappingPartitioner
 from ..data_source.relational_database import get_rdb_reference_datatype
+
+
+def retrieve_mappings(config):
+    if config.is_read_parsed_mappings_file_provided():
+        # retrieve parsed mapping from file and finish mapping processing
+        mappings = pd.read_csv(config.get_parsed_mappings_read_path())
+        logging.info(f'{len(mappings)} mappings rules loaded from file.')
+    else:
+        mappings_parser = MappingParser(config)
+
+        start_time = time.time()
+        mappings = mappings_parser.parse_mappings()
+        logging.info(f'Mappings processed in {get_delta_time(start_time)} seconds.')
+
+    if config.is_write_parsed_mappings_file_provided():
+        mappings.sort_values(by=['id'], axis=0).to_csv(config.get_parsed_mappings_write_path(), index=False)
+        logging.info('Parsed mapping rules saved to file.')
+        sys.exit()
+
+    return mappings
 
 
 def _mapping_to_rml_star(mapping_graph):
