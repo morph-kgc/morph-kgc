@@ -6,17 +6,12 @@ __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"
 
 
-import pandas as pd
-import multiprocessing as mp
-import logging
-
-from itertools import repeat
 from falcon.uri import encode_value
 from urllib.parse import quote
 
 from .utils import *
 from .constants import *
-from .data_source.relational_database import get_sql_data, get_rdb_reference_datatype
+from .data_source.relational_database import get_sql_data
 from .data_source.data_file import get_file_data
 
 
@@ -368,14 +363,10 @@ def _materialize_mapping_rule(mapping_rule, mappings_df, config, data=None, pare
     return data
 
 
-def _materialize_mapping_partition(mapping_partition_df, mappings_df, config):
-    """
-    Generates the triples of a mapping partition. If `to_file` is True, then the triples will be writen to disk and the
-    number of triples generated will be returned, otherwise a set with the triples is returned.
-    """
+def _materialize_mapping_group_to_file(mapping_group_df, mappings_df, config):
 
     triples = set()
-    for i, mapping_rule in mapping_partition_df.iterrows():
+    for i, mapping_rule in mapping_group_df.iterrows():
         start_time = time.time()
         data = _materialize_mapping_rule(mapping_rule, mappings_df, config)
         triples.update(set(data['triple']))
@@ -383,54 +374,16 @@ def _materialize_mapping_partition(mapping_partition_df, mappings_df, config):
         logging.debug(f"{len(triples)} triples generated for mapping rule `{mapping_rule['id']}` "
                       f"in {get_delta_time(start_time)} seconds.")
 
+    triples_to_file(triples, config, mapping_group_df.iloc[0]['mapping_partition'])
+
+    return len(triples)
+
+
+def _materialize_mapping_group_to_set(mapping_group_df, mappings_df, config):
+
+    triples = set()
+    for i, mapping_rule in mapping_group_df.iterrows():
+        data = _materialize_mapping_rule(mapping_rule, mappings_df, config)
+        triples.update(set(data['triple']))
+
     return triples
-
-
-class Materializer:
-
-    def __init__(self, mappings_df, config):
-        self.config = config
-        self.mappings_df = mappings_df
-
-        # keep only asserted mapping rules
-        asserted_mapping_df = mappings_df.loc[mappings_df['triples_map_type'] == R2RML_TRIPLES_MAP_CLASS]
-        self.mapping_partitions = [group for _, group in asserted_mapping_df.groupby(by='mapping_partition')]
-
-        prepare_output_files(config, self.mappings_df)
-
-    def __str__(self):
-        return str(self.mappings_df)
-
-    def __repr__(self):
-        return repr(self.mappings_df)
-
-    def __len__(self):
-        return len(self.mappings_df)
-
-    def materialize(self, to_file=True):
-        triples = set()
-        for mapping_partition in self.mapping_partitions:
-            triples.update(_materialize_mapping_partition(mapping_partition, self.mappings_df, self.config))
-
-        logging.info(f'Number of triples generated in total: {len(triples)}.')
-
-        if to_file:
-            triples_to_file(triples, self.config, self.mapping_partitions.iloc[0]['mapping_partition'])
-        else:
-            return triples
-
-    def materialize_concurrently(self, to_file=True):
-        logging.debug(f'Parallelizing with {self.config.get_number_of_processes()} cores.')
-
-        pool = mp.Pool(self.config.get_number_of_processes())
-        triples = set().union(*pool.starmap(_materialize_mapping_partition,
-                                            zip(self.mapping_partitions, repeat(self.mappings_df),
-                                                repeat(self.config))))
-        pool.close()
-        pool.join()
-        logging.info(f'Number of triples generated in total: {len(triples)}.')
-
-        if to_file:
-            triples_to_file(triples, self.config, self.mapping_partitions.iloc[0]['mapping_partition'])
-        else:
-            return triples
