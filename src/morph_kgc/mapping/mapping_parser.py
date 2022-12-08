@@ -680,13 +680,13 @@ class MappingParser:
                         self.mappings_df.at[i, 'object_termtype'] = parent_triples_map_rule.at['subject_termtype']
                         self.mappings_df.at[i, 'object_join_conditions'] = np.nan
                         logging.debug(f"Removed self-join from mapping rule `{mapping_rule['id']}`.")
-
-                try:
-                    # if no join condition is provided (i.e. eval() fails) and the logical sources are different
-                    # this will result in an error (see #110)
-                    eval(mapping_rule['object_join_conditions'])
-                except:
-                    logging.error(
-                        f"The referencing object map in mapping rule `{mapping_rule['id']}` involves two different "
-                        f"logical sources, but a join condition is missing.")
-                    sys.exit()
+                else:
+                    try:
+                        # if no join condition is provided (i.e. eval() fails) and the logical sources are different
+                        # this will result in an error (see #110)
+                        eval(mapping_rule['object_join_conditions'])
+                    except:
+                        logging.error(
+                            f"The referencing object map in mapping rule `{mapping_rule['id']}` involves two different "
+                            f"logical sources, but a join condition is missing.")
+                        sys.exit()
