@@ -504,7 +504,8 @@ class MappingParser:
                 self.mappings_df.at[i, 'source_type'] = RDB
             elif self.mappings_df.at[i, 'logical_source_type'] == RML_QUERY:
                 # it is a query, but it is not an RDB, hence it is a tabular view
-                self.mappings_df.at[i, 'source_type'] = TV
+                # assign CSV (it can also be Apache Parquet but format is automatically inferred)
+                self.mappings_df.at[i, 'source_type'] = CSV
             elif self.mappings_df.at[i, 'logical_source_type'] == RML_SOURCE:
                 file_extension = os.path.splitext(str(mapping_rule['logical_source_value']))[1][1:].strip()
                 self.mappings_df.at[i, 'source_type'] = file_extension.upper()
