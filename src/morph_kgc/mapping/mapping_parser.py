@@ -284,6 +284,14 @@ def _transform_mappings_into_dataframe(mapping_graph, section_name):
     source_mappings_df = pd.DataFrame(mapping_query_results.bindings)
     source_mappings_df.columns = source_mappings_df.columns.map(str)
 
+    # # DEBUG
+    # print("\n\nXXXXXXXXX\n_transform_mappings_into_dataframe> ")
+    # print(source_mappings_df)
+    # for col in source_mappings_df:
+    #     print("\ncol: %s" % str(col))
+    #     print("val: %s" % str(source_mappings_df[col]))
+    #     print("-------------------")
+
     # process mapping rules with joins
     # create a dict with child triples maps in the keys and its join conditions in the values
     join_conditions_dict = _get_join_conditions_dict(join_query_results)
@@ -423,6 +431,11 @@ class MappingParser:
         else:
             for section_name in self.config.get_data_sources_sections():
                 data_source_mappings_df = self._parse_data_source_mapping_files(section_name)
+
+                # DEBUG
+                print("_get_from_r2_rml> ")
+                print(data_source_mappings_df)
+
                 self.mappings_df = pd.concat([self.mappings_df, data_source_mappings_df])
 
         self.mappings_df = self.mappings_df.reset_index(drop=True)

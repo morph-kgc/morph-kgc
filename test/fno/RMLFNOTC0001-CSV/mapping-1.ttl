@@ -3,34 +3,20 @@
 @prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
 @prefix rml: <http://semweb.mmlab.be/ns/rml#> .
 @prefix rr: <http://www.w3.org/ns/r2rml#> .
-@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
-@prefix : <http://oeg-upm.net/> .
 
-:TriplesMap1
-  a rr:TriplesMap;
+<#Person_Mapping>
+    rml:logicalSource <#LogicalSource> ;
+    rr:subjectMap <#SubjectMap> ;
+    rr:predicateObjectMap <#NameMapping> .
 
-  rml:logicalSource [
-    rml:source "test/fno/RMLFNOTC0001-CSV/student.csv";
-    rml:referenceFormulation ql:CSV
-  ];
-
-  rr:predicateObjectMap :NameMapping ;
-
-  rr:subjectMap [
-    rr:template "http://example.com/{Name}"
-  ].
-
-
-
-:NameMapping
+<#NameMapping>
     rr:predicate dbo:title ;
     rr:objectMap [                             # A function-valued term map
-        fnml:execution :Execution ;          # Link to an FNML Execution
+        fnml:execution <#Execution> ;          # Link to an FNML Execution
         fnml:return grel:stringOut             # Specify which return of the referenced function to use, if omitted, the first specified return is used
-    ].
+    ] .
 
-:Execution
-    a fnml:Execution ;                # A new class
+<#Execution> a fnml:Execution ;                # A new class
     fnml:function grel:toUppercase ;           # Specify which FnO function
     fnml:input [                               # Specify the inputs
         a fnml:Input ;                         # A new class
@@ -38,4 +24,4 @@
         fnml:valueMap [                        # Link to the term map that creates the input value
             rml:reference "name"               # Specify the reference within the data source
         ]
-    ].
+    ] .

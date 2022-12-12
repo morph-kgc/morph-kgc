@@ -44,10 +44,16 @@ MAPPING_PARSING_QUERY = """
 
     # Subject -------------------------------------------------------------------------
         ?triples_map_id rml:subjectMap ?subject_map .
+        {
         ?subject_map ?subject_map_type ?subject_map_value .
         FILTER ( ?subject_map_type IN ( rr:constant, rr:template, rml:reference, rml:quotedTriplesMap ) ) .
+        } UNION {
+                ?subject_map fnml:return ?subject_output .
+                ?subject_map fnml:execution ?subject_map_value.
+        }
         OPTIONAL { ?subject_map rr:termType ?subject_termtype . }
-
+        
+        
     # Predicate -----------------------------------------------------------------------
         OPTIONAL {
             ?triples_map_id rr:predicateObjectMap ?_predicate_object_map .
@@ -68,6 +74,12 @@ MAPPING_PARSING_QUERY = """
                 ?_predicate_object_map rr:graphMap ?graph_map .
                 ?graph_map ?graph_map_type ?graph_map_value .
                 FILTER ( ?graph_map_type IN ( rr:constant, rr:template, rml:reference ) ) .
+            }
+            OPTIONAL {
+                ?_predicate_object_map rml:objectMap ?object_map .
+                ?object_map fnml:return  ?object_output .
+                ?object_map fnml:execution  ?object_map_value .
+                ?object_map ?object_map_type ?object_map_value .
             }
         }
     }
