@@ -5,14 +5,34 @@ __license__ = "Apache-2.0"
 __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"
 
-import numpy as np
-import pandas as pd
+
+import sys
 
 from ..constants import *
 from ..utils import *
 from ..mapping.mapping_constants import MAPPINGS_DATAFRAME_COLUMNS, MAPPING_PARSING_QUERY, JOIN_CONDITION_PARSING_QUERY
 from ..mapping.mapping_partitioner import MappingPartitioner
 from ..data_source.relational_database import get_rdb_reference_datatype
+
+
+def retrieve_mappings(config):
+    if config.is_read_parsed_mappings_file_provided():
+        # retrieve parsed mapping from file and finish mapping processing
+        mappings = pd.read_csv(config.get_parsed_mappings_read_path())
+        logging.info(f'{len(mappings)} mappings rules loaded from file.')
+    else:
+        mappings_parser = MappingParser(config)
+
+        start_time = time.time()
+        mappings = mappings_parser.parse_mappings()
+        logging.info(f'Mappings processed in {get_delta_time(start_time)} seconds.')
+
+    if config.is_write_parsed_mappings_file_provided():
+        mappings.sort_values(by=['id'], axis=0).to_csv(config.get_parsed_mappings_write_path(), index=False)
+        logging.info('Parsed mapping rules saved to file.')
+        sys.exit()
+
+    return mappings
 
 
 def _mapping_to_rml_star(mapping_graph):
@@ -484,7 +504,8 @@ class MappingParser:
                 self.mappings_df.at[i, 'source_type'] = RDB
             elif self.mappings_df.at[i, 'logical_source_type'] == RML_QUERY:
                 # it is a query, but it is not an RDB, hence it is a tabular view
-                self.mappings_df.at[i, 'source_type'] = TV
+                # assign CSV (it can also be Apache Parquet but format is automatically inferred)
+                self.mappings_df.at[i, 'source_type'] = CSV
             elif self.mappings_df.at[i, 'logical_source_type'] == RML_SOURCE:
                 file_extension = os.path.splitext(str(mapping_rule['logical_source_value']))[1][1:].strip()
                 self.mappings_df.at[i, 'source_type'] = file_extension.upper()
@@ -660,3 +681,13 @@ class MappingParser:
                         self.mappings_df.at[i, 'object_termtype'] = parent_triples_map_rule.at['subject_termtype']
                         self.mappings_df.at[i, 'object_join_conditions'] = np.nan
                         logging.debug(f"Removed self-join from mapping rule `{mapping_rule['id']}`.")
+                else:
+                    try:
+                        # if no join condition is provided (i.e. eval() fails) and the logical sources are different
+                        # this will result in an error (see #110)
+                        eval(mapping_rule['object_join_conditions'])
+                    except:
+                        logging.error(
+                            f"The referencing object map in mapping rule `{mapping_rule['id']}` involves two different "
+                            f"logical sources, but a join condition is missing.")
+                        sys.exit()

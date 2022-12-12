@@ -29,7 +29,6 @@ NO_PARTITIONING = ['NO', 'FALSE', 'OFF', '0']
 ##############################################################################
 
 # data files
-TV = 'TV'   # RML Tabular View
 CSV = 'CSV'
 TSV = 'TSV'
 EXCEL = ['XLS', 'XLSX', 'XLSM', 'XLSB']
@@ -52,7 +51,7 @@ ORACLE = 'ORACLE'
 POSTGRESQL = 'POSTGRESQL'
 SQLITE = 'SQLITE'
 
-FILE_SOURCE_TYPES = [TV, CSV, TSV, PARQUET, ORC, STATA, SPSS, JSON, XML] + EXCEL + FEATHER + SAS + ODS
+FILE_SOURCE_TYPES = [CSV, TSV, PARQUET, ORC, STATA, SPSS, JSON, XML] + EXCEL + FEATHER + SAS + ODS
 DATA_SOURCE_TYPES = [RDB] + FILE_SOURCE_TYPES
 
 # RDF serializations

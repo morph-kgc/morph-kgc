@@ -25,7 +25,7 @@ def get_file_data(mapping_rule, references):
     references = list(references)
     file_source_type = mapping_rule['source_type']
 
-    if file_source_type == TV:
+    if mapping_rule['logical_source_type'] == RML_QUERY:
         return _read_tabular_view(mapping_rule)
     elif file_source_type in [CSV, TSV]:
         return _read_csv(mapping_rule, references, file_source_type)

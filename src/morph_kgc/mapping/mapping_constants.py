@@ -59,16 +59,11 @@ MAPPING_PARSING_QUERY = """
             OPTIONAL {
                 ?_predicate_object_map rml:objectMap ?object_map .
                 ?object_map ?object_map_type ?object_map_value .
-                FILTER ( ?object_map_type IN ( rr:constant, rr:template, rml:reference, rml:quotedTriplesMap ) ) .
+                FILTER ( ?object_map_type IN ( rr:constant, rr:template, rml:reference, rr:parentTriplesMap, rml:quotedTriplesMap ) ) .
                 OPTIONAL { ?object_map rr:termType ?object_termtype . }
                 OPTIONAL { ?object_map rr:datatype ?object_datatype . }
                 OPTIONAL { ?object_map rr:language ?object_language . }
             } 
-            OPTIONAL {
-                ?_predicate_object_map rml:objectMap ?object_map .
-                ?object_map rr:parentTriplesMap ?object_map_value .
-                BIND( rr:parentTriplesMap AS ?object_map_type ) .
-            }
             OPTIONAL {
                 ?_predicate_object_map rr:graphMap ?graph_map .
                 ?graph_map ?graph_map_type ?graph_map_value .

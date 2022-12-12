@@ -2,4 +2,3 @@ pytest>=6.2.5
 odfpy>=1.4.1
 pyarrow>=7.0.0
 openpyxl>=3.0.0
-mkdocs-material>=8.2.9
