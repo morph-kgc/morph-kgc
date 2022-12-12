@@ -4,15 +4,7 @@
 @prefix rml: <http://semweb.mmlab.be/ns/rml#> .
 @prefix rr: <http://www.w3.org/ns/r2rml#> .
 @prefix ql: <http://semweb.mmlab.be/ns/ql#> .
-
-@prefix dcterms: <http://purl.org/dc/terms/> .
-@prefix fno:     <https://w3id.org/function/ontology#> .
-@prefix grel:    <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
-@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
-
 @prefix : <http://oeg-upm.net/> .
-
 
 :TriplesMap1
   a rr:TriplesMap;
@@ -47,27 +39,3 @@
             rml:reference "name"               # Specify the reference within the data source
         ]
     ].
-
-grel:toUpperCase
-    a                   fno:Function ;
-    fno:name            "to Uppercase" ;
-    rdfs:label          "to Uppercase" ;
-    dcterms:description "Returns the input with all letters in upper case." ;
-    fno:solves          grel:prob_ucase ;
-    fno:expects         ( grel:valueParam ) ;
-    fno:returns         ( grel:stringOut ) .
-
-grel:valueParam
-    a             fno:Parameter ;
-    fno:name      "input value" ;
-    rdfs:label    "input value" ;
-    fno:predicate grel:valueParameter ;
-    fno:type      xsd:string ;
-    fno:required  "true"^^xsd:boolean .
-
-grel:stringOut
-    a             fno:Output ;
-    fno:name      "output string" ;
-    rdfs:label    "output string" ;
-    fno:predicate grel:stringOutput ;
-    fno:type      xsd:string .

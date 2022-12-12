@@ -21,6 +21,14 @@ MAPPINGS_DATAFRAME_COLUMNS = [
 
 
 ##############################################################################
+#######################   FUNCTION DATAFRAME COLUMNS   ########################
+##############################################################################
+
+FUNCTIONS_DATAFRAME_COLUMNS = [
+    'execution', 'parameter_map_type ', 'parameter_map_value', 'parameter_name', 'parameter_type'
+]
+
+##############################################################################
 ########################   MAPPING PARSING QUERIES   #########################
 ##############################################################################
 
@@ -93,5 +101,40 @@ JOIN_CONDITION_PARSING_QUERY = """
     WHERE {
         ?term_map rr:joinCondition ?join_condition .
         ?join_condition rr:child ?child_value; rr:parent ?parent_value .
+    }
+"""
+
+##############################################################################
+########################   FUNCTION PARSING QUERIES   #########################
+##############################################################################
+
+# FUNCTION_PARSING_QUERY = """
+# SELECT * WHERE {?x ?y ?z}
+# """
+
+FUNCTION_PARSING_QUERY = """
+    prefix rr: <http://www.w3.org/ns/r2rml#> 
+    prefix rml: <http://semweb.mmlab.be/ns/rml#> 
+    prefix fno:     <https://w3id.org/function/ontology#> 
+    prefix fnml: <http://semweb.mmlab.be/ns/fnml#> 
+
+    SELECT DISTINCT ?func ?exec ?parameter_map_type ?parameter_map_value ?parameter_uri ?parameter_type
+    
+
+      WHERE {  
+
+            ?exec a fnml:Execution. 
+            ?exec fnml:function ?func. 
+            ?func a fno:Function.
+      
+        # output --------------------------------------------------------
+        
+        ?_predicate_object_map rml:objectMap ?object_map .
+        ?parameter_uri a fno:Output.
+        ?func fno:returns ?parameter_uri.
+        ?object_map fnml:return  ?parameter_uri.
+        ?object_map fnml:execution  ?exec.
+        OPTIONAL{?parameter_uri fno:type ?parameter_map_value }.        
+
     }
 """

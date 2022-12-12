@@ -18,6 +18,8 @@ def test_RMLFNOTC0001_CSV():
     g.parse(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'output.ttl'))
 
     mapping_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mapping.ttl')
+    # mapping_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mapping-shortcut.ttl')
+    # mapping_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mapping-verbose.ttl')
     config = f'[CONFIGURATION]\noutput_format=N-TRIPLES\n[DataSource]\nmappings={mapping_path}'
     g_morph = morph_kgc.materialize(config)
 
