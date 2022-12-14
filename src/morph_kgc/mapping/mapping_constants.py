@@ -38,8 +38,10 @@ MAPPING_PARSING_QUERY = """
     WHERE {
         ?triples_map_id rml:logicalSource ?_source .
         ?triples_map_id a ?triples_map_type .
-        ?_source ?logical_source_type ?logical_source_value .
-        FILTER ( ?logical_source_type IN ( rml:source, rr:tableName, rml:query ) ) .
+        OPTIONAL {  # logical_source is optional because it can be specified with file_path in config (see #119)
+            ?_source ?logical_source_type ?logical_source_value .
+            FILTER ( ?logical_source_type IN ( rml:source, rr:tableName, rml:query ) ) .
+        }
         OPTIONAL { ?_source rml:iterator ?iterator . }
 
     # Subject -------------------------------------------------------------------------
