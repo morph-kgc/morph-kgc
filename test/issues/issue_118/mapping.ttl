@@ -1,0 +1,42 @@
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix fnml: <http://semweb.mmlab.be/ns/fnml#> .
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix d2rq: <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#> .
+@prefix void: <http://rdfs.org/ns/void#> .
+@prefix dc: <http://purl.org/dc/terms/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@prefix haObjId: <https://data.hetarchief.be/id/object/> .
+@prefix premis: <http://www.loc.gov/premis/rdf/v3/> .
+@prefix : <http://mapping.example.com/> .
+
+:map_premis_000 rml:logicalSource :source_000 ;
+	rdf:type rr:TriplesMap ;
+	rdfs:label "premis" ;
+	rr:predicateObjectMap :pom_000 ;
+	rr:subjectMap :s_000 .
+
+:om_000 rdf:type rr:ObjectMap ;
+	rr:constant "http://www.loc.gov/premis/rdf/v3/IntellectualEntity" ;
+	rr:termType rr:IRI .
+
+:pm_000 rdf:type rr:PredicateMap ;
+	rr:constant rdf:type .
+
+:pom_000 rdf:type rr:PredicateObjectMap ;
+	rr:objectMap :om_000 ;
+	rr:predicateMap :pm_000 .
+
+:rules_000 void:exampleResource :map_premis_000 ;
+	rdf:type void:Dataset .
+
+:s_000 rdf:type rr:SubjectMap ;
+	rr:template "https://data.hetarchief.be/id/object/{/premis:object/premis:objectIdentifier/premis:objectIdentifierValue/text()}" .
+
+:source_000 rml:iterator "/premis:premis" ;
+	rml:referenceFormulation ql:XPath ;
+	rml:source "test/issues/issue_118/premis.xml" ;
+	rdf:type rml:LogicalSource .
