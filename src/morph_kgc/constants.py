@@ -142,20 +142,9 @@ QL_CSV = f'{QL_NAMESPACE}CSV'
 QL_JSON = f'{QL_NAMESPACE}JSONPath'
 QL_XML = f'{QL_NAMESPACE}XPath'
 
-# Fno
-FNO_NAMESPACE = 'https://w3id.org/function/ontology#'
-FNO_FUNCTION = f'{FNO_NAMESPACE}Function'
-FNO_EXECUTION = f'{FNO_NAMESPACE}Execution'
-FNO_EXECUTES = f'{FNO_NAMESPACE}executes'
-FNO_OUTPUT = f'{FNO_NAMESPACE}Output'
-FNO_PARAMETER = f'{FNO_NAMESPACE}Parameter'
-FNO_PREDICATE = f'{FNO_NAMESPACE}predicate'
-FNO_TYPE = f'{FNO_NAMESPACE}type'
-FNO_REQUIRED = f'{FNO_NAMESPACE}required'
-
 
 ##############################################################################
-############################   RML-star SPECIFICATION   ###########################
+############################   RML-star SPECIFICATION   ######################
 ##############################################################################
 
 # classes
@@ -171,6 +160,38 @@ RML_STAR_OBJECT_CONSTANT_SHORTCUT = f'{RML_NAMESPACE}object'
 
 # other
 RML_STAR_RDF_STAR_TRIPLE = f'{RML_NAMESPACE}RDFstarTriple'
+
+
+##############################################################################
+############################   RML+FnO SPECIFICATION   #######################
+##############################################################################
+
+FNO_NAMESPACE = 'https://w3id.org/function/ontology#'
+FNML_NAMESPACE = 'http://semweb.mmlab.be/ns/fnml#'
+
+# FnO classes
+FNO_FUNCTION = f'{FNO_NAMESPACE}Function'
+FNO_EXECUTION = f'{FNO_NAMESPACE}Execution'
+FNO_PARAMETER = f'{FNO_NAMESPACE}Parameter'
+FNO_OUTPUT = f'{FNO_NAMESPACE}Output'
+
+# FnO properties
+FNO_EXECUTES = f'{FNO_NAMESPACE}executes'
+FNO_PREDICATE = f'{FNO_NAMESPACE}predicate'
+FNO_TYPE = f'{FNO_NAMESPACE}type'
+FNO_REQUIRED = f'{FNO_NAMESPACE}required'
+FNO_NAME = f'{FNO_NAMESPACE}name'
+FNO_SOLVES = f'{FNO_NAMESPACE}solves'
+FNO_EXPECTS = f'{FNO_NAMESPACE}expects'
+FNO_RETURNS = f'{FNO_NAMESPACE}returns'
+
+# FNML properties
+FNML_RETURN_MAP = f'{FNML_NAMESPACE}returnMap'
+FNML_EXECUTION = f'{FNML_NAMESPACE}execution'
+FNML_FUNCTION_MAP = f'{FNML_NAMESPACE}returnMap'
+FNML_INPUT = f'{FNML_NAMESPACE}input'
+FNML_PARAMETER_MAP = f'{FNML_NAMESPACE}parameterMap'
+FNML_VALUE_MAP = f'{FNML_NAMESPACE}valueMap'
 
 
 ##############################################################################
