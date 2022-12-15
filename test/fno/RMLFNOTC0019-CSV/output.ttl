@@ -1,0 +1,5 @@
+<http://example.com/sport/Tennis> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/Sport>.
+<http://example.com/sport/Soccer> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/Sport>.
+<http://example.com/sport/Badminton> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/Sport>.
+<http://example.com/student/0> <http://example.com/does> <http://example.com/sport/Tennis>.
+<http://example.com/student/1> <http://example.com/does> <http://example.com/sport/Badminton>.

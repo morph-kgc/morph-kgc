@@ -1,0 +1,36 @@
+@prefix rr:        <http://www.w3.org/ns/r2rml#>.
+@prefix rml:       <http://semweb.mmlab.be/ns/rml#>.
+@prefix rdf:       <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs:      <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix ql:        <http://semweb.mmlab.be/ns/ql#>.
+#TODO some real prefixes would probably be cool idk
+@prefix aaabim:    <http://users.ugent.be/~tdlva/function/aaabim.ttl#> .
+@base   <http://mapping.example.com/>.
+@prefix ex:        <http://www.example.com/>.
+@prefix sosa:      <http://www.w3.org/ns/sosa/>.
+@prefix xsd:       <http://www.w3.org/2001/XMLSchema#>.
+@prefix fnml:      <http://semweb.mmlab.be/ns/fnml#> .
+@prefix fno:       <https://w3id.org/function/ontology#> .
+@prefix geo:       <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix grel:      <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
+
+<TriplesMap1>
+    a                     rr:TriplesMap ;
+    rml:logicalSource     [ rml:source               "article.json" ;
+                            rml:referenceFormulation ql:JSONPath ;
+                            rml:iterator             "$.article" ; ] ;
+    rr:subjectMap         [ rr:template "http://example.com/articles/{title}" ] ;
+    rr:predicateObjectMap [ rr:predicate ex:firstAuthor ;
+                            rr:objectMap [ fnml:functionValue [ rr:predicateObjectMap [ rr:predicate fno:executes ;
+                                                                                        rr:objectMap [ rr:constant grel:array_get ] ] ;
+                                                                rr:predicateObjectMap [ rr:predicate grel:param_a ;
+                                                                                        rr:objectMap [ rml:reference "authors[*].name" ] ] ;
+                                                                rr:predicateObjectMap [ rr:predicate grel:p_int_i_from ;
+                                                                                        rr:objectMap [ rr:constant "0"^^xsd:int ] ] ] ] ] ;
+    rr:predicateObjectMap [ rr:predicate ex:otherAuthors ;
+                            rr:objectMap [ fnml:functionValue [ rr:predicateObjectMap [ rr:predicate fno:executes ;
+                                                                                        rr:objectMap [ rr:constant grel:array_slice ] ] ;
+                                                                rr:predicateObjectMap [ rr:predicate grel:param_a ;
+                                                                                        rr:objectMap [ rml:reference "authors[*].name" ] ] ;
+                                                                rr:predicateObjectMap [ rr:predicate grel:p_int_i_from ;
+                                                                                        rr:objectMap [ rr:constant "1"^^xsd:int ] ] ] ] ] .

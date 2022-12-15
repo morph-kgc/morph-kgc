@@ -1,4 +1,4 @@
-# Function on object, 1 reference parameter
+# Function on predicate, 1 parameter
 
 @prefix rr: <http://www.w3.org/ns/r2rml#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
@@ -8,8 +8,7 @@
 @prefix ql: <http://semweb.mmlab.be/ns/ql#> .
 @prefix fnml:   <http://semweb.mmlab.be/ns/fnml#> .
 @prefix fno: 	<https://w3id.org/function/ontology#> .
-@prefix grel: 	<http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
-@prefix idlab-fn: <http://example.com/idlab/function/> .
+@prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
 
 @base <http://example.com/base/> .
 
@@ -26,8 +25,7 @@
   ];
 
   rr:predicateObjectMap [
-    rr:predicate foaf:name;
-    rr:objectMap [
+    rr:predicateMap [
       fnml:functionValue [
       	rr:predicateObjectMap [
       		rr:predicate fno:executes ;
@@ -35,6 +33,8 @@
       	rr:predicateObjectMap [
       		rr:predicate grel:valueParameter ;
       		rr:objectMap [ rml:reference "Name" ] ]
-      ]
-    ]
+      ] ;
+      rr:termType rr:IRI
+    ];
+    rr:objectMap [ rr:constant foaf:name ; rr:termType rr:IRI ]
   ].

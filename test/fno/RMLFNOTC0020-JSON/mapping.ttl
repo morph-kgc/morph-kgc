@@ -1,0 +1,63 @@
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ex: <http://example.com/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@prefix fnml:   <http://semweb.mmlab.be/ns/fnml#> .
+@prefix fno: 	<https://w3id.org/function/ontology#> .
+@prefix grel:     <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
+@prefix idlab-fn: <http://example.com/idlab/function/> .
+
+@base <http://example.com/base/> .
+
+<TriplesMap1>
+  a rr:TriplesMap;
+
+  rml:logicalSource [
+    rml:source "authors.json";
+    rml:referenceFormulation ql:JSONPath;
+    rml:iterator "$.authors[*]"
+  ];
+
+  rr:subjectMap [
+    rr:template "http://example.com/author/{name}";
+    rr:class ex:Author
+  ].
+
+<TriplesMap2>
+  a rr:TriplesMap;
+
+  rml:logicalSource [
+    rml:source "books.json";
+    rml:referenceFormulation ql:JSONPath;
+    rml:iterator "$.books[*]"
+  ];
+
+  rr:subjectMap [
+    rr:template "http://example.com/book/{title}";
+    rr:class ex:Book
+  ];
+
+  rr:predicateObjectMap [
+    rr:predicate ex:writtenBy;
+    rr:objectMap [
+      rr:parentTriplesMap <TriplesMap1>;
+      rml:joinCondition [
+        fnml:functionValue [
+      	  rr:predicateObjectMap [
+      		rr:predicate fno:executes ;
+      		rr:objectMap [ rr:constant idlab-fn:listContainsElement ]
+          ] ;
+      	  rr:predicateObjectMap [
+      		rr:predicate idlab-fn:list ;
+      		rr:objectMap [ rml:reference "authors"]
+          ] ;
+      	  rr:predicateObjectMap [
+      		rr:predicate idlab-fn:str ;
+      		rr:objectMap [ rml:parentTermMap [ rml:reference "name"] ]
+          ]
+        ]
+      ]
+    ]
+  ].

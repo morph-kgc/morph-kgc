@@ -1,4 +1,4 @@
-# Function on object, 1 reference parameter
+# Function on object returns empty string
 
 @prefix rr: <http://www.w3.org/ns/r2rml#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
@@ -9,7 +9,6 @@
 @prefix fnml:   <http://semweb.mmlab.be/ns/fnml#> .
 @prefix fno: 	<https://w3id.org/function/ontology#> .
 @prefix grel: 	<http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
-@prefix idlab-fn: <http://example.com/idlab/function/> .
 
 @base <http://example.com/base/> .
 
@@ -17,7 +16,7 @@
   a rr:TriplesMap;
 
   rml:logicalSource [
-    rml:source "test/fno/RMLFNOTC0001-CSV/student.csv";
+    rml:source "../student.csv";
     rml:referenceFormulation ql:CSV
   ];
 
@@ -26,15 +25,15 @@
   ];
 
   rr:predicateObjectMap [
-    rr:predicate foaf:name;
-    rr:objectMap [
-      fnml:functionValue [
-      	rr:predicateObjectMap [
-      		rr:predicate fno:executes ;
-      		rr:objectMap [ rr:constant grel:toUpperCase ] ] ;
-      	rr:predicateObjectMap [
-      		rr:predicate grel:valueParameter ;
-      		rr:objectMap [ rml:reference "Name" ] ]
+      rr:predicate foaf:name;
+      rr:objectMap [
+        fnml:functionValue [
+        	rr:predicateObjectMap [
+        		rr:predicate fno:executes ;
+        		rr:objectMap [ rr:constant grel:toUpperCase ] ] ;
+        	rr:predicateObjectMap [
+        		rr:predicate grel:valueParameter ;
+        		rr:objectMap [ rr:constant "" ] ]
+        ]
       ]
-    ]
-  ].
+    ].
