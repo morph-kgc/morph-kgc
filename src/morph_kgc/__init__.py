@@ -17,7 +17,7 @@ from io import BytesIO
 from itertools import repeat
 
 from .args_parser import load_config_from_command_line
-from .mapping.mapping_parser import retrieve_mappings
+from .mapping.rml_parser import retrieve_mappings
 from .data_source.relational_database import setup_oracle
 from .materializer import _materialize_mapping_rule, _materialize_mapping_group_to_set
 from .args_parser import load_config_from_argument

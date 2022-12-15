@@ -10,10 +10,10 @@ import sys
 
 from ..constants import *
 from ..utils import *
-from ..mapping.mapping_constants import FUNCTIONS_DATAFRAME_COLUMNS, MAPPINGS_DATAFRAME_COLUMNS, MAPPING_PARSING_QUERY, JOIN_CONDITION_PARSING_QUERY
+from ..mapping.mapping_constants import *
 from ..mapping.mapping_partitioner import MappingPartitioner
 from ..data_source.relational_database import get_rdb_reference_datatype
-from ..mapping import mapping_fno as fno
+
 
 def retrieve_mappings(config):
     if config.is_read_parsed_mappings_file_provided():
@@ -251,7 +251,7 @@ def _remove_string_datatypes(mapping_graph):
 
 def _get_join_conditions_dict(join_query_results):
     """
-    Creates a dictionary with the results of the JOIN_CONDITION_PARSING_QUERY. The keys are the identifiers of the
+    Creates a dictionary with the results of the RML_JOIN_CONDITION_PARSING_QUERY. The keys are the identifiers of the
     child triples maps of the join condition. The values of the dictionary are in turn other dictionaries with two
     items, child_value and parent_value, representing a join condition.
     """
@@ -277,8 +277,8 @@ def _transform_mappings_into_dataframe(mapping_graph, section_name):
     """
 
     # parse the mappings with the parsing queries
-    mapping_query_results = mapping_graph.query(MAPPING_PARSING_QUERY)
-    join_query_results = mapping_graph.query(JOIN_CONDITION_PARSING_QUERY)
+    mapping_query_results = mapping_graph.query(RML_PARSING_QUERY)
+    join_query_results = mapping_graph.query(RML_JOIN_CONDITION_PARSING_QUERY)
 
     # mapping rules in graph to DataFrame
     source_mappings_df = pd.DataFrame(mapping_query_results.bindings)
@@ -387,8 +387,8 @@ def _validate_termtypes(mapping_graph):
 class MappingParser:
 
     def __init__(self, config):
-        self.mappings_df = pd.DataFrame(columns=MAPPINGS_DATAFRAME_COLUMNS)
-        self.functions_df = pd.DataFrame(columns=FUNCTIONS_DATAFRAME_COLUMNS)
+        self.mappings_df = pd.DataFrame(columns=RML_DATAFRAME_COLUMNS)
+        self.functions_df = pd.DataFrame(columns=FNO_DATAFRAME_COLUMNS)
         self.config = config
 
     def __str__(self):
@@ -448,6 +448,8 @@ class MappingParser:
         """
         Parse and fetch functions from the mapppings
         """
+
+        """
         for section_name in self.config.get_data_sources_sections():
             function_graph = self._parse_to_graph(section_name)
             funcs_df = fno.funcs_to_df(function_graph)
@@ -457,6 +459,7 @@ class MappingParser:
             print(funcs_df)
 
             self.functions_df = pd.concat([self.functions_df, funcs_df])
+        """
 
 
 
@@ -482,7 +485,7 @@ class MappingParser:
         """
         Creates a Pandas DataFrame with the mapping rules of a data source. It loads the mapping files in an rdflib
         graph and recognizes the mapping language used. Mappings are translated to RML.
-        It performs queries MAPPING_PARSING_QUERY and JOIN_CONDITION_PARSING_QUERY and process the results to build a
+        It performs queries RML_PARSING_QUERY and RML_JOIN_CONDITION_PARSING_QUERY and process the results to build a
         DataFrame with the mapping rules. Also verifies that there are not repeated triples maps in the mappings.
         """
 

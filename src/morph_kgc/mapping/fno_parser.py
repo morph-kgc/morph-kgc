@@ -1,4 +1,4 @@
-
+"""
 from ..mapping.mapping_constants import FUNCTIONS_DATAFRAME_COLUMNS, FUNCTION_PARSING_QUERY
 
 
@@ -27,3 +27,4 @@ def funcs_to_df(g):
         # print("o [%s]" % (res["o"]))
         # print(res)
 
+"""
