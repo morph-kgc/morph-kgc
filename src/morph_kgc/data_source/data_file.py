@@ -16,6 +16,7 @@ import urllib.request
 
 from jsonpath import JSONPath
 from elementpath.xpath3 import XPath3Parser
+from io import BytesIO
 
 from ..constants import *
 from ..utils import normalize_hierarchical_data
@@ -163,12 +164,23 @@ def _read_json(mapping_rule, references):
 def _read_xml(mapping_rule, references):
     if mapping_rule['logical_source_value'].startswith('http'):
         with urllib.request.urlopen(mapping_rule['logical_source_value']) as xml_url:
-            xml_root = et.ElementTree(et.fromstring(xml_url.read().decode())).getroot()
+            xml_string = xml_url.read()
+            # Turn into file object for compatibility with iterparse
+            xml_file = BytesIO(xml_string)
     else:
-        with open(mapping_rule['logical_source_value'], encoding='utf-8') as xml_file:
-            xml_root = et.parse(xml_file).getroot()
+        xml_file = open(mapping_rule['logical_source_value'], encoding='utf-8')
+    
+    # Collect namespaces from XML document
+    namespaces = {}
+    for event, element in et.iterparse(xml_file, events=['end', 'start-ns']):
+        if event == "start-ns":
+            namespaces[element[0]] = element[1]
 
-    xpath_result = elementpath.iter_select(xml_root, mapping_rule['iterator'], parser=XPath3Parser)
+        if event == "end":
+            el = element
+    parsed = et.ElementTree(el)
+    xml_root = parsed.getroot()
+    xpath_result = elementpath.iter_select(xml_root, mapping_rule['iterator'], namespaces=namespaces, parser=XPath3Parser)
 
     # we need to retrieve both ELEMENTS and ATTRIBUTES in the XML
     data_records = []
