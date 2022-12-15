@@ -5,7 +5,6 @@ __license__ = "Apache-2.0"
 __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"
 
-
 import sys
 
 from ..constants import *
@@ -65,24 +64,33 @@ def _mapping_to_rml_star(mapping_graph):
 
     # replace RML properties with the equivalent RML-star properties
     mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_SUBJECT_MAP, RML_STAR_SUBJECT_MAP)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_SUBJECT_CONSTANT_SHORTCUT, RML_STAR_SUBJECT_CONSTANT_SHORTCUT)
+    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_SUBJECT_SHORTCUT,
+                                                RML_STAR_SUBJECT_SHORTCUT)
     mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_OBJECT_MAP, RML_STAR_OBJECT_MAP)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_OBJECT_CONSTANT_SHORTCUT, RML_STAR_OBJECT_CONSTANT_SHORTCUT)
+    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_OBJECT_SHORTCUT,
+                                                RML_STAR_OBJECT_SHORTCUT)
 
     return mapping_graph
 
 
 def _expand_constant_shortcut_properties(mapping_graph):
     """
-    Expand constant shortcut properties rml:subject, rr:predicate, rml:object and rr:graph.
+    Expand constant shortcut properties.
     See R2RML specification (https://www.w3.org/2001/sw/rdb2rdf/r2rml/#constant).
     """
 
-    constant_properties = [RML_STAR_SUBJECT_MAP, R2RML_PREDICATE_MAP, RML_STAR_OBJECT_MAP, R2RML_GRAPH_MAP]
-    constant_shortcuts = [RML_STAR_SUBJECT_CONSTANT_SHORTCUT, R2RML_PREDICATE_CONSTANT_SHORTCUT,
-                          RML_STAR_OBJECT_CONSTANT_SHORTCUT, R2RML_GRAPH_CONSTANT_SHORTCUT]
+    constant_shortcuts_dict = {
+        RML_STAR_SUBJECT_SHORTCUT: RML_STAR_SUBJECT_MAP,
+        R2RML_PREDICATE_SHORTCUT: R2RML_PREDICATE_MAP,
+        RML_STAR_OBJECT_SHORTCUT: RML_STAR_OBJECT_MAP,
+        R2RML_GRAPH_SHORTCUT: R2RML_GRAPH_MAP,
+        FNML_FUNCTION_SHORTCUT: FNML_FUNCTION_MAP,
+        FNML_RETURN_SHORTCUT: FNML_RETURN_MAP,
+        FNML_PARAMETER_SHORTCUT: FNML_PARAMETER_MAP,
+        FNML_VALUE_SHORTCUT: FNML_VALUE_SHORTCUT
+    }
 
-    for constant_property, constant_shortcut in zip(constant_properties, constant_shortcuts):
+    for constant_shortcut, constant_property in constant_shortcuts_dict.items():
         for s, o in mapping_graph.query(f'SELECT ?s ?o WHERE {{?s <{constant_shortcut}> ?o .}}'):
             blanknode = rdflib.BNode()
             mapping_graph.add((s, rdflib.term.URIRef(constant_property), blanknode))
@@ -104,8 +112,8 @@ def _rdf_class_to_pom(mapping_graph):
     for tm, c in mapping_graph.query(query):
         blanknode = rdflib.BNode()
         mapping_graph.add((tm, rdflib.term.URIRef(R2RML_PREDICATE_OBJECT_MAP), blanknode))
-        mapping_graph.add((blanknode, rdflib.term.URIRef(R2RML_PREDICATE_CONSTANT_SHORTCUT), rdflib.RDF.type))
-        mapping_graph.add((blanknode, rdflib.term.URIRef(RML_STAR_OBJECT_CONSTANT_SHORTCUT), c))
+        mapping_graph.add((blanknode, rdflib.term.URIRef(R2RML_PREDICATE_SHORTCUT), rdflib.RDF.type))
+        mapping_graph.add((blanknode, rdflib.term.URIRef(RML_STAR_OBJECT_SHORTCUT), c))
 
     mapping_graph.remove((None, rdflib.term.URIRef(R2RML_CLASS), None))
 
@@ -251,7 +259,7 @@ def _remove_string_datatypes(mapping_graph):
 
 def _get_join_conditions_dict(join_query_results):
     """
-    Creates a dictionary with the results of the RML_JOIN_CONDITION_PARSING_QUERY. The keys are the identifiers of the
+    Creates a dictionary with the results of the JOIN_CONDITION_PARSING_QUERY. The keys are the identifiers of the
     child triples maps of the join condition. The values of the dictionary are in turn other dictionaries with two
     items, child_value and parent_value, representing a join condition.
     """
@@ -283,14 +291,6 @@ def _transform_mappings_into_dataframe(mapping_graph, section_name):
     # mapping rules in graph to DataFrame
     source_mappings_df = pd.DataFrame(mapping_query_results.bindings)
     source_mappings_df.columns = source_mappings_df.columns.map(str)
-
-    # # DEBUG
-    # print("\n\nXXXXXXXXX\n_transform_mappings_into_dataframe> ")
-    # print(source_mappings_df)
-    # for col in source_mappings_df:
-    #     print("\ncol: %s" % str(col))
-    #     print("val: %s" % str(source_mappings_df[col]))
-    #     print("-------------------")
 
     # process mapping rules with joins
     # create a dict with child triples maps in the keys and its join conditions in the values
@@ -388,7 +388,6 @@ class MappingParser:
 
     def __init__(self, config):
         self.mappings_df = pd.DataFrame(columns=RML_DATAFRAME_COLUMNS)
-        self.functions_df = pd.DataFrame(columns=FNO_DATAFRAME_COLUMNS)
         self.config = config
 
     def __str__(self):
@@ -432,38 +431,20 @@ class MappingParser:
         else:
             for section_name in self.config.get_data_sources_sections():
                 data_source_mappings_df = self._parse_data_source_mapping_files(section_name)
-
-                # DEBUG
-                print("_get_from_r2_rml> ")
-                print(data_source_mappings_df)
-
                 self.mappings_df = pd.concat([self.mappings_df, data_source_mappings_df])
 
         self.mappings_df = self.mappings_df.reset_index(drop=True)
         # subject_map and object_map columns were used to handle join conditions, no longer needed
         self.mappings_df = self.mappings_df.drop(columns=['subject_map', 'object_map'])
-        self.parse_fno()
 
-    def parse_fno(self):
+    def _parse_data_source_mapping_files(self, section_name):
         """
-        Parse and fetch functions from the mapppings
-        """
-
-        """
-        for section_name in self.config.get_data_sources_sections():
-            function_graph = self._parse_to_graph(section_name)
-            funcs_df = fno.funcs_to_df(function_graph)
-
-            # DEBUG
-            print("\nXXXXXXXXXXX\nparse_fno> ")
-            print(funcs_df)
-
-            self.functions_df = pd.concat([self.functions_df, funcs_df])
+        Creates a Pandas DataFrame with the mapping rules of a data source. It loads the mapping files in an rdflib
+        graph and recognizes the mapping language used. Mappings are translated to RML.
+        It performs queries MAPPING_PARSING_QUERY and JOIN_CONDITION_PARSING_QUERY and process the results to build a
+        DataFrame with the mapping rules. Also verifies that there are not repeated triples maps in the mappings.
         """
 
-
-
-    def _parse_to_graph(self, section_name):
         # create an empty graph
         mapping_graph = rdflib.Graph()
 
@@ -478,33 +459,6 @@ class MappingParser:
                     mapping_graph.parse(f)
                 except Exception as n3_mapping_parse_exception:
                     raise Exception(n3_mapping_parse_exception)
-        return mapping_graph
-
-
-    def _parse_data_source_mapping_files(self, section_name):
-        """
-        Creates a Pandas DataFrame with the mapping rules of a data source. It loads the mapping files in an rdflib
-        graph and recognizes the mapping language used. Mappings are translated to RML.
-        It performs queries RML_PARSING_QUERY and RML_JOIN_CONDITION_PARSING_QUERY and process the results to build a
-        DataFrame with the mapping rules. Also verifies that there are not repeated triples maps in the mappings.
-        """
-
-        mapping_graph = self._parse_to_graph(section_name)
-
-        # # create an empty graph
-        # mapping_graph = rdflib.Graph()
-        #
-        # mapping_file_paths = self.config.get_mappings_files(section_name)
-        # # load mapping rules to the graph
-        # for f in mapping_file_paths:
-        #     try:
-        #         mapping_graph.parse(f, format=os.path.splitext(f)[1][1:].strip())
-        #     except:
-        #         # if a file extension such as .rml or .r2rml is used, assume it is turtle (issue #80)
-        #         try:
-        #             mapping_graph.parse(f)
-        #         except Exception as n3_mapping_parse_exception:
-        #             raise Exception(n3_mapping_parse_exception)
 
         # convert R2RML and RML rules to RML-star, so that we can assume RML-star for parsing
         mapping_graph = _mapping_to_rml_star(mapping_graph)
@@ -552,7 +506,7 @@ class MappingParser:
         in the mapping file. If db_url is not provided but the logical source is rml:query, then it is an RML tabular
         view. For data files the source type is inferred from the file extension.
         """
-        
+
         for i, mapping_rule in self.mappings_df.iterrows():
             if self.config.has_database_url(mapping_rule['source_name']):
                 self.mappings_df.at[i, 'source_type'] = RDB
@@ -735,13 +689,3 @@ class MappingParser:
                         self.mappings_df.at[i, 'object_termtype'] = parent_triples_map_rule.at['subject_termtype']
                         self.mappings_df.at[i, 'object_join_conditions'] = np.nan
                         logging.debug(f"Removed self-join from mapping rule `{mapping_rule['id']}`.")
-                else:
-                    try:
-                        # if no join condition is provided (i.e. eval() fails) and the logical sources are different
-                        # this will result in an error (see #110)
-                        eval(mapping_rule['object_join_conditions'])
-                    except:
-                        logging.error(
-                            f"The referencing object map in mapping rule `{mapping_rule['id']}` involves two different "
-                            f"logical sources, but a join condition is missing.")
-                        sys.exit()
