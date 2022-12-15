@@ -121,21 +121,14 @@ FUNCTION_PARSING_QUERY = """
     SELECT *
     #DISTINCT ?func ?exec ?parameter_map_type ?parameter_map_value ?parameter_uri ?parameter_type
     
-
       WHERE {  
-            # ?s ?p ?o
-            # ?exec a fnml:Execution. 
             ?exec fnml:function ?func. 
-            # ?func a fno:Function.
       
         # output --------------------------------------------------------
         
-        # ?_predicate_object_map rr:objectMap ?object_map .
-        # ?parameter_uri a fno:Output.
-        ?func1 fno:returns ?parameter_uri.
-        # ?object_map fnml:return  ?parameter_uri.
-        # ?object_map fnml:execution  ?exec.
-        # OPTIONAL{?parameter_uri fno:type ?parameter_map_value }.        
-
+        ?_predicate_object_map rr:objectMap ?object_map .
+        ?func fno:returns ?output_list.
+        ?output_list rdf:first ?parameter_uri.
+        BIND(fno:Output AS ?parameter_map_type).        
     }
 """

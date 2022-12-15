@@ -4,13 +4,10 @@
 @prefix rml: <http://semweb.mmlab.be/ns/rml#> .
 @prefix rr: <http://www.w3.org/ns/r2rml#> .
 @prefix ql: <http://semweb.mmlab.be/ns/ql#> .
-
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix fno:     <http://w3id.org/function/ontology#> .
-@prefix grel:    <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
 @prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
-
 @prefix : <http://oeg-upm.net/> .
 
 
@@ -39,7 +36,7 @@
 
 :Execution
     a fnml:Execution ;                # A new class
-    fnml:function grel:toUppercase ;           # Specify which FnO function
+    fnml:function grel:toUpperCase ;           # Specify which FnO function
     fnml:input [                               # Specify the inputs
         a fnml:Input ;                         # A new class
         fnml:parameter grel:valueParam ;       # Specify this specific parameter
