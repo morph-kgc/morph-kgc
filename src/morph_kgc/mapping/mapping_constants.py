@@ -115,26 +115,27 @@ JOIN_CONDITION_PARSING_QUERY = """
 FUNCTION_PARSING_QUERY = """
     prefix rr: <http://www.w3.org/ns/r2rml#> 
     prefix rml: <http://semweb.mmlab.be/ns/rml#> 
-    prefix fno:     <https://w3id.org/function/ontology#> 
+    prefix fno: <http://w3id.org/function/ontology#> 
     prefix fnml: <http://semweb.mmlab.be/ns/fnml#> 
 
-    SELECT DISTINCT ?func ?exec ?parameter_map_type ?parameter_map_value ?parameter_uri ?parameter_type
+    SELECT *
+    #DISTINCT ?func ?exec ?parameter_map_type ?parameter_map_value ?parameter_uri ?parameter_type
     
 
       WHERE {  
-
-            ?exec a fnml:Execution. 
+            # ?s ?p ?o
+            # ?exec a fnml:Execution. 
             ?exec fnml:function ?func. 
-            ?func a fno:Function.
+            # ?func a fno:Function.
       
         # output --------------------------------------------------------
         
-        ?_predicate_object_map rml:objectMap ?object_map .
-        ?parameter_uri a fno:Output.
-        ?func fno:returns ?parameter_uri.
-        ?object_map fnml:return  ?parameter_uri.
-        ?object_map fnml:execution  ?exec.
-        OPTIONAL{?parameter_uri fno:type ?parameter_map_value }.        
+        # ?_predicate_object_map rr:objectMap ?object_map .
+        # ?parameter_uri a fno:Output.
+        ?func1 fno:returns ?parameter_uri.
+        # ?object_map fnml:return  ?parameter_uri.
+        # ?object_map fnml:execution  ?exec.
+        # OPTIONAL{?parameter_uri fno:type ?parameter_map_value }.        
 
     }
 """

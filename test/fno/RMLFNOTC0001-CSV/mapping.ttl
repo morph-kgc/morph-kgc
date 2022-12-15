@@ -6,7 +6,7 @@
 @prefix ql: <http://semweb.mmlab.be/ns/ql#> .
 
 @prefix dcterms: <http://purl.org/dc/terms/> .
-@prefix fno:     <https://w3id.org/function/ontology#> .
+@prefix fno:     <http://w3id.org/function/ontology#> .
 @prefix grel:    <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
 @prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
