@@ -151,6 +151,17 @@ QL_CSV = f'{QL_NAMESPACE}CSV'
 QL_JSON = f'{QL_NAMESPACE}JSONPath'
 QL_XML = f'{QL_NAMESPACE}XPath'
 
+# Fno
+FNO_NAMESPACE = 'https://w3id.org/function/ontology#'
+FNO_FUNCTION = f'{FNO_NAMESPACE}Function'
+FNO_EXECUTION = f'{FNO_NAMESPACE}Execution'
+FNO_EXECUTES = f'{FNO_NAMESPACE}executes'
+FNO_OUTPUT = f'{FNO_NAMESPACE}Output'
+FNO_PARAMETER = f'{FNO_NAMESPACE}Parameter'
+FNO_PREDICATE = f'{FNO_NAMESPACE}predicate'
+FNO_TYPE = f'{FNO_NAMESPACE}type'
+FNO_REQUIRED = f'{FNO_NAMESPACE}required'
+
 
 ##############################################################################
 ############################   RML-star SPECIFICATION   ###########################

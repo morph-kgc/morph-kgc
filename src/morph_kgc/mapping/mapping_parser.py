@@ -10,10 +10,10 @@ import sys
 
 from ..constants import *
 from ..utils import *
-from ..mapping.mapping_constants import MAPPINGS_DATAFRAME_COLUMNS, MAPPING_PARSING_QUERY, JOIN_CONDITION_PARSING_QUERY
+from ..mapping.mapping_constants import FUNCTIONS_DATAFRAME_COLUMNS, MAPPINGS_DATAFRAME_COLUMNS, MAPPING_PARSING_QUERY, JOIN_CONDITION_PARSING_QUERY
 from ..mapping.mapping_partitioner import MappingPartitioner
 from ..data_source.relational_database import get_rdb_reference_datatype
-
+from ..mapping import mapping_fno as fno
 
 def retrieve_mappings(config):
     if config.is_read_parsed_mappings_file_provided():
@@ -284,6 +284,14 @@ def _transform_mappings_into_dataframe(mapping_graph, section_name):
     source_mappings_df = pd.DataFrame(mapping_query_results.bindings)
     source_mappings_df.columns = source_mappings_df.columns.map(str)
 
+    # # DEBUG
+    # print("\n\nXXXXXXXXX\n_transform_mappings_into_dataframe> ")
+    # print(source_mappings_df)
+    # for col in source_mappings_df:
+    #     print("\ncol: %s" % str(col))
+    #     print("val: %s" % str(source_mappings_df[col]))
+    #     print("-------------------")
+
     # process mapping rules with joins
     # create a dict with child triples maps in the keys and its join conditions in the values
     join_conditions_dict = _get_join_conditions_dict(join_query_results)
@@ -380,6 +388,7 @@ class MappingParser:
 
     def __init__(self, config):
         self.mappings_df = pd.DataFrame(columns=MAPPINGS_DATAFRAME_COLUMNS)
+        self.functions_df = pd.DataFrame(columns=FUNCTIONS_DATAFRAME_COLUMNS)
         self.config = config
 
     def __str__(self):
@@ -423,20 +432,35 @@ class MappingParser:
         else:
             for section_name in self.config.get_data_sources_sections():
                 data_source_mappings_df = self._parse_data_source_mapping_files(section_name)
+
+                # DEBUG
+                print("_get_from_r2_rml> ")
+                print(data_source_mappings_df)
+
                 self.mappings_df = pd.concat([self.mappings_df, data_source_mappings_df])
 
         self.mappings_df = self.mappings_df.reset_index(drop=True)
         # subject_map and object_map columns were used to handle join conditions, no longer needed
         self.mappings_df = self.mappings_df.drop(columns=['subject_map', 'object_map'])
+        self.parse_fno()
 
-    def _parse_data_source_mapping_files(self, section_name):
+    def parse_fno(self):
         """
-        Creates a Pandas DataFrame with the mapping rules of a data source. It loads the mapping files in an rdflib
-        graph and recognizes the mapping language used. Mappings are translated to RML.
-        It performs queries MAPPING_PARSING_QUERY and JOIN_CONDITION_PARSING_QUERY and process the results to build a
-        DataFrame with the mapping rules. Also verifies that there are not repeated triples maps in the mappings.
+        Parse and fetch functions from the mapppings
         """
-        
+        for section_name in self.config.get_data_sources_sections():
+            function_graph = self._parse_to_graph(section_name)
+            funcs_df = fno.funcs_to_df(function_graph)
+
+            # DEBUG
+            print("\nXXXXXXXXXXX\nparse_fno> ")
+            print(funcs_df)
+
+            self.functions_df = pd.concat([self.functions_df, funcs_df])
+
+
+
+    def _parse_to_graph(self, section_name):
         # create an empty graph
         mapping_graph = rdflib.Graph()
 
@@ -451,6 +475,33 @@ class MappingParser:
                     mapping_graph.parse(f)
                 except Exception as n3_mapping_parse_exception:
                     raise Exception(n3_mapping_parse_exception)
+        return mapping_graph
+
+
+    def _parse_data_source_mapping_files(self, section_name):
+        """
+        Creates a Pandas DataFrame with the mapping rules of a data source. It loads the mapping files in an rdflib
+        graph and recognizes the mapping language used. Mappings are translated to RML.
+        It performs queries MAPPING_PARSING_QUERY and JOIN_CONDITION_PARSING_QUERY and process the results to build a
+        DataFrame with the mapping rules. Also verifies that there are not repeated triples maps in the mappings.
+        """
+
+        mapping_graph = self._parse_to_graph(section_name)
+
+        # # create an empty graph
+        # mapping_graph = rdflib.Graph()
+        #
+        # mapping_file_paths = self.config.get_mappings_files(section_name)
+        # # load mapping rules to the graph
+        # for f in mapping_file_paths:
+        #     try:
+        #         mapping_graph.parse(f, format=os.path.splitext(f)[1][1:].strip())
+        #     except:
+        #         # if a file extension such as .rml or .r2rml is used, assume it is turtle (issue #80)
+        #         try:
+        #             mapping_graph.parse(f)
+        #         except Exception as n3_mapping_parse_exception:
+        #             raise Exception(n3_mapping_parse_exception)
 
         # convert R2RML and RML rules to RML-star, so that we can assume RML-star for parsing
         mapping_graph = _mapping_to_rml_star(mapping_graph)
