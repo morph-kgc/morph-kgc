@@ -1,0 +1,8 @@
+{
+  "books": [
+    {"title": "The adventure of young turtle", "authors": ["John"]},
+    {"title": "The big rabbit's trip", "authors": ["Edward", "Steve"]},
+    {"title": "A new horizon at the end of the night", "authors": []},
+    {"title": "The past comes back in the future"}
+  ]
+}

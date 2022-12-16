@@ -1,0 +1,38 @@
+# Function on predicate, 1 parameter
+
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ex: <http://example.com/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@prefix fnml:   <http://semweb.mmlab.be/ns/fnml#> .
+@prefix fno: 	<https://w3id.org/function/ontology#> .
+@prefix idlab-fn: <http://example.com/idlab/function/> .
+
+@base <http://example.com/base/> .
+
+<TriplesMap1>
+  a rr:TriplesMap;
+
+  rml:logicalSource [
+    rml:source "./student.csv";
+    rml:referenceFormulation ql:CSV
+  ];
+
+  rr:subjectMap [
+    fnml:functionValue [
+      rr:predicateObjectMap [
+        rr:predicate fno:executes ;
+        rr:objectMap [ rr:constant idlab-fn:toUpperCaseURL ] ] ;
+      rr:predicateObjectMap [
+        rr:predicate idlab-fn:str ;
+        rr:objectMap [ rml:reference "url" ] ]
+    ] ;
+    rr:termType rr:IRI
+  ];
+
+  rr:predicateObjectMap [
+    rr:predicate foaf:name;
+    rr:objectMap [ rml:reference "Name"]
+  ].

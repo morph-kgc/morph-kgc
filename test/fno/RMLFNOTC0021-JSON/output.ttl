@@ -1,0 +1,7 @@
+<http://example.com/book/A%20new%20horizon%20at%20the%20end%20of%20the%20night> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/Book> .
+<http://example.com/book/The%20adventure%20of%20young%20turtle> <http://example.com/writtenBy> "John" .
+<http://example.com/book/The%20adventure%20of%20young%20turtle> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/Book> .
+<http://example.com/book/The%20big%20rabbit%27s%20trip> <http://example.com/writtenBy> "Edward" .
+<http://example.com/book/The%20big%20rabbit%27s%20trip> <http://example.com/writtenBy> "Steve" .
+<http://example.com/book/The%20big%20rabbit%27s%20trip> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/Book> .
+<http://example.com/book/The%20past%20comes%20back%20in%20the%20future> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/Book> .

@@ -1,0 +1,5 @@
+@prefix ex:        <http://www.example.com/>.
+
+<http://example.com/articles/article1>
+    ex:firstAuthor  "Alice" ;
+    ex:otherAuthors "Bob", "Charlie" .

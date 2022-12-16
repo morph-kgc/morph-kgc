@@ -1,0 +1,39 @@
+# Function on object, 1 template parameter
+
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ex: <http://example.com/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@prefix fnml:   <http://semweb.mmlab.be/ns/fnml#> .
+@prefix fno:   <https://w3id.org/function/ontology#> .
+@prefix grel:   <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
+
+@base <http://example.com/base/> .
+
+<TriplesMap1>
+  a rr:TriplesMap;
+
+  rml:logicalSource [
+    rml:source "../student.csv";
+    rml:referenceFormulation ql:CSV
+  ];
+
+  rr:subjectMap [
+    rr:template "http://example.com/{Name}"
+  ];
+
+  rr:predicateObjectMap [
+    rr:predicate foaf:name;
+    rr:objectMap [
+      fnml:functionValue [
+        rr:predicateObjectMap [
+        rr:predicate fno:executes ;
+            rr:objectMap [ rr:constant grel:toUpperCase ] ] ;
+          rr:predicateObjectMap [
+            rr:predicate grel:valueParameter ;
+        rr:objectMap [ rr:template "Name: {Name}" ] ]
+        ]
+      ]
+    ].
