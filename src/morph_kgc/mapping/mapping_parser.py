@@ -487,8 +487,7 @@ class MappingParser:
         # ignore the delimited identifiers (this is not conformant with R2MRL specification)
         self._remove_delimiters_from_mappings()
 
-        # create a unique id for each mapping rule
-        self.mappings_df.insert(0, 'id', self.mappings_df.reset_index(drop=True).index)
+        self._normalize_rml_star()
 
         self._remove_self_joins_no_condition()
 
@@ -680,3 +679,40 @@ class MappingParser:
                         self.mappings_df.at[i, 'object_termtype'] = parent_triples_map_rule.at['subject_termtype']
                         self.mappings_df.at[i, 'object_join_conditions'] = np.nan
                         logging.debug(f"Removed self-join from mapping rule `{mapping_rule['id']}`.")
+
+    def _normalize_rml_star(self):
+        # create a unique id for each (normalized) mapping rule
+        self.mappings_df.insert(0, 'id', self.mappings_df.reset_index(drop=True).index.astype(str))
+        self.mappings_df['id'] = '#TM' + self.mappings_df['id']
+
+        # create dicts from triples maps to ids and vice versa
+        tm_to_id_list_dict = {}
+        tm_to_id_dict = {}
+        id_to_tm_dict = dict(zip(self.mappings_df['id'], self.mappings_df['triples_map_id']))
+        for rule_id, rule_tm in id_to_tm_dict.items():
+            if rule_tm in tm_to_id_list_dict:
+                tm_to_id_list_dict[rule_tm].append(rule_id)
+            else:
+                tm_to_id_dict[rule_tm] = rule_id
+                tm_to_id_list_dict[rule_tm] = [rule_id]
+
+        # for quoted maps and ref object maps, add a new rule for each normalized rule they are referencing
+        for position in ['subject', 'object']:
+            quoted_tm_df = self.mappings_df.loc[
+                self.mappings_df[f'{position}_map_type'].isin([RML_STAR_QUOTED_TRIPLES_MAP, R2RML_PARENT_TRIPLES_MAP])]
+            for i, mapping_rule in quoted_tm_df.iterrows():
+                for tm_id in tm_to_id_list_dict[mapping_rule[f'{position}_map_value']]:
+                    mapping_rule[f'{position}_map_value'] = tm_id
+                    self.mappings_df = pd.concat([self.mappings_df, mapping_rule.to_frame().T], ignore_index=True)
+
+        # replace the old references with to triples maps with the new ids of the tiples maps
+        # this generates duplicates with the newly added rules, remove the duplicates
+        self.mappings_df['subject_map_value'] = self.mappings_df['subject_map_value'].map(tm_to_id_dict).fillna(
+            self.mappings_df['subject_map_value'])
+        self.mappings_df['object_map_value'] = self.mappings_df['object_map_value'].map(tm_to_id_dict).fillna(
+            self.mappings_df['object_map_value'])
+        self.mappings_df = self.mappings_df.drop_duplicates()
+
+        # replace the old triples map ids with the new ids
+        self.mappings_df['triples_map_id'] = self.mappings_df['id']
+        self.mappings_df['id'] = range(len(self.mappings_df))
