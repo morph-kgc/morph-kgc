@@ -371,7 +371,7 @@ def _materialize_mapping_group_to_file(mapping_group_df, mappings_df, config):
         data = _materialize_mapping_rule(mapping_rule, mappings_df, config)
         triples.update(set(data['triple']))
 
-        logging.debug(f"{len(triples)} triples generated for mapping rule `{mapping_rule['id']}` "
+        logging.debug(f"{len(triples)} triples generated for mapping rule `{mapping_rule['triples_map_id']}` "
                       f"in {get_delta_time(start_time)} seconds.")
 
     triples_to_file(triples, config, mapping_group_df.iloc[0]['mapping_partition'])

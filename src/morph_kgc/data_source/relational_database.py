@@ -175,7 +175,7 @@ def get_sql_data(config, mapping_rule, references):
     db_connection, db_dialect = _relational_db_connection(config, mapping_rule['source_name'])
     sql_query = _replace_query_enclosing_characters(sql_query, db_dialect)
 
-    logging.debug(f"SQL query for mapping rule `{mapping_rule['id']}`: [{sql_query}]")
+    logging.debug(f"SQL query for mapping rule `{mapping_rule['triples_map_id']}`: [{sql_query}]")
 
     return pd.read_sql(sql_query, con=db_connection, coerce_float=False)
 
