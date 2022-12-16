@@ -1,0 +1,8 @@
+<http://example/a> <http://example/q2> << <http://example/s> <http://example/p1> <http://example/o> >> .
+<< <http://example/a> <http://example/q1> << <http://example/s> <http://example/p1> <http://example/o> >> >> <http://example/r> <http://example/z> .
+<http://example/s> <http://example/p1> <http://example/o> .
+<http://example/a> <http://example/q1> << <http://example/s> <http://example/p1> <http://example/o> >> .
+<http://example/a> <http://example/q1> << <http://example/s> <http://example/p2> <http://example/o> >> .
+<< <http://example/a> <http://example/q2> << <http://example/s> <http://example/p1> <http://example/o> >> >> <http://example/r> <http://example/z> .
+<http://example/a> <http://example/q2> << <http://example/s> <http://example/p2> <http://example/o> >> .
+<http://example/s> <http://example/p2> <http://example/o> .
