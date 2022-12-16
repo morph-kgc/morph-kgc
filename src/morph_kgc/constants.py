@@ -16,20 +16,10 @@ NO_PARTITIONING = ['NO', 'FALSE', 'OFF', '0']
 
 
 ##############################################################################
-########################   MAPPING PARTITION OPTIONS   #######################
-##############################################################################
-
-PARTIAL_AGGREGATIONS_PARTITIONING = 'PARTIAL-AGGREGATIONS'
-MAXIMAL_PARTITIONING = 'MAXIMAL'
-NO_PARTITIONING = ['NO', 'FALSE', 'OFF', '0']
-
-
-##############################################################################
 #########################   DATA SOURCE TYPES   ##############################
 ##############################################################################
 
 # data files
-TV = 'TV'   # RML Tabular View
 CSV = 'CSV'
 TSV = 'TSV'
 EXCEL = ['XLS', 'XLSX', 'XLSM', 'XLSB']
@@ -52,7 +42,7 @@ ORACLE = 'ORACLE'
 POSTGRESQL = 'POSTGRESQL'
 SQLITE = 'SQLITE'
 
-FILE_SOURCE_TYPES = [TV, CSV, TSV, PARQUET, ORC, STATA, SPSS, JSON, XML] + EXCEL + FEATHER + SAS + ODS
+FILE_SOURCE_TYPES = [CSV, TSV, PARQUET, ORC, STATA, SPSS, JSON, XML] + EXCEL + FEATHER + SAS + ODS
 DATA_SOURCE_TYPES = [RDB] + FILE_SOURCE_TYPES
 
 # RDF serializations
@@ -106,10 +96,10 @@ R2RML_SUBJECT_MAP = f'{R2RML_NAMESPACE}subjectMap'
 R2RML_PREDICATE_MAP = f'{R2RML_NAMESPACE}predicateMap'
 R2RML_OBJECT_MAP = f'{R2RML_NAMESPACE}objectMap'
 R2RML_GRAPH_MAP = f'{R2RML_NAMESPACE}graphMap'
-R2RML_SUBJECT_CONSTANT_SHORTCUT = f'{R2RML_NAMESPACE}subject'
-R2RML_PREDICATE_CONSTANT_SHORTCUT = f'{R2RML_NAMESPACE}predicate'
-R2RML_OBJECT_CONSTANT_SHORTCUT = f'{R2RML_NAMESPACE}object'
-R2RML_GRAPH_CONSTANT_SHORTCUT = f'{R2RML_NAMESPACE}graph'
+R2RML_SUBJECT_SHORTCUT = f'{R2RML_NAMESPACE}subject'
+R2RML_PREDICATE_SHORTCUT = f'{R2RML_NAMESPACE}predicate'
+R2RML_OBJECT_SHORTCUT = f'{R2RML_NAMESPACE}object'
+R2RML_GRAPH_SHORTCUT = f'{R2RML_NAMESPACE}graph'
 R2RML_PREDICATE_OBJECT_MAP = f'{R2RML_NAMESPACE}predicateObjectMap'
 R2RML_CONSTANT = f'{R2RML_NAMESPACE}constant'
 R2RML_TEMPLATE = f'{R2RML_NAMESPACE}template'
@@ -154,7 +144,7 @@ QL_XML = f'{QL_NAMESPACE}XPath'
 
 
 ##############################################################################
-############################   RML-star SPECIFICATION   ###########################
+############################   RML-star SPECIFICATION   ######################
 ##############################################################################
 
 # classes
@@ -165,11 +155,47 @@ RML_STAR_NON_ASSERTED_TRIPLES_MAP_CLASS = f'{RML_NAMESPACE}NonAssertedTriplesMap
 RML_STAR_QUOTED_TRIPLES_MAP = f'{RML_NAMESPACE}quotedTriplesMap'
 RML_STAR_SUBJECT_MAP = f'{RML_NAMESPACE}subjectMap'
 RML_STAR_OBJECT_MAP = f'{RML_NAMESPACE}objectMap'
-RML_STAR_SUBJECT_CONSTANT_SHORTCUT = f'{RML_NAMESPACE}subject'
-RML_STAR_OBJECT_CONSTANT_SHORTCUT = f'{RML_NAMESPACE}object'
+RML_STAR_SUBJECT_SHORTCUT = f'{RML_NAMESPACE}subject'
+RML_STAR_OBJECT_SHORTCUT = f'{RML_NAMESPACE}object'
 
 # other
 RML_STAR_RDF_STAR_TRIPLE = f'{RML_NAMESPACE}RDFstarTriple'
+
+
+##############################################################################
+############################   RML+FnO SPECIFICATION   #######################
+##############################################################################
+
+FNO_NAMESPACE = 'https://w3id.org/function/ontology#'
+FNML_NAMESPACE = 'http://semweb.mmlab.be/ns/fnml#'
+
+# FnO classes
+FNO_FUNCTION = f'{FNO_NAMESPACE}Function'
+FNO_EXECUTION = f'{FNO_NAMESPACE}Execution'
+FNO_PARAMETER = f'{FNO_NAMESPACE}Parameter'
+FNO_OUTPUT = f'{FNO_NAMESPACE}Output'
+
+# FnO properties
+FNO_EXECUTES = f'{FNO_NAMESPACE}executes'
+FNO_PREDICATE = f'{FNO_NAMESPACE}predicate'
+FNO_TYPE = f'{FNO_NAMESPACE}type'
+FNO_REQUIRED = f'{FNO_NAMESPACE}required'
+FNO_NAME = f'{FNO_NAMESPACE}name'
+FNO_SOLVES = f'{FNO_NAMESPACE}solves'
+FNO_EXPECTS = f'{FNO_NAMESPACE}expects'
+FNO_RETURNS = f'{FNO_NAMESPACE}returns'
+
+# FNML properties
+FNML_EXECUTION = f'{FNML_NAMESPACE}execution'
+FNML_INPUT = f'{FNML_NAMESPACE}input'
+FNML_FUNCTION_MAP = f'{FNML_NAMESPACE}functionMap'
+FNML_RETURN_MAP = f'{FNML_NAMESPACE}returnMap'
+FNML_PARAMETER_MAP = f'{FNML_NAMESPACE}parameterMap'
+FNML_VALUE_MAP = f'{FNML_NAMESPACE}valueMap'
+FNML_FUNCTION_SHORTCUT = f'{FNML_NAMESPACE}function'
+FNML_RETURN_SHORTCUT = f'{FNML_NAMESPACE}return'
+FNML_PARAMETER_SHORTCUT = f'{FNML_NAMESPACE}parameter'
+FNML_VALUE_SHORTCUT = f'{FNML_NAMESPACE}value'
 
 
 ##############################################################################

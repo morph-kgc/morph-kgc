@@ -17,7 +17,7 @@ from .args_parser import load_config_from_command_line
 from .materializer import _materialize_mapping_group_to_file
 from .data_source.relational_database import setup_oracle
 from .utils import get_delta_time
-from .mapping.mapping_parser import retrieve_mappings
+from .mapping.rml_parser import retrieve_mappings
 from .constants import R2RML_TRIPLES_MAP_CLASS
 from .utils import prepare_output_files
 

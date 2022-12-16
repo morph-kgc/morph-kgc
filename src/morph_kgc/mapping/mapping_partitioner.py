@@ -7,8 +7,6 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 
 import logging
-import pandas as pd
-import numpy as np
 import multiprocessing as mp
 
 from itertools import permutations
