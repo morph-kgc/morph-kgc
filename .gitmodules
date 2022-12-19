@@ -1,6 +1,0 @@
-[submodule "test-cases/r2rml-test-cases"]
-	path = test-cases/r2rml-test-cases
-	url = https://github.com/kg-construct/r2rml-test-cases-support.git
-[submodule "test-cases/rml-test-cases"]
-	path = test-cases/rml-test-cases
-	url = https://github.com/kg-construct/rml-test-cases-support.git
