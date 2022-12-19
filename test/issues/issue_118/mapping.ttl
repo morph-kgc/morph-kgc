@@ -34,7 +34,7 @@
 	rdf:type void:Dataset .
 
 :s_000 rdf:type rr:SubjectMap ;
-	rr:template "https://data.hetarchief.be/id/object/{premis:object/premis:objectIdentifier/premis:objectIdentifierValue/text()}" .
+	rr:template "https://data.hetarchief.be/id/object/{premis:object/premis:objectIdentifier/premis:objectIdentifierValue}" .
 
 :source_000 rml:iterator "/premis:premis" ;
 	rml:referenceFormulation ql:XPath ;
