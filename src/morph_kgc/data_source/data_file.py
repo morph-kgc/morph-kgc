@@ -202,7 +202,7 @@ def _read_xml(mapping_rule, references):
                 attribute = None
 
             if element:
-                for r in e.findall(element):
+                for r in e.findall(element, namespaces=namespaces):
                     if attribute:
                         data_value.append(r.get(attribute))
                     else:

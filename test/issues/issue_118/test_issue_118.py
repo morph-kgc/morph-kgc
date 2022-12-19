@@ -6,7 +6,7 @@ __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"
 
 
-"""
+
 import os
 import morph_kgc
 
@@ -23,4 +23,4 @@ def test_issue_118():
     g_morph = morph_kgc.materialize(config)
 
     assert compare.isomorphic(g, g_morph)
-"""
+
