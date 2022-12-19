@@ -28,13 +28,13 @@ if __name__ == "__main__":
 
     setup_oracle(config)
 
-    mappings_df = retrieve_mappings(config)
+    rml_df, fno_df = retrieve_mappings(config)
 
     # keep only asserted mapping rules
-    asserted_mapping_df = mappings_df.loc[mappings_df['triples_map_type'] == R2RML_TRIPLES_MAP_CLASS]
+    asserted_mapping_df = rml_df.loc[rml_df['triples_map_type'] == R2RML_TRIPLES_MAP_CLASS]
     mapping_groups = [group for _, group in asserted_mapping_df.groupby(by='mapping_partition')]
 
-    prepare_output_files(config, mappings_df)
+    prepare_output_files(config, rml_df)
 
     start_time = time.time()
     num_triples = 0
@@ -43,12 +43,12 @@ if __name__ == "__main__":
 
         pool = mp.Pool(config.get_number_of_processes())
         num_triples = sum(
-            pool.starmap(_materialize_mapping_group_to_file, zip(mapping_groups, repeat(mappings_df), repeat(config))))
+            pool.starmap(_materialize_mapping_group_to_file, zip(mapping_groups, repeat(rml_df), repeat(fno_df), repeat(config))))
         pool.close()
         pool.join()
     else:
         for mapping_group in mapping_groups:
-            num_triples += _materialize_mapping_group_to_file(mapping_group, mappings_df, config)
+            num_triples += _materialize_mapping_group_to_file(mapping_group, rml_df, fno_df, config)
 
     logging.info(f'Number of triples generated in total: {num_triples}.')
     logging.info(f'Materialization finished in {get_delta_time(start_time)} seconds.')

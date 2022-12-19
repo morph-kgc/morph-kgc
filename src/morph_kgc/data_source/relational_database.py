@@ -119,20 +119,20 @@ def _get_column_table_datatype(config, source_name, table_name, column_name):
     return None
 
 
-def get_rdb_reference_datatype(config, mapping_rule, reference):
+def get_rdb_reference_datatype(config, rml_rule, reference):
     inferred_data_type = ''
 
-    if mapping_rule['logical_source_type'] == R2RML_TABLE_NAME:
-        inferred_data_type = _get_column_table_datatype(config, mapping_rule['source_name'],
-                                                        mapping_rule['logical_source_value'], reference)
-    elif mapping_rule['logical_source_type'] == RML_QUERY:
+    if rml_rule['logical_source_type'] == R2RML_TABLE_NAME:
+        inferred_data_type = _get_column_table_datatype(config, rml_rule['source_name'],
+                                                        rml_rule['logical_source_value'], reference)
+    elif rml_rule['logical_source_type'] == RML_QUERY:
         # if mapping rule has a query, get the table names in the query
-        table_names = sql_metadata.Parser(mapping_rule['logical_source_value']).tables
+        table_names = sql_metadata.Parser(rml_rule['logical_source_value']).tables
         for table_name in table_names:
             # for each table in the query get the datatype of the object reference in that table if an
             # exception is thrown, then the reference is not a column in that table, and nothing is done
             try:
-                inferred_data_type = _get_column_table_datatype(config, mapping_rule['source_name'],
+                inferred_data_type = _get_column_table_datatype(config, rml_rule['source_name'],
                                                                 table_name, reference)
                 if inferred_data_type:
                     # already found it, end looping
@@ -143,20 +143,20 @@ def get_rdb_reference_datatype(config, mapping_rule, reference):
     return inferred_data_type
 
 
-def _build_sql_query(mapping_rule, references):
+def _build_sql_query(rml_rule, references):
     """
     Build a query for MYSQL using backticks '`' as enclosing character. This character will later be replaced with the
     one corresponding one to the dialect that applies. It also takes care of schema-qualified names.
     """
 
-    if mapping_rule['logical_source_type'] == RML_QUERY:
-        query = mapping_rule['logical_source_value']
-    elif mapping_rule['logical_source_type'] == R2RML_TABLE_NAME and len(references) > 0:
+    if rml_rule['logical_source_type'] == RML_QUERY:
+        query = rml_rule['logical_source_value']
+    elif rml_rule['logical_source_type'] == R2RML_TABLE_NAME and len(references) > 0:
         query = 'SELECT ' # + 'DISTINCT ' # TODO: is this more efficient?
         # replacements of `.` to deal with schema-qualified names (see issue #89)
         for reference in references:
             query = f"{query}`{reference.replace('.', '`.`')}`, "
-        query = f"{query[:-2]} FROM `{mapping_rule['logical_source_value'].replace('.', '`.`')}` WHERE "
+        query = f"{query[:-2]} FROM `{rml_rule['logical_source_value'].replace('.', '`.`')}` WHERE "
         for reference in references:
             query = f"{query}`{reference.replace('.', '`.`')}` IS NOT NULL AND "
         query = query[:-5]
@@ -166,16 +166,16 @@ def _build_sql_query(mapping_rule, references):
     return query
 
 
-def get_sql_data(config, mapping_rule, references):
-    sql_query = _build_sql_query(mapping_rule, references)
+def get_sql_data(config, rml_rule, references):
+    sql_query = _build_sql_query(rml_rule, references)
     if sql_query is None:
         # in case all term maps are constants e.g. R2RML test case R2RMLTC0006a
         return pd.DataFrame(columns=list(references))
 
-    db_connection, db_dialect = _relational_db_connection(config, mapping_rule['source_name'])
+    db_connection, db_dialect = _relational_db_connection(config, rml_rule['source_name'])
     sql_query = _replace_query_enclosing_characters(sql_query, db_dialect)
 
-    logging.debug(f"SQL query for mapping rule `{mapping_rule['triples_map_id']}`: [{sql_query}]")
+    logging.debug(f"SQL query for mapping rule `{rml_rule['triples_map_id']}`: [{sql_query}]")
 
     return pd.read_sql(sql_query, con=db_connection, coerce_float=False)
 
