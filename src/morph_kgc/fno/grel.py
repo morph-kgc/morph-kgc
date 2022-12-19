@@ -10,12 +10,16 @@ functions_dict = {}
 
 
 def fno(fun_id, **params):
-   def wrapper(funct):
-      functions_dict[fun_id] = {}
-      functions_dict[fun_id]['function'] = funct
-      functions_dict[fun_id]['parameters'] = params
-      return funct
-   return wrapper
+    """
+    We borrow the idea of using decorators from pyRML by Andrea Giovanni Nuzzolese.
+    """
+
+    def wrapper(funct):
+        functions_dict[fun_id] = {}
+        functions_dict[fun_id]['function'] = funct
+        functions_dict[fun_id]['parameters'] = params
+        return funct
+    return wrapper
 
 
 @fno(
