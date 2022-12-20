@@ -9,9 +9,19 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 import sys
 import logging
 
-from .grel import *
+from importlib.machinery import SourceFileLoader
+
+from .grel import grel_dict
 from ..utils import get_fno_execution
 from ..constants import FNML_EXECUTION, R2RML_TEMPLATE
+
+
+def load_udfs(config):
+    if config.get_udfs():
+        udf_module = SourceFileLoader("udf", config.get_udfs()).load_module()
+        udf_dict = udf_module.udf_dict
+    else:
+        udf_dict = {}
 
 
 def execute_fno(data, fno_df, fno_execution):
@@ -19,8 +29,14 @@ def execute_fno(data, fno_df, fno_execution):
     function_id = execution_rule_df.iloc[0]['function_map_value']
     execution_id = execution_rule_df.iloc[0]['execution']
 
-    function = functions_dict[function_id]['function']
-    function_parameters = functions_dict[function_id]['parameters']
+    if function_id in grel_dict:
+        function = grel_dict[function_id]['function']
+        function_parameters = grel_dict[function_id]['parameters']
+    else:
+        udf_module = SourceFileLoader("udf", '/home/jarenas/PycharmProjects/morph-kgc/testing/test.py').load_module()
+        udf_dict = udf_module.udf_dict
+        function = udf_dict[function_id]['function']
+        function_parameters = udf_dict[function_id]['parameters']
 
     for i, execution_rule in execution_rule_df.iterrows():
         if execution_rule['value_map_type'] == FNML_EXECUTION:
