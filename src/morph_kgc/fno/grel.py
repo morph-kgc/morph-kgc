@@ -34,3 +34,10 @@ def to_lower_case(text):
     text='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter')
 def to_upper_case(text):
     return text.upper()
+
+
+@fno(
+    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#strip',
+    text='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter')
+def strip(text):
+    return text.strip()

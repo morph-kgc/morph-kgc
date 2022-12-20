@@ -33,6 +33,6 @@ def execute_fno(data, fno_df, fno_execution):
     for key, value in function_parameters.items():
         function_parameters[key] = parameter_to_value_dict[value]
 
-    data[execution_id] = data[function_parameters.values()].apply(lambda x: function(*function_parameters), axis=1)
+    data[execution_id] = data[function_parameters.values()].apply(lambda x: function(**function_parameters), axis=1)
 
     return data
