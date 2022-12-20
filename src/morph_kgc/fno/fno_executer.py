@@ -23,8 +23,10 @@ def load_udfs(config):
     else:
         udf_dict = {}
 
+    return udf_dict
 
-def execute_fno(data, fno_df, fno_execution):
+
+def execute_fno(data, fno_df, fno_execution, config):
     execution_rule_df = get_fno_execution(fno_df, fno_execution)
     function_id = execution_rule_df.iloc[0]['function_map_value']
     execution_id = execution_rule_df.iloc[0]['execution']
@@ -33,14 +35,13 @@ def execute_fno(data, fno_df, fno_execution):
         function = grel_dict[function_id]['function']
         function_parameters = grel_dict[function_id]['parameters']
     else:
-        udf_module = SourceFileLoader("udf", '/home/jarenas/PycharmProjects/morph-kgc/testing/test.py').load_module()
-        udf_dict = udf_module.udf_dict
+        udf_dict = load_udfs(config)
         function = udf_dict[function_id]['function']
         function_parameters = udf_dict[function_id]['parameters']
 
     for i, execution_rule in execution_rule_df.iterrows():
         if execution_rule['value_map_type'] == FNML_EXECUTION:
-            data = execute_fno(data, fno_df, execution_rule['value_map_value'])
+            data = execute_fno(data, fno_df, execution_rule['value_map_value'], config)
         elif execution_rule['value_map_type'] == R2RML_TEMPLATE:
             logging.error('Value maps that are rr:template are not supported yet.')
             sys.exit()

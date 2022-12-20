@@ -13,7 +13,6 @@ import multiprocessing as mp
 
 from itertools import repeat
 
-from .fno.fno_executer import load_udfs
 from .args_parser import load_config_from_command_line
 from .materializer import _materialize_mapping_group_to_file
 from .data_source.relational_database import setup_oracle
@@ -36,7 +35,6 @@ if __name__ == "__main__":
     mapping_groups = [group for _, group in asserted_mapping_df.groupby(by='mapping_partition')]
 
     prepare_output_files(config, rml_df)
-    load_udfs(config)
 
     start_time = time.time()
     num_triples = 0

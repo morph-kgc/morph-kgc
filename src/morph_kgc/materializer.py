@@ -188,7 +188,7 @@ def _materialize_reference(results_df, reference, config, position, columns_alia
 def _materialize_fno_execution(results_df, fno_execution, fno_df, config, position, columns_alias='', termtype=R2RML_LITERAL, language_tag='', datatype=''):
     # TODO: handle column_alias?
 
-    results_df = execute_fno(results_df, fno_df, fno_execution)
+    results_df = execute_fno(results_df, fno_df, fno_execution, config)
 
     if config.only_write_printable_characters():
         results_df[fno_execution] = results_df[fno_execution].apply(lambda x: remove_non_printable_characters(x))
