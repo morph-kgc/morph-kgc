@@ -65,7 +65,7 @@ RML_PARSING_QUERY = """
             ?triples_map_id rr:predicateObjectMap ?_predicate_object_map .
             ?_predicate_object_map rr:predicateMap ?_predicate_map .
             ?_predicate_map ?predicate_map_type ?predicate_map_value .
-            FILTER ( ?predicate_map_type IN ( rr:constant, rr:template, rml:reference ) ) .
+            FILTER ( ?predicate_map_type IN ( rr:constant, rr:template, rml:reference, fnml:execution ) ) .
 
     # Object --------------------------------------------------------------------------
             OPTIONAL {
@@ -84,7 +84,7 @@ RML_PARSING_QUERY = """
             OPTIONAL {
                 ?_predicate_object_map rr:graphMap ?graph_map .
                 ?graph_map ?graph_map_type ?graph_map_value .
-                FILTER ( ?graph_map_type IN ( rr:constant, rr:template, rml:reference ) ) .
+                FILTER ( ?graph_map_type IN ( rr:constant, rr:template, rml:reference, fnml:execution ) ) .
             }
         }
     }
@@ -125,13 +125,15 @@ FNO_PARSING_QUERY = """
 
     # Input ---------------------------------------------------------------------------
 
-        ?execution fnml:input ?input .
-
-        ?input fnml:parameterMap ?parameter_map .
-        ?parameter_map rr:constant ?parameter_map_value .
-
-        ?input fnml:valueMap ?value_map .
-        ?value_map ?value_map_type ?value_map_value .
-        FILTER ( ?value_map_type IN ( rr:constant, rr:template, rml:reference, fnml:execution ) ) .
+        OPTIONAL {  # OPTIONAL because a function can have 0 arguments (e.g., uuid())
+            ?execution fnml:input ?input .
+    
+            ?input fnml:parameterMap ?parameter_map .
+            ?parameter_map rr:constant ?parameter_map_value .
+    
+            ?input fnml:valueMap ?value_map .
+            ?value_map ?value_map_type ?value_map_value .
+            FILTER ( ?value_map_type IN ( rr:constant, rr:template, rml:reference, fnml:execution ) ) .
+        }
     }
 """

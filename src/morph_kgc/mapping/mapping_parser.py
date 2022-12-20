@@ -87,7 +87,7 @@ def _expand_constant_shortcut_properties(mapping_graph):
         FNML_FUNCTION_SHORTCUT: FNML_FUNCTION_MAP,
         FNML_RETURN_SHORTCUT: FNML_RETURN_MAP,
         FNML_PARAMETER_SHORTCUT: FNML_PARAMETER_MAP,
-        FNML_VALUE_SHORTCUT: FNML_VALUE_SHORTCUT
+        FNML_VALUE_SHORTCUT: FNML_VALUE_MAP
     }
 
     for constant_shortcut, constant_property in constant_shortcuts_dict.items():

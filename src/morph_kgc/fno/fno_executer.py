@@ -9,12 +9,14 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 import sys
 import logging
 
+import pandas as pd
+
 from importlib.machinery import SourceFileLoader
 
 from .built_in_vectorized import biv_dict
 from .built_in_scalar import bis_dict
 from ..utils import get_fno_execution
-from ..constants import FNML_EXECUTION, R2RML_TEMPLATE
+from ..constants import FNML_EXECUTION, R2RML_TEMPLATE, R2RML_CONSTANT
 
 
 def load_udfs(config):
@@ -40,7 +42,8 @@ def execute_fno(data, fno_df, fno_execution, config):
             logging.error('Value maps that are rr:template are not supported yet.')
             sys.exit()
 
-    parameter_to_value_dict = dict(zip(execution_rule_df['parameter_map_value'], execution_rule_df['value_map_value']))
+    parameter_to_value_type_dict = dict(zip(execution_rule_df['parameter_map_value'], execution_rule_df['value_map_type']))
+    parameter_to_value_value_dict = dict(zip(execution_rule_df['parameter_map_value'], execution_rule_df['value_map_value']))
 
     # prepare function and execute
     if function_id in biv_dict:
@@ -48,7 +51,12 @@ def execute_fno(data, fno_df, fno_execution, config):
         function_parameters = biv_dict[function_id]['parameters']
 
         for key, value in function_parameters.items():
-            function_parameters[key] = data[parameter_to_value_dict[value]]
+            if parameter_to_value_type_dict[value] == R2RML_CONSTANT:
+                constant_value = parameter_to_value_value_dict[value]
+                function_parameters[key] = pd.Series([constant_value for _ in range(len(data))])
+            else:
+                # TODO: what if template?
+                function_parameters[key] = data[parameter_to_value_value_dict[value]]
         data[execution_id] = function(**function_parameters)
     else:
         if function_id in bis_dict:
@@ -59,13 +67,16 @@ def execute_fno(data, fno_df, fno_execution, config):
             function = udf_dict[function_id]['function']
             function_parameters = udf_dict[function_id]['parameters']
 
-        for key, value in function_parameters.items():
-            function_parameters[key] = parameter_to_value_dict[value]
-
         for i, row in data.iterrows():
-            params = {}
+            scalar_params = {}
             for key, value in function_parameters.items():
-                params[key] = row[value]
-            data.at[i, execution_id] = function(**params)
+                if parameter_to_value_type_dict[value] == R2RML_CONSTANT:
+                    scalar_params[key] = parameter_to_value_value_dict[value]
+                else:
+                    # TODO: what if template?
+                    scalar_params[key] = row[parameter_to_value_value_dict[value]]
+
+            data.at[i, execution_id] = function(**scalar_params)
 
     return data
+

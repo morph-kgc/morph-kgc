@@ -61,8 +61,6 @@ def _get_references_in_rml_rule(rml_rule, rml_df, fno_df, only_subject_map=False
         references.extend(get_references_in_template(rml_rule['subject_map_value']))
     elif rml_rule['subject_map_type'] == RML_REFERENCE:
         references.append(rml_rule['subject_map_value'])
-    elif rml_rule['subject_map_type'] == FNML_EXECUTION:
-        references.append(rml_rule['subject_map_value'])
 
     if not only_subject_map:
         if rml_rule['predicate_map_type'] == R2RML_TEMPLATE:
@@ -404,6 +402,8 @@ def _materialize_rml_rule(rml_rule, rml_df, fno_df, config, data=None, parent_jo
             data = _materialize_constant(data, rml_rule['graph_map_value'], 'graph')
         elif rml_rule['graph_map_type'] == RML_REFERENCE:
             data = _materialize_reference(data, rml_rule['graph_map_value'], config, 'graph', termtype=R2RML_IRI)
+        elif rml_rule['graph_map_type'] == FNML_EXECUTION:
+            data = _materialize_fno_execution(data, rml_rule['graph_map_value'], fno_df, config, 'graph', termtype=R2RML_IRI)
         else:
             data['graph'] = ''
         data['triple'] = data['triple'] + ' ' + data['graph']

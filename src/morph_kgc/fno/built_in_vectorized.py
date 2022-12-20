@@ -10,7 +10,7 @@ biv_dict = {}
 
 
 ##############################################################################
-########################   GREL   ############################################
+########################   BUILT-IN VECTORIZED FUNCTION DECORATOR   ##########
 ##############################################################################
 
 
@@ -27,26 +27,23 @@ def biv(fun_id, **params):
     return wrapper
 
 
+##############################################################################
+########################   GREL   ############################################
+##############################################################################
+
+
 @biv(
-    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#toLowercase',
-    text_series='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter')
+    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#toLowerCase',
+    text_series='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam')
 def to_lower_case(text_series):
     return text_series.str.lower()
 
 
 @biv(
-    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#toUppercase',
-    text_series='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter')
+    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#toUpperCase',
+    text_series='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam')
 def to_upper_case(text_series):
     return text_series.str.upper()
-
-
-@biv(
-    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#concat',
-    text_series_1='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter1',
-    text_series_2='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter2')
-def concat(text_series_1, text_series_2):
-    return text_series_1 + text_series_2
 
 
 ##############################################################################
