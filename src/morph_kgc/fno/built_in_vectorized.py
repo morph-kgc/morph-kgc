@@ -43,7 +43,7 @@ def to_lower_case(text_series):
     fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#toUpperCase',
     text_series='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam')
 def to_upper_case(text_series):
-    return text_series.str.upper()
+    return text_series
 
 
 ##############################################################################

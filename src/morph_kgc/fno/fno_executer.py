@@ -51,6 +51,8 @@ def execute_fno(data, fno_df, fno_execution, config):
         function_parameters = biv_dict[function_id]['parameters']
 
         for key, value in function_parameters.items():
+            print(parameter_to_value_type_dict)
+            print(value)
             if parameter_to_value_type_dict[value] == R2RML_CONSTANT:
                 constant_value = parameter_to_value_value_dict[value]
                 function_parameters[key] = pd.Series([constant_value for _ in range(len(data))])

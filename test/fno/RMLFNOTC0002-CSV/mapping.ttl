@@ -14,7 +14,7 @@
 
 <TriplesMap1>
     rml:logicalSource [
-        rml:source "test/fno/RMLFNOTC0002-CSV/student.csv";
+        rml:source "student.csv";
         rml:referenceFormulation ql:CSV
     ];
     rr:subjectMap [
