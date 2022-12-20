@@ -194,10 +194,11 @@ def _complete_termtypes(mapping_graph):
     query = 'SELECT DISTINCT ?om ?pom WHERE { ' \
             f'?pom <{RML_STAR_OBJECT_MAP}> ?om . ' \
             f'OPTIONAL {{ ?om <{R2RML_TERM_TYPE}> ?termtype . }} . ' \
-            f'OPTIONAL {{ ?om <{RML_REFERENCE}> ?column . }} . ' \
+            f'OPTIONAL {{ ?om <{RML_REFERENCE}> ?reference . }} . ' \
+            f'OPTIONAL {{ ?om <{FNML_EXECUTION}> ?execution . }} . ' \
             f'OPTIONAL {{ ?om <{R2RML_LANGUAGE}> ?language . }} . ' \
             f'OPTIONAL {{ ?om <{R2RML_DATATYPE}> ?datatype . }} . ' \
-            'FILTER ( !bound(?termtype) && ( bound(?column) || bound(?language) || bound(?datatype) ) ) }'
+            'FILTER ( !bound(?termtype) && ( bound(?reference) || bound(?execution) || bound(?language) || bound(?datatype) ) ) }'
     for om, _ in mapping_graph.query(query):
         mapping_graph.add((om, rdflib.term.URIRef(R2RML_TERM_TYPE), rdflib.term.URIRef(R2RML_LITERAL)))
 
