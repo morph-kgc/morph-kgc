@@ -22,7 +22,7 @@ def biv(fun_id, **params):
     def wrapper(funct):
         biv_dict[fun_id] = {}
         biv_dict[fun_id]['function'] = funct
-        biv_dict[fun_id]['parameters'] = params.copy()
+        biv_dict[fun_id]['parameters'] = params
         return funct
     return wrapper
 
