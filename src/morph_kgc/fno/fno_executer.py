@@ -24,7 +24,7 @@ def execute_fno(data, fno_df, fno_execution):
 
     for i, execution_rule in execution_rule_df.iterrows():
         if execution_rule['value_map_type'] == FNML_EXECUTION:
-            data = execute_fno(data, fno_df, execution_rule['execution'])
+            data = execute_fno(data, fno_df, execution_rule['value_map_value'])
         elif execution_rule['value_map_type'] == R2RML_TEMPLATE:
             logging.error('Value maps that are rr:template are not supported yet.')
             sys.exit()
