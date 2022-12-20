@@ -31,8 +31,8 @@ def execute_fno(data, fno_df, fno_execution):
 
     parameter_to_value_dict = dict(zip(execution_rule_df['parameter_map_value'], execution_rule_df['value_map_value']))
     for key, value in function_parameters.items():
-        function_parameters[key] = parameter_to_value_dict[value]
+        function_parameters[key] = data[parameter_to_value_dict[value]]
 
-    data[execution_id] = data[function_parameters.values()].apply(lambda x: function(**function_parameters), axis=1)
+    data[execution_id] = function(**function_parameters)
 
     return data
