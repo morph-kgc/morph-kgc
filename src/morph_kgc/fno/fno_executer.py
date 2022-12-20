@@ -11,7 +11,8 @@ import logging
 
 from importlib.machinery import SourceFileLoader
 
-from .grel import grel_dict
+from .built_in_vectorized import biv_dict
+from .built_in_scalar import bis_dict
 from ..utils import get_fno_execution
 from ..constants import FNML_EXECUTION, R2RML_TEMPLATE
 
@@ -31,14 +32,7 @@ def execute_fno(data, fno_df, fno_execution, config):
     function_id = execution_rule_df.iloc[0]['function_map_value']
     execution_id = execution_rule_df.iloc[0]['execution']
 
-    if function_id in grel_dict:
-        function = grel_dict[function_id]['function']
-        function_parameters = grel_dict[function_id]['parameters']
-    else:
-        udf_dict = load_udfs(config)
-        function = udf_dict[function_id]['function']
-        function_parameters = udf_dict[function_id]['parameters']
-
+    # handle composite functions
     for i, execution_rule in execution_rule_df.iterrows():
         if execution_rule['value_map_type'] == FNML_EXECUTION:
             data = execute_fno(data, fno_df, execution_rule['value_map_value'], config)
@@ -47,9 +41,31 @@ def execute_fno(data, fno_df, fno_execution, config):
             sys.exit()
 
     parameter_to_value_dict = dict(zip(execution_rule_df['parameter_map_value'], execution_rule_df['value_map_value']))
-    for key, value in function_parameters.items():
-        function_parameters[key] = data[parameter_to_value_dict[value]]
 
-    data[execution_id] = function(**function_parameters)
+    # prepare function and execute
+    if function_id in biv_dict:
+        function = biv_dict[function_id]['function']
+        function_parameters = biv_dict[function_id]['parameters']
+
+        for key, value in function_parameters.items():
+            function_parameters[key] = data[parameter_to_value_dict[value]]
+        data[execution_id] = function(**function_parameters)
+    else:
+        if function_id in bis_dict:
+            function = bis_dict[function_id]['function']
+            function_parameters = bis_dict[function_id]['parameters']
+        else:
+            udf_dict = load_udfs(config)
+            function = udf_dict[function_id]['function']
+            function_parameters = udf_dict[function_id]['parameters']
+
+        for key, value in function_parameters.items():
+            function_parameters[key] = parameter_to_value_dict[value]
+
+        for i, row in data.iterrows():
+            params = {}
+            for key, value in function_parameters.items():
+                params[key] = row[value]
+            data.at[i, execution_id] = function(**params)
 
     return data

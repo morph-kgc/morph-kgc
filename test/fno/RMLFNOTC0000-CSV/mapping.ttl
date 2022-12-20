@@ -8,29 +8,33 @@
 @prefix ql: <http://semweb.mmlab.be/ns/ql#> .
 @prefix fnml:   <http://semweb.mmlab.be/ns/fnml#> .
 @prefix fno: 	<https://w3id.org/function/ontology#> .
-@prefix idlab-fn: <http://example.com/idlab/function/> .
+@prefix morph-kgc: <https://github.com/oeg-upm/morph-kgc/function/built-in.ttl#> .
 
 @base <http://example.com/base/> .
 
 <TriplesMap1>
-  a rr:TriplesMap;
+    rml:logicalSource [
+        rml:source "test/fno/RMLFNOTC0000-CSV/student.csv";
+        rml:referenceFormulation ql:CSV
+    ];
 
-  rml:logicalSource [
-    rml:source "../student.csv";
-    rml:referenceFormulation ql:CSV
-  ];
+    rr:subjectMap [
+        rr:template "http://example.com/{Name}"
+    ];
 
-  rr:subjectMap [
-    rr:template "http://example.com/{Name}"
-  ];
+    rr:predicateObjectMap [
+        rr:predicate foaf:name;
+        rr:objectMap [
+            fnml:execution <#Execution> ;
+        ]
+    ] .
 
-  rr:predicateObjectMap [
-    rr:predicate foaf:name;
-    rr:objectMap [
-      fnml:functionValue [
-      	rr:predicateObjectMap [
-      		rr:predicate fno:executes ;
-      		rr:objectMap [ rr:constant idlab-fn:random ] ]
-      ]
-    ]
-  ].
+<#Execution>
+    fnml:function moprh-kgc:uuid ;
+    fnml:input [
+        fnml:parameter grel:valueParam ;
+        fnml:valueMap [
+            fnml:execution <#Execution2> ; # Link to another function-valued term map to nest functions
+            fnml:return grel:stringOut
+        ]
+    ] .
