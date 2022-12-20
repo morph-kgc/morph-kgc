@@ -6,6 +6,9 @@ __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"
 
 
+import copy
+
+
 biv_dict = {}
 
 
@@ -22,7 +25,7 @@ def biv(fun_id, **params):
     def wrapper(funct):
         biv_dict[fun_id] = {}
         biv_dict[fun_id]['function'] = funct
-        biv_dict[fun_id]['parameters'] = params
+        biv_dict[fun_id]['parameters'] = copy.deepcopy(params)
         return funct
     return wrapper
 

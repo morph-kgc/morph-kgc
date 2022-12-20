@@ -50,13 +50,13 @@ def execute_fno(data, fno_df, fno_execution, config):
         function = biv_dict[function_id]['function']
         function_parameters = biv_dict[function_id]['parameters']
 
-        for k, v in function_parameters.items():
-            if parameter_to_value_type_dict[v] == R2RML_CONSTANT:
-                constant_value = parameter_to_value_value_dict[v]
-                function_parameters[k] = pd.Series([constant_value for _ in range(len(data))])
+        for key, value in function_parameters.items():
+            if parameter_to_value_type_dict[value] == R2RML_CONSTANT:
+                constant_value = parameter_to_value_value_dict[value]
+                function_parameters[key] = pd.Series([constant_value for _ in range(len(data))])
             else:
                 # TODO: what if template?
-                function_parameters[k] = data[parameter_to_value_value_dict[v]]
+                function_parameters[key] = data[parameter_to_value_value_dict[value]]
         data[execution_id] = function(**function_parameters)
     else:
         if function_id in bis_dict:
