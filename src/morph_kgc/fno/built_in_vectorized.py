@@ -22,7 +22,7 @@ def biv(fun_id, **params):
     def wrapper(funct):
         biv_dict[fun_id] = {}
         biv_dict[fun_id]['function'] = funct
-        biv_dict[fun_id]['parameters'] = params
+        biv_dict[fun_id]['parameters'] = params.copy()
         return funct
     return wrapper
 
@@ -43,7 +43,7 @@ def to_lower_case(text_series):
     fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#toUpperCase',
     text_series='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam')
 def to_upper_case(text_series):
-    return text_series
+    return text_series.str.upper()
 
 
 ##############################################################################
