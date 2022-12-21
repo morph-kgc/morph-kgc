@@ -66,24 +66,11 @@ def uuid():
 def to_upper_case_url(url):
     url_lower = url.lower()
 
-    if url.startswith('https://'):
+    if url_lower.startswith('https://'):
         return f'https://{encode_value(url[:8].upper())}'
-    elif url.startswith('http://'):
+    elif url_lower.startswith('http://'):
         return f'http://{encode_value(url[:7].upper())}'
 
     # else:
     return f'http://{encode_value(url.upper())}'
-
-@bis(
-    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#toLowerCase',
-    text_series='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam')
-def to_lower_case(text_series):
-    return text_series.lower()
-
-
-@bis(
-    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#toUpperCase',
-    text_series='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam')
-def to_upper_case(text_series):
-    return text_series.upper()
 
