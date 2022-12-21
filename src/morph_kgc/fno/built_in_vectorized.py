@@ -6,9 +6,6 @@ __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"
 
 
-import copy
-
-
 biv_dict = {}
 
 
@@ -22,10 +19,10 @@ def biv(fun_id, **params):
     We borrow the idea of using decorators from pyRML by Andrea Giovanni Nuzzolese.
     """
 
+    biv_dict[fun_id] = {}
+    biv_dict[fun_id]['parameters'] = params
     def wrapper(funct):
-        biv_dict[fun_id] = {}
         biv_dict[fun_id]['function'] = funct
-        biv_dict[fun_id]['parameters'] = copy.deepcopy(params)
         return funct
     return wrapper
 
