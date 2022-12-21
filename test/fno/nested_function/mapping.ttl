@@ -29,7 +29,7 @@
     ]; .
 
 <#Execution> a fnml:Execution ;
-    fnml:function grel:toUppercase ;
+    fnml:function grel:toUpperCase ;
     fnml:input
         [
             a fnml:Input ;
@@ -47,16 +47,16 @@
             a fnml:Input ;
             fnml:parameter grel:valueParam ;
             fnml:valueMap [
-                rml:reference "name"
+                rml:reference "Name"
             ]
         ] ,
         [
             a fnml:Input ;
-            fnml:input grel:param_find ;
+            fnml:parameter grel:param_find ;
             fnml:value " "
         ] ,
         [
             a fnml:Input ;
-            fnml:input grel:param_replace  ;
+            fnml:parameter grel:param_replace  ;
             fnml:value "-"
         ] .

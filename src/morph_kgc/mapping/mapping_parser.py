@@ -421,7 +421,6 @@ class MappingParser:
 
         # replace empty strings with NaN
         self.rml_df = self.rml_df.replace(r'^\s*$', np.nan, regex=True)
-        self.fno_df = self.fno_df.replace(r'^\s*$', np.nan, regex=True)
 
         # generate mapping partitions
         mapping_partitioner = MappingPartitioner(self.rml_df, self.config)

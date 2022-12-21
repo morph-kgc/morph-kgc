@@ -6,12 +6,6 @@ __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"
 
 
-import html
-
-from uuid import uuid4
-from falcon.uri import encode_value
-
-
 bif_dict = {}
 
 
@@ -40,22 +34,46 @@ def bif(fun_id, **params):
 
 @bif(
     fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#escape',
-    text='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam',
+    string='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam',
     mode='http://users.ugent.be/~bjdmeest/function/grel.ttl#modeParam')
-def escape(text, mode):
+def string_escape(string, mode):
     if mode == 'html':
-        return html.escape(text)
+        import html
+        return html.escape(string)
     else:
-        raise
+        # TODO: not valid mode
+        pass
+
+
+@bif(
+    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#string_split',
+    string='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam',
+    separator='http://users.ugent.be/~bjdmeest/function/grel.ttl#param_string_sep')
+def string_split(string, separator):
+    return string.split(separator)
 
 
 @bif(
     fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#string_replace',
-    text='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam',
+    string='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam',
     old_substring='http://users.ugent.be/~bjdmeest/function/grel.ttl#param_find',
     new_substring='http://users.ugent.be/~bjdmeest/function/grel.ttl#param_replace')
-def escape(text, old_substring, new_substring):
-    return text.replace(old_substring, new_substring)
+def string_replace(string, old_substring, new_substring):
+    return string.replace(old_substring, new_substring)
+
+
+@bif(
+    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#toLowerCase',
+    string='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam')
+def to_lower_case(string):
+    return string.lower()
+
+
+@bif(
+    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#toUpperCase',
+    string='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam')
+def to_upper_case(string):
+    return string.upper()
 
 
 ##############################################################################
@@ -66,6 +84,8 @@ def escape(text, old_substring, new_substring):
 @bif(
     fun_id='https://github.com/oeg-upm/morph-kgc/function/built-in.ttl#uuid')
 def uuid():
+    from uuid import uuid4
+
     return str(uuid4())
 
 
@@ -73,6 +93,8 @@ def uuid():
     fun_id='http://example.com/idlab/function/toUpperCaseURL',
     url='http://example.com/idlab/function/str')
 def to_upper_case_url(url):
+    from falcon.uri import encode_value
+
     url_lower = url.lower()
 
     if url_lower.startswith('https://'):
@@ -82,18 +104,3 @@ def to_upper_case_url(url):
 
     # else:
     return f'http://{encode_value(url.upper())}'
-
-
-@bif(
-    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#toLowerCase',
-    text_series='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam')
-def to_lower_case(text_series):
-    return text_series.lower()
-
-
-@bif(
-    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#toUpperCase',
-    text_series='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam')
-def to_upper_case(text_series):
-    return text_series.upper()
-

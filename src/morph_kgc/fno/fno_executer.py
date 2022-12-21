@@ -14,7 +14,7 @@ import pandas as pd
 from importlib.machinery import SourceFileLoader
 
 from .built_in_functions import bif_dict
-from ..utils import get_fno_execution
+from ..utils import get_fno_execution, remove_null_values_from_dataframe
 from ..constants import FNML_EXECUTION, R2RML_TEMPLATE, R2RML_CONSTANT
 
 
@@ -31,7 +31,6 @@ def load_udfs(config):
 def execute_fno(data, fno_df, fno_execution, config):
     execution_rule_df = get_fno_execution(fno_df, fno_execution)
     function_id = execution_rule_df.iloc[0]['function_map_value']
-    execution_id = execution_rule_df.iloc[0]['execution']
 
     # handle composite functions
     for i, execution_rule in execution_rule_df.iterrows():
@@ -67,9 +66,10 @@ def execute_fno(data, fno_df, fno_execution, config):
         for k, v in function_params.items():
             exec_params[k] = v[i]
         exec_res.append(function(**exec_params))
-    data[execution_id] = pd.Series(exec_res)
 
-    # TODO: remove null values if the execution of the function introduced them
+    # TODO: this can be avoided for many built-in functions
+    data = data.explode(fno_execution)
+    data = remove_null_values_from_dataframe(data, config, fno_execution)
 
     return data
 
