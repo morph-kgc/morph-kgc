@@ -74,3 +74,16 @@ def to_upper_case_url(url):
     # else:
     return f'http://{encode_value(url.upper())}'
 
+@bis(
+    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#toLowerCase',
+    text_series='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam')
+def to_lower_case(text_series):
+    return text_series.lower()
+
+
+@bis(
+    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#toUpperCase',
+    text_series='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam')
+def to_upper_case(text_series):
+    return text_series.upper()
+

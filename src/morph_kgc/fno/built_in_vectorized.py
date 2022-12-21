@@ -19,10 +19,10 @@ def biv(fun_id, **params):
     We borrow the idea of using decorators from pyRML by Andrea Giovanni Nuzzolese.
     """
 
-    biv_dict[fun_id] = {}
-    biv_dict[fun_id]['parameters'] = params
     def wrapper(funct):
+        biv_dict[fun_id] = {}
         biv_dict[fun_id]['function'] = funct
+        biv_dict[fun_id]['parameters'] = params
         return funct
     return wrapper
 
@@ -31,7 +31,7 @@ def biv(fun_id, **params):
 ########################   GREL   ############################################
 ##############################################################################
 
-
+"""
 @biv(
     fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#toLowerCase',
     text_series='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam')
@@ -44,6 +44,7 @@ def to_lower_case(text_series):
     text_series='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam')
 def to_upper_case(text_series):
     return text_series.str.upper()
+"""
 
 
 ##############################################################################

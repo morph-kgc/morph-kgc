@@ -78,5 +78,7 @@ def execute_fno(data, fno_df, fno_execution, config):
 
             data.at[i, execution_id] = function(**scalar_params)
 
+        # TODO: remove null values if the execution of the function introduced them
+
     return data
 
