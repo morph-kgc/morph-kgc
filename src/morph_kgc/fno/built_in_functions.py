@@ -12,7 +12,7 @@ from uuid import uuid4
 from falcon.uri import encode_value
 
 
-bis_dict = {}
+bif_dict = {}
 
 
 ##############################################################################
@@ -20,15 +20,15 @@ bis_dict = {}
 ##############################################################################
 
 
-def bis(fun_id, **params):
+def bif(fun_id, **params):
     """
     We borrow the idea of using decorators from pyRML by Andrea Giovanni Nuzzolese.
     """
 
     def wrapper(funct):
-        bis_dict[fun_id] = {}
-        bis_dict[fun_id]['function'] = funct
-        bis_dict[fun_id]['parameters'] = params
+        bif_dict[fun_id] = {}
+        bif_dict[fun_id]['function'] = funct
+        bif_dict[fun_id]['parameters'] = params
         return funct
     return wrapper
 
@@ -38,7 +38,7 @@ def bis(fun_id, **params):
 ##############################################################################
 
 
-@bis(
+@bif(
     fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#escape',
     text='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter',
     mode='http://users.ugent.be/~bjdmeest/function/grel.ttl#modeParameter')
@@ -54,13 +54,13 @@ def escape(text, mode):
 ##############################################################################
 
 
-@bis(
+@bif(
     fun_id='https://github.com/oeg-upm/morph-kgc/function/built-in.ttl#uuid')
 def uuid():
     return str(uuid4())
 
 
-@bis(
+@bif(
     fun_id='http://example.com/idlab/function/toUpperCaseURL',
     url='http://example.com/idlab/function/str')
 def to_upper_case_url(url):
@@ -74,14 +74,14 @@ def to_upper_case_url(url):
     # else:
     return f'http://{encode_value(url.upper())}'
 
-@bis(
+@bif(
     fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#toLowerCase',
     text_series='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam')
 def to_lower_case(text_series):
     return text_series.lower()
 
 
-@bis(
+@bif(
     fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#toUpperCase',
     text_series='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam')
 def to_upper_case(text_series):

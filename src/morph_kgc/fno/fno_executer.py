@@ -13,8 +13,7 @@ import pandas as pd
 
 from importlib.machinery import SourceFileLoader
 
-from .built_in_vectorized import biv_dict
-from .built_in_scalar import bis_dict
+from .built_in_functions import bif_dict
 from ..utils import get_fno_execution
 from ..constants import FNML_EXECUTION, R2RML_TEMPLATE, R2RML_CONSTANT
 
@@ -46,39 +45,31 @@ def execute_fno(data, fno_df, fno_execution, config):
     parameter_to_value_value_dict = dict(zip(execution_rule_df['parameter_map_value'], execution_rule_df['value_map_value']))
 
     # prepare function and execute
-    if function_id in biv_dict:
-        function = biv_dict[function_id]['function']
-        function_parameters = biv_dict[function_id]['parameters']
-
-        for key, value in function_parameters.items():
-            if parameter_to_value_type_dict[value] == R2RML_CONSTANT:
-                constant_value = parameter_to_value_value_dict[value]
-                function_parameters[key] = pd.Series([constant_value for _ in range(len(data))])
-            else:
-                # TODO: what if template?
-                function_parameters[key] = data[parameter_to_value_value_dict[value]]
-        data[execution_id] = function(**function_parameters)
+    if function_id in bif_dict:
+        function = bif_dict[function_id]['function']
+        function_decorator_parameters = bif_dict[function_id]['parameters']
     else:
-        if function_id in bis_dict:
-            function = bis_dict[function_id]['function']
-            function_parameters = bis_dict[function_id]['parameters']
+        udf_dict = load_udfs(config)
+        function = udf_dict[function_id]['function']
+        function_decorator_parameters = udf_dict[function_id]['parameters']
+
+    function_params = {}
+    for key, value in function_decorator_parameters.items():
+        if parameter_to_value_type_dict[value] == R2RML_CONSTANT:
+            function_params[key] = [parameter_to_value_value_dict[value]] * len(data)
         else:
-            udf_dict = load_udfs(config)
-            function = udf_dict[function_id]['function']
-            function_parameters = udf_dict[function_id]['parameters']
+            # TODO: what if template?
+            function_params[key] = list(data[parameter_to_value_value_dict[value]])
 
-        for i, row in data.iterrows():
-            scalar_params = {}
-            for key, value in function_parameters.items():
-                if parameter_to_value_type_dict[value] == R2RML_CONSTANT:
-                    scalar_params[key] = parameter_to_value_value_dict[value]
-                else:
-                    # TODO: what if template?
-                    scalar_params[key] = row[parameter_to_value_value_dict[value]]
+    exec_res = []
+    for i in range(len(data)):
+        exec_params = {}
+        for k, v in function_params.items():
+            exec_params[k] = v[i]
+        exec_res.append(function(**exec_params))
+    data[execution_id] = pd.Series(exec_res)
 
-            data.at[i, execution_id] = function(**scalar_params)
-
-        # TODO: remove null values if the execution of the function introduced them
+    # TODO: remove null values if the execution of the function introduced them
 
     return data
 
