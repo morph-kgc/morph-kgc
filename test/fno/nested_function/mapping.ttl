@@ -12,31 +12,51 @@
 
 @base <http://example.com/base/> .
 
-<TriplesMap1>
+<#Person_Mapping>
     rml:logicalSource [
-        rml:source "test/fno/RMLFNOTC0003-CSV/student.csv";
+        rml:source "test/fno/nested_function/student.csv";
         rml:referenceFormulation ql:CSV
     ];
     rr:subjectMap [
         rr:template "http://example.com/{Name}"
     ];
-    rr:predicateObjectMap [
-        rr:predicate foaf:name;
-        rr:objectMap [
-            fnml:execution <#Execution> ;
-        ]
-    ] .
+    rr:predicateObjectMap <#NameMapping> .
 
-<#Execution>
-    fnml:function grel:escape ;
+<#NameMapping>
+    rr:predicate foaf:name ;
+    rr:objectMap [
+        fnml:execution <#Execution> ;
+    ]; .
+
+<#Execution> a fnml:Execution ;
+    fnml:function grel:toUppercase ;
     fnml:input
         [
+            a fnml:Input ;
             fnml:parameter grel:valueParam ;
             fnml:valueMap [
-                rml:reference "Comment"
+                fnml:execution <#Execution2> ;
+                fnml:return grel:stringOut
+            ]
+        ] .
+
+<#Execution2> a fnml:Execution ;
+    fnml:function grel:string_replace ;
+    fnml:input
+        [
+            a fnml:Input ;
+            fnml:parameter grel:valueParam ;
+            fnml:valueMap [
+                rml:reference "name"
             ]
         ] ,
         [
-            fnml:parameter grel:modeParam  ;
-            fnml:value "html"
+            a fnml:Input ;
+            fnml:input grel:param_find ;
+            fnml:value " "
+        ] ,
+        [
+            a fnml:Input ;
+            fnml:input grel:param_replace  ;
+            fnml:value "-"
         ] .

@@ -6,9 +6,11 @@ __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"
 
 
+##############################################################################
+########################   UDF DECORATOR & DICT   ############################
+##############################################################################
+
 udf_dict = {}
-
-
 def udf(fun_id, **params):
     def wrapper(funct):
         udf_dict[fun_id] = {}
@@ -17,6 +19,10 @@ def udf(fun_id, **params):
         return funct
     return wrapper
 
+
+##############################################################################
+########################   UDF IMPLEMENTATIONS   #############################
+##############################################################################
 
 @udf(
     fun_id='http://example.com/toUpperCase',

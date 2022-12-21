@@ -40,13 +40,22 @@ def bif(fun_id, **params):
 
 @bif(
     fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#escape',
-    text='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter',
-    mode='http://users.ugent.be/~bjdmeest/function/grel.ttl#modeParameter')
+    text='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam',
+    mode='http://users.ugent.be/~bjdmeest/function/grel.ttl#modeParam')
 def escape(text, mode):
     if mode == 'html':
         return html.escape(text)
     else:
         raise
+
+
+@bif(
+    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#string_replace',
+    text='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam',
+    old_substring='http://users.ugent.be/~bjdmeest/function/grel.ttl#param_find',
+    new_substring='http://users.ugent.be/~bjdmeest/function/grel.ttl#param_replace')
+def escape(text, old_substring, new_substring):
+    return text.replace(old_substring, new_substring)
 
 
 ##############################################################################
@@ -73,6 +82,7 @@ def to_upper_case_url(url):
 
     # else:
     return f'http://{encode_value(url.upper())}'
+
 
 @bif(
     fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#toLowerCase',
