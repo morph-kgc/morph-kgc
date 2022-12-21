@@ -38,7 +38,6 @@ def biv(fun_id, **params):
     text_series='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam')
 def to_lower_case(text_series):
     return text_series.str.lower()
-"""
 
 
 @biv(
@@ -46,6 +45,7 @@ def to_lower_case(text_series):
     text_series='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam')
 def to_upper_case(text_series):
     return text_series.str.upper()
+"""
 
 
 ##############################################################################
