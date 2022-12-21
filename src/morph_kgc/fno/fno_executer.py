@@ -67,6 +67,8 @@ def execute_fno(data, fno_df, fno_execution, config):
             exec_params[k] = v[i]
         exec_res.append(function(**exec_params))
 
+    data[fno_execution] = exec_res
+
     # TODO: this can be avoided for many built-in functions
     data = data.explode(fno_execution)
     data = remove_null_values_from_dataframe(data, config, fno_execution)
