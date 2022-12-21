@@ -32,11 +32,13 @@ def biv(fun_id, **params):
 ##############################################################################
 
 
+"""
 @biv(
     fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#toLowerCase',
     text_series='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam')
 def to_lower_case(text_series):
     return text_series.str.lower()
+"""
 
 
 @biv(
