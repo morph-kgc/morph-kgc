@@ -1,0 +1,3 @@
+<http://transport.linkeddata.es/madrid/metro/calendar_rules/00000000000000000005> <http://vocab.gtfs.org/terms#monday> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<http://transport.linkeddata.es/madrid/metro/calendar_rules/00000000000000000004> <http://vocab.gtfs.org/terms#monday> "false"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<http://transport.linkeddata.es/madrid/metro/calendar_rules/00000000000000000005> <http://vocab.gtfs.org/terms#tuesday> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
