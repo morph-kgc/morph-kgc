@@ -70,14 +70,17 @@ def execute_fno(data, fno_df, fno_execution, config):
 
     function_params = {}
     for key, value in function_decorator_parameters.items():
-        if parameter_to_value_type_dict[value] == R2RML_CONSTANT:
-            function_params[key] = [parameter_to_value_value_dict[value]] * len(data)
-        elif parameter_to_value_type_dict[value] == R2RML_TEMPLATE:
-            fno_template_data = _materialize_fno_template(data, parameter_to_value_value_dict[value])
-            function_params[key] = list(fno_template_data)
-        else:
-            # RML_REFERENCE or FNML_EXECUTION
-            function_params[key] = list(data[parameter_to_value_value_dict[value]])
+
+        # if parameter is optional it is not in parameter_to_value_type_dict
+        if value in parameter_to_value_type_dict:
+            if parameter_to_value_type_dict[value] == R2RML_CONSTANT:
+                function_params[key] = [parameter_to_value_value_dict[value]] * len(data)
+            elif parameter_to_value_type_dict[value] == R2RML_TEMPLATE:
+                fno_template_data = _materialize_fno_template(data, parameter_to_value_value_dict[value])
+                function_params[key] = list(fno_template_data)
+            else:
+                # RML_REFERENCE or FNML_EXECUTION
+                function_params[key] = list(data[parameter_to_value_value_dict[value]])
 
     exec_res = []
     for i in range(len(data)):
@@ -88,8 +91,10 @@ def execute_fno(data, fno_df, fno_execution, config):
 
     data[fno_execution] = exec_res
 
-    # TODO: this can be avoided for many built-in functions
+    # only list values are exploded, strings that encode lists are not exploded
     data = data.explode(fno_execution)
+
+    # TODO: this can be avoided for many built-in functions
     data = remove_null_values_from_dataframe(data, config, fno_execution)
 
     return data

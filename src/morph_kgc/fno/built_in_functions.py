@@ -50,7 +50,49 @@ def string_escape(string, mode):
     string='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam',
     separator='http://users.ugent.be/~bjdmeest/function/grel.ttl#param_string_sep')
 def string_split(string, separator):
-    return string.split(separator)
+    return str(string.split(separator))
+
+
+@bif(
+    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#array_get',
+    string_list='http://users.ugent.be/~bjdmeest/function/grel.ttl#param_a',
+    start='http://users.ugent.be/~bjdmeest/function/grel.ttl#p_int_i_from',
+    end='http://users.ugent.be/~bjdmeest/function/grel.ttl#p_int_i_opt_to')
+def string_array_get(string_list, start, end=None):
+    # it does not explode
+
+    try:
+        string_list = eval(string_list) # it is a list
+    except:
+        pass # it is a string
+
+    start = int(start)
+    if end:
+        end = int(end)
+        return str(string_list[start:end])
+    else:
+        return string_list[start]
+
+
+@bif(
+    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#array_slice',
+    string_list='http://users.ugent.be/~bjdmeest/function/grel.ttl#param_a',
+    start='http://users.ugent.be/~bjdmeest/function/grel.ttl#p_int_i_from',
+    end='http://users.ugent.be/~bjdmeest/function/grel.ttl#p_int_i_opt_to')
+def string_array_slice(string_list, start, end=None):
+    # it does not explode
+
+    try:
+        string_list = eval(string_list) # it is a list
+    except:
+        pass # it is a string
+
+    start = int(start)
+    if end:
+        end = int(end)
+        return str(string_list[start:end])
+    else:
+        return str(string_list[start:])
 
 
 @bif(
@@ -87,6 +129,14 @@ def uuid():
     from uuid import uuid4
 
     return str(uuid4())
+
+
+@bif(
+    fun_id='https://github.com/oeg-upm/morph-kgc/function/built-in.ttl#string_split_explode',
+    string='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam',
+    separator='http://users.ugent.be/~bjdmeest/function/grel.ttl#param_string_sep')
+def string_split_explode(string, separator):
+    return string.split(separator)
 
 
 @bif(

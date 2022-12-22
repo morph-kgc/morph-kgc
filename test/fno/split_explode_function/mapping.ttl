@@ -14,7 +14,7 @@
 
 <TriplesMap1>
     rml:logicalSource [
-        rml:source "test/fno/split_function/mixed_content_list.csv";
+        rml:source "test/fno/split_explode_function/mixed_content_list.csv";
         rml:referenceFormulation ql:CSV
     ];
     rr:subjectMap [
@@ -28,7 +28,7 @@
     ] .
 
 <#Execution>
-    fnml:function grel:string_split ;
+    fnml:function morph-kgc:string_split_explode ;
     fnml:input
         [
             fnml:parameter grel:valueParam ;

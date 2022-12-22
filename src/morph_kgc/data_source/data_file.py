@@ -179,8 +179,7 @@ def _read_xml(rml_rule, references):
             el = element
     parsed = et.ElementTree(el)
     xml_root = parsed.getroot()
-    xpath_result = elementpath.iter_select(xml_root, rml_rule['iterator'], namespaces=namespaces,
-                                           parser=XPath3Parser)
+    xpath_result = elementpath.iter_select(xml_root, rml_rule['iterator'], namespaces=namespaces, parser=XPath3Parser)
 
     # we need to retrieve both ELEMENTS and ATTRIBUTES in the XML
     data_records = []
