@@ -13,7 +13,7 @@ from rdflib.graph import Graph
 from rdflib import compare
 
 
-def test_array_get_slice_functions():
+def test_controls_if():
     g = Graph()
     g.parse(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'output.nq'))
 

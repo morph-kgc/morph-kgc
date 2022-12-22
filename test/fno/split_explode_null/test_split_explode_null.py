@@ -13,7 +13,7 @@ from rdflib.graph import Graph
 from rdflib import compare
 
 
-def test_split_explode_function():
+def test_split_explode_null():
     g = Graph()
     g.parse(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'output.nq'))
 

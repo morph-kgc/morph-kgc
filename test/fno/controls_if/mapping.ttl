@@ -15,7 +15,7 @@
 
 <TriplesMap1>
     rml:logicalSource [
-        rml:source "test/fno/controls_if_cast_function/calendar.csv" ;
+        rml:source "test/fno/controls_if/calendar.csv" ;
         rml:referenceFormulation ql:CSV ;
     ];
     rr:subjectMap [
@@ -37,12 +37,12 @@
     ].
 
 <#Execution1>
-    fnml:function morph-kgc:controls_if_cast ;
+    fnml:function grel:controls_if ;
     fnml:input
         [
             fnml:parameter grel:bool_b ;
             fnml:valueMap [
-                rml:reference "monday"
+                rr:template "1 == int({monday})"
             ]
         ] ,
         [
@@ -55,12 +55,12 @@
         ] .
 
 <#Execution2>
-    fnml:function morph-kgc:controls_if_cast ;
+    fnml:function grel:controls_if ;
     fnml:input
         [
             fnml:parameter grel:bool_b ;
             fnml:valueMap [
-                rml:reference "tuesday"
+                rr:template "1 == int({tuesday})"
             ]
         ] ,
         [

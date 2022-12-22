@@ -46,6 +46,23 @@ def string_escape(string, mode):
 
 
 @bif(
+    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#string_toString',
+    string='http://users.ugent.be/~bjdmeest/function/grel.ttl#param_any_e')
+def string_to_string(string):
+    return str(string)
+
+
+@bif(
+    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#date_toDate',
+    string='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam',
+    format_code='http://users.ugent.be/~bjdmeest/function/grel.ttl#param_string_pattern')
+def date_to_date(string, format_code):
+    from datetime import datetime
+
+    return str(datetime.strptime(string, format_code).date())
+
+
+@bif(
     fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#string_split',
     string='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam',
     separator='http://users.ugent.be/~bjdmeest/function/grel.ttl#param_string_sep')
@@ -116,6 +133,13 @@ def to_lower_case(string):
     string='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam')
 def to_upper_case(string):
     return string.upper()
+
+
+@bif(
+    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#toTitleCase',
+    string='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam')
+def to_title_case(string):
+    return string.title()
 
 
 @bif(

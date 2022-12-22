@@ -14,29 +14,25 @@
 
 <TriplesMap1>
     rml:logicalSource [
-        rml:source "test/fno/split_explode_function/mixed_content_list.csv";
+        rml:source "test/fno/udf/student.csv";
         rml:referenceFormulation ql:CSV
     ];
     rr:subjectMap [
-        rr:template "http://example.com/{ID}"
+        rr:template "http://example.com/{Name}"
     ];
     rr:predicateObjectMap [
-        rr:predicate ex:col;
+        rr:predicate foaf:name;
         rr:objectMap [
             fnml:execution <#Execution> ;
         ]
     ] .
 
 <#Execution>
-    fnml:function morph-kgc:string_split_explode ;
+    fnml:function ex:toUpperCase ;
     fnml:input
         [
             fnml:parameter grel:valueParam ;
             fnml:valueMap [
-                rml:reference "COL"
+                rml:reference "Name" ;
             ]
-        ] ,
-        [
-            fnml:parameter grel:param_string_sep ;
-            fnml:value ";"
         ] .

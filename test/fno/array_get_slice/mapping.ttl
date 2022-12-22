@@ -9,61 +9,54 @@
 @prefix morph-kgc: <https://github.com/oeg-upm/morph-kgc/function/built-in.ttl#> .
 @prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
 @prefix idlab-fn: <http://example.com/idlab/function/> .
-@prefix gtfs: <http://vocab.gtfs.org/terms#> .
 
 @base <http://example.com/base/> .
 
 <TriplesMap1>
     rml:logicalSource [
-        rml:source "test/fno/controls_if_function/calendar.csv" ;
+        rml:source "test/fno/array_get_slice/article.tsv" ;
         rml:referenceFormulation ql:CSV ;
     ];
     rr:subjectMap [
-        rr:template "http://transport.linkeddata.es/madrid/metro/calendar_rules/{service_id}"
+        rr:template "http://example.com/articles/{title}"
     ];
     rr:predicateObjectMap [
-        rr:predicate gtfs:monday;
+        rr:predicate ex:firstAuthor;
         rr:objectMap [
             fnml:execution <#Execution1> ;
-            rr:datatype xsd:boolean
         ]
     ];
     rr:predicateObjectMap [
-        rr:predicate gtfs:tuesday;
+        rr:predicate ex:otherAuthors;
         rr:objectMap [
             fnml:execution <#Execution2> ;
-            rr:datatype xsd:boolean
         ]
     ].
 
 <#Execution1>
-    fnml:function grel:controls_if ;
+    fnml:function grel:array_get ;
     fnml:input
         [
-            fnml:parameter grel:bool_b ;
+            fnml:parameter grel:param_a ;
             fnml:valueMap [
-                rr:template "1 == int({monday})"
+                rml:reference "authors"
             ]
         ] ,
         [
-            fnml:parameter grel:any_true ;
-            fnml:value "true"
-        ] ,
-        [
-            fnml:parameter grel:any_false ;
-            fnml:value "false"
+            fnml:parameter grel:p_int_i_from ;
+            fnml:value "0"
         ] .
 
 <#Execution2>
-    fnml:function grel:controls_if ;
+    fnml:function grel:array_slice ;
     fnml:input
         [
-            fnml:parameter grel:bool_b ;
+            fnml:parameter grel:param_a ;
             fnml:valueMap [
-                rr:template "1 == int({tuesday})"
+                rml:reference "authors"
             ]
         ] ,
         [
-            fnml:parameter grel:any_true ;
-            fnml:value "true"
+            fnml:parameter grel:p_int_i_from ;
+            fnml:value "1"
         ] .

@@ -13,12 +13,13 @@ from rdflib.graph import Graph
 from rdflib import compare
 
 
-def test_controls_if_cast_function():
+def test_udf():
     g = Graph()
     g.parse(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'output.nq'))
 
     mapping_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mapping.ttl')
-    config = f'[DataSource]\nmappings={mapping_path}'
+    udf_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'udf.py')
+    config = f'[CONFIGURATION]\noutput_format=N-QUADS\nudfs={udf_path}\n[DataSource]\nmappings={mapping_path}'
     g_morph = morph_kgc.materialize(config)
 
     assert compare.isomorphic(g, g_morph)
