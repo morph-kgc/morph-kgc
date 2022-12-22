@@ -165,16 +165,6 @@ class MappingPartitioner:
 
         self.rml_df = self.rml_df.reset_index(drop=True)
 
-        # if RML-star or TMs without POMs (rml:NonAssertedTriplesMap) do not partition mappings (assign empty partition)
-        if RML_STAR_QUOTED_TRIPLES_MAP in self.rml_df['subject_map_type'].values or \
-            RML_STAR_QUOTED_TRIPLES_MAP in self.rml_df['object_map_type'] or \
-            RML_STAR_NON_ASSERTED_TRIPLES_MAP_CLASS in set(self.rml_df['triples_map_type']):
-
-            # TODO: enable mapping partitioning for these cases
-            self.rml_df['mapping_partition'] = '0-0-0-0'
-
-            return self.rml_df
-
         if self.config.get_mapping_partitioning() == PARTIAL_AGGREGATIONS_PARTITIONING:
             self._get_term_invariants()
             self._generate_partial_aggregations_partition()
