@@ -64,6 +64,7 @@ def execute_fno(data, fno_df, fno_execution, config):
         function = bif_dict[function_id]['function']
         function_decorator_parameters = bif_dict[function_id]['parameters']
     else:
+        # TODO: load only once, with some control variable
         udf_dict = load_udfs(config)
         function = udf_dict[function_id]['function']
         function_decorator_parameters = udf_dict[function_id]['parameters']
