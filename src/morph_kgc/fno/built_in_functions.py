@@ -143,6 +143,13 @@ def to_title_case(string):
 
 
 @bif(
+    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#string_trim',
+    string='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam')
+def string_trim(string):
+    return string.strip()
+
+
+@bif(
     fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#controls_if',
     boolean_expression='http://users.ugent.be/~bjdmeest/function/grel.ttl#bool_b',
     value_true='http://users.ugent.be/~bjdmeest/function/grel.ttl#any_true',
@@ -152,6 +159,18 @@ def controls_if(boolean_expression, value_true, value_false=None):
         return value_true
     else:
         return value_false
+
+
+@bif(
+    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#math_round',
+    number='http://users.ugent.be/~bjdmeest/function/grel.ttl#param_dec_n')
+def number_round(number):
+    if ','  in number and '.' in number:
+        number = number.replace(',', '')    # e.g. 4,894.57
+    elif ',' in number:
+        number = number.replace(',', '.')   # e.g. 10,7
+
+    return round(float(number))
 
 
 ##############################################################################
@@ -186,6 +205,15 @@ def uuid():
     separator='http://users.ugent.be/~bjdmeest/function/grel.ttl#param_string_sep')
 def string_split_explode(string, separator):
     return string.split(separator)
+
+
+@bif(
+    fun_id='https://github.com/oeg-upm/morph-kgc/function/built-in.ttl#concat',
+    string1='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam1',
+    string2='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam2',
+    separator='http://users.ugent.be/~bjdmeest/function/grel.ttl#param_string_sep')
+def string_split_explode(string1, string2, separator=''):
+    return f'{string1}{separator}{string2}'
 
 
 @bif(
