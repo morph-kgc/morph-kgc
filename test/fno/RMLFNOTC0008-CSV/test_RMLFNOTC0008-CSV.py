@@ -13,7 +13,6 @@ from rdflib.graph import Graph
 from rdflib import compare
 
 
-"""
 def test_RMLFNOTC0008_CSV():
     g = Graph()
     g.parse(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'output.nq'))
@@ -23,4 +22,3 @@ def test_RMLFNOTC0008_CSV():
     g_morph = morph_kgc.materialize(config)
 
     assert compare.isomorphic(g, g_morph)
-"""

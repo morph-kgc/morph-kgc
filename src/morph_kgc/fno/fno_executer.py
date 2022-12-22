@@ -6,16 +6,35 @@ __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"
 
 
-import sys
-import logging
-
-import pandas as pd
-
 from importlib.machinery import SourceFileLoader
 
 from .built_in_functions import bif_dict
-from ..utils import get_fno_execution, remove_null_values_from_dataframe
+from ..utils import get_fno_execution, remove_null_values_from_dataframe, get_references_in_template
 from ..constants import FNML_EXECUTION, R2RML_TEMPLATE, R2RML_CONSTANT
+
+
+def _materialize_fno_template(data, template):
+    # TODO: this function is very similar to _materialize_template in materializer
+    references = get_references_in_template(template)
+
+    # Curly braces that do not enclose column names MUST be escaped by a backslash character (“\”).
+    # This also applies to curly braces within column names.
+    template = template.replace('\\{', '{').replace('\\}', '}')
+
+    # use auxiliary column to store the data of the template
+    data['aux_fno_template_data'] = ''
+
+    for reference in references:
+        data['reference_results'] = data[reference]
+
+        splitted_template = template.split('{' + reference + '}')
+        data['aux_fno_template_data'] = data['aux_fno_template_data'] + splitted_template[0] + data['reference_results']
+        template = str('{' + reference + '}').join(splitted_template[1:])
+    if template:
+        # add what remains in the template after the last reference
+        data['aux_fno_template_data'] = data['aux_fno_template_data'] + template
+
+    return data['aux_fno_template_data']
 
 
 def load_udfs(config):
@@ -36,9 +55,6 @@ def execute_fno(data, fno_df, fno_execution, config):
     for i, execution_rule in execution_rule_df.iterrows():
         if execution_rule['value_map_type'] == FNML_EXECUTION:
             data = execute_fno(data, fno_df, execution_rule['value_map_value'], config)
-        elif execution_rule['value_map_type'] == R2RML_TEMPLATE:
-            logging.error('Value maps that are rr:template are not supported yet.')
-            sys.exit()
 
     parameter_to_value_type_dict = dict(zip(execution_rule_df['parameter_map_value'], execution_rule_df['value_map_type']))
     parameter_to_value_value_dict = dict(zip(execution_rule_df['parameter_map_value'], execution_rule_df['value_map_value']))
@@ -56,8 +72,11 @@ def execute_fno(data, fno_df, fno_execution, config):
     for key, value in function_decorator_parameters.items():
         if parameter_to_value_type_dict[value] == R2RML_CONSTANT:
             function_params[key] = [parameter_to_value_value_dict[value]] * len(data)
+        elif parameter_to_value_type_dict[value] == R2RML_TEMPLATE:
+            fno_template_data = _materialize_fno_template(data, parameter_to_value_value_dict[value])
+            function_params[key] = list(fno_template_data)
         else:
-            # TODO: what if template?
+            # RML_REFERENCE or FNML_EXECUTION
             function_params[key] = list(data[parameter_to_value_value_dict[value]])
 
     exec_res = []
@@ -74,4 +93,3 @@ def execute_fno(data, fno_df, fno_execution, config):
     data = remove_null_values_from_dataframe(data, config, fno_execution)
 
     return data
-

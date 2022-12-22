@@ -29,7 +29,7 @@
     fnml:function grel:toUpperCase ;
     fnml:input
         [
-            fnml:parameter grel:valueParameter ;
+            fnml:parameter grel:valueParam ;
             fnml:valueMap [
                 rr:template "Name: {Name}"
             ];
