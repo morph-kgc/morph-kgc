@@ -1,5 +1,9 @@
 # Documentation
 
+## Tutorial
+
+You can get quickly started with the tutorial in **[`Google Colaboratory`](https://colab.research.google.com/drive/1ByFx_NOEfTZeaJ1Wtw3UwTH3H3-Sye2O?usp=sharing)**.
+
 ## Installation
 
 In the following we describe different ways in which you can install and use Morph-KGC. Depending on the data sources that you need to work with, you may need to install additional libraries, see **[Advanced Setup](https://morph-kgc.readthedocs.io/en/latest/documentation/#advanced-setup)**.
