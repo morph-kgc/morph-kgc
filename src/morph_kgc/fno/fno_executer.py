@@ -7,6 +7,7 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 
 from importlib.machinery import SourceFileLoader
+from types import ModuleType
 
 from .built_in_functions import bif_dict
 from ..utils import get_fno_execution, remove_null_values_from_dataframe, get_references_in_template
@@ -15,7 +16,9 @@ from ..constants import FNML_EXECUTION, R2RML_TEMPLATE, R2RML_CONSTANT
 
 def load_udfs(config):
     if config.get_udfs():
-        udf_module = SourceFileLoader("udf", config.get_udfs()).load_module()
+        udf_loader = SourceFileLoader("udf", config.get_udfs())
+        udf_module = ModuleType(udf_loader.name)
+        udf_loader.exec_module(udf_module)
         udf_dict = udf_module.udf_dict
     else:
         udf_dict = {}
