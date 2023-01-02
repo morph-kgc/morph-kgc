@@ -16,7 +16,7 @@ import pandas as pd
 import multiprocessing as mp
 
 from itertools import product
-from .constants import AUXILIAR_UNIQUE_REPLACING_STRING
+from .constants import AUXILIAR_UNIQUE_REPLACING_STRING, FNML_EXECUTION, R2RML_TEMPLATE, RML_REFERENCE
 
 
 def configure_logger(logging_level, logging_file):
@@ -52,7 +52,7 @@ def create_dirs_in_path(file_path):
     Checks that directories in a file path exist. If they do not exist, it creates the directories.
     """
 
-    file_path = str(file_path).strip()
+    file_path = file_path.strip()
     if not os.path.exists(os.path.dirname(file_path)):
         if os.path.dirname(file_path):
             os.makedirs(os.path.dirname(file_path))
@@ -78,12 +78,20 @@ def get_repeated_elements_in_list(input_list):
     return repeated_elems
 
 
-def get_mapping_rule(mappings_df, triples_map_id):
+def get_rml_rule(rml_df, triples_map_id):
     """
     Retrieves mapping rule from mapping rules in the input DataFrame by its triples map id.
     """
-    mapping_rule = mappings_df[mappings_df['triples_map_id'] == triples_map_id].iloc[0]
-    return mapping_rule
+    rml_rule = rml_df[rml_df['triples_map_id'] == triples_map_id].iloc[0]
+    return rml_rule
+
+
+def get_fno_execution(fno_df, execution_id):
+    """
+    Retrieves FnO execution by its id.
+    """
+
+    return fno_df[fno_df['execution'] == execution_id]
 
 
 def get_references_in_template(template):
@@ -96,6 +104,22 @@ def get_references_in_template(template):
     template = template.replace('\\{', AUXILIAR_UNIQUE_REPLACING_STRING).replace('\\}', AUXILIAR_UNIQUE_REPLACING_STRING)
     references = re.findall('\\{([^}]+)', template)
     references = [reference.replace(AUXILIAR_UNIQUE_REPLACING_STRING, '\\{').replace(AUXILIAR_UNIQUE_REPLACING_STRING, '\\}') for reference in references]
+
+    return references
+
+
+def get_references_in_fno_execution(fno_df, execution):
+    execution_rule_df = fno_df[fno_df['execution']==execution]
+
+    references = []
+    for i, parameter in execution_rule_df.iterrows():
+        if parameter['value_map_type'] == R2RML_TEMPLATE:
+            references = get_references_in_template(parameter['value_map_value'])
+        elif parameter['value_map_type'] == RML_REFERENCE:
+            # a list with one value
+            references = [parameter['value_map_value']]
+        elif parameter['value_map_type'] == FNML_EXECUTION:
+            references = get_references_in_fno_execution(fno_df, parameter['value_map_value'])
 
     return references
 
@@ -123,7 +147,7 @@ def remove_non_printable_characters(string):
     return ''.join(char for char in string if char.isprintable())
 
 
-def prepare_output_files(config, mappings_df):
+def prepare_output_files(config, rml_df):
     """
     Remove the files that will be used to store the final knowledge graph. If a file path contains directories that do
     not exist, they are created.
@@ -134,7 +158,7 @@ def prepare_output_files(config, mappings_df):
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
-        mapping_groups_names = set(mappings_df['mapping_partition'])
+        mapping_groups_names = set(rml_df['mapping_partition'])
         for mapping_group_name in mapping_groups_names:
             mapping_group_file_path = config.get_output_file_path(mapping_group_name)
             if os.path.exists(mapping_group_file_path):
@@ -172,13 +196,13 @@ def get_delta_time(start_time):
     return "{:.3f}".format((time.time() - start_time))
 
 
-def get_references_in_join_condition(mapping_rule, join_conditions):
+def get_references_in_join_condition(rml_rule, join_conditions):
     references = list()
     parent_references = list()
 
     # if join_condition is not null and it is not empty
-    if pd.notna(mapping_rule[join_conditions]) and mapping_rule[join_conditions]:
-        join_conditions = eval(mapping_rule[join_conditions])
+    if pd.notna(rml_rule[join_conditions]) and rml_rule[join_conditions]:
+        join_conditions = eval(rml_rule[join_conditions])
         for join_condition in join_conditions.values():
             references.append(join_condition['child_value'])
             parent_references.append(join_condition['parent_value'])
@@ -202,15 +226,15 @@ def normalize_oracle_identifier_casing(dataframe, references):
     return dataframe
 
 
-def remove_null_values_from_dataframe(dataframe, config, references):
+def remove_null_values_from_dataframe(data, config, references):
     # data to str to be able to perform string replacement
-    dataframe = dataframe.astype(str)
+    data = data.applymap(str)
 
     if config.get_na_values():  # if there is some NULL values to replace
-        dataframe.replace(config.get_na_values(), np.NaN, inplace=True)
-        dataframe.dropna(axis=0, how='any', subset=references, inplace=True)
+        data.replace(config.get_na_values(), np.NaN, inplace=True)
+        data.dropna(axis=0, how='any', subset=references, inplace=True)
 
-    return dataframe
+    return data
 
 
 def normalize_hierarchical_data(data):

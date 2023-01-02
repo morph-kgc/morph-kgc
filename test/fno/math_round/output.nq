@@ -1,0 +1,3 @@
+<http://example.com/distance/2> <http://example.com/distance> "9"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://example.com/distance/3> <http://example.com/distance> "6285"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://example.com/distance/1> <http://example.com/distance> "1927"^^<http://www.w3.org/2001/XMLSchema#integer> .

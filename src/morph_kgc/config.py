@@ -41,6 +41,8 @@ ENFORCE_SQL_QUERY_FILTER_NULL = 'enforce_sql_filter_null'
 
 NUMBER_OF_PROCESSES = 'number_of_processes'
 
+UDFS = 'udfs'
+
 LOGGING_LEVEL = 'logging_level'
 LOGGING_FILE = 'logging_file'
 
@@ -73,6 +75,7 @@ DEFAULT_INFER_SQL_DATATYPES = 'no'
 DEFAULT_NUMBER_OF_PROCESSES = 2 * mp.cpu_count()
 DEFAULT_NA_VALUES = ',#N/A,N/A,#N/A N/A,n/a,NA,<NA>,#NA,NULL,null,NaN,nan,None'
 DEFAULT_ONLY_PRINTABLE_CHARACTERS = 'no'
+DEFAULT_UDFS = ''
 
 # ORACLE
 DEFAULT_ORACLE_CLIENT_LIB_DIR = ''
@@ -98,6 +101,7 @@ CONFIGURATION_OPTIONS_EMPTY_VALID = {
             LOGGING_FILE: DEFAULT_LOGGING_FILE,
             ORACLE_CLIENT_LIB_DIR: DEFAULT_ORACLE_CLIENT_LIB_DIR,
             ORACLE_CLIENT_CONFIG_DIR: DEFAULT_ORACLE_CLIENT_LIB_DIR,
+            UDFS: DEFAULT_UDFS,
         }
 
 # input parameters that are to be replaced with the default vale if they are empty
@@ -262,6 +266,9 @@ class Config(ConfigParser):
 
     def get_safe_percent_encoding(self):
         return self.get(self.configuration_section, SAFE_PERCENT_ENCODING)
+
+    def get_udfs(self):
+        return self.get(self.configuration_section, UDFS)
 
     def get_output_file_path(self, mapping_group=None):
         file_extension = OUTPUT_FORMAT_FILE_EXTENSION[self.get_output_format()]

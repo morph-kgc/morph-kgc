@@ -1,0 +1,69 @@
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ex: <http://example.com/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@prefix fnml: <http://semweb.mmlab.be/ns/fnml#> .
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix morph-kgc: <https://github.com/oeg-upm/morph-kgc/function/built-in.ttl#> .
+@prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
+@prefix idlab-fn: <http://example.com/idlab/function/> .
+@prefix gtfs: <http://vocab.gtfs.org/terms#> .
+
+@base <http://example.com/base/> .
+
+<TriplesMap1>
+    rml:logicalSource [
+        rml:source "test/fno/controls_if/calendar.csv" ;
+        rml:referenceFormulation ql:CSV ;
+    ];
+    rr:subjectMap [
+        rr:template "http://transport.linkeddata.es/madrid/metro/calendar_rules/{service_id}"
+    ];
+    rr:predicateObjectMap [
+        rr:predicate gtfs:monday;
+        rr:objectMap [
+            fnml:execution <#Execution1> ;
+            rr:datatype xsd:boolean
+        ]
+    ];
+    rr:predicateObjectMap [
+        rr:predicate gtfs:tuesday;
+        rr:objectMap [
+            fnml:execution <#Execution2> ;
+            rr:datatype xsd:boolean
+        ]
+    ].
+
+<#Execution1>
+    fnml:function grel:controls_if ;
+    fnml:input
+        [
+            fnml:parameter grel:bool_b ;
+            fnml:valueMap [
+                rr:template "1 == int({monday})"
+            ]
+        ] ,
+        [
+            fnml:parameter grel:any_true ;
+            fnml:value "true"
+        ] ,
+        [
+            fnml:parameter grel:any_false ;
+            fnml:value "false"
+        ] .
+
+<#Execution2>
+    fnml:function grel:controls_if ;
+    fnml:input
+        [
+            fnml:parameter grel:bool_b ;
+            fnml:valueMap [
+                rr:template "1 == int({tuesday})"
+            ]
+        ] ,
+        [
+            fnml:parameter grel:any_true ;
+            fnml:value "true"
+        ] .

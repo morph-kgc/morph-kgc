@@ -1,0 +1,4 @@
+<http://example.com/2> <http://example.com/col> "b" .
+<http://example.com/4> <http://example.com/col> "e" .
+<http://example.com/2> <http://example.com/col> "c" .
+<http://example.com/2> <http://example.com/col> "d" .

@@ -17,7 +17,6 @@ from ._version import __version__
 
 
 def _existing_file_path(file_path):
-    file_path = str(file_path)
     if not os.path.isfile(file_path):
         raise argparse.ArgumentTypeError(f'{file_path} is not a valid file path.')
 

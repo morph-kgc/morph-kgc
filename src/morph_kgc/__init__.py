@@ -19,7 +19,7 @@ from itertools import repeat
 from .args_parser import load_config_from_command_line
 from .mapping.mapping_parser import retrieve_mappings
 from .data_source.relational_database import setup_oracle
-from .materializer import _materialize_mapping_rule, _materialize_mapping_group_to_set
+from .materializer import _materialize_mapping_group_to_set
 from .args_parser import load_config_from_argument
 from .constants import R2RML_TRIPLES_MAP_CLASS
 
@@ -36,10 +36,10 @@ def materialize_set(config):
 
     setup_oracle(config)
 
-    mappings_df = retrieve_mappings(config)
+    rml_df, fno_df = retrieve_mappings(config)
 
     # keep only asserted mapping rules
-    asserted_mapping_df = mappings_df.loc[mappings_df['triples_map_type'] == R2RML_TRIPLES_MAP_CLASS]
+    asserted_mapping_df = rml_df.loc[rml_df['triples_map_type'] == R2RML_TRIPLES_MAP_CLASS]
     mapping_groups = [group for _, group in asserted_mapping_df.groupby(by='mapping_partition')]
 
     if config.is_multiprocessing_enabled():
@@ -47,13 +47,13 @@ def materialize_set(config):
 
         pool = mp.Pool(config.get_number_of_processes())
         triples = set().union(
-            *pool.starmap(_materialize_mapping_group_to_set, zip(mapping_groups, repeat(mappings_df), repeat(config))))
+            *pool.starmap(_materialize_mapping_group_to_set, zip(mapping_groups, repeat(rml_df), repeat(fno_df), repeat(config))))
         pool.close()
         pool.join()
     else:
         triples = set()
         for mapping_group in mapping_groups:
-            triples.update(_materialize_mapping_group_to_set(mapping_group, mappings_df, config))
+            triples.update(_materialize_mapping_group_to_set(mapping_group, rml_df, fno_df, config))
 
     logging.info(f'Number of triples generated in total: {len(triples)}.')
 

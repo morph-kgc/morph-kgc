@@ -1,5 +1,5 @@
 __author__ = "Julián Arenas-Guerrero"
-__credits__ = ["Julián Arenas-Guerrero"]
+__credits__ = ["Julián Arenas-Guerrero", "Miel Vander Sande"]
 
 __license__ = "Apache-2.0"
 __maintainer__ = "Julián Arenas-Guerrero"
@@ -22,47 +22,47 @@ from ..constants import *
 from ..utils import normalize_hierarchical_data
 
 
-def get_file_data(mapping_rule, references):
+def get_file_data(rml_rule, references):
     references = list(references)
-    file_source_type = mapping_rule['source_type']
+    file_source_type = rml_rule['source_type']
 
-    if mapping_rule['logical_source_type'] == RML_QUERY:
-        return _read_tabular_view(mapping_rule)
+    if rml_rule['logical_source_type'] == RML_QUERY:
+        return _read_tabular_view(rml_rule)
     elif file_source_type in [CSV, TSV]:
-        return _read_csv(mapping_rule, references, file_source_type)
+        return _read_csv(rml_rule, references, file_source_type)
     elif file_source_type in EXCEL:
-        return _read_excel(mapping_rule, references)
+        return _read_excel(rml_rule, references)
     elif file_source_type in ODS:
-        return _read_ods(mapping_rule, references)
+        return _read_ods(rml_rule, references)
     elif file_source_type == PARQUET:
-        return _read_parquet(mapping_rule, references)
+        return _read_parquet(rml_rule, references)
     elif file_source_type in FEATHER:
-        return _read_feather(mapping_rule, references)
+        return _read_feather(rml_rule, references)
     elif file_source_type == ORC:
-        return _read_orc(mapping_rule, references)
+        return _read_orc(rml_rule, references)
     elif file_source_type == STATA:
-        return _read_stata(mapping_rule, references)
+        return _read_stata(rml_rule, references)
     elif file_source_type in SAS:
-        return _read_sas(mapping_rule)
+        return _read_sas(rml_rule)
     elif file_source_type == SPSS:
-        return _read_spss(mapping_rule, references)
+        return _read_spss(rml_rule, references)
     elif file_source_type == JSON:
-        return _read_json(mapping_rule, references)
+        return _read_json(rml_rule, references)
     elif file_source_type == XML:
-        return _read_xml(mapping_rule, references)
+        return _read_xml(rml_rule, references)
     else:
         raise ValueError(f'Found an invalid source type. Found value `{file_source_type}`.')
 
 
-def _read_tabular_view(mapping_rule):
-    return duckdb.query(mapping_rule['logical_source_value']).df()
+def _read_tabular_view(rml_rule):
+    return duckdb.query(rml_rule['logical_source_value']).df()
 
 
-def _read_csv(mapping_rule, references, file_source_type):
+def _read_csv(rml_rule, references, file_source_type):
     delimiter = ',' if file_source_type == 'CSV' else '\t'
 
     try:
-        return pd.read_table(mapping_rule['logical_source_value'],
+        return pd.read_table(rml_rule['logical_source_value'],
                              sep=delimiter,
                              index_col=False,
                              encoding='utf-8',
@@ -74,7 +74,7 @@ def _read_csv(mapping_rule, references, file_source_type):
                              na_filter=False)
     except:
         # if delimiter is other than comma or tab, then infer it (issue #81)
-        return pd.read_table(mapping_rule['logical_source_value'],
+        return pd.read_table(rml_rule['logical_source_value'],
                              index_col=False,
                              sep=None,
                              encoding='utf-8',
@@ -86,20 +86,20 @@ def _read_csv(mapping_rule, references, file_source_type):
                              na_filter=False)
 
 
-def _read_parquet(mapping_rule, references):
-    return pd.read_parquet(mapping_rule['logical_source_value'], engine='pyarrow', columns=references)
+def _read_parquet(rml_rule, references):
+    return pd.read_parquet(rml_rule['logical_source_value'], engine='pyarrow', columns=references)
 
 
-def _read_feather(mapping_rule, references):
-    return pd.read_feather(mapping_rule['logical_source_value'], use_threads=False, columns=references)
+def _read_feather(rml_rule, references):
+    return pd.read_feather(rml_rule['logical_source_value'], use_threads=False, columns=references)
 
 
-def _read_orc(mapping_rule, references):
-    return pd.read_orc(mapping_rule['logical_source_value'], encoding='utf-8', columns=references)
+def _read_orc(rml_rule, references):
+    return pd.read_orc(rml_rule['logical_source_value'], encoding='utf-8', columns=references)
 
 
-def _read_stata(mapping_rule, references):
-    return pd.read_stata(mapping_rule['logical_source_value'],
+def _read_stata(rml_rule, references):
+    return pd.read_stata(rml_rule['logical_source_value'],
                          columns=references,
                          convert_dates=False,
                          convert_categoricals=False,
@@ -108,16 +108,16 @@ def _read_stata(mapping_rule, references):
                          order_categoricals=False)
 
 
-def _read_sas(mapping_rule):
-    return pd.read_sas(mapping_rule['logical_source_value'], encoding='utf-8')
+def _read_sas(rml_rule):
+    return pd.read_sas(rml_rule['logical_source_value'], encoding='utf-8')
 
 
-def _read_spss(mapping_rule, references):
-    return pd.read_spss(mapping_rule['logical_source_value'], usecols=references, convert_categoricals=False)
+def _read_spss(rml_rule, references):
+    return pd.read_spss(rml_rule['logical_source_value'], usecols=references, convert_categoricals=False)
 
 
-def _read_excel(mapping_rule, references):
-    return pd.read_excel(mapping_rule['logical_source_value'],
+def _read_excel(rml_rule, references):
+    return pd.read_excel(rml_rule['logical_source_value'],
                          sheet_name=0,
                          engine='openpyxl',
                          usecols=references,
@@ -126,8 +126,8 @@ def _read_excel(mapping_rule, references):
                          na_filter=False)
 
 
-def _read_ods(mapping_rule, references):
-    return pd.read_excel(mapping_rule['logical_source_value'],
+def _read_ods(rml_rule, references):
+    return pd.read_excel(rml_rule['logical_source_value'],
                          sheet_name=0,
                          engine='odf',
                          usecols=references,
@@ -136,15 +136,15 @@ def _read_ods(mapping_rule, references):
                          na_filter=False)
 
 
-def _read_json(mapping_rule, references):
-    if mapping_rule['logical_source_value'].startswith('http'):
-        with urllib.request.urlopen(mapping_rule['logical_source_value']) as json_url:
+def _read_json(rml_rule, references):
+    if rml_rule['logical_source_value'].startswith('http'):
+        with urllib.request.urlopen(rml_rule['logical_source_value']) as json_url:
             json_data = json.loads(json_url.read().decode())
     else:
-        with open(mapping_rule['logical_source_value'], encoding='utf-8') as json_file:
+        with open(rml_rule['logical_source_value'], encoding='utf-8') as json_file:
             json_data = json.load(json_file)
 
-    jsonpath_expression = mapping_rule['iterator'] + '.('
+    jsonpath_expression = rml_rule['iterator'] + '.('
     # add top level object of the references to reduce intermediate results (THIS IS NOT STRICTLY NECESSARY)
     for reference in references:
         jsonpath_expression += reference + ','
@@ -161,27 +161,25 @@ def _read_json(mapping_rule, references):
     return json_df
 
 
-def _read_xml(mapping_rule, references):
-    if mapping_rule['logical_source_value'].startswith('http'):
-        with urllib.request.urlopen(mapping_rule['logical_source_value']) as xml_url:
+def _read_xml(rml_rule, references):
+    if rml_rule['logical_source_value'].startswith('http'):
+        with urllib.request.urlopen(rml_rule['logical_source_value']) as xml_url:
             xml_string = xml_url.read()
             # Turn into file object for compatibility with iterparse
             xml_file = BytesIO(xml_string)
     else:
-        xml_file = open(mapping_rule['logical_source_value'], encoding='utf-8')
+        xml_file = open(rml_rule['logical_source_value'], encoding='utf-8')
 
     # Collect namespaces from XML document
     namespaces = {}
     for event, element in et.iterparse(xml_file, events=['end', 'start-ns']):
         if event == "start-ns":
             namespaces[element[0]] = element[1]
-
-        if event == "end":
+        elif event == "end":
             el = element
     parsed = et.ElementTree(el)
     xml_root = parsed.getroot()
-    xpath_result = elementpath.iter_select(xml_root, mapping_rule['iterator'], namespaces=namespaces,
-                                           parser=XPath3Parser)
+    xpath_result = elementpath.iter_select(xml_root, rml_rule['iterator'], namespaces=namespaces, parser=XPath3Parser)
 
     # we need to retrieve both ELEMENTS and ATTRIBUTES in the XML
     data_records = []

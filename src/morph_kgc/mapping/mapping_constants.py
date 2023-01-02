@@ -12,9 +12,9 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 RML_DATAFRAME_COLUMNS = [
     'source_name', 'triples_map_id', 'triples_map_type', 'logical_source_type', 'logical_source_value', 'iterator',
-    'subject_map_type', 'subject_map_value', 'subject_map', 'subject_termtype',
+    'subject_map_type', 'subject_map_value', 'subject_termtype',
     'predicate_map_type', 'predicate_map_value',
-    'object_map_type', 'object_map_value', 'object_map', 'object_termtype', 'object_datatype', 'object_language',
+    'object_map_type', 'object_map_value', 'object_termtype', 'object_datatype', 'object_language',
     'graph_map_type', 'graph_map_value',
     'subject_join_conditions', 'object_join_conditions'
 ]
@@ -25,7 +25,7 @@ RML_DATAFRAME_COLUMNS = [
 ##############################################################################
 
 FNO_DATAFRAME_COLUMNS = [
-    'execution', 'parameter_map_type ', 'parameter_map_value', 'parameter_name', 'parameter_type'
+    'execution', 'function_map_value', 'parameter_map_value', 'value_map_type', 'value_map_value'
 ]
 
 
@@ -48,7 +48,8 @@ RML_PARSING_QUERY = """
     WHERE {
         ?triples_map_id rml:logicalSource ?_source ;
                         a ?triples_map_type .
-        OPTIONAL {  # logical_source is optional because it can be specified with file_path in config (see #119)
+        OPTIONAL {
+            # logical_source is optional because it can be specified with file_path in config (see #119)
             ?_source ?logical_source_type ?logical_source_value .
             FILTER ( ?logical_source_type IN ( rml:source, rr:tableName, rml:query ) ) .
         }
@@ -65,7 +66,7 @@ RML_PARSING_QUERY = """
             ?triples_map_id rr:predicateObjectMap ?_predicate_object_map .
             ?_predicate_object_map rr:predicateMap ?_predicate_map .
             ?_predicate_map ?predicate_map_type ?predicate_map_value .
-            FILTER ( ?predicate_map_type IN ( rr:constant, rr:template, rml:reference ) ) .
+            FILTER ( ?predicate_map_type IN ( rr:constant, rr:template, rml:reference, fnml:execution ) ) .
 
     # Object --------------------------------------------------------------------------
             OPTIONAL {
@@ -84,7 +85,7 @@ RML_PARSING_QUERY = """
             OPTIONAL {
                 ?_predicate_object_map rr:graphMap ?graph_map .
                 ?graph_map ?graph_map_type ?graph_map_value .
-                FILTER ( ?graph_map_type IN ( rr:constant, rr:template, rml:reference ) ) .
+                FILTER ( ?graph_map_type IN ( rr:constant, rr:template, rml:reference, fnml:execution ) ) .
             }
         }
     }
@@ -111,31 +112,30 @@ FNO_PARSING_QUERY = """
     prefix rml: <http://semweb.mmlab.be/ns/rml#>
     prefix fnml: <http://semweb.mmlab.be/ns/fnml#>
 
-    SELECT DISTINCT ?term_map ?function_map_value ?parameter_map_value ?value_map_type ?value_map_value
+    SELECT DISTINCT
+        ?execution ?function_map_value ?parameter_map_value ?value_map ?value_map_type ?value_map_value
+
     WHERE {
     
     # FuntionMap ----------------------------------------------------------------------
         
-        ?term_map fnml:functionMap ?function_map .        
-        ?function_map ?function_map_type ?function_map_value .
-        FILTER ( ?function_map_type IN ( rr:constant, rr:template, rml:reference ) ) .
-        OPTIONAL {
-            # return maps are not used in the current implementation
-            ?term_map fnml:returnMap ?return_map .
-            ?return_map ?return_map_type ?return_map_value .
-            FILTER ( ?return_map_type IN ( rr:constant, rr:template, rml:reference ) ) .
-        }
+        ?execution fnml:functionMap ?function_map .        
+        ?function_map rr:constant ?function_map_value .
+        
+        # return maps are not used in the current implementation, default is first return value
 
     # Input ---------------------------------------------------------------------------
 
-        ?term_map fnml:input ?input .
-
-        ?input fnml:parameterMap ?parameter_map .
-        ?parameter_map ?parameter_map_type ?parameter_map_value .
-        FILTER ( ?parameter_map_type IN ( rr:constant, rr:template, rml:reference ) ) .
-
-        ?input fnml:valueMap ?value_map .
-        ?value_map ?value_map_type ?value_map_value .
-        FILTER ( ?value_map_type IN ( rr:constant, rr:template, rml:reference, fnml:execution ) ) .
+        OPTIONAL {
+            # OPTIONAL because a function can have 0 arguments (e.g., uuid())
+            ?execution fnml:input ?input .
+    
+            ?input fnml:parameterMap ?parameter_map .
+            ?parameter_map rr:constant ?parameter_map_value .
+    
+            ?input fnml:valueMap ?value_map .
+            ?value_map ?value_map_type ?value_map_value .
+            FILTER ( ?value_map_type IN ( rr:constant, rr:template, rml:reference, fnml:execution ) ) .
+        }
     }
 """
