@@ -48,7 +48,8 @@ RML_PARSING_QUERY = """
     WHERE {
         ?triples_map_id rml:logicalSource ?_source ;
                         a ?triples_map_type .
-        OPTIONAL {  # logical_source is optional because it can be specified with file_path in config (see #119)
+        OPTIONAL {
+            # logical_source is optional because it can be specified with file_path in config (see #119)
             ?_source ?logical_source_type ?logical_source_value .
             FILTER ( ?logical_source_type IN ( rml:source, rr:tableName, rml:query ) ) .
         }
@@ -125,7 +126,8 @@ FNO_PARSING_QUERY = """
 
     # Input ---------------------------------------------------------------------------
 
-        OPTIONAL {  # OPTIONAL because a function can have 0 arguments (e.g., uuid())
+        OPTIONAL {
+            # OPTIONAL because a function can have 0 arguments (e.g., uuid())
             ?execution fnml:input ?input .
     
             ?input fnml:parameterMap ?parameter_map .

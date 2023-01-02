@@ -13,6 +13,16 @@ from ..utils import get_fno_execution, remove_null_values_from_dataframe, get_re
 from ..constants import FNML_EXECUTION, R2RML_TEMPLATE, R2RML_CONSTANT
 
 
+def load_udfs(config):
+    if config.get_udfs():
+        udf_module = SourceFileLoader("udf", config.get_udfs()).load_module()
+        udf_dict = udf_module.udf_dict
+    else:
+        udf_dict = {}
+
+    return udf_dict
+
+
 def _materialize_fno_template(data, template):
     # TODO: this function is very similar to _materialize_template in materializer
     references = get_references_in_template(template)
@@ -37,16 +47,6 @@ def _materialize_fno_template(data, template):
     return data['aux_fno_template_data']
 
 
-def load_udfs(config):
-    if config.get_udfs():
-        udf_module = SourceFileLoader("udf", config.get_udfs()).load_module()
-        udf_dict = udf_module.udf_dict
-    else:
-        udf_dict = {}
-
-    return udf_dict
-
-
 def execute_fno(data, fno_df, fno_execution, config):
     execution_rule_df = get_fno_execution(fno_df, fno_execution)
     function_id = execution_rule_df.iloc[0]['function_map_value']
@@ -64,24 +64,23 @@ def execute_fno(data, fno_df, fno_execution, config):
         function = bif_dict[function_id]['function']
         function_decorator_parameters = bif_dict[function_id]['parameters']
     else:
-        # TODO: load only once, with some control variable
         udf_dict = load_udfs(config)
         function = udf_dict[function_id]['function']
         function_decorator_parameters = udf_dict[function_id]['parameters']
 
     function_params = {}
-    for key, value in function_decorator_parameters.items():
+    for k, v in function_decorator_parameters.items():
 
         # if parameter is optional it is not in parameter_to_value_type_dict
-        if value in parameter_to_value_type_dict:
-            if parameter_to_value_type_dict[value] == R2RML_CONSTANT:
-                function_params[key] = [parameter_to_value_value_dict[value]] * len(data)
-            elif parameter_to_value_type_dict[value] == R2RML_TEMPLATE:
-                fno_template_data = _materialize_fno_template(data, parameter_to_value_value_dict[value])
-                function_params[key] = list(fno_template_data)
+        if v in parameter_to_value_type_dict:
+            if parameter_to_value_type_dict[v] == R2RML_CONSTANT:
+                function_params[k] = [parameter_to_value_value_dict[v]] * len(data)
+            elif parameter_to_value_type_dict[v] == R2RML_TEMPLATE:
+                fno_template_data = _materialize_fno_template(data, parameter_to_value_value_dict[v])
+                function_params[k] = list(fno_template_data)
             else:
                 # RML_REFERENCE or FNML_EXECUTION
-                function_params[key] = list(data[parameter_to_value_value_dict[value]])
+                function_params[k] = list(data[parameter_to_value_value_dict[v]])
 
     exec_res = []
     for i in range(len(data)):
