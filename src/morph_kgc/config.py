@@ -30,7 +30,7 @@ NA_VALUES = 'na_values'
 OUTPUT_DIR = 'output_dir'
 OUTPUT_FILE = 'output_file'
 OUTPUT_FORMAT = 'output_format'
-ONLY_PRINTABLE_CHARACTERS = 'only_printable_characters'
+ONLY_PRINTABLE_CHARS = 'only_printable_chars'
 SAFE_PERCENT_ENCODING = 'safe_percent_encoding'
 
 FILE_PATH = 'file_path'
@@ -74,7 +74,7 @@ DEFAULT_LOGGING_LEVEL = 'INFO'
 DEFAULT_INFER_SQL_DATATYPES = 'no'
 DEFAULT_NUMBER_OF_PROCESSES = 2 * mp.cpu_count()
 DEFAULT_NA_VALUES = ',#N/A,N/A,#N/A N/A,n/a,NA,<NA>,#NA,NULL,null,NaN,nan,None'
-DEFAULT_ONLY_PRINTABLE_CHARACTERS = 'no'
+DEFAULT_ONLY_PRINTABLE_CHARS = 'no'
 DEFAULT_UDFS = ''
 
 # ORACLE
@@ -108,7 +108,7 @@ CONFIGURATION_OPTIONS_EMPTY_VALID = {
 CONFIGURATION_OPTIONS_EMPTY_NON_VALID = {
             OUTPUT_DIR: DEFAULT_OUTPUT_DIR,
             OUTPUT_FORMAT: DEFAULT_OUTPUT_FORMAT,
-            ONLY_PRINTABLE_CHARACTERS: DEFAULT_ONLY_PRINTABLE_CHARACTERS,
+            ONLY_PRINTABLE_CHARS: DEFAULT_ONLY_PRINTABLE_CHARS,
             INFER_SQL_DATATYPES: DEFAULT_INFER_SQL_DATATYPES,
             LOGGING_LEVEL: DEFAULT_LOGGING_LEVEL,
             NUMBER_OF_PROCESSES: DEFAULT_NUMBER_OF_PROCESSES
@@ -223,7 +223,7 @@ class Config(ConfigParser):
         return self.getboolean(self.configuration_section, ENFORCE_SQL_QUERY_FILTER_NULL)
 
     def only_write_printable_characters(self):
-        return self.getboolean(self.configuration_section, ONLY_PRINTABLE_CHARACTERS)
+        return self.getboolean(self.configuration_section, ONLY_PRINTABLE_CHARS)
 
     def get_configuration_option(self, option):
         return self.get(self.configuration_section, option)
