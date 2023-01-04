@@ -151,7 +151,7 @@ The parameters of the sections in the **[INI file](https://en.wikipedia.org/wiki
 
 The execution of Morph-KGC can be **tuned** via the **`CONFIGURATION`** section in the **[INI file](https://en.wikipedia.org/wiki/INI_file)**. This section can be empty, in which case Morph-KGC will use the **default** property values.
 
-|<div style="width:190px">Property</div>|Description|Values|
+|<div style="width:195px">Property</div>|Description|Values|
 |-------|-------|-------|
 |**`output_file`**|File to write the resulting knowledge graph to.|**Default:** _knowledge-graph.nt_|
 |**`output_dir`**|Directory to write the resulting knowledge graph to. If it is specified, `output_file` will be ignored and multiple output files will generated, one for each mapping partition.|**Default:**|
