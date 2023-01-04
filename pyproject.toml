@@ -2,6 +2,15 @@
 requires = ["hatchling>=1.11.0"]
 build-backend = "hatchling.build"
 
+[project.urls]
+Documentation = 'https://morph-kgc.readthedocs.io/en/latest/documentation/'
+Source = 'https://github.com/oeg-upm/morph-kgc'
+Tracker = 'https://github.com/oeg-upm/morph-kgc/issues'
+CI = 'https://github.com/oeg-upm/morph-kgc/actions'
+Homepage = "https://morph-kgc.readthedocs.io/en/latest/"
+History = "https://github.com/oeg-upm/morph-kgc/releases"
+#Sponsor = ""
+
 [project]
 name = "morph_kgc"
 description = "Powerful [R2]RML engine to create RDF knowledge graphs from heterogeneous data sources."
@@ -36,7 +45,7 @@ dependencies = [
   "rdflib>=6.1.1",
   "pyoxigraph>=0.3.10",
   "sql_metadata>=2.6.0",
-  "SQLAlchemy>=1.4.0",
+  "SQLAlchemy>=1.4.16",
   "jsonpath-python>=1.0.6",
   "elementpath>=3.0.0",
   "duckdb>=0.6.0",
@@ -46,11 +55,23 @@ dependencies = [
 [tool.hatch.version]
 path = "src/morph_kgc/_version.py"
 
-[project.urls]
-Documentation = 'https://morph-kgc.readthedocs.io/en/latest/documentation/'
-Source = 'https://github.com/oeg-upm/morph-kgc'
-Tracker = 'https://github.com/oeg-upm/morph-kgc/issues'
-CI = 'https://github.com/oeg-upm/morph-kgc/actions'
-Homepage = "https://morph-kgc.readthedocs.io/en/latest/"
-History = "https://github.com/oeg-upm/morph-kgc/releases"
-#Sponsor = ""
+[project.optional-dependencies]
+test = ['pytest>=7.2.0', 'openpyxl>=3.0.10', 'odfpy>=1.4.1', 'pyarrow>=10.0.1']
+docs = ['8.5.11']
+performance = ['bottleneck>=1.3.2', 'numexpr>=2.7.1']
+mysql = ['pymysql>=1.0.2']
+postgresql = ['psycopg[binary]']
+oracle = ['cx-Oracle>=8.3.0']
+mssql = ['pymssql>=2.2.7']
+excel = ['openpyxl>=3.0.10', 'odfpy>=1.4.1']
+tabular = ['pyarrow>=10.0.1']
+spss = ['pyreadstat>=1.2.0']
+all = [
+  "morph_kgc[mysql]",
+  "morph_kgc[postgresql]",
+  "morph_kgc[oracle]",
+  "morph_kgc[mssql]",
+  "morph_kgc[excel]",
+  "morph_kgc[tabular]",
+  "morph_kgc[spss]",
+]
