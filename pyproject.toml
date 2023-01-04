@@ -1,0 +1,60 @@
+[build-system]
+requires = ["hatchling>=1.11.0", "hatch-requirements-txt>=0.3.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "morph_kgc"
+description = "Powerful [R2]RML engine to create RDF knowledge graphs from heterogeneous data sources."
+readme = "README.md"
+keywords = ["Morph-KGC", "RDF", "R2RML", "RML", "RML-star", "Knowledge Graph", "Data Integration"]
+authors = [
+  {name = "Julián Arenas-Guerrero", email = "arenas.guerrero.julian@outlook.com"}
+]
+license = "Apache-2.0"
+classifiers = [
+  'Programming Language :: Python :: 3',
+  'Programming Language :: Python :: 3.7',
+  'Programming Language :: Python :: 3.8',
+  'Programming Language :: Python :: 3.9',
+  'Programming Language :: Python :: 3.10',
+  'Programming Language :: Python :: 3.11',
+  'License :: OSI Approved :: Apache Software License',
+  'Operating System :: OS Independent',
+  'Development Status :: 5 - Production/Stable',
+  'Environment :: Console',
+  'Intended Audience :: Information Technology',
+  'Intended Audience :: Science/Research',
+  'Topic :: Software Development :: Pre-processors',
+  'Topic :: Database',
+  'Topic :: Utilities',
+  'Topic :: Scientific/Engineering :: Interface Engine/Protocol Translator',
+]
+requires-python = ">=3.7"
+dynamic = ["version", "dependencies"]
+
+[tool.hatch.version]
+path = "src/morph_kgc/_version.py"
+
+[tool.hatch.metadata.hooks.requirements_txt]
+files = ["requirements.txt"]
+
+[project.urls]
+Documentation = 'https://morph-kgc.readthedocs.io/en/latest/documentation/'
+Source = 'https://github.com/oeg-upm/morph-kgc'
+Tracker = 'https://github.com/oeg-upm/morph-kgc/issues'
+CI = 'https://github.com/oeg-upm/morph-kgc/actions'
+Homepage = "https://morph-kgc.readthedocs.io/en/latest/"
+History = "https://github.com/oeg-upm/morph-kgc/releases"
+#Sponsor = ""
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "/docs",
+  "/src",
+  "/test",
+  "/requirements.txt",
+  "/requirements-dev.txt",
+  "/requirements-docs.txt",
+  "/README.md",
+  "/LICENSE",
+]
