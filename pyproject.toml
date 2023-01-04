@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling>=1.11.0", "hatch-requirements-txt>=0.3.0"]
+requires = ["hatchling>=1.11.0"]
 build-backend = "hatchling.build"
 
 [project]
@@ -30,13 +30,21 @@ classifiers = [
   'Topic :: Scientific/Engineering :: Interface Engine/Protocol Translator',
 ]
 requires-python = ">=3.7"
-dynamic = ["version", "dependencies"]
+dynamic = ["version"]
+dependencies = [
+  "pandas>=1.4.0",
+  "rdflib>=6.1.1",
+  "pyoxigraph>=0.3.10",
+  "sql_metadata>=2.6.0",
+  "SQLAlchemy>=1.4.0",
+  "jsonpath-python>=1.0.6",
+  "elementpath>=3.0.0",
+  "duckdb>=0.6.0",
+  "falcon>=3.0.0"
+]
 
 [tool.hatch.version]
 path = "src/morph_kgc/_version.py"
-
-[tool.hatch.metadata.hooks.requirements_txt]
-files = ["requirements.txt"]
 
 [project.urls]
 Documentation = 'https://morph-kgc.readthedocs.io/en/latest/documentation/'
@@ -46,15 +54,3 @@ CI = 'https://github.com/oeg-upm/morph-kgc/actions'
 Homepage = "https://morph-kgc.readthedocs.io/en/latest/"
 History = "https://github.com/oeg-upm/morph-kgc/releases"
 #Sponsor = ""
-
-[tool.hatch.build.targets.sdist]
-include = [
-  "/docs",
-  "/src",
-  "/test",
-  "/requirements.txt",
-  "/requirements-dev.txt",
-  "/requirements-docs.txt",
-  "/README.md",
-  "/LICENSE",
-]
