@@ -5,7 +5,7 @@ site_name: Morph-KGC
 repo_url: https://github.com/oeg-upm/morph-kgc
 edit_uri: ""
 
-copyright: Copyright &copy; 2020 - 2022 Julián Arenas-Guerrero | Universidad Politécnica de Madrid
+copyright: Copyright &copy; 2020 - 2023 Julián Arenas-Guerrero | Universidad Politécnica de Madrid
 
 theme:
   icon:
