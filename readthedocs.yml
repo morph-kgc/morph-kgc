@@ -3,8 +3,7 @@ version: 2
 python:
   version: 3
   install:
-    - method: pip
-      path: mkdocs-material
+    - mkdocs-material
 
 mkdocs:
  configuration: mkdocs.yml
