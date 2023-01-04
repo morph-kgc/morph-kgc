@@ -124,6 +124,7 @@ def _materialize_template(results_df, template, config, position, columns_alias=
             else:
                 results_df['reference_results'] = results_df['reference_results'].apply(lambda x: encode_value(x))
         elif termtype.strip() == R2RML_LITERAL:
+            # TODO: this can be avoided for most cases (if '\\' in data_value)
             results_df['reference_results'] = results_df['reference_results'].str.replace('\\', '\\\\', regex=False).str.replace('\n', '\\n', regex=False).str.replace('\t', '\\t', regex=False).str.replace('\b', '\\b', regex=False).str.replace('\f', '\\f', regex=False).str.replace('\r', '\\r', regex=False).str.replace('"', '\\"', regex=False).str.replace("'", "\\'", regex=False)
 
         splitted_template = template.split('{' + reference + '}')
