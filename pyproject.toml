@@ -46,7 +46,7 @@ dependencies = [
   'pyoxigraph>=0.3.10',
   'sql_metadata>=2.6.0',
   'SQLAlchemy>=1.4.16',
-  'jsonpath-python>=1.0.6',
+  'jsonpath-python==1.0.5',
   'elementpath>=3.0.0',
   'duckdb>=0.6.0',
   'falcon>=3.0.0'
