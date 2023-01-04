@@ -1,7 +1,7 @@
 # FAQ
 
 #### Who develops Morph-KGC?
-Morph-KGC was created in the **[Ontology Engineering Group](https://oeg.fi.upm.es)** at **[Universidad Politécnica de Madrid](https://www.upm.es/internacional)** by **[Julián Arenas-Guerrero](https://github.com/ArenasGuerreroJulian/)** along with other **[contributors](https://github.com/oeg-upm/morph-kgc/graphs/contributors)**.
+Morph-KGC was created by **[Julián Arenas-Guerrero](https://github.com/ArenasGuerreroJulian/)** in the **[Ontology Engineering Group](https://oeg.fi.upm.es)** at **[Universidad Politécnica de Madrid](https://www.upm.es/internacional)**.
 
 #### How can I learn R2RML, RML or RML-star?
 The best starting point is the **[R2RML Recommendation](https://www.w3.org/TR/r2rml/)**. After that, you can continue with the **[RML](https://rml.io/specs/rml/)** or **[RML-star](https://kg-construct.github.io/rml-star-spec/)** specifications.
@@ -10,7 +10,7 @@ The best starting point is the **[R2RML Recommendation](https://www.w3.org/TR/r2
 The best place to get the answer is at **[Discussions for RML questions](https://github.com/kg-construct/rml-questions/discussions)**.
 
 #### I installed Morph-KGC but I get an error saying some dependency is missing
-To use relational databases and some data files it is required to install additional libraries. You can see which one you need to install in **[Advanced Setup](https://morph-kgc.readthedocs.io/en/latest/documentation/#advanced-setup)**.
+To use relational databases and some data files it is required to install additional dependencies. You can check specific configuration options in **[Advanced Setup](https://morph-kgc.readthedocs.io/en/latest/documentation/#advanced-setup)**.
 
 #### How do I submit a bug report?
 Please, [open an issue](https://github.com/oeg-upm/morph-kgc/issues/new/choose) with a clear description of the bug. We will try to solve it as soon as possible.
