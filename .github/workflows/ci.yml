@@ -1,13 +1,6 @@
 name: CI
-on:
-  push:
-    branches:
-      - main
-      - develop
-  pull_request:
-    branches:
-      - main
-      - develop
+
+on: [push, pull_request]
 
 jobs:
   build:
@@ -25,10 +18,10 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install -r requirements-dev.txt
+        python -m pip install --upgrade pip setuptools wheel
+    - name: Build Morph-KGC
+      run: |
+        pip install .[test]
     - name: Test with pytest
       run: |
-        pip install .
         pytest

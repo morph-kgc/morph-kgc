@@ -8,7 +8,6 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 import logging
 import pandas as pd
-import sql_metadata
 
 from sqlalchemy import create_engine
 from sqlalchemy.pool import NullPool
@@ -126,6 +125,8 @@ def get_rdb_reference_datatype(config, rml_rule, reference):
         inferred_data_type = _get_column_table_datatype(config, rml_rule['source_name'],
                                                         rml_rule['logical_source_value'], reference)
     elif rml_rule['logical_source_type'] == RML_QUERY:
+        import sql_metadata
+
         # if mapping rule has a query, get the table names in the query
         table_names = sql_metadata.Parser(rml_rule['logical_source_value']).tables
         for table_name in table_names:

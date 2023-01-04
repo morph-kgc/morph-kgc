@@ -13,19 +13,7 @@
 
 **Morph-KGC** is an engine that constructs **[RDF](https://www.w3.org/TR/rdf11-concepts/)** and **[RDF-star](https://w3c.github.io/rdf-star/cg-spec/2021-12-17.html)** knowledge graphs from heterogeneous data sources with the **[R2RML](https://www.w3.org/TR/r2rml/)**, **[RML](https://rml.io/specs/rml/)** and **[RML-star](https://kg-construct.github.io/rml-star-spec/)** mapping languages. Morph-KGC is built on top of [pandas](https://pandas.pydata.org/) and it leverages *mapping partitions* to significantly reduce execution times and memory consumption for large data sources.
 
-**Citing Morph-KGC**: If you used Morph-KGC in your work, please cite the **[SWJ paper](https://content.iospress.com/download/semantic-web/sw223135?id=semantic-web%2Fsw223135)**:
-
-```bib
-@article{arenas2022morph,
-  title   = {{Morph-KGC: Scalable knowledge graph materialization with mapping partitions}},
-  author  = {Arenas-Guerrero, Julián and Chaves-Fraga, David and Toledo, Jhon and Pérez, María S. and Corcho, Oscar},
-  journal = {Semantic Web},
-  year    = {2022},
-  doi     = {10.3233/SW-223135}
-}
-```
-
-## Main Features
+## Features
 
 - Supports **[R2RML](https://www.w3.org/TR/r2rml/)**, **[RML](https://rml.io/specs/rml/)** and **[RML-star](https://kg-construct.github.io/rml-star-spec/)** mapping languages.
 - Input data formats:
@@ -37,7 +25,6 @@
 - Integration with **[RDFLib](https://rdflib.readthedocs.io)** and **[Oxigraph](https://pyoxigraph.readthedocs.io/en/latest/)**.
 - **Remote** data files and mapping files.
 - Runs on **Linux**, **Windows** and **macOS** systems.
-- Compatible with **[Python](https://www.python.org/)** 3.7 or higher.
 - **Optimized** to materialize large knowledge graphs.
 
 ## Documentation
@@ -51,14 +38,14 @@ Learn quickly with the tutorial in **[Google Colaboratory](https://colab.researc
 ## Getting Started
 
 **[PyPi](https://pypi.org/project/morph-kgc/)** is the fastest way to install Morph-KGC:
-```
+```bash
 pip install morph-kgc
 ```
 
 We recommend to use **[virtual environments](https://docs.python.org/3/library/venv.html#)** to install Morph-KGC.
 
 To run the engine via **command line** you just need to execute the following:
-```
+```bash
 python3 -m morph_kgc config.ini
 ```
 
@@ -71,12 +58,12 @@ import morph_kgc
 # generate the triples and load them to an RDFLib graph
 g_rdflib = morph_kgc.materialize('/path/to/config.ini')
 # work with the RDFLib graph
-q_res = g_rdflib.query(' SELECT DISTINCT ?classes WHERE { ?s a ?classes } ')
+q_res = g_rdflib.query('SELECT DISTINCT ?classes WHERE { ?s a ?classes }')
 
 # generate the triples and load them to Oxigraph
 g_oxigraph = morph_kgc.materialize_oxigraph('/path/to/config.ini')
 # work with Oxigraph
-q_res = graph.query(' SELECT DISTINCT ?classes WHERE { ?s a ?classes } ')
+q_res = g_oxigraph.query('SELECT DISTINCT ?classes WHERE { ?s a ?classes }')
 
 # the methods above also accept the config as a string
 config = """
@@ -90,6 +77,20 @@ g_rdflib = morph_kgc.materialize(config)
 ## License
 
 Morph-KGC is available under the **[Apache License 2.0](https://github.com/oeg-upm/Morph-KGC/blob/main/LICENSE)**.
+
+## Citing
+
+If you used Morph-KGC in your work, please cite the **[SWJ paper](https://content.iospress.com/download/semantic-web/sw223135?id=semantic-web%2Fsw223135)**:
+
+```bib
+@article{arenas2022morph,
+  title   = {{Morph-KGC: Scalable knowledge graph materialization with mapping partitions}},
+  author  = {Arenas-Guerrero, Julián and Chaves-Fraga, David and Toledo, Jhon and Pérez, María S. and Corcho, Oscar},
+  journal = {Semantic Web},
+  year    = {2022},
+  doi     = {10.3233/SW-223135}
+}
+```
 
 ## Author
 

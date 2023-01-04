@@ -6,13 +6,19 @@ You can get quickly started with the tutorial in **[`Google Colaboratory`](https
 
 ## Installation
 
-In the following we describe different ways in which you can install and use Morph-KGC. Depending on the data sources that you need to work with, you may need to install additional libraries, see **[Advanced Setup](https://morph-kgc.readthedocs.io/en/latest/documentation/#advanced-setup)**.
+In the following we describe different ways in which you can install and use Morph-KGC.
 
 ### PyPi
 
 **[PyPi](https://pypi.org/project/morph-kgc/)** is the fastest way to install Morph-KGC:
 ```
 pip install morph-kgc
+```
+
+Some data sources require additional dependencies. Check **[Advanced Setup](https://morph-kgc.readthedocs.io/en/latest/documentation/#advanced-setup)** for specific installation instructions or install all the dependencies:
+
+```
+pip install morph-kgc[all]
 ```
 
 We recommend to use **[virtual environments](https://docs.python.org/3/library/venv.html#)** to install Morph-KGC.
@@ -186,14 +192,14 @@ The properties to be specified for **relational databases** are listed below. Al
 |**`mappings`**|Specifies the mapping file(s) or URL(s) for the relational database.|**[REQUIRED]**<br>**Valid:**<br>- The path to a mapping file or URL.<br>- The paths to multiple mapping files or URLs separated by commas.<br>- The path to a directory containing all the mapping files.|
 |**`db_url`**|It is a URL that configures the database engine (username, password, hostname, database name). See **[here](https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls)** how to create the database URLs.|**[REQUIRED]**<br>**Example:** _dialect+driver://username:password@host:port/db_name_|
 
-Example **`db_url`** values (see **[here](https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls)** all the information) for the **DBAPI drivers** recommended in **[Advanced Setup](https://morph-kgc.readthedocs.io/en/latest/documentation/#advanced-setup)** are:
+Example **`db_url`** values (see **[here](https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls)** all the information):
 
-- **[MySQL](https://www.mysql.com/):** _mysql+pymysql://username:password@host:port/db_name_
-- **[PostgreSQL](https://www.postgresql.org/):** _postgresql+psycopg2://username:password@host:port/db_name_
-- **[Oracle](https://www.oracle.com/database/):** _oracle+cx_oracle://username:password@host:port/db_name_
-- **[Microsoft SQL Server](https://www.microsoft.com/sql-server):** _mssql+pymssql://username:password@host:port/db_name_
-- **[MariaDB](https://mariadb.org/):** _mariadb+pymysql://username:password@host:port/db_name_
-- **[SQLite](https://www.sqlite.org):** _sqlite:///db_path/db_name.db_
+- **[MySQL](https://www.mysql.com/)**: _mysql+pymysql://username:password@host:port/db_name_
+- **[PostgreSQL](https://www.postgresql.org/)**: _postgresql+psycopg2://username:password@host:port/db_name_
+- **[Oracle](https://www.oracle.com/database/)**: _oracle+cx_oracle://username:password@host:port/db_name_
+- **[Microsoft SQL Server](https://www.microsoft.com/sql-server)**: _mssql+pymssql://username:password@host:port/db_name_
+- **[MariaDB](https://mariadb.org/)**: _mariadb+pymysql://username:password@host:port/db_name_
+- **[SQLite](https://www.sqlite.org)**: _sqlite:///db_path/db_name.db_
 
 #### Data Files
 
@@ -214,45 +220,28 @@ The properties to be specified for **data files** are listed below. **Remote** d
 
 ### Relational Databases
 
-The supported DBMSs are **[MySQL](https://www.mysql.com/)**, **[PostgreSQL](https://www.postgresql.org/)**, **[Oracle](https://www.oracle.com/database/)**, **[Microsoft SQL Server](https://www.microsoft.com/sql-server)**, **[MariaDB](https://mariadb.org/)** and **[SQLite](https://www.sqlite.org)**. To use relational databases it is neccessary to first **install the DBAPI driver**. We recommend the following ones:
+The supported DBMSs are **[MySQL](https://www.mysql.com/)**, **[PostgreSQL](https://www.postgresql.org/)**, **[Oracle](https://www.oracle.com/database/)**, **[Microsoft SQL Server](https://www.microsoft.com/sql-server)**, **[MariaDB](https://mariadb.org/)** and **[SQLite](https://www.sqlite.org)**. To use relational databases it is necessary to additionally install **DBAPI drivers**. You can install them via:
 
-- **[MySQL](https://www.mysql.com/):** [PyMySQL](https://pypi.org/project/PyMySQL/).
-- **[PostgreSQL](https://www.postgresql.org/):** [psycopg2](https://pypi.org/project/psycopg2-binary/).
-- **[Oracle](https://www.oracle.com/database/):** [cx-Oracle](https://pypi.org/project/cx-Oracle/).
-- **[Microsoft SQL Server](https://www.microsoft.com/sql-server):** [pymssql](https://pypi.org/project/pymssql/).
-- **[MariaDB](https://mariadb.org/):** [PyMySQL](https://pypi.org/project/PyMySQL/).
-- **[SQLite](https://www.sqlite.org):** does **not** need any additional DBAPI driver.
+- **[MySQL](https://www.mysql.com/)** and **[MariaDB](https://mariadb.org/)**: `pip install morph-kgc[mysql]`.
+- **[PostgreSQL](https://www.postgresql.org/)**: `pip install morph-kgc[postgresql]`.
+- **[Microsoft SQL Server](https://www.microsoft.com/sql-server)**: `pip install morph-kgc[mssql]`.
+- **[Oracle](https://www.oracle.com/database/)**: `pip install morph-kgc[oracle]`.
 
-Morph-KGC relies on **[SQLAlchemy](https://www.sqlalchemy.org/)**. Additional DBAPI drivers are supported, you can check the full list **[here](https://docs.sqlalchemy.org/en/14/dialects/index.html#included-dialects)**. For **[MySQL](https://www.mysql.com/)** and **[MariaDB](https://mariadb.org/)** you may also need to install **[cryptography](https://pypi.org/project/cryptography/)**.
-
-{==
-
-*__Note:__ to run Morph-KGC with [Oracle](https://www.oracle.com/database/), the libraries of the [Oracle Client](https://www.oracle.com/database/technologies/instant-client/downloads.html) need to be loaded. See [cx_Oracle Installation](https://cx-oracle.readthedocs.io/en/latest/user_guide/installation.html) to install these libraries. See [cx_Oracle Initialization](https://cx-oracle.readthedocs.io/en/latest/user_guide/initialization.html) to setup the initialization of [Oracle](https://www.oracle.com/database/). Depending on the selected option, provide the properties `oracle_client_lib_dir` and `oracle_client_config_dir` in the [`CONFIGURATION`](https://morph-kgc.readthedocs.io/en/latest/documentation/#engine-configuration) section accordingly.*
-
-==}
+To run Morph-KGC with [Oracle](https://www.oracle.com/database/), the libraries of the [Oracle Client](https://www.oracle.com/database/technologies/instant-client/downloads.html) need to be loaded. See [cx_Oracle Installation](https://cx-oracle.readthedocs.io/en/latest/user_guide/installation.html) to install these libraries. See [cx_Oracle Initialization](https://cx-oracle.readthedocs.io/en/latest/user_guide/initialization.html) to setup the initialization of [Oracle](https://www.oracle.com/database/). Depending on the selected option, provide the properties `oracle_client_lib_dir` and `oracle_client_config_dir` in the [`CONFIGURATION`](https://morph-kgc.readthedocs.io/en/latest/documentation/#engine-configuration) section accordingly.
 
 ### Tabular Files
 
-The supported tabular files formats are **[CSV](https://en.wikipedia.org/wiki/Comma-separated_values)**, **[TSV](https://en.wikipedia.org/wiki/Tab-separated_values)**, **[Excel](https://www.microsoft.com/en-us/microsoft-365/excel)**, **[Parquet](https://parquet.apache.org/documentation/latest/)**, **[Feather](https://arrow.apache.org/docs/python/feather.html)**, **[ORC](https://orc.apache.org/)**, **[Stata](https://www.stata.com/)**, **[SAS](https://www.sas.com)**, **[SPSS](https://www.ibm.com/analytics/spss-statistics-software)** and **[ODS](https://en.wikipedia.org/wiki/OpenDocument)**. To work with some of them it is neccessary to install some libraries:
+The supported tabular files formats are **[CSV](https://en.wikipedia.org/wiki/Comma-separated_values)**, **[TSV](https://en.wikipedia.org/wiki/Tab-separated_values)**, **[Excel](https://www.microsoft.com/en-us/microsoft-365/excel)**, **[Parquet](https://parquet.apache.org/documentation/latest/)**, **[Feather](https://arrow.apache.org/docs/python/feather.html)**, **[ORC](https://orc.apache.org/)**, **[Stata](https://www.stata.com/)**, **[SAS](https://www.sas.com)**, **[SPSS](https://www.ibm.com/analytics/spss-statistics-software)** and **[ODS](https://en.wikipedia.org/wiki/OpenDocument)**. To work with some of them it is necessary to install additional dependencies. You can install them via:
 
-- **[Excel](https://www.microsoft.com/en-us/microsoft-365/excel):** [OpenPyXL](https://pypi.org/project/openpyxl/).
-- **[Parquet](https://parquet.apache.org/documentation/latest/):** [PyArrow](https://pypi.org/project/pyarrow/).
-- **[ODS](https://en.wikipedia.org/wiki/OpenDocument):** [OdfPy](https://pypi.org/project/odfpy/).
-- **[Feather](https://arrow.apache.org/docs/python/feather.html):** [PyArrow](https://pypi.org/project/pyarrow/).
-- **[ORC](https://orc.apache.org/):** [PyArrow](https://pypi.org/project/pyarrow/).
-- **[SPSS](https://www.ibm.com/analytics/spss-statistics-software):** [pyreadstat](https://pypi.org/project/pyreadstat/).
+- **[Excel](https://www.microsoft.com/en-us/microsoft-365/excel)** and **[ODS](https://en.wikipedia.org/wiki/OpenDocument)**: `pip install morph-kgc[excel]`.
+- **[Parquet](https://parquet.apache.org/documentation/latest/)**, **[Feather](https://arrow.apache.org/docs/python/feather.html)** and **[ORC](https://orc.apache.org/)**: `pip install morph-kgc[tabular]`.
+- **[SPSS](https://www.ibm.com/analytics/spss-statistics-software)**: `pip install morph-kgc[sspss]`.
 
 ### Hierarchical Files
 
 The supported hierarchical files formats are **[XML](https://www.w3.org/TR/xml/)** and **[JSON](https://www.json.org)**.
 
-Morph-KGC uses **[XPath 3.0](https://www.w3.org/TR/xpath30/)** to query XML files and **[JSONPath](https://goessner.net/articles/JsonPath/)** to query JSON files.
-
-{==
-
-*__Note:__ the specific JSONPath syntax supported by Morph-KGC can be consulted __[here](https://github.com/zhangxianbing/jsonpath-python#jsonpath-syntax)__.*
-
-==}
+Morph-KGC uses **[XPath 3.0](https://www.w3.org/TR/xpath30/)** to query XML files and **[JSONPath](https://goessner.net/articles/JsonPath/)** to query JSON files. The specific JSONPath syntax supported by Morph-KGC can be consulted __[here](https://github.com/zhangxianbing/jsonpath-python#jsonpath-syntax)__.
 
 ## Mappings
 
