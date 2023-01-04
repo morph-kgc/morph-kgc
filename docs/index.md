@@ -20,6 +20,12 @@
 - Runs on **Linux**, **Windows** and **macOS** systems.
 - **Optimized** to materialize large knowledge graphs.
 
+## Licenses
+
+**Morph-KGC** is available under the **[Apache License 2.0](https://github.com/oeg-upm/Morph-KGC/blob/main/LICENSE)**.
+
+The **documentation** is licensed under **[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)**.
+
 ## Citing
 
 If you used Morph-KGC in your work, please cite the **[SWJ paper](https://content.iospress.com/download/semantic-web/sw223135?id=semantic-web%2Fsw223135)**:
@@ -33,12 +39,6 @@ If you used Morph-KGC in your work, please cite the **[SWJ paper](https://conten
   doi     = {10.3233/SW-223135}
 }
 ```
-
-## Licenses
-
-**Morph-KGC** is available under the **[Apache License 2.0](https://github.com/oeg-upm/Morph-KGC/blob/main/LICENSE)**.
-
-The **documentation** is licensed under **[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)**.
 
 ## Author
 
