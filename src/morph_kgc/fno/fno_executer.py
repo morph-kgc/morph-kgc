@@ -94,11 +94,12 @@ def execute_fno(data, fno_df, fno_execution, config):
 
     data[fno_execution] = exec_res
 
+    # TODO: this can be avoided for many built-in functions and also UDFs with a special parameter
     #if function_id in ['http://users.ugent.be/~bjdmeest/function/grel.ttl#string_split']:
+
     # only list values are exploded, strings that encode lists are not exploded
     data = data.explode(fno_execution)
 
-    # TODO: this can be avoided for many built-in functions
     data = remove_null_values_from_dataframe(data, config, fno_execution, column=fno_execution)
 
     return data
