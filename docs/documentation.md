@@ -235,7 +235,7 @@ The supported tabular files formats are **[CSV](https://en.wikipedia.org/wiki/Co
 
 - **[Excel](https://www.microsoft.com/en-us/microsoft-365/excel)** and **[ODS](https://en.wikipedia.org/wiki/OpenDocument)**: `pip install morph-kgc[excel]`.
 - **[Parquet](https://parquet.apache.org/documentation/latest/)**, **[Feather](https://arrow.apache.org/docs/python/feather.html)** and **[ORC](https://orc.apache.org/)**: `pip install morph-kgc[tabular]`.
-- **[SPSS](https://www.ibm.com/analytics/spss-statistics-software)**: `pip install morph-kgc[sspss]`.
+- **[SPSS](https://www.ibm.com/analytics/spss-statistics-software)**: `pip install morph-kgc[spss]`.
 
 ### Hierarchical Files
 
