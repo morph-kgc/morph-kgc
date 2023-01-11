@@ -215,7 +215,7 @@ def string_split_explode(string, separator):
     string1='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam1',
     string2='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam2',
     separator='http://users.ugent.be/~bjdmeest/function/grel.ttl#param_string_sep')
-def string_split_explode(string1, string2, separator=''):
+def string_concat(string1, string2, separator=''):
     return f'{string1}{separator}{string2}'
 
 
