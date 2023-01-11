@@ -31,6 +31,7 @@ def _preprocess_data(data, rml_rule, references, config):
         if config.get_database_url(rml_rule['source_name']).lower().startswith(ORACLE.lower()):
             data = normalize_oracle_identifier_casing(data, references)
 
+    data = data.applymap(str)   # TODO: this could be removed
     data = remove_null_values_from_dataframe(data, config, references)
     data = data.convert_dtypes(convert_boolean=False)
 

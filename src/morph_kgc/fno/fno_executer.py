@@ -94,6 +94,7 @@ def execute_fno(data, fno_df, fno_execution, config):
 
     data[fno_execution] = exec_res
 
+    #if function_id in ['http://users.ugent.be/~bjdmeest/function/grel.ttl#string_split']:
     # only list values are exploded, strings that encode lists are not exploded
     data = data.explode(fno_execution)
 
