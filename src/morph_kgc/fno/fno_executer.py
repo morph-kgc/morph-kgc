@@ -99,6 +99,6 @@ def execute_fno(data, fno_df, fno_execution, config):
     data = data.explode(fno_execution)
 
     # TODO: this can be avoided for many built-in functions
-    data = remove_null_values_from_dataframe(data, config, fno_execution)
+    data = remove_null_values_from_dataframe(data, config, fno_execution, column=fno_execution)
 
     return data

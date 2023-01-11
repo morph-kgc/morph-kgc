@@ -226,10 +226,14 @@ def normalize_oracle_identifier_casing(dataframe, references):
     return dataframe
 
 
-def remove_null_values_from_dataframe(data, config, references):
+def remove_null_values_from_dataframe(data, config, references, column=None):
     if config.get_na_values():  # if there is some NULL values to replace
-        data.replace(config.get_na_values(), np.NaN, inplace=True)
-        data.dropna(axis=0, how='any', subset=references, inplace=True)
+        if column:
+            # only replace nulls in the given column
+            data[column] = data[column].replace(config.get_na_values(), np.NaN)
+        else:
+            data = data.replace(config.get_na_values(), np.NaN)
+        data = data.dropna(axis=0, how='any', subset=references)
 
     return data
 
