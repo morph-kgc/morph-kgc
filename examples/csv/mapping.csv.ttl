@@ -782,7 +782,7 @@
 :pom_073 rr:objectMap :om_074.
 :om_074 a rr:ObjectMap;
     rr:template "http://transport.linkeddata.es/madrid/metro/shape_point/{shape_id}-{shape_pt_sequence}";
-    rr:termType rr:Literal.
+    rr:termType rr:IRI.
 :rules_000 void:exampleResource :map_shapePoints_000.
 :map_shapePoints_000 rml:logicalSource :source_011.
 :source_011 a rml:LogicalSource;
