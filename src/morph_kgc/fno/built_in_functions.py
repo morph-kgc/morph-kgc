@@ -157,7 +157,7 @@ def string_trim(string):
     boolean_expression='http://users.ugent.be/~bjdmeest/function/grel.ttl#bool_b',
     value_true='http://users.ugent.be/~bjdmeest/function/grel.ttl#any_true',
     value_false='http://users.ugent.be/~bjdmeest/function/grel.ttl#any_false')
-def controls_if(boolean_expression, value_true, value_false=''):
+def controls_if(boolean_expression, value_true, value_false=None):
     if eval(boolean_expression):
         return value_true
     else:
@@ -186,7 +186,7 @@ def number_round(number):
     string='http://users.ugent.be/~bjdmeest/function/grel.ttl#bool_b',
     value_true='http://users.ugent.be/~bjdmeest/function/grel.ttl#any_true',
     value_false='http://users.ugent.be/~bjdmeest/function/grel.ttl#any_false')
-def controls_if_cast(string, value_true, value_false=''):
+def controls_if_cast(string, value_true, value_false=None):
     if string.lower() in ['', 'false', 'no', 'off', '0']:
         # this will be filtered when removing nulls
         return value_false
