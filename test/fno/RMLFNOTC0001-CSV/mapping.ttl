@@ -6,7 +6,7 @@
 @prefix ql: <http://semweb.mmlab.be/ns/ql#> .
 @prefix fnml: <http://semweb.mmlab.be/ns/fnml#> .
 @prefix fno: <https://w3id.org/function/ontology#> .
-@prefix morph-kgc: <https://github.com/oeg-upm/morph-kgc/function/built-in.ttl#> .
+@prefix morph-kgc: <https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#> .
 @prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
 @prefix idlab-fn: <http://example.com/idlab/function/> .
 

@@ -182,7 +182,7 @@ def number_round(number):
 
 
 @bif(
-    fun_id='https://github.com/oeg-upm/morph-kgc/function/built-in.ttl#controls_if_cast',
+    fun_id='https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#controls_if_cast',
     string='http://users.ugent.be/~bjdmeest/function/grel.ttl#bool_b',
     value_true='http://users.ugent.be/~bjdmeest/function/grel.ttl#any_true',
     value_false='http://users.ugent.be/~bjdmeest/function/grel.ttl#any_false')
@@ -195,7 +195,7 @@ def controls_if_cast(string, value_true, value_false=''):
 
 
 @bif(
-    fun_id='https://github.com/oeg-upm/morph-kgc/function/built-in.ttl#uuid')
+    fun_id='https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#uuid')
 def uuid():
     from uuid import uuid4
 
@@ -203,7 +203,7 @@ def uuid():
 
 
 @bif(
-    fun_id='https://github.com/oeg-upm/morph-kgc/function/built-in.ttl#string_split_explode',
+    fun_id='https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#string_split_explode',
     string='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam',
     separator='http://users.ugent.be/~bjdmeest/function/grel.ttl#param_string_sep')
 def string_split_explode(string, separator):
@@ -211,7 +211,7 @@ def string_split_explode(string, separator):
 
 
 @bif(
-    fun_id='https://github.com/oeg-upm/morph-kgc/function/built-in.ttl#concat',
+    fun_id='https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#concat',
     string1='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam1',
     string2='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam2',
     separator='http://users.ugent.be/~bjdmeest/function/grel.ttl#param_string_sep')
@@ -237,14 +237,14 @@ def to_upper_case_url(url):
 
 
 @bif(
-    fun_id='https://github.com/oeg-upm/morph-kgc/function/built-in.ttl#hash',
+    fun_id='https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#hash',
     string='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam')
 def hash(string):
     return sha256(string.encode("UTF-8")).hexdigest()
 
 
 @bif(
-    fun_id='https://github.com/oeg-upm/morph-kgc/function/built-in.ttl#hash_iri',
+    fun_id='https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#hash_iri',
     string='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam')
 def hash_iri(string):
     return f'http://example.com/ns#{sha256(string.encode("UTF-8")).hexdigest()}'

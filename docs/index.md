@@ -22,7 +22,7 @@
 
 ## Licenses
 
-**Morph-KGC** is available under the **[Apache License 2.0](https://github.com/oeg-upm/Morph-KGC/blob/main/LICENSE)**.
+**Morph-KGC** is available under the **[Apache License 2.0](https://github.com/morph-kgc/morph-kgc/blob/main/LICENSE)**.
 
 The **documentation** is licensed under **[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)**.
 
@@ -48,6 +48,6 @@ If you used Morph-KGC in your work, please cite the **[SWJ paper](https://conten
 
 ## Contributors
 
-See the full list of contributors in **[GitHub](https://github.com/oeg-upm/morph-kgc/graphs/contributors)**.
+See the full list of contributors in **[GitHub](https://github.com/morph-kgc/morph-kgc/graphs/contributors)**.
 
 ![OEG](assets/logo-oeg.png){ width="150" align=left } ![UPM](assets/logo-upm.png){ width="161" align=right }

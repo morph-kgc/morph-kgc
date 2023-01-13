@@ -2,7 +2,7 @@ site_url: https://oeg-upm.github.io/morph-kgc/
 
 site_name: Morph-KGC
 
-repo_url: https://github.com/oeg-upm/morph-kgc
+repo_url: https://github.com/morph-kgc/morph-kgc
 edit_uri: ""
 
 copyright: Copyright &copy; 2020 - 2023 Julián Arenas-Guerrero | Universidad Politécnica de Madrid
@@ -42,7 +42,7 @@ theme:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/oeg-upm/morph-kgc
+      link: https://github.com/morph-kgc/morph-kgc
       name: Morph-KGC on GitHub
     - icon: fontawesome/brands/python
       link: https://pypi.org/project/morph-kgc/

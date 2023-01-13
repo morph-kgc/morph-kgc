@@ -214,7 +214,7 @@ def normalize_oracle_identifier_casing(dataframe, references):
     """
     This renames the columns of a DataFrame generated when querying Oracle. This is necessary as Oracle identifier
     casing is inconsistent with SQLAlchemy (https://docs.sqlalchemy.org/en/14/dialects/oracle.html#identifier-casing).
-    This function addresses issue #37 (https://github.com/oeg-upm/Morph-KGC/issues/37).
+    This function addresses issue #37 (https://github.com/morph-kgc/morph-kgc/issues/37).
     """
 
     lowercase_references = [reference.lower() for reference in references]

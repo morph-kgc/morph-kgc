@@ -11,7 +11,7 @@
     "installation": [
         {
             "originalHeader": "Installation and Usage",
-            "excerpt": "[PyPi](https://pypi.org/project/morph-kgc/) is the fastest way to install Morph-KGC:\n```\npip install morph-kgc\n```\n\nTo run the engine you just need to execute the following:\n```\npython3 -m morph_kgc config.ini\n```\n\n[Here](https://github.com/oeg-upm/Morph-KGC/wiki/Configuration) you can see how to generate the configuration file. It is also possible to run Morph-KGC as a library with [RDFlib](https://rdflib.readthedocs.io/en/stable/):\n```python\nimport morph_kgc\n\n# generate the triples and load them to an RDFlib graph\ngraph = morph_kgc.materialize('/path/to/config.ini')\n\n# work with the graph\ngraph.query(' SELECT DISTINCT ?classes WHERE { ?s a ?classes } ')\n```\n",
+            "excerpt": "[PyPi](https://pypi.org/project/morph-kgc/) is the fastest way to install Morph-KGC:\n```\npip install morph-kgc\n```\n\nTo run the engine you just need to execute the following:\n```\npython3 -m morph_kgc config.ini\n```\n\n[Here](https://github.com/morph-kgc/morph-kgc/wiki/Configuration) you can see how to generate the configuration file. It is also possible to run Morph-KGC as a library with [RDFlib](https://rdflib.readthedocs.io/en/stable/):\n```python\nimport morph_kgc\n\n# generate the triples and load them to an RDFlib graph\ngraph = morph_kgc.materialize('/path/to/config.ini')\n\n# work with the graph\ngraph.query(' SELECT DISTINCT ?classes WHERE { ?s a ?classes } ')\n```\n",
             "confidence": [
                 1
             ],
@@ -28,7 +28,7 @@
         }
     ],
     "logo": {
-        "excerpt": "https://github.com/oeg-upm/morph-kgc/blob/main/logo.png",
+        "excerpt": "https://github.com/morph-kgc/morph-kgc/blob/main/logo.png",
         "confidence": [
             1.0
         ],
@@ -36,7 +36,7 @@
     },
     "image": [
         {
-            "excerpt": "https://github.com/oeg-upm/morph-kgc/actions/workflows/continuous-integration.yml/badge.svg",
+            "excerpt": "https://github.com/morph-kgc/morph-kgc/actions/workflows/continuous-integration.yml/badge.svg",
             "confidence": [
                 1.0
             ],
@@ -81,7 +81,7 @@
     "documentation": [
         {
             "originalHeader": "Documentation",
-            "excerpt": "Check the **[wiki](https://github.com/oeg-upm/Morph-KGC/wiki)** with all the information:\n\n**[Getting Started](https://github.com/oeg-upm/Morph-KGC/wiki/Getting-Started)**\n\n**[Usage](https://github.com/oeg-upm/Morph-KGC/wiki/Usage)**\n\n**[Configuration](https://github.com/oeg-upm/Morph-KGC/wiki/Configuration)**\n- **[Engine](https://github.com/oeg-upm/Morph-KGC/wiki/Engine-Configuration)**\n- **[Data Sources](https://github.com/oeg-upm/Morph-KGC/wiki/Data-Source-Configuration)**\n  - [Relational Databases](https://github.com/oeg-upm/Morph-KGC/wiki/Relational-Databases)\n  - [Data Files](https://github.com/oeg-upm/Morph-KGC/wiki/Data-Files)\n\n**[Features](https://github.com/oeg-upm/Morph-KGC/wiki/Features)**\n\n**[Academic Publications](https://github.com/oeg-upm/Morph-KGC/wiki/Academic-Publications)**\n\n**[License](https://github.com/oeg-upm/Morph-KGC/wiki/License)**\n\n**[FAQ](https://github.com/oeg-upm/Morph-KGC/wiki/FAQ)**\n",
+            "excerpt": "Check the **[wiki](https://github.com/morph-kgc/morph-kgc/wiki)** with all the information:\n\n**[Getting Started](https://github.com/morph-kgc/morph-kgc/wiki/Getting-Started)**\n\n**[Usage](https://github.com/morph-kgc/morph-kgc/wiki/Usage)**\n\n**[Configuration](https://github.com/morph-kgc/morph-kgc/wiki/Configuration)**\n- **[Engine](https://github.com/morph-kgc/morph-kgc/wiki/Engine-Configuration)**\n- **[Data Sources](https://github.com/morph-kgc/morph-kgc/wiki/Data-Source-Configuration)**\n  - [Relational Databases](https://github.com/morph-kgc/morph-kgc/wiki/Relational-Databases)\n  - [Data Files](https://github.com/morph-kgc/morph-kgc/wiki/Data-Files)\n\n**[Features](https://github.com/morph-kgc/morph-kgc/wiki/Features)**\n\n**[Academic Publications](https://github.com/morph-kgc/morph-kgc/wiki/Academic-Publications)**\n\n**[License](https://github.com/morph-kgc/morph-kgc/wiki/License)**\n\n**[FAQ](https://github.com/morph-kgc/morph-kgc/wiki/FAQ)**\n",
             "confidence": [
                 1
             ],
@@ -108,7 +108,7 @@
     "usage": [
         {
             "originalHeader": "Installation and Usage",
-            "excerpt": "[PyPi](https://pypi.org/project/morph-kgc/) is the fastest way to install Morph-KGC:\n```\npip install morph-kgc\n```\n\nTo run the engine you just need to execute the following:\n```\npython3 -m morph_kgc config.ini\n```\n\n[Here](https://github.com/oeg-upm/Morph-KGC/wiki/Configuration) you can see how to generate the configuration file. It is also possible to run Morph-KGC as a library with [RDFlib](https://rdflib.readthedocs.io/en/stable/):\n```python\nimport morph_kgc\n\n# generate the triples and load them to an RDFlib graph\ngraph = morph_kgc.materialize('/path/to/config.ini')\n\n# work with the graph\ngraph.query(' SELECT DISTINCT ?classes WHERE { ?s a ?classes } ')\n```\n",
+            "excerpt": "[PyPi](https://pypi.org/project/morph-kgc/) is the fastest way to install Morph-KGC:\n```\npip install morph-kgc\n```\n\nTo run the engine you just need to execute the following:\n```\npython3 -m morph_kgc config.ini\n```\n\n[Here](https://github.com/morph-kgc/morph-kgc/wiki/Configuration) you can see how to generate the configuration file. It is also possible to run Morph-KGC as a library with [RDFlib](https://rdflib.readthedocs.io/en/stable/):\n```python\nimport morph_kgc\n\n# generate the triples and load them to an RDFlib graph\ngraph = morph_kgc.materialize('/path/to/config.ini')\n\n# work with the graph\ngraph.query(' SELECT DISTINCT ?classes WHERE { ?s a ?classes } ')\n```\n",
             "confidence": [
                 1
             ],
@@ -116,7 +116,7 @@
         }
     ],
     "codeRepository": {
-        "excerpt": "https://github.com/oeg-upm/morph-kgc",
+        "excerpt": "https://github.com/morph-kgc/morph-kgc",
         "confidence": [
             1.0
         ],
@@ -189,7 +189,7 @@
         "technique": "GitHub API"
     },
     "downloadUrl": {
-        "excerpt": "https://github.com/oeg-upm/morph-kgc/releases",
+        "excerpt": "https://github.com/morph-kgc/morph-kgc/releases",
         "confidence": [
             1.0
         ],
@@ -247,7 +247,7 @@
         "technique": "File Exploration"
     },
     "readmeUrl": {
-        "excerpt": "https://github.com/oeg-upm/morph-kgc/README.md",
+        "excerpt": "https://github.com/morph-kgc/morph-kgc/README.md",
         "confidence": [
             1.0
         ],
@@ -263,7 +263,7 @@
                 "body": "- Datatype inference for _SQLite_.\r\n- Handling curly braces in string templates according to [R2RML spec](https://www.w3.org/TR/r2rml/#dfn-template-valued-term-map).\r\n- Do not generate output dir when executing as a library.\r\n- Fixed bug regarding the generation of integers values as float for _JSON_ files with _NULL_ values.",
                 "tarballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/tarball/1.6.0",
                 "zipballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/zipball/1.6.0",
-                "htmlUrl": "https://github.com/oeg-upm/morph-kgc/releases/tag/1.6.0",
+                "htmlUrl": "https://github.com/morph-kgc/morph-kgc/releases/tag/1.6.0",
                 "url": "https://api.github.com/repos/oeg-upm/morph-kgc/releases/60494063",
                 "dateCreated": "2022-02-25T15:30:33Z",
                 "datePublished": "2022-02-25T15:36:26Z"
@@ -276,7 +276,7 @@
                 "body": "- Added `safe_percent_encoding` option to avoid percent encoding of specific characters.\r\n- The default value of `clean_output_dir` has changed to *false*.\r\n- Several changes regarding **hierarchical** data sources (JSON and XML):\r\n  - Migration from `lxml` to `elementpath` library. This entails that from this version, Morph-KGC uses **XPath 2.0**.\r\n  - References in the mapping rules can access elements in lower levels of the tree (e.g. *author.name* in JSONPath or *author/name* in XPath).\r\n  - Minor bugs fixed.",
                 "tarballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/tarball/1.5.0",
                 "zipballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/zipball/1.5.0",
-                "htmlUrl": "https://github.com/oeg-upm/morph-kgc/releases/tag/1.5.0",
+                "htmlUrl": "https://github.com/morph-kgc/morph-kgc/releases/tag/1.5.0",
                 "url": "https://api.github.com/repos/oeg-upm/morph-kgc/releases/56155751",
                 "dateCreated": "2021-12-29T18:59:45Z",
                 "datePublished": "2021-12-29T19:15:38Z"
@@ -289,7 +289,7 @@
                 "body": "- Automatic inference of file data format. It is no longer needed to specify the data format in the configuration file.\r\n- Handling [escape sequences](https://www.w3.org/TR/turtle/#sec-escapes).",
                 "tarballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/tarball/1.4.1",
                 "zipballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/zipball/1.4.1",
-                "htmlUrl": "https://github.com/oeg-upm/morph-kgc/releases/tag/1.4.1",
+                "htmlUrl": "https://github.com/morph-kgc/morph-kgc/releases/tag/1.4.1",
                 "url": "https://api.github.com/repos/oeg-upm/morph-kgc/releases/53867970",
                 "dateCreated": "2021-11-22T20:06:51Z",
                 "datePublished": "2021-11-22T20:13:50Z"
@@ -302,7 +302,7 @@
                 "body": "- Full compatibility for _JSONPath_ supported.\r\n- Full compatibility for _XPath_ supported.\r\n- Minor bugs fixed.",
                 "tarballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/tarball/1.4.0",
                 "zipballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/zipball/1.4.0",
-                "htmlUrl": "https://github.com/oeg-upm/morph-kgc/releases/tag/1.4.0",
+                "htmlUrl": "https://github.com/morph-kgc/morph-kgc/releases/tag/1.4.0",
                 "url": "https://api.github.com/repos/oeg-upm/morph-kgc/releases/52400652",
                 "dateCreated": "2021-10-31T14:39:48Z",
                 "datePublished": "2021-10-31T14:43:28Z"
@@ -315,7 +315,7 @@
                 "body": "- No longer generates `xsd:string` data types, as it is equivalent to not specifying a data type.\r\n- Fixed bug where integer RDB columns with _NULLs_ where generating float values #35.",
                 "tarballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/tarball/1.3.8",
                 "zipballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/zipball/1.3.8",
-                "htmlUrl": "https://github.com/oeg-upm/morph-kgc/releases/tag/1.3.8",
+                "htmlUrl": "https://github.com/morph-kgc/morph-kgc/releases/tag/1.3.8",
                 "url": "https://api.github.com/repos/oeg-upm/morph-kgc/releases/52166026",
                 "dateCreated": "2021-10-27T17:52:45Z",
                 "datePublished": "2021-10-27T17:58:01Z"
@@ -328,7 +328,7 @@
                 "body": "- Updated dependencies versions.\r\n- Minor bugs fixed.",
                 "tarballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/tarball/1.3.7",
                 "zipballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/zipball/1.3.7",
-                "htmlUrl": "https://github.com/oeg-upm/morph-kgc/releases/tag/1.3.7",
+                "htmlUrl": "https://github.com/morph-kgc/morph-kgc/releases/tag/1.3.7",
                 "url": "https://api.github.com/repos/oeg-upm/morph-kgc/releases/52127645",
                 "dateCreated": "2021-10-27T10:32:56Z",
                 "datePublished": "2021-10-27T10:33:59Z"
@@ -341,7 +341,7 @@
                 "body": "- Data type inference for Oracle.\r\n- Fixed bug with `rr:sqlQuery` generating _NULL_ values, #35.\r\n- Fixed bug for JSON.",
                 "tarballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/tarball/1.3.6",
                 "zipballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/zipball/1.3.6",
-                "htmlUrl": "https://github.com/oeg-upm/morph-kgc/releases/tag/1.3.6",
+                "htmlUrl": "https://github.com/morph-kgc/morph-kgc/releases/tag/1.3.6",
                 "url": "https://api.github.com/repos/oeg-upm/morph-kgc/releases/52115635",
                 "dateCreated": "2021-10-27T07:50:41Z",
                 "datePublished": "2021-10-27T07:55:09Z"
@@ -354,7 +354,7 @@
                 "body": "- Data type inference for MySQL and PostgreSQL.\r\n- Bugs fixed.",
                 "tarballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/tarball/1.3.5",
                 "zipballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/zipball/1.3.5",
-                "htmlUrl": "https://github.com/oeg-upm/morph-kgc/releases/tag/1.3.5",
+                "htmlUrl": "https://github.com/morph-kgc/morph-kgc/releases/tag/1.3.5",
                 "url": "https://api.github.com/repos/oeg-upm/morph-kgc/releases/51972168",
                 "dateCreated": "2021-10-25T12:21:58Z",
                 "datePublished": "2021-10-25T12:25:48Z"
@@ -367,7 +367,7 @@
                 "body": "- `na_filter` now also applies to relational databases.\r\n- `materialize_default_graph` is no longer supported.\r\n- Bugs fixed.",
                 "tarballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/tarball/1.3.4",
                 "zipballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/zipball/1.3.4",
-                "htmlUrl": "https://github.com/oeg-upm/morph-kgc/releases/tag/1.3.4",
+                "htmlUrl": "https://github.com/morph-kgc/morph-kgc/releases/tag/1.3.4",
                 "url": "https://api.github.com/repos/oeg-upm/morph-kgc/releases/51283474",
                 "dateCreated": "2021-10-13T13:06:32Z",
                 "datePublished": "2021-10-13T13:08:20Z"
@@ -380,7 +380,7 @@
                 "body": "- Bugs fixed.",
                 "tarballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/tarball/1.3.2",
                 "zipballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/zipball/1.3.2",
-                "htmlUrl": "https://github.com/oeg-upm/morph-kgc/releases/tag/1.3.2",
+                "htmlUrl": "https://github.com/morph-kgc/morph-kgc/releases/tag/1.3.2",
                 "url": "https://api.github.com/repos/oeg-upm/morph-kgc/releases/51197739",
                 "dateCreated": "2021-10-12T10:09:52Z",
                 "datePublished": "2021-10-12T10:10:54Z"
@@ -393,7 +393,7 @@
                 "body": "- Support for Blank Nodes.\r\n- Filtering of NULL values supported for all data formats.\r\n- Solved bug with identifier casing in Oracle.",
                 "tarballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/tarball/1.3.0",
                 "zipballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/zipball/1.3.0",
-                "htmlUrl": "https://github.com/oeg-upm/morph-kgc/releases/tag/1.3.0",
+                "htmlUrl": "https://github.com/morph-kgc/morph-kgc/releases/tag/1.3.0",
                 "url": "https://api.github.com/repos/oeg-upm/morph-kgc/releases/51172321",
                 "dateCreated": "2021-10-11T22:52:04Z",
                 "datePublished": "2021-10-11T22:54:58Z"
@@ -406,7 +406,7 @@
                 "body": "- Setup options to connect to Oracle databases.",
                 "tarballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/tarball/1.2.2",
                 "zipballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/zipball/1.2.2",
-                "htmlUrl": "https://github.com/oeg-upm/morph-kgc/releases/tag/1.2.2",
+                "htmlUrl": "https://github.com/morph-kgc/morph-kgc/releases/tag/1.2.2",
                 "url": "https://api.github.com/repos/oeg-upm/morph-kgc/releases/51131612",
                 "dateCreated": "2021-10-11T10:22:01Z",
                 "datePublished": "2021-10-11T10:23:53Z"
@@ -419,7 +419,7 @@
                 "body": "Support for running Morph-KGC as a library.",
                 "tarballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/tarball/1.2.1",
                 "zipballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/zipball/1.2.1",
-                "htmlUrl": "https://github.com/oeg-upm/morph-kgc/releases/tag/1.2.1",
+                "htmlUrl": "https://github.com/morph-kgc/morph-kgc/releases/tag/1.2.1",
                 "url": "https://api.github.com/repos/oeg-upm/morph-kgc/releases/51048791",
                 "dateCreated": "2021-10-08T16:38:45Z",
                 "datePublished": "2021-10-08T16:41:52Z"
@@ -432,7 +432,7 @@
                 "body": "Support for hierarchical data formats:\r\n- JSON\r\n- XML",
                 "tarballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/tarball/1.2.0",
                 "zipballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/zipball/1.2.0",
-                "htmlUrl": "https://github.com/oeg-upm/morph-kgc/releases/tag/1.2.0",
+                "htmlUrl": "https://github.com/morph-kgc/morph-kgc/releases/tag/1.2.0",
                 "url": "https://api.github.com/repos/oeg-upm/morph-kgc/releases/51025740",
                 "dateCreated": "2021-10-08T10:32:04Z",
                 "datePublished": "2021-10-08T10:37:43Z"
@@ -445,7 +445,7 @@
                 "body": "- Support for Excel file format.\r\n- Enabled parentTriplesMap without join conditions.\r\n- Faster percent encoding.\r\n- Correction of bugs.",
                 "tarballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/tarball/1.1.4",
                 "zipballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/zipball/1.1.4",
-                "htmlUrl": "https://github.com/oeg-upm/morph-kgc/releases/tag/1.1.4",
+                "htmlUrl": "https://github.com/morph-kgc/morph-kgc/releases/tag/1.1.4",
                 "url": "https://api.github.com/repos/oeg-upm/morph-kgc/releases/50978505",
                 "dateCreated": "2021-10-07T16:12:48Z",
                 "datePublished": "2021-10-07T16:13:44Z"
@@ -458,7 +458,7 @@
                 "body": "- Connection to relational databases are now handled with SQLAlchemy. MySQL, PostgreSQL, Oracle, SQL Server, MariaDB and SQLlite are now supported.\r\n- Several tabular data formats are now supported: CSV, TSV, PARQUET, FEATHER, ORC, STATA, SAS, SPSS.\r\n- MAXIMAL partitioning algorithm implemented.\r\n- Correction of minor bugs.",
                 "tarballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/tarball/1.1.0",
                 "zipballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/zipball/1.1.0",
-                "htmlUrl": "https://github.com/oeg-upm/morph-kgc/releases/tag/1.1.0",
+                "htmlUrl": "https://github.com/morph-kgc/morph-kgc/releases/tag/1.1.0",
                 "url": "https://api.github.com/repos/oeg-upm/morph-kgc/releases/50807237",
                 "dateCreated": "2021-10-05T11:18:46Z",
                 "datePublished": "2021-10-05T11:21:12Z"
@@ -471,7 +471,7 @@
                 "body": "Scalable Knowledge Graph Construction with [R2]RML Mappings",
                 "tarballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/tarball/1.0.0",
                 "zipballUrl": "https://api.github.com/repos/oeg-upm/morph-kgc/zipball/1.0.0",
-                "htmlUrl": "https://github.com/oeg-upm/morph-kgc/releases/tag/1.0.0",
+                "htmlUrl": "https://github.com/morph-kgc/morph-kgc/releases/tag/1.0.0",
                 "url": "https://api.github.com/repos/oeg-upm/morph-kgc/releases/50806985",
                 "dateCreated": "2021-10-05T11:08:29Z",
                 "datePublished": "2021-10-05T11:16:58Z"

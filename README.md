@@ -2,12 +2,12 @@
 <img src="https://github.com/ArenasGuerreroJulian/morph-kgc/blob/main/docs/assets/logo.png" height="100" alt="morph">
 </p>
 
-[![License](https://img.shields.io/pypi/l/morph-kgc.svg)](https://github.com/oeg-upm/morph-kgc/blob/main/LICENSE)
+[![License](https://img.shields.io/pypi/l/morph-kgc.svg)](https://github.com/morph-kgc/morph-kgc/blob/main/LICENSE)
 [![DOI](https://zenodo.org/badge/311956260.svg?style=flat)](https://zenodo.org/badge/latestdoi/311956260)
 [![Latest PyPI version](https://img.shields.io/pypi/v/morph-kgc?style=flat)](https://pypi.python.org/pypi/morph-kgc)
 [![Python Version](https://img.shields.io/pypi/pyversions/morph-kgc.svg)](https://pypi.python.org/pypi/morph-kgc)
 [![PyPI status](https://img.shields.io:/pypi/status/morph-kgc?)](https://pypi.python.org/pypi/morph-kgc)
-[![build](https://github.com/oeg-upm/morph-kgc/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/oeg-upm/morph-kgc/actions/workflows/continuous-integration.yml)
+[![build](https://github.com/morph-kgc/morph-kgc/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/morph-kgc/morph-kgc/actions/workflows/continuous-integration.yml)
 [![Documentation Status](https://readthedocs.org/projects/morph-kgc/badge/?version=latest)](https://morph-kgc.readthedocs.io/en/latest/?badge=latest)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1ByFx_NOEfTZeaJ1Wtw3UwTH3H3-Sye2O?usp=sharing)
 
@@ -49,7 +49,7 @@ To run the engine via **command line** you just need to execute the following:
 python3 -m morph_kgc config.ini
 ```
 
-Check the **[documentation](https://morph-kgc.readthedocs.io/en/latest/documentation/#configuration)** to see how to generate the configuration **INI file**. **[Here](https://github.com/oeg-upm/morph-kgc/blob/main/examples/configuration-file/default_config.ini)** you can also see an example INI file.
+Check the **[documentation](https://morph-kgc.readthedocs.io/en/latest/documentation/#configuration)** to see how to generate the configuration **INI file**. **[Here](https://github.com/morph-kgc/morph-kgc/blob/main/examples/configuration-file/default_config.ini)** you can also see an example INI file.
 
 It is also possible to run Morph-KGC as a **library** with **[RDFLib](https://rdflib.readthedocs.io)** and **[Oxigraph](https://pyoxigraph.readthedocs.io/en/latest/)**:
 ```python
@@ -76,7 +76,7 @@ g_rdflib = morph_kgc.materialize(config)
 
 ## License
 
-Morph-KGC is available under the **[Apache License 2.0](https://github.com/oeg-upm/Morph-KGC/blob/main/LICENSE)**.
+Morph-KGC is available under the **[Apache License 2.0](https://github.com/morph-kgc/morph-kgc/blob/main/LICENSE)**.
 
 ## Citing
 
@@ -100,4 +100,4 @@ If you used Morph-KGC in your work, please cite the **[SWJ paper](https://conten
 
 ## Contributors
 
-See the full list of contributors **[here](https://github.com/oeg-upm/morph-kgc/graphs/contributors)**.
+See the full list of contributors **[here](https://github.com/morph-kgc/morph-kgc/graphs/contributors)**.
