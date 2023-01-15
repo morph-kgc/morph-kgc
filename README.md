@@ -7,7 +7,7 @@
 [![Latest PyPI version](https://img.shields.io/pypi/v/morph-kgc?style=flat)](https://pypi.python.org/pypi/morph-kgc)
 [![Python Version](https://img.shields.io/pypi/pyversions/morph-kgc.svg)](https://pypi.python.org/pypi/morph-kgc)
 [![PyPI status](https://img.shields.io:/pypi/status/morph-kgc?)](https://pypi.python.org/pypi/morph-kgc)
-[![build](https://github.com/morph-kgc/morph-kgc/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/morph-kgc/morph-kgc/actions/workflows/continuous-integration.yml)
+[![build](https://github.com/morph-kgc/morph-kgc/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/morph-kgc/morph-kgc/actions/workflows/ci.yml)
 [![Documentation Status](https://readthedocs.org/projects/morph-kgc/badge/?version=latest)](https://morph-kgc.readthedocs.io/en/latest/?badge=latest)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1ByFx_NOEfTZeaJ1Wtw3UwTH3H3-Sye2O?usp=sharing)
 
