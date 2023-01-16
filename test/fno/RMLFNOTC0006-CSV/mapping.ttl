@@ -22,8 +22,7 @@
     ];
     rr:predicateObjectMap [
         rr:predicate foaf:name;
-        rr:objectMap [ rml:reference "Name"] ;
-        rr:graphMap [
+        rr:objectMap [
             fnml:execution <#Execution> ;
             rr:termType rr:IRI
         ];
