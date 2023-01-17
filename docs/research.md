@@ -28,7 +28,7 @@
 
 ## Projects
 
-- Grant PDC2021-120917-C22 funded by MCIN/AEI/ 10.13039/501100011033 and by the European Union NextGenerationEU/PRTR.
+- SIGTRANS (Grant PDC2021-120917-C22 funded by MCIN/AEI/ 10.13039/501100011033 and by the European Union NextGenerationEU/PRTR).
 <figure markdown>
   ![PDC2021-120917-C22](assets/PDC2021-120917-C22.png){ width="500" }
 </figure>
