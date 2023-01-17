@@ -30,7 +30,7 @@
 
 - **KnowledgeSpaces** (Grant PID2020-118274RB-I00 funded by MCIN/AEI/ 10.13039/501100011033).
 <figure markdown>
-  ![KnowledgeSpaces](assets/knowledgespaces.png){ width="370" }
+  ![KnowledgeSpaces](assets/knowledgespaces.png){ width="360" }
 </figure>
 
 - **SIGTRANS** (Grant PDC2021-120917-C22 funded by MCIN/AEI/ 10.13039/501100011033 and by the European Union NextGenerationEU/PRTR).
