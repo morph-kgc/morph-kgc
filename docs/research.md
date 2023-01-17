@@ -28,6 +28,7 @@
 
 ## Projects
 
-- SIGTRANS - Sistema de Información Geográfica interoperable y semánticamente enriquecido para el análisis y la gestión del TRANSporte público (Grant PCD2021-120917-C22 funded by MCIN/AEI/ 10.13039/501100011033 and cofunded by the European Union NextGenerationEU/PRTR).
+- Grant PDC2021-120917-C22 funded by MCIN/AEI/ 10.13039/501100011033 and by the European Union NextGenerationEU/PRTR.
+
 
 ![OEG](assets/logo-oeg.png){ width="150" align=left } ![UPM](assets/logo-upm.png){ width="161" align=right }
