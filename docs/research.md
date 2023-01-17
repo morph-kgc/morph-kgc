@@ -35,12 +35,12 @@
 
 - **SIGTRANS** (Grant PDC2021-120917-C22 funded by MCIN/AEI/ 10.13039/501100011033 and by the European Union NextGenerationEU/PRTR).
 <figure markdown>
-  ![SIGTRANS](sigtrans.png){ width="500" }
+  ![SIGTRANS](assets/sigtrans.png){ width="500" }
 </figure>
 
 - **Datos 4.0** (Grant TIN2016-78011-C4-4-R funded by MCIN/AEI/ 10.13039/501100011033 and by ERDF A way of making Europe).
 <figure markdown>
-  ![Datos 4.0](datos40.png){ width="500" }
+  ![Datos 4.0](assets/datos40.png){ width="500" }
 </figure>
 
 ![OEG](assets/logo-oeg.png){ width="150" align=left } ![UPM](assets/logo-upm.png){ width="161" align=right }
