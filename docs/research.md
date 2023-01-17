@@ -30,12 +30,12 @@
 
 - **KnowledgeSpaces** (Grant PID2020-118274RB-I00 funded by MCIN/AEI/ 10.13039/501100011033).
 <figure markdown>
-  ![KnowledgeSpaces](assets/knowledgespaces.png){ width="390" }
+  ![KnowledgeSpaces](assets/knowledgespaces.png){ width="370" }
 </figure>
 
 - **SIGTRANS** (Grant PDC2021-120917-C22 funded by MCIN/AEI/ 10.13039/501100011033 and by the European Union NextGenerationEU/PRTR).
 <figure markdown>
-  ![SIGTRANS](assets/sigtrans.png){ width="500" }
+  ![SIGTRANS](assets/sigtrans.png){ width="510" }
 </figure>
 
 - **Datos 4.0** (Grant TIN2016-78011-C4-4-R funded by MCIN/AEI/ 10.13039/501100011033 and by ERDF A way of making Europe).
