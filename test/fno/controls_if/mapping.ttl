@@ -42,7 +42,7 @@
         [
             fnml:parameter grel:bool_b ;
             fnml:valueMap [
-                rr:template "1 == int({monday})"
+                rr:template "'1' == '{monday}'"
             ]
         ] ,
         [
@@ -60,7 +60,7 @@
         [
             fnml:parameter grel:bool_b ;
             fnml:valueMap [
-                rr:template "1 == int({tuesday})"
+                rr:template "'1' == '{tuesday}'"
             ]
         ] ,
         [
