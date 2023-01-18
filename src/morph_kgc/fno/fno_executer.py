@@ -6,24 +6,39 @@ __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"
 
 
-from importlib.machinery import SourceFileLoader
-from types import ModuleType
-
 from .built_in_functions import bif_dict
 from ..utils import get_fno_execution, remove_null_values_from_dataframe, get_references_in_template
 from ..constants import FNML_EXECUTION, R2RML_TEMPLATE, R2RML_CONSTANT
 
 
+UDF_DICT_DECORATOR_CODE = """
+udf_dict = {}
+def udf(fun_id, **params):
+    def wrapper(funct):
+        udf_dict[fun_id] = {}
+        udf_dict[fun_id]['function'] = funct
+        udf_dict[fun_id]['parameters'] = params
+        return funct
+    return wrapper
+"""
+
 def load_udfs(config):
     if config.get_udfs():
-        udf_loader = SourceFileLoader("udf", config.get_udfs())
-        udf_module = ModuleType(udf_loader.name)
-        udf_loader.exec_module(udf_module)
-        udf_dict = udf_module.udf_dict
-    else:
-        udf_dict = {}
+        import sys
+        from types import ModuleType
 
-    return udf_dict
+        with open(config.get_udfs(), 'r') as f:
+            udfs_code = f.read()
+
+        udfs_code = f'{UDF_DICT_DECORATOR_CODE}{udfs_code}'
+
+        udf_mod = ModuleType('udfs')
+        sys.modules['udfs'] = udf_mod
+        exec(udfs_code, udf_mod.__dict__)
+
+        return udf_mod.udf_dict
+    else:
+        return {}
 
 
 def _materialize_fno_template(data, template):
