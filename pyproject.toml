@@ -17,7 +17,7 @@ description = 'Powerful [R2]RML engine to create RDF knowledge graphs from heter
 readme = 'README.md'
 keywords = ['Morph-KGC', 'RDF', 'R2RML', 'RML', 'RML-star', 'Knowledge Graph', 'Data Integration']
 authors = [
-  {name = 'Julián Arenas-Guerrero', email = 'arenas.guerrero.julian@outlook.com'}
+  {name = 'Julián Arenas-Guerrero', email = 'julian.arenas.guerrero@upm.es'}
 ]
 license = 'Apache-2.0'
 classifiers = [
