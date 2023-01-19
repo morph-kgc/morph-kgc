@@ -47,7 +47,7 @@ The source code of **Morph-KGC** is registered on the **Intellectual Property Re
   ![Datos 4.0](assets/datos40.png){ width="450" }
 </figure>
 
-- **[ENTENTE](https://cordis.europa.eu/project/id/900018)** (Grant 9000018 funded by Euratom 2019-2020).
+- **[ENTENTE](https://doi.org/10.3030/900018)** (Grant 9000018 funded by Euratom 2019-2020).
 <figure markdown>
   ![ENTENTE](assets/entente.png){ width="400" }
 </figure>
