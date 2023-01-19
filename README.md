@@ -31,7 +31,7 @@
 
 **[Read the documentation](https://morph-kgc.readthedocs.io/en/latest/documentation/)**.
 
-## Tutorial :computer:<!-- :microscope: :school: :arrow_forward: :black_square_button: :school_satchel: :books: -->
+## Tutorial :woman_teacher:
 
 Learn quickly with the tutorial in **[Google Colaboratory](https://colab.research.google.com/drive/1ByFx_NOEfTZeaJ1Wtw3UwTH3H3-Sye2O?usp=sharing)**!
 
@@ -98,6 +98,6 @@ If you used Morph-KGC in your work, please cite the **[SWJ paper](https://conten
 
 *[Ontology Engineering Group](https://oeg.fi.upm.es)*, *[Universidad Politécnica de Madrid](https://www.upm.es/internacional)*.
 
-## Contributors :construction_worker:
+## Contributors :woman_technologist:
 
 See the full list of contributors **[here](https://github.com/morph-kgc/morph-kgc/graphs/contributors)**.
