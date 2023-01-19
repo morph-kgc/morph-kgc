@@ -26,6 +26,10 @@
 - **[Knowledge Graphs For Data Integration](https://w3id.org/kg4di)**  
 **FWO Scientific Research Network** | **2022**
 
+## Intellectual Property
+
+The source code of **Morph-KGC** is registered on the **Intellectual Property Registry of the Community of Madrid** under the reference _M-003951/2021_.
+
 ## Projects
 
 - **KnowledgeSpaces** (Grant PID2020-118274RB-I00 funded by MCIN/AEI/ 10.13039/501100011033).
