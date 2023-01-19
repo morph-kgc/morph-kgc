@@ -13,7 +13,7 @@
 
 **Morph-KGC** is an engine that constructs **[RDF](https://www.w3.org/TR/rdf11-concepts/)** and **[RDF-star](https://w3c.github.io/rdf-star/cg-spec/2021-12-17.html)** knowledge graphs from heterogeneous data sources with the **[R2RML](https://www.w3.org/TR/r2rml/)**, **[RML](https://rml.io/specs/rml/)** and **[RML-star](https://kg-construct.github.io/rml-star-spec/)** mapping languages. Morph-KGC is built on top of [pandas](https://pandas.pydata.org/) and it leverages *mapping partitions* to significantly reduce execution times and memory consumption for large data sources.
 
-## Features
+## Features :sparkles:
 
 - Supports **[R2RML](https://www.w3.org/TR/r2rml/)**, **[RML](https://rml.io/specs/rml/)** and **[RML-star](https://kg-construct.github.io/rml-star-spec/)** mapping languages.
 - Input data formats:
@@ -27,15 +27,15 @@
 - Runs on **Linux**, **Windows** and **macOS** systems.
 - **Optimized** to materialize large knowledge graphs.
 
-## Documentation
+## Documentation :bookmark_tabs:
 
 **[Read the documentation](https://morph-kgc.readthedocs.io/en/latest/documentation/)**.
 
-## Tutorial
+## Tutorial :computer:<!-- :microscope: :school: :arrow_forward: :black_square_button: :school_satchel: :books: -->
 
 Learn quickly with the tutorial in **[Google Colaboratory](https://colab.research.google.com/drive/1ByFx_NOEfTZeaJ1Wtw3UwTH3H3-Sye2O?usp=sharing)**!
 
-## Getting Started
+## Getting Started :rocket:
 
 **[PyPi](https://pypi.org/project/morph-kgc/)** is the fastest way to install Morph-KGC:
 ```bash
@@ -74,11 +74,11 @@ config = """
 g_rdflib = morph_kgc.materialize(config)
 ```
 
-## License
+## License :unlock:
 
 Morph-KGC is available under the **[Apache License 2.0](https://github.com/morph-kgc/morph-kgc/blob/main/LICENSE)**.
 
-## Citing
+## Citing :speech_balloon:
 
 If you used Morph-KGC in your work, please cite the **[SWJ paper](https://content.iospress.com/download/semantic-web/sw223135?id=semantic-web%2Fsw223135)**:
 
@@ -92,12 +92,12 @@ If you used Morph-KGC in your work, please cite the **[SWJ paper](https://conten
 }
 ```
 
-## Author
+## Author & Contact :mailbox_with_mail:
 
 - **[Julián Arenas-Guerrero](https://github.com/arenas-guerrero-julian/) - [julian.arenas.guerrero@upm.es](mailto:julian.arenas.guerrero@upm.es)**
 
 *[Ontology Engineering Group](https://oeg.fi.upm.es)*, *[Universidad Politécnica de Madrid](https://www.upm.es/internacional)*.
 
-## Contributors
+## Contributors :construction_worker:
 
 See the full list of contributors **[here](https://github.com/morph-kgc/morph-kgc/graphs/contributors)**.
