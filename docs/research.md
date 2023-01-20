@@ -34,7 +34,7 @@ The source code of **Morph-KGC** is registered on the **Intellectual Property Re
 
 - **KnowledgeSpaces** (Grant PID2020-118274RB-I00 funded by MCIN/AEI/ 10.13039/501100011033).
 <figure markdown>
-  ![KnowledgeSpaces](assets/knowledgespaces.png){ width="360" }
+  ![KnowledgeSpaces](assets/knowledgespaces.png){ width="320" }
 </figure>
 
 - **SIGTRANS** (Grant PDC2021-120917-C22 funded by MCIN/AEI/ 10.13039/501100011033 and by the European Union NextGenerationEU/PRTR).
@@ -44,7 +44,7 @@ The source code of **Morph-KGC** is registered on the **Intellectual Property Re
 
 - **Datos 4.0** (Grant TIN2016-78011-C4-4-R funded by MCIN/AEI/ 10.13039/501100011033 and by ERDF A way of making Europe).
 <figure markdown>
-  ![Datos 4.0](assets/datos40.png){ width="450" }
+  ![Datos 4.0](assets/datos40.png){ width="440" }
 </figure>
 
 - **[ENTENTE](https://doi.org/10.3030/900018)** (Grant 9000018 funded by Euratom 2019-2020).
