@@ -102,7 +102,7 @@ If you used Morph-KGC in your work, please cite the **[SWJ paper](https://conten
 
 See the full list of contributors **[here](https://github.com/morph-kgc/morph-kgc/graphs/contributors)**.
 
-## Sponsor
+## Sponsor :shield:
 
 <p align="center">
 <img src="https://github.com/morph-kgc/morph-kgc/blob/main/docs/assets/BASF.png" height="100" alt="BASF">
