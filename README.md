@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://github.com/ArenasGuerreroJulian/morph-kgc/blob/main/docs/assets/logo.png" height="100" alt="morph">
+<img src="https://github.com/morph-kgc/morph-kgc/blob/main/docs/assets/logo.png" height="100" alt="morph">
 </p>
 
 [![License](https://img.shields.io/pypi/l/morph-kgc.svg)](https://github.com/morph-kgc/morph-kgc/blob/main/LICENSE)
@@ -78,6 +78,12 @@ g_rdflib = morph_kgc.materialize(config)
 
 Morph-KGC is available under the **[Apache License 2.0](https://github.com/morph-kgc/morph-kgc/blob/main/LICENSE)**.
 
+## Author & Contact :mailbox_with_mail:
+
+- **[Julián Arenas-Guerrero](https://github.com/arenas-guerrero-julian/) - [julian.arenas.guerrero@upm.es](mailto:julian.arenas.guerrero@upm.es)**
+
+*[Ontology Engineering Group](https://oeg.fi.upm.es)*, *[Universidad Politécnica de Madrid](https://www.upm.es/internacional)*.
+
 ## Citing :speech_balloon:
 
 If you used Morph-KGC in your work, please cite the **[SWJ paper](https://content.iospress.com/download/semantic-web/sw223135?id=semantic-web%2Fsw223135)**:
@@ -92,12 +98,12 @@ If you used Morph-KGC in your work, please cite the **[SWJ paper](https://conten
 }
 ```
 
-## Author & Contact :mailbox_with_mail:
-
-- **[Julián Arenas-Guerrero](https://github.com/arenas-guerrero-julian/) - [julian.arenas.guerrero@upm.es](mailto:julian.arenas.guerrero@upm.es)**
-
-*[Ontology Engineering Group](https://oeg.fi.upm.es)*, *[Universidad Politécnica de Madrid](https://www.upm.es/internacional)*.
-
 ## Contributors :woman_technologist:
 
 See the full list of contributors **[here](https://github.com/morph-kgc/morph-kgc/graphs/contributors)**.
+
+## Sponsor
+
+<p align="center">
+<img src="https://github.com/morph-kgc/morph-kgc/blob/main/docs/assets/BASF.png" height="100" alt="BASF">
+</p>

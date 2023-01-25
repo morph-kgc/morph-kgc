@@ -20,11 +20,23 @@
 - Runs on **Linux**, **Windows** and **macOS** systems.
 - **Optimized** to materialize large knowledge graphs.
 
+## Organizations That Use Morph-KGC
+
+<figure markdown>
+  ![BASF](assets/BASF.png){ width="300" }
+</figure>
+
 ## Licenses
 
 **Morph-KGC** is available under the **[Apache License 2.0](https://github.com/morph-kgc/morph-kgc/blob/main/LICENSE)**.
 
 The **documentation** is licensed under **[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)**.
+
+## Author
+
+- **[Julián Arenas-Guerrero](https://github.com/arenas-guerrero-julian/) - [julian.arenas.guerrero@upm.es](mailto:julian.arenas.guerrero@upm.es)**
+
+*[Ontology Engineering Group](https://oeg.fi.upm.es/)*, *[Universidad Politécnica de Madrid](https://www.upm.es/internacional)*.
 
 ## Citing
 
@@ -39,15 +51,3 @@ If you used Morph-KGC in your work, please cite the **[SWJ paper](https://conten
   doi     = {10.3233/SW-223135}
 }
 ```
-
-## Author
-
-- **[Julián Arenas-Guerrero](https://github.com/arenas-guerrero-julian/) - [julian.arenas.guerrero@upm.es](mailto:julian.arenas.guerrero@upm.es)**
-
-*[Ontology Engineering Group](https://oeg.fi.upm.es/)*, *[Universidad Politécnica de Madrid](https://www.upm.es/internacional)*.
-
-## Contributors
-
-See the full list of contributors in **[GitHub](https://github.com/morph-kgc/morph-kgc/graphs/contributors)**.
-
-![OEG](assets/logo-oeg.png){ width="150" align=left } ![UPM](assets/logo-upm.png){ width="161" align=right }
