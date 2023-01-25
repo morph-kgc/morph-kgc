@@ -22,7 +22,7 @@
 
 ## Organizations That Use Morph-KGC
 
-![BASF](assets/logo-oeg.png){ width="300" align=left }
+![BASF](assets/BASF.png){ width="300" align=left }
 
 ## Licenses
 
