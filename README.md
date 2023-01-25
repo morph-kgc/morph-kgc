@@ -105,5 +105,5 @@ See the full list of contributors **[here](https://github.com/morph-kgc/morph-kg
 ## Sponsor
 
 <p align="center">
-<img src="https://github.com/morph-kgc/morph-kgc/blob/main/docs/assets/BASF.png" height="100" alt="BASF">
+<img src="https://github.com/morph-kgc/morph-kgc/blob/main/docs/assets/BASF.tif" height="100" alt="BASF">
 </p>
