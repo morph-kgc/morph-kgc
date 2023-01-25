@@ -23,7 +23,7 @@
 ## Organizations That Use Morph-KGC
 
 <figure markdown>
-  ![BASF](assets/BASF.png){ width="300" }
+  ![BASF](assets/BASF.png){ width="300" align=left }
 </figure>
 
 ## Licenses
@@ -51,3 +51,5 @@ If you used Morph-KGC in your work, please cite the **[SWJ paper](https://conten
   doi     = {10.3233/SW-223135}
 }
 ```
+
+![OEG](assets/logo-oeg.png){ width="150" align=left } ![UPM](assets/logo-upm.png){ width="161" align=right }
