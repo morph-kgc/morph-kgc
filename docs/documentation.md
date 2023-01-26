@@ -151,21 +151,22 @@ The parameters of the sections in the **[INI file](https://en.wikipedia.org/wiki
 
 The execution of Morph-KGC can be **tuned** via the **`CONFIGURATION`** section in the **[INI file](https://en.wikipedia.org/wiki/INI_file)**. This section can be empty, in which case Morph-KGC will use the **default** property values.
 
-|<div style="width:195px">Property</div>|Description| Values                                                                                                                                                                  |
-|-------|-------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-|**`output_file`**|File to write the resulting knowledge graph to.| **Default:** _knowledge-graph.nt_                                                                                                                                       |
-|**`output_dir`**|Directory to write the resulting knowledge graph to. If it is specified, `output_file` will be ignored and multiple output files will generated, one for each mapping partition.| **Default:**                                                                                                                                                            |
-|**`na_values`**|Set of values to be interpreted as _NULL_ when retrieving data from the input sources. The set of values must be separated by commas.| **Default:** ,_nan_                                                                                                                                                     |
-|**`output_format`**|RDF serialization to use for the resulting knowledge graph.| **Valid:** _[N-TRIPLES](https://www.w3.org/TR/n-triples/)_, _[N-QUADS](https://www.w3.org/TR/n-quads/)_<br>**Default:** _[N-TRIPLES](https://www.w3.org/TR/n-triples/)_ |
-|**`only_printable_chars`**|Remove characters in the genarated RDF that are not printable.| **Valid:** _yes_, _no_, _true_, _false_, _on_, _off_, _1_, _0_<br>**Default:** _no_                                                                                     |
-|**`safe_percent_encoding`**|Set of ASCII characters that should not be percent encoded. All characters are encoded by default.| **Example:** _:/_<br>**Default:**                                                                                                                                       |
-|**`mapping_partitioning`**|[Mapping partitioning](https://content.iospress.com/download/semantic-web/sw223135?id=semantic-web%2Fsw223135) algorithm to use. Mapping partitioning can also be disabled.| **Valid:** _PARTIAL-AGGREGATIONS_, _MAXIMAL_, _no_, _false_, _off_, _0_<br>**Default:** _PARTIAL-AGGREGATIONS_                                                          |
-|**`infer_sql_datatypes`**|Infer datatypes for relational databases. If a [datatypeable term map](https://www.w3.org/TR/r2rml/#dfn-datatypeable-term-map) has a _[rr:datatype](https://www.w3.org/ns/r2rml#datatype)_ property, then the datatype will not be inferred.| **Valid:** _yes_, _no_, _true_, _false_, _on_, _off_, _1_, _0_<br>**Default:** _no_                                                                                     |
-|**`number_of_processes`**|The number of processes to use. If _1_, Morph-KGC will use sequential processing (minimizing memory consumption), otherwise parallel processing is used (minimizing execution time).| **Default:** _2 * number of CPUs in the system_                                                                                                                         |
-|**`logging_level`**|Sets the [level](https://docs.python.org/3/library/logging.html#logging-levels) of the log messages to show.| **Valid:** _DEBUG_, _INFO_, _WARNING_, _ERROR_, _CRITICAL_, _NOTSET_<br>**Default:** _INFO_                                                                             |
-|**`logging_file`**|If not provided, log messages will be redirected to _stdout_. If a file path is provided, log messages will be written to the file.| **Default:**                                                                                                                                                            |
-|**`oracle_client_lib_dir`**|*lib_dir* directory specified in a call to *[cx_Oracle.init_oracle_client()](https://cx-oracle.readthedocs.io/en/latest/api_manual/module.html#cx_Oracle.init_oracle_client)*.| **Default:**                                                                                                                                                            |
-|**`oracle_client_config_dir`**|*config_dir* directory specified in a call to *[cx_Oracle.init_oracle_client()](https://cx-oracle.readthedocs.io/en/latest/api_manual/module.html#cx_Oracle.init_oracle_client)*.| **Default:**                                                                                                                                                            |
+| <div style="width:195px">Property</div> | Description                                                                                                                                                                                                                                  | Values                                                                                                                                                                  |
+|-----------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **`output_file`**                       | File to write the resulting knowledge graph to.                                                                                                                                                                                              | **Default:** _knowledge-graph.nt_                                                                                                                                       |
+| **`output_dir`**                        | Directory to write the resulting knowledge graph to. If it is specified, `output_file` will be ignored and multiple output files will generated, one for each mapping partition.                                                             | **Default:**                                                                                                                                                            |
+| **`na_values`**                         | Set of values to be interpreted as _NULL_ when retrieving data from the input sources. The set of values must be separated by commas.                                                                                                        | **Default:** ,_nan_                                                                                                                                                     |
+| **`output_format`**                     | RDF serialization to use for the resulting knowledge graph.                                                                                                                                                                                  | **Valid:** _[N-TRIPLES](https://www.w3.org/TR/n-triples/)_, _[N-QUADS](https://www.w3.org/TR/n-quads/)_<br>**Default:** _[N-TRIPLES](https://www.w3.org/TR/n-triples/)_ |
+| **`only_printable_chars`**              | Remove characters in the genarated RDF that are not printable.                                                                                                                                                                               | **Valid:** _yes_, _no_, _true_, _false_, _on_, _off_, _1_, _0_<br>**Default:** _no_                                                                                     |
+| **`safe_percent_encoding`**             | Set of ASCII characters that should not be percent encoded. All characters are encoded by default.                                                                                                                                           | **Example:** _:/_<br>**Default:**                                                                                                                                       |
+| **`udfs`**                              | File with Python user-defined functions to be called from _[RML+FnO](https://kg-construct.github.io/fnml-spec/)_.                                                                                                                            | **Default:**                                                                                                                                                            |
+| **`mapping_partitioning`**              | [Mapping partitioning](https://content.iospress.com/download/semantic-web/sw223135?id=semantic-web%2Fsw223135) algorithm to use. Mapping partitioning can also be disabled.                                                                  | **Valid:** _PARTIAL-AGGREGATIONS_, _MAXIMAL_, _no_, _false_, _off_, _0_<br>**Default:** _PARTIAL-AGGREGATIONS_                                                          |
+| **`infer_sql_datatypes`**               | Infer datatypes for relational databases. If a [datatypeable term map](https://www.w3.org/TR/r2rml/#dfn-datatypeable-term-map) has a _[rr:datatype](https://www.w3.org/ns/r2rml#datatype)_ property, then the datatype will not be inferred. | **Valid:** _yes_, _no_, _true_, _false_, _on_, _off_, _1_, _0_<br>**Default:** _no_                                                                                     |
+| **`number_of_processes`**               | The number of processes to use. If _1_, Morph-KGC will use sequential processing (minimizing memory consumption), otherwise parallel processing is used (minimizing execution time).                                                         | **Default:** _2 * number of CPUs in the system_                                                                                                                         |
+| **`logging_level`**                     | Sets the [level](https://docs.python.org/3/library/logging.html#logging-levels) of the log messages to show.                                                                                                                                 | **Valid:** _DEBUG_, _INFO_, _WARNING_, _ERROR_, _CRITICAL_, _NOTSET_<br>**Default:** _INFO_                                                                             |
+| **`logging_file`**                      | If not provided, log messages will be redirected to _stdout_. If a file path is provided, log messages will be written to the file.                                                                                                          | **Default:**                                                                                                                                                            |
+| **`oracle_client_lib_dir`**             | *lib_dir* directory specified in a call to *[cx_Oracle.init_oracle_client()](https://cx-oracle.readthedocs.io/en/latest/api_manual/module.html#cx_Oracle.init_oracle_client)*.                                                               | **Default:**                                                                                                                                                            |
+| **`oracle_client_config_dir`**          | *config_dir* directory specified in a call to *[cx_Oracle.init_oracle_client()](https://cx-oracle.readthedocs.io/en/latest/api_manual/module.html#cx_Oracle.init_oracle_client)*.                                                            | **Default:**                                                                                                                                                            |
 
 {==
 
@@ -247,32 +248,47 @@ Morph-KGC uses **[XPath 3.0](https://www.w3.org/TR/xpath30/)** to query XML file
 
 Morph-KGC is compliant with the W3C Recommendation **[RDB to RDF Mapping Language (R2RML)](https://www.w3.org/TR/r2rml/)** and the **[RDF Mapping Language (RML)](https://rml.io/specs/rml/)**. You can refer to their associated specifications to consult the syntaxes.
 
-### RML Views
+### RML+FnO
 
-In addition to **[R2RML views](https://www.w3.org/TR/r2rml/#r2rml-views)**, Morph-KGC also supports **RML views** over tabular data (**[CSV](https://en.wikipedia.org/wiki/Comma-separated_values)** and **[Parquet](https://parquet.apache.org/documentation/latest/)** formats). RML views enable transformation functions, complex joins or mixed content using the **[SQL](https://duckdb.org/docs/sql/introduction)** query language. For instance, the following triples map takes as input a **[CSV](https://en.wikipedia.org/wiki/Comma-separated_values)** file and filters the data based on the language of some codes.
+Declarative **transformation functions** are supported via **[RML+FnO](https://kg-construct.github.io/fnml-spec/)**. Morph-KGC comes with a subset of the **[GREL functions](http://users.ugent.be/~bjdmeest/function/grel.ttl#)** as **built-in functions** that can be directly used from the mappings. Python **user-defined functions** are additionally supported. A Python script with **user-defined functions** is provided to Morph-KGC via the `udfs` parameter. Decorators for these functions must be defined to link the **Python** parameters to the **FnO** parameters. An example of a **user-defined function**:
 
 ```
-<#TM1>
+@udf(
+    fun_id='http://example.com/toUpperCase',
+    text='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam')
+def to_upper_case(text):
+    return text.upper()
+```
+
+An **[RML+FnO](https://kg-construct.github.io/fnml-spec/)** mapping calling this functions would be:
+
+```
+<TriplesMap1>
     rml:logicalSource [
-        rml:query """
-            SELECT "Code", "Name", "Lan"
-            FROM 'country.csv'
-            WHERE "Lan" = 'EN';
-        """
+        rml:source "test/fno/udf/student.csv";
+        rml:referenceFormulation ql:CSV
     ];
     rr:subjectMap [
-        rr:template "http://example.com/{Code}"
+        rr:template "http://example.com/{Name}"
     ];
     rr:predicateObjectMap [
-        rr:predicate rdfs:label;
+        rr:predicate foaf:name;
         rr:objectMap [
-            rr:column "Name";
-            rr:language "en"
+            fnml:execution <#Execution> ;
         ]
-    ].
+    ] .
+
+<#Execution>
+    fnml:function ex:toUpperCase ;
+    fnml:input [
+        fnml:parameter grel:valueParam ;
+        fnml:valueMap [
+            rml:reference "Name" ;
+        ]
+    ] .
 ```
 
-Morph-KGC uses **[DuckDB](duckdb.org/)** to evaluate queries over tabular sources, the supported **[SQL](https://duckdb.org/docs/sql/introduction)** syntax can be consulted in its [documentation](https://duckdb.org/docs/sql/introduction).
+The complete set of **built-in functions** can be consulted [here](https://github.com/morph-kgc/morph-kgc/blob/main/src/morph_kgc/fno/built_in_functions.py).
 
 ### RML-star
 
@@ -304,9 +320,31 @@ Morph-KGC supports the new **[RML-star](https://kg-construct.github.io/rml-star-
     ].
 ```
 
-### YARRRML
+### RML Views
 
-**[YARRRML](https://rml.io/yarrrml/spec/)** is a human-friendly serialization of **[RML](https://rml.io/specs/rml/)** using **[YAML](https://yaml.org/)**. This serialization results in more compact mapping files which are easier to maintain. You can write your mappings in **[YARRRML](https://rml.io/yarrrml/spec/)** and use an external tool such as **[Matey](https://rml.io/yarrrml/matey/)** or **[yarrrml-translator](https://github.com/oeg-upm/yarrrml-translator)** to generate the **[RML](https://rml.io/specs/rml/)** mapping. Once the mappings are in **[RML](https://rml.io/specs/rml/)** you can use Morph-KGC to materialize the knowledge graph.
+In addition to **[R2RML views](https://www.w3.org/TR/r2rml/#r2rml-views)**, Morph-KGC also supports **RML views** over tabular data (**[CSV](https://en.wikipedia.org/wiki/Comma-separated_values)** and **[Parquet](https://parquet.apache.org/documentation/latest/)** formats). RML views enable transformation functions, complex joins or mixed content using the **[SQL](https://duckdb.org/docs/sql/introduction)** query language. For instance, the following triples map takes as input a **[CSV](https://en.wikipedia.org/wiki/Comma-separated_values)** file and filters the data based on the language of some codes.
 
+```
+<#TM1>
+    rml:logicalSource [
+        rml:query """
+            SELECT "Code", "Name", "Lan"
+            FROM 'country.csv'
+            WHERE "Lan" = 'EN';
+        """
+    ];
+    rr:subjectMap [
+        rr:template "http://example.com/{Code}"
+    ];
+    rr:predicateObjectMap [
+        rr:predicate rdfs:label;
+        rr:objectMap [
+            rr:column "Name";
+            rr:language "en"
+        ]
+    ].
+```
+
+Morph-KGC uses **[DuckDB](duckdb.org/)** to evaluate queries over tabular sources, the supported **[SQL](https://duckdb.org/docs/sql/introduction)** syntax can be consulted in its [documentation](https://duckdb.org/docs/sql/introduction).
 
 ![OEG](assets/logo-oeg.png){ width="150" align=left } ![UPM](assets/logo-upm.png){ width="161" align=right }
