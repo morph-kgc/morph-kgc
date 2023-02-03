@@ -114,12 +114,12 @@ def get_references_in_fno_execution(fno_df, execution):
     references = []
     for i, parameter in execution_rule_df.iterrows():
         if parameter['value_map_type'] == R2RML_TEMPLATE:
-            references = get_references_in_template(parameter['value_map_value'])
+            references.extend(get_references_in_template(parameter['value_map_value']))
         elif parameter['value_map_type'] == RML_REFERENCE:
             # a list with one value
-            references = [parameter['value_map_value']]
+            references.extend([parameter['value_map_value']])
         elif parameter['value_map_type'] == FNML_EXECUTION:
-            references = get_references_in_fno_execution(fno_df, parameter['value_map_value'])
+            references.extend(get_references_in_fno_execution(fno_df, parameter['value_map_value']))
 
     return references
 
