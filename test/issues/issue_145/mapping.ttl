@@ -1,0 +1,53 @@
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ex: <http://example.com/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@prefix fnml: <http://semweb.mmlab.be/ns/fnml#> .
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix morph-kgc: <https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#> .
+@prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
+@prefix idlab-fn: <http://example.com/idlab/function/> .
+@prefix gtfs: <http://vocab.gtfs.org/terms#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+
+@base <http://example.com/base/> .
+
+<TriplesMap1>
+    rml:logicalSource [
+        rml:source "test/issues/issue_145/data.csv" ;
+        rml:referenceFormulation ql:CSV ;
+    ];
+    rr:subjectMap [
+        rr:template "http://transport.linkeddata.es/madrid/metro/calendar_rules/{service_id}"
+    ];
+    rr:predicateObjectMap [
+        rr:predicate dct:example;
+        rr:objectMap [
+            fnml:execution <#Execution>
+        ]
+    ].
+
+<#Execution>
+    fnml:function morph-kgc:concat ;
+    fnml:input
+        [
+            fnml:parameter grel:valueParam1 ;
+            fnml:valueMap [
+                rml:reference "service_id"
+            ]
+        ] ,
+        [
+            fnml:parameter grel:valueParam2 ;
+            fnml:valueMap [
+                rml:reference "monday"
+            ]
+        ],
+        [
+
+            fnml:parameter grel:param_string_sep ;
+            fnml:valueMap [
+                rr:template "-"
+            ]
+        ] .
