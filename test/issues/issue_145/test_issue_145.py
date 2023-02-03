@@ -17,7 +17,7 @@ def test_issue_145():
     g = Graph()
     g.parse(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'output.nq'))
 
-    mapping_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mapping.rml')
+    mapping_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mapping.ttl')
     config = f'[CONFIGURATION]\noutput_format=N-QUADS\n[DataSource]\nmappings={mapping_path}'
     g_morph = morph_kgc.materialize(config)
 
