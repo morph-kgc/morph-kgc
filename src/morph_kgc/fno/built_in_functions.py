@@ -173,7 +173,7 @@ def number_round(number):
     elif ',' in number:
         number = number.replace(',', '.')   # e.g. 10,7
 
-    return round(float(number))
+    return str(round(float(number)))
 
 
 ##############################################################################
