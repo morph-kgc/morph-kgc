@@ -6,9 +6,6 @@ __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"
 
 
-from hashlib import sha256
-
-
 bif_dict = {}
 
 
@@ -240,6 +237,7 @@ def to_upper_case_url(url):
     fun_id='https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#hash',
     string='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam')
 def hash(string):
+    from hashlib import sha256
     return sha256(string.encode("UTF-8")).hexdigest()
 
 
