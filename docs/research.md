@@ -23,8 +23,6 @@
 
 - **[The Knowledge Graph Construction Tutorial](https://w3id.org/kg-construct/costdkg-eswc-tutorial)**  
 **ESWC** | **2022**
-- **[Knowledge Graphs For Data Integration](https://w3id.org/kg4di)**  
-**FWO Scientific Research Network** | **2022**
 
 ## Intellectual Property
 
