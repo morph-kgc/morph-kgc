@@ -147,7 +147,7 @@ def _read_json(rml_rule, references):
     jsonpath_expression = rml_rule['iterator'] + '.('
     # add top level object of the references to reduce intermediate results (THIS IS NOT STRICTLY NECESSARY)
     for reference in references:
-        jsonpath_expression += reference + ','
+        jsonpath_expression += reference.split('.')[0] + ','
     jsonpath_expression = jsonpath_expression[:-1] + ')'
 
     jsonpath_result = JSONPath(jsonpath_expression).parse(json_data)
