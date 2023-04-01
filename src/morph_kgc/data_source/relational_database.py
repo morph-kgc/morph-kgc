@@ -102,7 +102,7 @@ def _get_column_table_datatype(config, source_name, table_name, column_name):
                     f"WHERE `table_name`='{table_name}' AND `column_name`='{column_name}'"
         sql_query = _replace_query_enclosing_characters(sql_query, db_dialect)
 
-    query_results_df = pd.read_sql(sql_query, con=db_connection)
+    query_results_df = pd.read_sql_query(sql_query, con=db_connection)
 
     if 'data_type' in query_results_df.columns and len(query_results_df) == 1:
         data_type = query_results_df['data_type'][0]
@@ -178,7 +178,7 @@ def get_sql_data(config, rml_rule, references):
 
     logging.debug(f"SQL query for mapping rule `{rml_rule['triples_map_id']}`: [{sql_query}]")
 
-    return pd.read_sql(sql_query, con=db_connection, coerce_float=False)
+    return pd.read_sql_query(sql_query, con=db_connection, coerce_float=False)
 
 
 def setup_oracle(config):
