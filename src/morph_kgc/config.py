@@ -33,8 +33,6 @@ OUTPUT_FORMAT = 'output_format'
 ONLY_PRINTABLE_CHARS = 'only_printable_chars'
 SAFE_PERCENT_ENCODING = 'safe_percent_encoding'
 
-FILE_PATH = 'file_path'
-
 MAPPING_PARTITIONING = 'mapping_partitioning'
 INFER_SQL_DATATYPES = 'infer_sql_datatypes'
 ENFORCE_SQL_QUERY_FILTER_NULL = 'enforce_sql_filter_null'
@@ -58,7 +56,9 @@ WRITE_PARSED_MAPPINGS_PATH = 'write_parsed_mappings_path'
 ##############################################################################
 
 MAPPINGS = 'mappings'
+FILE_PATH = 'file_path'
 DATABASE_URL = 'db_url'
+CONNECT_ARGS = 'connect_args'
 
 
 ##############################################################################
@@ -311,6 +311,12 @@ class Config(ConfigParser):
 
     def get_file_path(self, source_section):
         return self.get(source_section, FILE_PATH)
+
+    def has_connect_args(self, source_section):
+        return self.has_option(source_section, CONNECT_ARGS)
+
+    def get_connect_args(self, source_section):
+        return self.get(source_section, CONNECT_ARGS)
 
     def get_mappings_files(self, source_section):
         mapping_file_paths = []
