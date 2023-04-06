@@ -188,7 +188,7 @@ One data source section should be included in the **[INI file](https://en.wikipe
 
 The properties to be specified for **relational databases** are listed below. All of the properties are **required**.
 
-|<div style="width:90px">Property</div>|Description|<div style="width:475px">Values</div>|
+|<div style="width:100px">Property</div>|Description|<div style="width:475px">Values</div>|
 |-------|-------|-------|
 |**`mappings`**|Specifies the mapping file(s) or URL(s) for the relational database.|**[REQUIRED]**<br>**Valid:**<br>- The path to a mapping file or URL.<br>- The paths to multiple mapping files or URLs separated by commas.<br>- The path to a directory containing all the mapping files.|
 |**`db_url`**|It is a URL that configures the database engine (username, password, hostname, database name). See **[here](https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls)** how to create the database URLs.|**[REQUIRED]**<br>**Example:** _dialect+driver://username:password@host:port/db_name_|
