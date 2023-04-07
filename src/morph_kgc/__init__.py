@@ -24,11 +24,7 @@ from .args_parser import load_config_from_argument
 from .constants import R2RML_TRIPLES_MAP_CLASS
 
 
-<<<<<<< HEAD
 def materialize_set(config, python_source=None):
-=======
-def materialize_set(config):
->>>>>>> origin/main
     config = load_config_from_argument(config)
 
     # parallelization when running as a library is only enabled for Linux see #94
@@ -40,11 +36,7 @@ def materialize_set(config):
 
     setup_oracle(config)
 
-<<<<<<< HEAD
     rml_df, fno_df = retrieve_mappings(config, python_source)
-=======
-    rml_df, fno_df = retrieve_mappings(config)
->>>>>>> origin/main
 
     # keep only asserted mapping rules
     asserted_mapping_df = rml_df.loc[rml_df['triples_map_type'] == R2RML_TRIPLES_MAP_CLASS]
@@ -55,34 +47,21 @@ def materialize_set(config):
 
         pool = mp.Pool(config.get_number_of_processes())
         triples = set().union(
-<<<<<<< HEAD
             *pool.starmap(_materialize_mapping_group_to_set, zip(mapping_groups, repeat(rml_df), repeat(fno_df), repeat(config), repeat(python_source))))
-=======
-            *pool.starmap(_materialize_mapping_group_to_set, zip(mapping_groups, repeat(rml_df), repeat(fno_df), repeat(config))))
->>>>>>> origin/main
         pool.close()
         pool.join()
     else:
         triples = set()
         for mapping_group in mapping_groups:
-<<<<<<< HEAD
             triples.update(_materialize_mapping_group_to_set(mapping_group, rml_df, fno_df, config, python_source))
-=======
-            triples.update(_materialize_mapping_group_to_set(mapping_group, rml_df, fno_df, config))
->>>>>>> origin/main
 
     logging.info(f'Number of triples generated in total: {len(triples)}.')
 
     return triples
 
 
-<<<<<<< HEAD
 def materialize(config, python_source=None):
     triples = materialize_set(config, python_source)
-=======
-def materialize(config):
-    triples = materialize_set(config)
->>>>>>> origin/main
 
     graph = Graph()
     rdf_ntriples = '.\n'.join(triples)
@@ -94,13 +73,8 @@ def materialize(config):
     return graph
 
 
-<<<<<<< HEAD
 def materialize_oxigraph(config, python_source=None):
     triples = materialize_set(config, python_source)
-=======
-def materialize_oxigraph(config):
-    triples = materialize_set(config)
->>>>>>> origin/main
 
     graph = Store()
     rdf_ntriples = '.\n'.join(triples)
