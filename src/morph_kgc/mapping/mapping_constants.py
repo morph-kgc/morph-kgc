@@ -11,7 +11,11 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 ##############################################################################
 
 RML_DATAFRAME_COLUMNS = [
+<<<<<<< HEAD
+    'source_name', 'triples_map_id', 'triples_map_type', 'logical_source_type', 'logical_source_value', 'iterator', 
+=======
     'source_name', 'triples_map_id', 'triples_map_type', 'logical_source_type', 'logical_source_value', 'iterator',
+>>>>>>> origin/main
     'subject_map_type', 'subject_map_value', 'subject_termtype',
     'predicate_map_type', 'predicate_map_value',
     'object_map_type', 'object_map_value', 'object_termtype', 'object_datatype', 'object_language',
@@ -37,9 +41,16 @@ RML_PARSING_QUERY = """
     prefix rr: <http://www.w3.org/ns/r2rml#>
     prefix rml: <http://semweb.mmlab.be/ns/rml#>
     prefix fnml: <http://semweb.mmlab.be/ns/fnml#>
+<<<<<<< HEAD
+    prefix sd: <https://w3id.org/okn/o/sd/>
+
+    SELECT DISTINCT 
+        ?triples_map_id ?triples_map_type ?logical_source_type ?logical_source_value ?iterator 
+=======
 
     SELECT DISTINCT
         ?triples_map_id ?triples_map_type ?logical_source_type ?logical_source_value ?iterator
+>>>>>>> origin/main
         ?subject_map_type ?subject_map_value ?subject_map ?subject_termtype
         ?predicate_map_type ?predicate_map_value
         ?object_map_type ?object_map_value ?object_map ?object_termtype ?object_datatype ?object_language
@@ -51,6 +62,13 @@ RML_PARSING_QUERY = """
         OPTIONAL {
             # logical_source is optional because it can be specified with file_path in config (see #119)
             ?_source ?logical_source_type ?logical_source_value .
+<<<<<<< HEAD
+            OPTIONAL {
+                ?logical_source_value sd:name ?logical_source_in_memory_value.
+                BIND(?logical_source_in_memory_value AS ?logical_source_value)
+            }
+=======
+>>>>>>> origin/main
             FILTER ( ?logical_source_type IN ( rml:source, rr:tableName, rml:query ) ) .
         }
         OPTIONAL { ?_source rml:iterator ?iterator . }
