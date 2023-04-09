@@ -5,7 +5,9 @@ __license__ = "Apache-2.0"
 __maintainer__ = "Ioannis Dasoulas"
 __email__ = "ioannis.dasoulas@kuleuven.be"
 
+
 import morph_kgc
+
 
 users_dict = {"users": [
         {
@@ -65,4 +67,4 @@ g_rdflib = morph_kgc.materialize('./config.ini', data_dict)
 
 print("Knowledge graphs triples:")
 for s,p,o in g_rdflib.triples((None, None, None)):
-  print(s,p,o)
+    print(s,p,o)

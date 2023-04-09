@@ -5,8 +5,10 @@ __license__ = "Apache-2.0"
 __maintainer__ = "Ioannis Dasoulas"
 __email__ = "ioannis.dasoulas@kuleuven.be"
 
+
 import morph_kgc
 import pandas as pd
+
 
 users_df = pd.DataFrame({'Id': [1,2,3,4],\
                       'Username': ["@jude","@emily","@wayne","@jordan1"], \
@@ -23,4 +25,4 @@ g_rdflib = morph_kgc.materialize('./config.ini', data_dict)
 
 print("Knowledge graphs triples:")
 for s,p,o in g_rdflib.triples((None, None, None)):
-  print(s,p,o)
+    print(s,p,o)

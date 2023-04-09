@@ -41,5 +41,8 @@ An example for _CSV_ can be found in the [`csv`](https://github.com/morph-kgc/mo
 
 Note that the **_paths_ parameters in the configuration file need to be updated** accordingly. Given that this example involves multiple CSV files, the paths to these files are provided in the mapping file with the `rml:source` property. The values of this property have to be updated with the correct _paths_ to the CSV files in your system.
 
+### In-memory Data Structures
+Examples for [Python Dictionaries](https://docs.python.org/3/tutorial/datastructures.html#dictionaries) and [DataFrames](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html) can be found in [`dict`](https://github.com/morph-kgc/morph-kgc/tree/main/examples/dict) and [`dataframe`](https://github.com/morph-kgc/morph-kgc/tree/main/examples/dataframe) directories.
+
 ### Configuration Files
 The directory [`configuration-file`](https://github.com/morph-kgc/morph-kgc/tree/main/examples/configuration-file) contains some configuration files to run Morph-KGC with. [`default_config.ini`](https://github.com/morph-kgc/morph-kgc/blob/main/examples/configuration-file/default_config.ini) contains all possible configuration options along with their default values. Options that are not provided in the `CONFIGURATION` section will use the default values. You can see all the information about configuration files in the **[documentation](https://morph-kgc.readthedocs.io/en/latest/documentation/#configuration)**.
