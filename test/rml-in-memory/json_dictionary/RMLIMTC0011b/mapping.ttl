@@ -1,0 +1,110 @@
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ex: <http://example.com/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@prefix sd: <https://w3id.org/okn/o/sd/>.
+@prefix kg4di: <https://w3id.org/kg4di/definedBy>.
+@base <http://example.com/base/> .
+
+<TriplesMap1>
+  a rr:TriplesMap;
+
+  rml:logicalSource [
+    rml:source [
+			a sd:DatasetSpecification;
+			sd:name "variable3";
+			sd:hasDataTransformation [
+				sd:hasSourceCode [
+					sd:programmingLanguage "Python3.9";
+				];
+			];
+		];
+		rml:referenceFormulation ql:Dictionary;
+    rml:iterator "$.students[*]"
+  ];
+
+  rr:subjectMap [
+    rr:template "http://example.com/student/{ID}";
+  ];
+
+  rr:predicateObjectMap [
+    rr:predicate ex:firstName;
+    rr:objectMap [
+      rml:reference "FirstName"
+    ]
+  ];
+
+  rr:predicateObjectMap [
+    rr:predicate ex:lastName;
+    rr:objectMap [
+      rml:reference "LastName"
+    ]
+  ].
+
+<TriplesMap2>
+  a rr:TriplesMap;
+
+  rml:logicalSource [
+    rml:source [
+			a sd:DatasetSpecification;
+			sd:name "variable1";
+			sd:hasDataTransformation [
+				sd:hasSourceCode [
+					sd:programmingLanguage "Python3.9";
+				];
+			];
+		];
+		rml:referenceFormulation ql:Dictionary;
+    rml:iterator "$.sports[*]"
+  ];
+
+  rr:subjectMap [
+    rr:template "http://example.com/sport/{ID}";
+  ];
+
+  rr:predicateObjectMap [
+    rr:predicate ex:id;
+    rr:objectMap [
+      rml:reference "ID"
+    ]
+  ];
+
+  rr:predicateObjectMap [
+    rr:predicate ex:description;
+    rr:objectMap [
+      rml:reference "Description"
+    ]
+  ].
+
+<LinkMap_1_2>
+  a rr:TriplesMap;
+
+  rml:logicalSource [
+    rml:source [
+			a sd:DatasetSpecification;
+			sd:name "variable2";
+			sd:hasDataTransformation [
+				sd:hasSourceCode [
+					sd:programmingLanguage "Python3.9";
+				];
+			];
+		];
+		rml:referenceFormulation ql:Dictionary;
+    rml:iterator "$.links[*]"
+  ];
+
+  rr:subjectMap [
+    rr:template "http://example.com/student/{ID_Student}";
+  ];
+
+  rr:predicateObjectMap [
+    rr:predicate ex:plays;
+    rr:objectMap [
+      rr:template "http://example.com/sport/{ID_Sport}"
+    ]
+  ].
+
+ql:Dictionary a rml:ReferenceFormulation;
+	kg4di:definedBy "Python".

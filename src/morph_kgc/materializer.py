@@ -13,6 +13,7 @@ from .utils import *
 from .constants import *
 from .data_source.relational_database import get_sql_data
 from .data_source.data_file import get_file_data
+from .data_source.python_data import get_ram_data
 from .fno.fno_executer import execute_fno
 
 
@@ -46,12 +47,14 @@ def _preprocess_data(data, rml_rule, references, config):
     return data
 
 
-def _get_data(config, rml_rule, references):
+def _get_data(config, rml_rule, references, python_source=None):
 
     if rml_rule['source_type'] == RDB:
         data = get_sql_data(config, rml_rule, references)
     elif rml_rule['source_type'] in FILE_SOURCE_TYPES:
         data = get_file_data(rml_rule, references)
+    elif rml_rule['source_type'] in IN_MEMORY_TYPES:
+        data = get_ram_data(rml_rule, references, python_source)
 
     data = _preprocess_data(data, rml_rule, references, config)
 
@@ -311,7 +314,7 @@ def _merge_data(data, parent_data, rml_rule, join_condition):
         return data.merge(parent_data, how='inner', left_on=child_join_references, right_on=parent_join_references)
 
 
-def _materialize_rml_rule(rml_rule, rml_df, fno_df, config, data=None, parent_join_references=set(), nest_level=0):
+def _materialize_rml_rule(rml_rule, rml_df, fno_df, config, data=None, parent_join_references=set(), nest_level=0, python_source=None):
     references = set(_get_references_in_rml_rule(rml_rule, rml_df, fno_df))
 
     references_subject_join, parent_references_subject_join = get_references_in_join_condition(rml_rule, 'subject_join_conditions')
@@ -320,7 +323,7 @@ def _materialize_rml_rule(rml_rule, rml_df, fno_df, config, data=None, parent_jo
 
     if rml_rule['subject_map_type'] == RML_STAR_QUOTED_TRIPLES_MAP or rml_rule['object_map_type'] == RML_STAR_QUOTED_TRIPLES_MAP:
         if data is None:
-            data = _get_data(config, rml_rule, references)
+            data = _get_data(config, rml_rule, references, python_source)
 
         if rml_rule['subject_map_type'] == RML_STAR_QUOTED_TRIPLES_MAP:
             if pd.notna(rml_rule['subject_join_conditions']):
@@ -383,15 +386,15 @@ def _materialize_rml_rule(rml_rule, rml_df, fno_df, config, data=None, parent_jo
         references, parent_references = _add_references_in_join_condition(rml_rule, references, parent_references)
 
         if data is None:
-            data = _get_data(config, rml_rule, references)
+            data = _get_data(config, rml_rule, references, python_source)
 
-        parent_data = _get_data(config, parent_triples_map_rule, parent_references)
+        parent_data = _get_data(config, parent_triples_map_rule, parent_references, python_source)
         merged_data = _merge_data(data, parent_data, rml_rule, 'object_join_conditions')
         data = _materialize_join_rml_rule_terms(merged_data, rml_rule, parent_triples_map_rule, config)
     else:
 
         if data is None:
-            data = _get_data(config, rml_rule, references)
+            data = _get_data(config, rml_rule, references, python_source)
 
         data = _materialize_rml_rule_terms(data, rml_rule, fno_df, config)
 
@@ -433,11 +436,11 @@ def _materialize_mapping_group_to_file(mapping_group_df, rml_df, fno_df, config)
     return len(triples)
 
 
-def _materialize_mapping_group_to_set(mapping_group_df, rml_df, fno_df, config):
+def _materialize_mapping_group_to_set(mapping_group_df, rml_df, fno_df, config, python_source=None):
 
     triples = set()
     for i, rml_rule in mapping_group_df.iterrows():
-        data = _materialize_rml_rule(rml_rule, rml_df, fno_df, config)
+        data = _materialize_rml_rule(rml_rule, rml_df, fno_df, config, python_source=python_source)
         triples.update(set(data['triple']))
 
     return triples

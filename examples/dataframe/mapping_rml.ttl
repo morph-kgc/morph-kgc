@@ -1,0 +1,107 @@
+@prefix insta: <http://instagram.com/data/>.
+@prefix rr: <http://www.w3.org/ns/r2rml#>.
+@prefix rml: <http://semweb.mmlab.be/ns/rml#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix ql: <http://semweb.mmlab.be/ns/ql#>.
+@prefix d2rq: <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+@base <http://example.com/ns#>.
+@prefix schema: <http://schema.org/>.
+@prefix sd: <https://w3id.org/okn/o/sd/>.
+@prefix kg4di: <https://w3id.org/kg4di/definedBy>.
+
+
+<people_0> a rr:TriplesMap;
+
+	rml:logicalSource [
+		a rml:LogicalSource;
+		rml:source [
+			a sd:DatasetSpecification;
+			sd:name "variable1";
+			sd:hasDataTransformation [
+				sd:hasSoftwareRequirements "pandas>=1.1.0";
+				sd:hasSourceCode [
+					sd:programmingLanguage "Python3.9";
+				];
+			];
+		];
+		rml:referenceFormulation ql:DataFrame;
+	];
+	rr:subjectMap [
+		a rr:SubjectMap;
+		rr:template "http://instagram.com/data/user{Id}";
+	];
+	rr:predicateObjectMap [
+		rr:predicateMap [
+			a rr:PredicateMap;
+			rr:constant rdf:type;
+		];
+		rr:objectMap [
+			a rr:ObjectMap;
+			rr:constant insta:User;
+		];
+	];
+	rr:predicateObjectMap [
+		rr:predicateMap [
+			a rr:PredicateMap;
+			rr:constant insta:username;
+		];
+		rr:objectMap [
+			a rr:ObjectMap;
+			rml:reference "Username";
+		];
+	];
+	rr:predicateObjectMap [
+		rr:predicateMap [
+			a rr:PredicateMap;
+			rr:constant insta:name;
+		];
+		rr:objectMap [
+			a rr:ObjectMap;
+			rr:template "{Name} {Surname}";
+			rr:datatype rdfs:Literal
+		];
+	].
+
+
+<followers_0> a rr:TriplesMap;
+
+	rml:logicalSource [
+		a rml:LogicalSource;
+		rml:source [
+			a sd:DatasetSpecification;
+			sd:name "variable2";
+			sd:hasDataTransformation [
+				sd:hasSoftwareRequirements "pandas>=1.1.0";
+				sd:hasSourceCode [
+					sd:programmingLanguage "Python3.9";
+				];
+			];
+		];
+		rml:referenceFormulation ql:DataFrame;
+	];
+	rr:subjectMap [
+		a rr:SubjectMap;
+		rr:template "http://instagram.com/data/user{Id}";
+	];
+	rr:predicateObjectMap [
+		rr:predicateMap [
+			a rr:PredicateMap;
+			rr:constant insta:followersNumber;
+		];
+		rr:objectMap [
+			a rr:ObjectMap;
+			rml:reference "Followers";
+		];
+	].
+
+ql:DataFrame a rml:ReferenceFormulation;
+	kg4di:definedBy "Pandas".
+
+
+
+
+
+

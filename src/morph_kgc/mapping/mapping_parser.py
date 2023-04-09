@@ -14,13 +14,13 @@ from ..mapping.mapping_partitioner import MappingPartitioner
 from ..data_source.relational_database import get_rdb_reference_datatype
 
 
-def retrieve_mappings(config):
+def retrieve_mappings(config, python_source=None):
     if config.is_read_parsed_mappings_file_provided():
-        # retrieve parsed mapping from file and finish mapping processing
+        #retrieve parsed mapping from file and finish mapping processing
         mappings = pd.read_csv(config.get_parsed_mappings_read_path())
         logging.info(f'{len(mappings)} mappings rules loaded from file.')
     else:
-        mappings_parser = MappingParser(config)
+        mappings_parser = MappingParser(config, python_source)
 
         start_time = time.time()
         rml_df, fno_df = mappings_parser.parse_mappings()
@@ -396,10 +396,11 @@ def _validate_termtypes(mapping_graph):
 
 class MappingParser:
 
-    def __init__(self, config):
+    def __init__(self, config, python_source=None):
         self.rml_df = pd.DataFrame(columns=RML_DATAFRAME_COLUMNS)
         self.fno_df = pd.DataFrame(columns=FNO_DATAFRAME_COLUMNS)
         self.config = config
+        self.python_source = python_source
 
     def __str__(self):
         return str(self.rml_df)
@@ -418,7 +419,7 @@ class MappingParser:
         self.validate_mappings()
 
         logging.info(f'{len(self.rml_df)} mapping rules retrieved.')
-
+        
         # replace empty strings with NaN
         self.rml_df = self.rml_df.replace(r'^\s*$', np.nan, regex=True)
 
@@ -525,9 +526,12 @@ class MappingParser:
                 # it is a query, but it is not an RDB, hence it is a tabular view
                 # assign CSV (it can also be Apache Parquet but format is automatically inferred)
                 self.rml_df.at[i, 'source_type'] = CSV
-            elif self.rml_df.at[i, 'logical_source_type'] == RML_SOURCE:
+            elif (self.rml_df.at[i, 'logical_source_type'] == RML_SOURCE) \
+                 and ("." in self.rml_df.at[i, 'logical_source_value']):
                 file_extension = os.path.splitext(str(rml_rule['logical_source_value']))[1][1:].strip()
                 self.rml_df.at[i, 'source_type'] = file_extension.upper()
+            elif (self.rml_df.at[i, 'logical_source_type'] == RML_SOURCE):
+                 self.rml_df.at[i, 'source_type'] = PYTHON_SOURCE 
             else:
                 raise Exception('No source type could be retrieved for some mapping rules.')
 

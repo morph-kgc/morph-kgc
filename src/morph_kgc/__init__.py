@@ -24,7 +24,7 @@ from .args_parser import load_config_from_argument
 from .constants import R2RML_TRIPLES_MAP_CLASS
 
 
-def materialize_set(config):
+def materialize_set(config, python_source=None):
     config = load_config_from_argument(config)
 
     # parallelization when running as a library is only enabled for Linux see #94
@@ -36,7 +36,7 @@ def materialize_set(config):
 
     setup_oracle(config)
 
-    rml_df, fno_df = retrieve_mappings(config)
+    rml_df, fno_df = retrieve_mappings(config, python_source)
 
     # keep only asserted mapping rules
     asserted_mapping_df = rml_df.loc[rml_df['triples_map_type'] == R2RML_TRIPLES_MAP_CLASS]
@@ -47,21 +47,21 @@ def materialize_set(config):
 
         pool = mp.Pool(config.get_number_of_processes())
         triples = set().union(
-            *pool.starmap(_materialize_mapping_group_to_set, zip(mapping_groups, repeat(rml_df), repeat(fno_df), repeat(config))))
+            *pool.starmap(_materialize_mapping_group_to_set, zip(mapping_groups, repeat(rml_df), repeat(fno_df), repeat(config), repeat(python_source))))
         pool.close()
         pool.join()
     else:
         triples = set()
         for mapping_group in mapping_groups:
-            triples.update(_materialize_mapping_group_to_set(mapping_group, rml_df, fno_df, config))
+            triples.update(_materialize_mapping_group_to_set(mapping_group, rml_df, fno_df, config, python_source))
 
     logging.info(f'Number of triples generated in total: {len(triples)}.')
 
     return triples
 
 
-def materialize(config):
-    triples = materialize_set(config)
+def materialize(config, python_source=None):
+    triples = materialize_set(config, python_source)
 
     graph = Graph()
     rdf_ntriples = '.\n'.join(triples)
@@ -73,8 +73,8 @@ def materialize(config):
     return graph
 
 
-def materialize_oxigraph(config):
-    triples = materialize_set(config)
+def materialize_oxigraph(config, python_source=None):
+    triples = materialize_set(config, python_source)
 
     graph = Store()
     rdf_ntriples = '.\n'.join(triples)
