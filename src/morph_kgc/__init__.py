@@ -36,7 +36,7 @@ def materialize_set(config, python_source=None):
 
     setup_oracle(config)
 
-    rml_df, fno_df = retrieve_mappings(config, python_source)
+    rml_df, fno_df = retrieve_mappings(config)
 
     # keep only asserted mapping rules
     asserted_mapping_df = rml_df.loc[rml_df['triples_map_type'] == R2RML_TRIPLES_MAP_CLASS]
