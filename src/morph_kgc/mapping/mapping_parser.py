@@ -14,13 +14,13 @@ from ..mapping.mapping_partitioner import MappingPartitioner
 from ..data_source.relational_database import get_rdb_reference_datatype
 
 
-def retrieve_mappings(config, python_source=None):
+def retrieve_mappings(config):
     if config.is_read_parsed_mappings_file_provided():
         #retrieve parsed mapping from file and finish mapping processing
         mappings = pd.read_csv(config.get_parsed_mappings_read_path())
         logging.info(f'{len(mappings)} mappings rules loaded from file.')
     else:
-        mappings_parser = MappingParser(config, python_source)
+        mappings_parser = MappingParser(config)
 
         start_time = time.time()
         rml_df, fno_df = mappings_parser.parse_mappings()
@@ -396,11 +396,10 @@ def _validate_termtypes(mapping_graph):
 
 class MappingParser:
 
-    def __init__(self, config, python_source=None):
+    def __init__(self, config):
         self.rml_df = pd.DataFrame(columns=RML_DATAFRAME_COLUMNS)
         self.fno_df = pd.DataFrame(columns=FNO_DATAFRAME_COLUMNS)
         self.config = config
-        self.python_source = python_source
 
     def __str__(self):
         return str(self.rml_df)
@@ -527,11 +526,12 @@ class MappingParser:
                 # assign CSV (it can also be Apache Parquet but format is automatically inferred)
                 self.rml_df.at[i, 'source_type'] = CSV
             elif (self.rml_df.at[i, 'logical_source_type'] == RML_SOURCE) \
-                 and ("." in self.rml_df.at[i, 'logical_source_value']):
+                    and ('.' in self.rml_df.at[i, 'logical_source_value']):
                 file_extension = os.path.splitext(str(rml_rule['logical_source_value']))[1][1:].strip()
                 self.rml_df.at[i, 'source_type'] = file_extension.upper()
-            elif (self.rml_df.at[i, 'logical_source_type'] == RML_SOURCE):
-                 self.rml_df.at[i, 'source_type'] = PYTHON_SOURCE 
+            elif self.rml_df.at[i, 'logical_source_type'] == RML_SOURCE:
+                # it is an in-memory data structure
+                self.rml_df.at[i, 'source_type'] = PYTHON_SOURCE
             else:
                 raise Exception('No source type could be retrieved for some mapping rules.')
 
