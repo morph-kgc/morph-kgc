@@ -75,6 +75,9 @@ def _replace_query_enclosing_characters(sql_query, db_dialect):
                 num_enclosing_char += 1
             else:
                 dialect_sql_query = dialect_sql_query + char
+    elif db_dialect == DATABRICKS:
+        # remove all backticks
+        dialect_sql_query = sql_query.replace('`', '')
     else:
         # replace backticks with double quotes
         dialect_sql_query = sql_query.replace('`', '"')
