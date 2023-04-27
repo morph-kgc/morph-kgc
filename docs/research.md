@@ -11,6 +11,8 @@
 
 ### Conferences
 
+- **[Boosting Knowledge Graph Generation from Tabular Data with RML Views](https://oa.upm.es/73463/1/_2023___ESWC__RML_Tabular_Views.pdf)**  
+**ESWC** | **2023** | Julián Arenas-Guerrero, Ahmad Alobaid, María Navas-Loro María S. Pérez, Oscar Corcho
 - **[RML-star: A Declarative Mapping Language for RDF-star Generation](http://ceur-ws.org/Vol-2980/paper374.pdf)**  
 **ISWC** | **2021** | Thomas Delva, Julián Arenas-Guerrero, Ana Iglesias-Molina, Oscar Corcho, David Chaves-Fraga, Anastasia Dimou
 
