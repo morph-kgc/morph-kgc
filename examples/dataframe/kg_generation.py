@@ -18,8 +18,8 @@ users_df = pd.DataFrame({'Id': [1,2,3,4],\
 followers_df = pd.DataFrame({'Id': [1,2,3,4],\
                       'Followers': [344, 456, 1221, 23]})
 
-data_dict = {"variable1.csv": users_df,
-            "variable2.csv": followers_df}
+data_dict = {"variable1": users_df,
+            "variable2": followers_df}
 
 g_rdflib = morph_kgc.materialize('./config.ini', data_dict)
 
