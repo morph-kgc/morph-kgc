@@ -16,7 +16,7 @@ from ..utils import normalize_hierarchical_data
 
 def get_ram_data(rml_rule, references, python_source=None):
     references = list(references)
-    source_key = rml_rule['logical_source_value']
+    source_key = rml_rule['logical_source_value'][1:-1]
     source_value = python_source[source_key]
 
     if isinstance(source_value, pd.DataFrame):

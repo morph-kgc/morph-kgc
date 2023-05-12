@@ -19,7 +19,7 @@
 		a rml:LogicalSource;
 		rml:source [
 			a sd:DatasetSpecification;
-			sd:name "variable1";
+			sd:name "variable1.csv";
 			sd:hasDataTransformation [
 				sd:hasSoftwareRequirements "pandas>=1.1.0";
 				sd:hasSourceCode [
@@ -72,7 +72,7 @@
 		a rml:LogicalSource;
 		rml:source [
 			a sd:DatasetSpecification;
-			sd:name "variable2";
+			sd:name "variable2.csv";
 			sd:hasDataTransformation [
 				sd:hasSoftwareRequirements "pandas>=1.1.0";
 				sd:hasSourceCode [
