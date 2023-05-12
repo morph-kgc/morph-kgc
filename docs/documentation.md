@@ -346,6 +346,49 @@ In addition to **[R2RML views](https://www.w3.org/TR/r2rml/#r2rml-views)**, Morp
     ].
 ```
 
+### In-memory mappings
+Morph-KGC supports the combination of heterogeneous data sources with in-memory data structures using the **[SD Ontology](https://knowledgecaptureanddiscovery.github.io/SoftwareDescriptionOntology/release/1.8.0/index-en.html)**. Currently, **[Pandas Dataframes](https://pandas.pydata.org)** and Python dictionaries are supported for **[RDF](https://www.w3.org/TR/rdf11-concepts/)** construction. The following **[RDF Mapping Language (RML)](https://rml.io/specs/rml/)** rules and the Python snippet demonstrate the transformation of a **[Pandas Dataframe](https://pandas.pydata.org)** to **[RDF](https://www.w3.org/TR/rdf11-concepts/)**.
+
+The RML mappings:
+```
+<TM_0> 
+  rml:logicalSource [
+    a rml:LogicalSource;		
+    rml:source [
+      a sd:DatasetSpecification;
+      sd:name "variable1";
+      sd:hasDataTransformation [
+        sd:hasSoftwareRequirements "pandas>=1.1.0";
+        sd:hasSourceCode [
+          sd:programmingLanguage "Python3.9";];];
+    ];
+    rml:referenceFormulation ql:DataFrame;
+  ];
+  rr:subjectMap [
+    a rr:SubjectMap;
+    rr:template "http://example.com/data/user{Id}";
+  ];
+  rr:predicateObjectMap [
+    rr:predicate rdf:type;
+    rr:objectMap [
+    a rr:ObjectMap;
+      rr:constant ex:User;
+    ];
+  ].
+```
+
+The Python script corresponding to the mappings:
+```
+import morph_kgc
+import pandas as pd
+
+users_df = pd.DataFrame({'Id': [1,2,3,4],\
+           'Username': ["@jude","@emily","@wayne","@jordan1"]})
+data_dict = {"variable1": users_df}
+g_rdflib = morph_kgc.materialize('./config.ini', data_dict)
+
+```
+
 Morph-KGC uses **[DuckDB](duckdb.org/)** to evaluate queries over tabular sources, the supported **[SQL](https://duckdb.org/docs/sql/introduction)** syntax can be consulted in its [documentation](https://duckdb.org/docs/sql/introduction). For views over **[JSON](https://www.json.org)** check the corresponding [JSON section in the DuckDB documentation](https://duckdb.org/docs/extensions/json.html) and [this blog post](https://duckdb.org/2023/03/03/json.html).
 
 ![OEG](assets/logo-oeg.png){ width="150" align=left } ![UPM](assets/logo-upm.png){ width="161" align=right }
