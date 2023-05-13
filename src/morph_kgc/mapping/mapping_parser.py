@@ -416,16 +416,15 @@ class MappingParser:
 
         self._infer_datatypes()
         self.validate_mappings()
-        
+
         logging.info(f'{len(self.rml_df)} mapping rules retrieved.')
-        
+
         # replace empty strings with NaN
         self.rml_df = self.rml_df.replace(r'^\s*$', np.nan, regex=True)
 
         # generate mapping partitions
         mapping_partitioner = MappingPartitioner(self.rml_df, self.config)
         self.rml_df = mapping_partitioner.partition_mappings()
-
 
         return self.rml_df, self.fno_df
 
