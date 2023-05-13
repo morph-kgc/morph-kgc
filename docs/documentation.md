@@ -321,6 +321,26 @@ Morph-KGC supports the new **[RML-star](https://w3id.org/rml/star/spec)** mappin
     ].
 ```
 
+### YARRRML
+
+**[YARRRML](https://rml.io/yarrrml/spec/)** is a human-friendly serialization of [RML](https://w3id.org/rml/core/spec) that uses [YAML](https://yaml.org/). Morph-KGC supports [YARRRML](https://rml.io/yarrrml/spec/), also for [RML-FNML](https://w3id.org/rml/fnml/spec) and [RML-star](https://w3id.org/rml/star). The mapping below shows a [YARRRML](https://rml.io/yarrrml/spec/) example.
+
+```yml
+prefixes:
+  foaf: http://xmlns.com/foaf/0.1/
+  ex: http://example.com/
+  rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns#
+  xsd: http://www.w3.org/2001/XMLSchema#
+
+mappings:
+  TM1:
+   sources:
+     - ['student.csv~csv']
+   s: http://example.com/$(Name)
+   po:
+     - [foaf:name, $(Name)]
+```
+
 ### RML Views
 
 In addition to **[R2RML views](https://www.w3.org/TR/r2rml/#r2rml-views)**, Morph-KGC also supports **RML views** over tabular data (**[CSV](https://en.wikipedia.org/wiki/Comma-separated_values)** and **[Parquet](https://parquet.apache.org/documentation/latest/)** formats) and **[JSON](https://www.json.org)** files. RML views enable transformation functions, complex joins or mixed content using the **[SQL](https://duckdb.org/docs/sql/introduction)** query language. For instance, the following triples map takes as input a **[CSV](https://en.wikipedia.org/wiki/Comma-separated_values)** file and filters the data based on the language of some codes.

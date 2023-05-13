@@ -230,4 +230,6 @@ XSD_STRING = f'{XSD_NAMESPACE}string'
 RDF_NAMESPACE = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
 RDF_TYPE = f'{RDF_NAMESPACE}type'
 
+RDFS_NAMESPACE = 'http://www.w3.org/2000/01/rdf-schema#'
+
 AUXILIAR_UNIQUE_REPLACING_STRING = 'zzyy_xxww\u200B'

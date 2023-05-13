@@ -12,7 +12,7 @@ Additional optimizations are also implemented to increase efficiency: **[redunda
 
 ### W3C Compliance
 
-Morph-KGC adopts the **[W3C](https://www.w3.org/)** Recommendation **[R2RML](https://www.w3.org/TR/r2rml/)** mapping language to map relational databases to **[RDF](https://www.w3.org/TR/rdf11-concepts/)**. In addition, it supports **[RML](https://w3id.org/rml/core/spec)**, **[RML-star](https://w3id.org/rml/star/spec)** and **[RML-FNML](https://w3id.org/rml/fnml/spec)**, which are being further developed by the **[Knowledge Graph Construction W3C Community Group](https://www.w3.org/community/kg-construct/)**.
+Morph-KGC adopts the **[W3C](https://www.w3.org/)** Recommendation **[R2RML](https://www.w3.org/TR/r2rml/)** mapping language to map relational databases to **[RDF](https://www.w3.org/TR/rdf11-concepts/)**. In addition, it supports **[RML](https://w3id.org/rml/core/spec)**, **[RML-star](https://w3id.org/rml/star/spec)**, **[RML-FNML](https://w3id.org/rml/fnml/spec)** and [YARRRML](https://rml.io/yarrrml/spec/), which are being further developed by the **[Knowledge Graph Construction W3C Community Group](https://www.w3.org/community/kg-construct/)**.
 
 ### Reliability
 
