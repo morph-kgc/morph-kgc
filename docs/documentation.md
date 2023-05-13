@@ -11,13 +11,13 @@ In the following we describe different ways in which you can install and use Mor
 ### PyPi
 
 **[PyPi](https://pypi.org/project/morph-kgc/)** is the fastest way to install Morph-KGC:
-```
+```bash
 pip install morph-kgc
 ```
 
 Some data sources require additional dependencies. Check **[Advanced Setup](https://morph-kgc.readthedocs.io/en/latest/documentation/#advanced-setup)** for specific installation instructions or install all the dependencies:
 
-```
+```bash
 pip install morph-kgc[all]
 ```
 
@@ -26,7 +26,7 @@ We recommend to use **[virtual environments](https://docs.python.org/3/library/v
 ### From Source
 
 You can also grab the latest source code from the **[GitHub repository](https://github.com/morph-kgc/morph-kgc)**:
-```
+```bash
 pip install git+https://github.com/morph-kgc/morph-kgc.git
 ```
 
@@ -38,7 +38,7 @@ Morph-KGC uses an **[INI file](https://en.wikipedia.org/wiki/INI_file)** to conf
 
 To run the engine using the **command line** you just need to execute the following:
 
-```
+```bash
 python3 -m morph_kgc path/to/config.ini
 ```
 
@@ -48,7 +48,7 @@ Morph-KGC can be used as a **library**, providing different methods to materiali
 
 The methods in the **API** accept the **config as a string or as the path to an INI file**.
 
-```
+```Python
 import morph_kgc
 
 config = """
@@ -64,7 +64,7 @@ config = """
 
 Materialize the knowledge graph to **[RDFLib](https://rdflib.readthedocs.io/en/stable/)**.
 
-```
+```Python
 # generate the triples and load them to an RDFLib graph
 
 graph = morph_kgc.materialize(config)
@@ -87,7 +87,7 @@ q_res = graph.query(' SELECT DISTINCT ?classes WHERE { ?s a ?classes } ')
 
 Materialize the knowledge graph to **[Oxigraph](https://pyoxigraph.readthedocs.io/en/latest/)**.
 
-```
+```Python
 # generate the triples and load them to Oxigraph
 
 graph = morph_kgc.materialize_oxigraph(config)
@@ -104,7 +104,7 @@ q_res = graph.query(' SELECT DISTINCT ?classes WHERE { ?s a ?classes } ')
 
 Materialize the knowledge graph to a Python **Set of triples**.
 
-```
+```Python
 # create a Python Set with the triples
 
 graph = morph_kgc.materialize_set(config)
@@ -253,7 +253,7 @@ Morph-KGC is compliant with the W3C Recommendation **[RDB to RDF Mapping Languag
 
 Declarative **transformation functions** are supported via **[RML+FnO](https://kg-construct.github.io/fnml-spec/)**. Morph-KGC comes with a subset of the **[GREL functions](http://users.ugent.be/~bjdmeest/function/grel.ttl#)** as **built-in functions** that can be directly used from the mappings. Python **user-defined functions** are additionally supported. A Python script with **user-defined functions** is provided to Morph-KGC via the `udfs` parameter. Decorators for these functions must be defined to link the **Python** parameters to the **FnO** parameters. An example of a **user-defined function**:
 
-```
+```Python
 @udf(
     fun_id='http://example.com/toUpperCase',
     text='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam')
@@ -263,30 +263,30 @@ def to_upper_case(text):
 
 An **[RML+FnO](https://kg-construct.github.io/fnml-spec/)** mapping calling this functions would be:
 
-```
-<TriplesMap1>
+```ttl
+<#TM1>
     rml:logicalSource [
         rml:source "test/fno/udf/student.csv";
-        rml:referenceFormulation ql:CSV
+        rml:referenceFormulation ql:CSV;
     ];
     rr:subjectMap [
-        rr:template "http://example.com/{Name}"
+        rr:template "http://example.com/{Name}";
     ];
     rr:predicateObjectMap [
         rr:predicate foaf:name;
         rr:objectMap [
-            fnml:execution <#Execution> ;
-        ]
-    ] .
+            fnml:execution <#Execution>;
+        ];
+    ].
 
 <#Execution>
-    fnml:function ex:toUpperCase ;
+    fnml:function ex:toUpperCase;
     fnml:input [
-        fnml:parameter grel:valueParam ;
+        fnml:parameter grel:valueParam;
         fnml:valueMap [
-            rml:reference "Name" ;
-        ]
-    ] .
+            rml:reference "Name";
+        ];
+    ].
 ```
 
 The complete set of **built-in functions** can be consulted [here](https://github.com/morph-kgc/morph-kgc/blob/main/src/morph_kgc/fno/built_in_functions.py).
@@ -295,29 +295,29 @@ The complete set of **built-in functions** can be consulted [here](https://githu
 
 Morph-KGC supports the new **[RML-star](https://kg-construct.github.io/rml-star-spec/)** mapping language to generate **[RDF-star](https://w3c.github.io/rdf-star/cg-spec/2021-12-17.html)** knowledge graphs. **[RML-star](https://kg-construct.github.io/rml-star-spec/)** introduces the **star map** class to generate **[RDF-star](https://w3c.github.io/rdf-star/cg-spec/2021-12-17.html)** triples. A star map can be either at the place of a subject map or an object map, generating **quoted triples** in either the subject or object positions. The _rml:embeddedTriplesMap_ property connects the star maps to the triples map that defines how the quoted triples will be generated. Triples map can be declared as _rml:NonAssertedTriplesMap_ if they are to be referenced from an embedded triples map, but are not supposed to generate asserted triples in the output **[RDF-star](https://w3c.github.io/rdf-star/cg-spec/2021-12-17.html)** graph. The following example from the **[RML-star specification](https://kg-construct.github.io/rml-star-spec/)** uses a non-asserted triples map to generate quoted triples.
 
-```
-<#TM2> a rml:NonAssertedTriplesMap;
+```ttl
+<#TM1> a rml:NonAssertedTriplesMap;
     rml:logicalSource ex:ConfidenceSource;
     rml:subjectMap [
-        rr:template "http://example.com/{entity}"
+        rr:template "http://example.com/{entity}";
     ];
     rr:predicateObjectMap [
         rr:predicate rdf:type;
         rml:objectMap [
-            rr:template "http://example.com/{class}"
-        ]
+            rr:template "http://example.com/{class}";
+        ];
     ].
 
-<#TM3> a rr:TriplesMap;
-    rml:logicalSource ex:ConfidenceSource ;
+<#TM2> a rr:TriplesMap;
+    rml:logicalSource ex:ConfidenceSource;
     rml:subjectMap [
-        rml:quotedTriplesMap <#TM2>
+        rml:quotedTriplesMap <#TM1>;
     ];
     rr:predicateObjectMap [
         rr:predicate ex:confidence;
         rml:objectMap [
-            rml:reference "confidence"
-        ]
+            rml:reference "confidence";
+        ];
     ].
 ```
 
@@ -325,7 +325,7 @@ Morph-KGC supports the new **[RML-star](https://kg-construct.github.io/rml-star-
 
 In addition to **[R2RML views](https://www.w3.org/TR/r2rml/#r2rml-views)**, Morph-KGC also supports **RML views** over tabular data (**[CSV](https://en.wikipedia.org/wiki/Comma-separated_values)** and **[Parquet](https://parquet.apache.org/documentation/latest/)** formats) and **[JSON](https://www.json.org)** files. RML views enable transformation functions, complex joins or mixed content using the **[SQL](https://duckdb.org/docs/sql/introduction)** query language. For instance, the following triples map takes as input a **[CSV](https://en.wikipedia.org/wiki/Comma-separated_values)** file and filters the data based on the language of some codes.
 
-```
+```ttl
 <#TM1>
     rml:logicalSource [
         rml:query """
@@ -335,60 +335,66 @@ In addition to **[R2RML views](https://www.w3.org/TR/r2rml/#r2rml-views)**, Morp
         """
     ];
     rr:subjectMap [
-        rr:template "http://example.com/{Code}"
+        rr:template "http://example.com/{Code}";
     ];
     rr:predicateObjectMap [
         rr:predicate rdfs:label;
         rr:objectMap [
             rr:column "Name";
-            rr:language "en"
-        ]
+            rr:language "en";
+        ];
     ].
 ```
 
-### In-memory mappings
-Morph-KGC supports the combination of heterogeneous data sources with in-memory data structures using the **[SD Ontology](https://knowledgecaptureanddiscovery.github.io/SoftwareDescriptionOntology/release/1.8.0/index-en.html)**. Currently, **[Pandas Dataframes](https://pandas.pydata.org)** and Python dictionaries are supported for **[RDF](https://www.w3.org/TR/rdf11-concepts/)** construction. The following **[RDF Mapping Language (RML)](https://rml.io/specs/rml/)** rules and the Python snippet demonstrate the transformation of a **[Pandas Dataframe](https://pandas.pydata.org)** to **[RDF](https://www.w3.org/TR/rdf11-concepts/)**.
+Morph-KGC uses **[DuckDB](duckdb.org/)** to evaluate queries over tabular sources, the supported **[SQL](https://duckdb.org/docs/sql/introduction)** syntax can be consulted in its [documentation](https://duckdb.org/docs/sql/introduction). For views over **[JSON](https://www.json.org)** check the corresponding [JSON section in the DuckDB documentation](https://duckdb.org/docs/extensions/json.html) and [this blog post](https://duckdb.org/2023/03/03/json.html).
 
-The RML mappings:
-```
-<TM_0> 
-  rml:logicalSource [
-    a rml:LogicalSource;		
-    rml:source [
-      a sd:DatasetSpecification;
-      sd:name "variable1";
-      sd:hasDataTransformation [
-        sd:hasSoftwareRequirements "pandas>=1.1.0";
-        sd:hasSourceCode [
-          sd:programmingLanguage "Python3.9";];];
+### RML In-Memory
+
+Morph-KGC supports the definition of in-memory logical sources (**[Pandas DataFrames](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html)** and **[Python Dictionaries](https://docs.python.org/3/tutorial/datastructures.html#dictionaries)**) within RML using the **[SD Ontology](https://knowledgecaptureanddiscovery.github.io/SoftwareDescriptionOntology/release/1.8.0/index-en.html)**. The following **[RML](https://rml.io/specs/rml/)** rules show the transformation of a **[Pandas Dataframe](https://pandas.pydata.org)** to **[RDF](https://www.w3.org/TR/rdf11-concepts/)**.
+
+```ttl
+@prefix sd: <https://w3id.org/okn/o/sd/>.
+
+<#TM1>
+    rml:logicalSource [
+        rml:source [
+            a sd:DatasetSpecification;
+            sd:name "variable1";
+            sd:hasDataTransformation [
+                sd:hasSoftwareRequirements "pandas>=1.1.0";
+                sd:hasSourceCode [
+                    sd:programmingLanguage "Python3.9";
+                ];
+            ];   
+        ];
+        rml:referenceFormulation ql:DataFrame;
     ];
-    rml:referenceFormulation ql:DataFrame;
-  ];
-  rr:subjectMap [
-    a rr:SubjectMap;
-    rr:template "http://example.com/data/user{Id}";
-  ];
-  rr:predicateObjectMap [
-    rr:predicate rdf:type;
-    rr:objectMap [
-    a rr:ObjectMap;
-      rr:constant ex:User;
+    rr:subjectMap [
+        rr:template "http://example.com/data/user{Id}";
     ];
-  ].
+    rr:predicateObjectMap [
+        rr:predicate rdf:type;
+        rr:objectMap [
+            rr:constant ex:User;
+        ];
+    ].
 ```
 
-The Python script corresponding to the mappings:
-```
+The above mappings can be executed from Python as follows:
+```Python
 import morph_kgc
 import pandas as pd
 
 users_df = pd.DataFrame({'Id': [1,2,3,4],\
            'Username': ["@jude","@emily","@wayne","@jordan1"]})
 data_dict = {"variable1": users_df}
-g_rdflib = morph_kgc.materialize('./config.ini', data_dict)
 
+config = """
+    [DataSource]
+    mappings = mapping_rml.ttl
+"""
+
+g_rdflib = morph_kgc.materialize(config, data_dict)
 ```
-
-Morph-KGC uses **[DuckDB](duckdb.org/)** to evaluate queries over tabular sources, the supported **[SQL](https://duckdb.org/docs/sql/introduction)** syntax can be consulted in its [documentation](https://duckdb.org/docs/sql/introduction). For views over **[JSON](https://www.json.org)** check the corresponding [JSON section in the DuckDB documentation](https://duckdb.org/docs/extensions/json.html) and [this blog post](https://duckdb.org/2023/03/03/json.html).
 
 ![OEG](assets/logo-oeg.png){ width="150" align=left } ![UPM](assets/logo-upm.png){ width="161" align=right }
