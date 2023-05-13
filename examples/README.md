@@ -13,7 +13,7 @@ An example with _MySQL_ using [GTFS-Madrid-Bench](https://github.com/oeg-upm/gtf
 - The `configuration` file that has to be provided to Morph-KGC.
 
 To start a docker container with the MySQL instance containing the data, run the following:
-```
+```bash
 docker run --name mysql-gtfs1 -p 3306:3306 -d -e MYSQL_ROOT_PASSWORD=gtfs oegdataintegration/mysql-gtfs1:1.0
 ```
 
