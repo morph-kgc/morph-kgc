@@ -517,12 +517,7 @@ class MappingParser:
         in the mapping file. If db_url is not provided but the logical source is rml:query, then it is an RML tabular
         view. For data files the source type is inferred from the file extension.
         """
-        #logging.info(f'{(self.rml_df)}')
-        with pd.option_context('display.max_rows', None,
-                       'display.max_columns', None,
-                       'display.precision', 3,
-                       ):
-            print(self.rml_df)
+
         for i, rml_rule in self.rml_df.iterrows():
             if self.config.has_database_url(rml_rule['source_name']):
                 self.rml_df.at[i, 'source_type'] = RDB
@@ -530,15 +525,14 @@ class MappingParser:
                 # it is a query, but it is not an RDB, hence it is a tabular view
                 # assign CSV (it can also be Apache Parquet but format is automatically inferred)
                 self.rml_df.at[i, 'source_type'] = CSV
-            elif (self.rml_df.at[i, 'logical_source_type'] == RML_SOURCE) \
-                    and ('.' in self.rml_df.at[i, 'logical_source_value']) \
-                    and ('{' != self.rml_df.at[i, 'logical_source_value'][0]) \
-                    and ('}' != self.rml_df.at[i, 'logical_source_value'][-1]):
-                file_extension = os.path.splitext(str(rml_rule['logical_source_value']))[1][1:].strip()
-                self.rml_df.at[i, 'source_type'] = file_extension.upper()
-            elif self.rml_df.at[i, 'logical_source_type'] == RML_SOURCE:
+            elif self.rml_df.at[i, 'logical_source_type'] == RML_SOURCE \
+                    and self.rml_df.at[i, 'logical_source_value'].startswith('{') \
+                    and self.rml_df.at[i, 'logical_source_value'].endswith('}'):
                 # it is an in-memory data structure
                 self.rml_df.at[i, 'source_type'] = PYTHON_SOURCE
+            elif self.rml_df.at[i, 'logical_source_type'] == RML_SOURCE:
+                file_extension = os.path.splitext(str(rml_rule['logical_source_value']))[1][1:].strip()
+                self.rml_df.at[i, 'source_type'] = file_extension.upper()
             else:
                 raise Exception('No source type could be retrieved for some mapping rules.')
 
