@@ -54,7 +54,7 @@ RML_PARSING_QUERY = """
             ?_source ?logical_source_type ?logical_source_value .
             OPTIONAL {
                 ?logical_source_value sd:name ?logical_source_in_memory_value.
-                BIND(?logical_source_in_memory_value AS ?logical_source_value)
+                BIND(CONCAT("{",?logical_source_in_memory_value,"}") AS ?logical_source_value)
             }
             FILTER ( ?logical_source_type IN ( rml:source, rr:tableName, rml:query ) ) .
         }

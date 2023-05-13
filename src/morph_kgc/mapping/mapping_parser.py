@@ -416,7 +416,7 @@ class MappingParser:
 
         self._infer_datatypes()
         self.validate_mappings()
-
+        
         logging.info(f'{len(self.rml_df)} mapping rules retrieved.')
         
         # replace empty strings with NaN
@@ -425,6 +425,7 @@ class MappingParser:
         # generate mapping partitions
         mapping_partitioner = MappingPartitioner(self.rml_df, self.config)
         self.rml_df = mapping_partitioner.partition_mappings()
+
 
         return self.rml_df, self.fno_df
 
@@ -517,7 +518,12 @@ class MappingParser:
         in the mapping file. If db_url is not provided but the logical source is rml:query, then it is an RML tabular
         view. For data files the source type is inferred from the file extension.
         """
-
+        #logging.info(f'{(self.rml_df)}')
+        with pd.option_context('display.max_rows', None,
+                       'display.max_columns', None,
+                       'display.precision', 3,
+                       ):
+            print(self.rml_df)
         for i, rml_rule in self.rml_df.iterrows():
             if self.config.has_database_url(rml_rule['source_name']):
                 self.rml_df.at[i, 'source_type'] = RDB
@@ -526,7 +532,9 @@ class MappingParser:
                 # assign CSV (it can also be Apache Parquet but format is automatically inferred)
                 self.rml_df.at[i, 'source_type'] = CSV
             elif (self.rml_df.at[i, 'logical_source_type'] == RML_SOURCE) \
-                    and ('.' in self.rml_df.at[i, 'logical_source_value']):
+                    and ('.' in self.rml_df.at[i, 'logical_source_value']) \
+                    and ('{' != self.rml_df.at[i, 'logical_source_value'][0]) \
+                    and ('}' != self.rml_df.at[i, 'logical_source_value'][-1]):
                 file_extension = os.path.splitext(str(rml_rule['logical_source_value']))[1][1:].strip()
                 self.rml_df.at[i, 'source_type'] = file_extension.upper()
             elif self.rml_df.at[i, 'logical_source_type'] == RML_SOURCE:
