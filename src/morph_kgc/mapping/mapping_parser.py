@@ -7,6 +7,7 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 import sys
 
+from .yarrrml import load_yarrrml
 from ..constants import *
 from ..utils import *
 from ..mapping.mapping_constants import *
@@ -464,7 +465,11 @@ class MappingParser:
         # load mapping rules to the graph
         for f in mapping_file_paths:
             try:
-                mapping_graph.parse(f, format=os.path.splitext(f)[1][1:].strip())
+                if f.endswith('.yarrrml') or f.endswith('.yml') or f.endswith('.yaml'):
+                    mapping_graph += load_yarrrml(f)
+                else:
+                    # mapping is in an RDF serialization
+                    mapping_graph.parse(f, format=os.path.splitext(f)[1][1:].strip())
             except:
                 # if a file extension such as .rml or .r2rml is used, assume it is turtle (issue #80)
                 try:
