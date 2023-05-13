@@ -6,4 +6,4 @@ python:
     - requirements: docs/requirements.txt
 
 mkdocs:
- configuration: mkdocs.yml
+  configuration: mkdocs.yml
