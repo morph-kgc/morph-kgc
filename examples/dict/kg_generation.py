@@ -63,6 +63,11 @@ followers_dict = {"followers": [
 data_dict = {"variable1": users_dict,
             "variable2": followers_dict}
 
+config = """
+    [DataSource]
+    mappings=./mapping_rml.ttl
+"""
+
 g_rdflib = morph_kgc.materialize('./config.ini', data_dict)
 
 print("Knowledge graphs triples:")

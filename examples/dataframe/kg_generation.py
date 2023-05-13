@@ -21,6 +21,12 @@ followers_df = pd.DataFrame({'Id': [1,2,3,4],\
 data_dict = {"variable1": users_df,
             "variable2": followers_df}
 
+
+config = """
+    [DataSource]
+    mappings=./mapping_rml.ttl
+"""
+
 g_rdflib = morph_kgc.materialize('./config.ini', data_dict)
 
 print("Knowledge graphs triples:")

@@ -350,7 +350,7 @@ Morph-KGC uses **[DuckDB](duckdb.org/)** to evaluate queries over tabular source
 
 ### RML In-Memory
 
-Morph-KGC supports the definition of in-memory logical sources (**[Pandas DataFrames](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html)** and **[Python Dictionaries](https://docs.python.org/3/tutorial/datastructures.html#dictionaries)**) within RML using the **[SD Ontology](https://knowledgecaptureanddiscovery.github.io/SoftwareDescriptionOntology/release/1.8.0/index-en.html)**. The following **[RML](https://rml.io/specs/rml/)** rules show the transformation of a **[Pandas Dataframe](https://pandas.pydata.org)** to **[RDF](https://www.w3.org/TR/rdf11-concepts/)**.
+Morph-KGC supports the definition of in-memory logical sources (**[Pandas DataFrames](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html)** and **[Python Dictionaries](https://docs.python.org/3/tutorial/datastructures.html#dictionaries)**) within RML using the **[SD Ontology](https://knowledgecaptureanddiscovery.github.io/SoftwareDescriptionOntology/release/1.8.0/index-en.html)**. The following **[RML](https://rml.io/specs/rml/)** rules show the transformation of a **[Pandas Dataframe](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html)** to **[RDF](https://www.w3.org/TR/rdf11-concepts/)**.
 
 ```ttl
 @prefix sd: <https://w3id.org/okn/o/sd/>.
