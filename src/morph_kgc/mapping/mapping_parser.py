@@ -288,7 +288,7 @@ def _transform_mappings_into_dataframe(mapping_graph, section_name):
     # parse the mappings with the parsing queries
     rml_query_results = mapping_graph.query(RML_PARSING_QUERY)
     join_query_results = mapping_graph.query(RML_JOIN_CONDITION_PARSING_QUERY)
-    fno_query_results = mapping_graph.query(FNO_PARSING_QUERY)
+    fno_query_results = mapping_graph.query(FNML_PARSING_QUERY)
 
     # RML in graph to DataFrame
     rml_df = pd.DataFrame(rml_query_results.bindings)
@@ -321,7 +321,7 @@ def _transform_mappings_into_dataframe(mapping_graph, section_name):
     # subject_map and object_map columns were used to handle join conditions, no longer needed
     rml_df = rml_df.drop(columns=['subject_map', 'object_map'])
 
-    # FnO in graph to DataFrame
+    # FNML in graph to DataFrame
     fno_df = pd.DataFrame(fno_query_results.bindings)
     fno_df.columns = fno_df.columns.map(str)
     fno_df = fno_df.applymap(str)
@@ -398,7 +398,7 @@ class MappingParser:
 
     def __init__(self, config):
         self.rml_df = pd.DataFrame(columns=RML_DATAFRAME_COLUMNS)
-        self.fno_df = pd.DataFrame(columns=FNO_DATAFRAME_COLUMNS)
+        self.fno_df = pd.DataFrame(columns=FNML_DATAFRAME_COLUMNS)
         self.config = config
 
     def __str__(self):
@@ -491,7 +491,7 @@ class MappingParser:
         # check termtypes are correct
         _validate_termtypes(mapping_graph)
 
-        # create RML and FnO dataframes
+        # create RML and FNML dataframes
         return _transform_mappings_into_dataframe(mapping_graph, section_name)
 
     def _preprocess_mappings(self):

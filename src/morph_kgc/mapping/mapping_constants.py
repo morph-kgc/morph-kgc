@@ -21,10 +21,10 @@ RML_DATAFRAME_COLUMNS = [
 
 
 ##############################################################################
-#######################   FnO DATAFRAME COLUMNS   ############################
+#######################   FNML DATAFRAME COLUMNS   ############################
 ##############################################################################
 
-FNO_DATAFRAME_COLUMNS = [
+FNML_DATAFRAME_COLUMNS = [
     'execution', 'function_map_value', 'parameter_map_value', 'value_map_type', 'value_map_value'
 ]
 
@@ -109,10 +109,10 @@ RML_JOIN_CONDITION_PARSING_QUERY = """
 
 
 ##############################################################################
-########################   FnO PARSING QUERY   ###############################
+########################   FNML PARSING QUERY   ###############################
 ##############################################################################
 
-FNO_PARSING_QUERY = """
+FNML_PARSING_QUERY = """
     prefix rr: <http://www.w3.org/ns/r2rml#>
     prefix rml: <http://semweb.mmlab.be/ns/rml#>
     prefix fnml: <http://semweb.mmlab.be/ns/fnml#>

@@ -7,7 +7,7 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 
 from .built_in_functions import bif_dict
-from ..utils import get_fno_execution, remove_null_values_from_dataframe, get_references_in_template
+from ..utils import get_fnml_execution, remove_null_values_from_dataframe, get_references_in_template
 from ..constants import FNML_EXECUTION, R2RML_TEMPLATE, R2RML_CONSTANT
 
 
@@ -41,7 +41,7 @@ def load_udfs(config):
         return {}
 
 
-def _materialize_fno_template(data, template):
+def _materialize_fnml_template(data, template):
     # TODO: this function is very similar to _materialize_template in materializer
     references = get_references_in_template(template)
 
@@ -50,29 +50,29 @@ def _materialize_fno_template(data, template):
     template = template.replace('\\{', '{').replace('\\}', '}')
 
     # use auxiliary column to store the data of the template
-    data['aux_fno_template_data'] = ''
+    data['aux_fnml_template_data'] = ''
 
     for reference in references:
         data['reference_results'] = data[reference]
 
         splitted_template = template.split('{' + reference + '}')
-        data['aux_fno_template_data'] = data['aux_fno_template_data'] + splitted_template[0] + data['reference_results']
+        data['aux_fnml_template_data'] = data['aux_fnml_template_data'] + splitted_template[0] + data['reference_results']
         template = str('{' + reference + '}').join(splitted_template[1:])
     if template:
         # add what remains in the template after the last reference
-        data['aux_fno_template_data'] = data['aux_fno_template_data'] + template
+        data['aux_fnml_template_data'] = data['aux_fnml_template_data'] + template
 
-    return data['aux_fno_template_data']
+    return data['aux_fnml_template_data']
 
 
-def execute_fno(data, fno_df, fno_execution, config):
-    execution_rule_df = get_fno_execution(fno_df, fno_execution)
+def execute_fnml(data, fnml_df, fnml_execution, config):
+    execution_rule_df = get_fnml_execution(fnml_df, fnml_execution)
     function_id = execution_rule_df.iloc[0]['function_map_value']
 
     # handle composite functions
     for i, execution_rule in execution_rule_df.iterrows():
         if execution_rule['value_map_type'] == FNML_EXECUTION:
-            data = execute_fno(data, fno_df, execution_rule['value_map_value'], config)
+            data = execute_fnml(data, fnml_df, execution_rule['value_map_value'], config)
 
     parameter_to_value_type_dict = dict(zip(execution_rule_df['parameter_map_value'], execution_rule_df['value_map_type']))
     parameter_to_value_value_dict = dict(zip(execution_rule_df['parameter_map_value'], execution_rule_df['value_map_value']))
@@ -94,8 +94,8 @@ def execute_fno(data, fno_df, fno_execution, config):
             if parameter_to_value_type_dict[v] == R2RML_CONSTANT:
                 function_params[k] = [parameter_to_value_value_dict[v]] * len(data)
             elif parameter_to_value_type_dict[v] == R2RML_TEMPLATE:
-                fno_template_data = _materialize_fno_template(data, parameter_to_value_value_dict[v])
-                function_params[k] = list(fno_template_data)
+                fnml_template_data = _materialize_fnml_template(data, parameter_to_value_value_dict[v])
+                function_params[k] = list(fnml_template_data)
             else:
                 # RML_REFERENCE or FNML_EXECUTION
                 function_params[k] = list(data[parameter_to_value_value_dict[v]])
@@ -107,14 +107,14 @@ def execute_fno(data, fno_df, fno_execution, config):
             exec_params[k] = v[i]
         exec_res.append(function(**exec_params))
 
-    data[fno_execution] = exec_res
+    data[fnml_execution] = exec_res
 
     # TODO: this can be avoided for many built-in functions and also UDFs with a special parameter
     #if function_id in ['http://users.ugent.be/~bjdmeest/function/grel.ttl#string_split']:
 
-    data = remove_null_values_from_dataframe(data, config, fno_execution, column=fno_execution)
+    data = remove_null_values_from_dataframe(data, config, fnml_execution, column=fnml_execution)
 
     # only list values are exploded, strings that encode lists are not exploded
-    data = data.explode(fno_execution)
+    data = data.explode(fnml_execution)
 
     return data

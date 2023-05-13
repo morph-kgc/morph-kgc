@@ -36,7 +36,7 @@ def materialize_set(config, python_source=None):
 
     setup_oracle(config)
 
-    rml_df, fno_df = retrieve_mappings(config)
+    rml_df, fnml_df = retrieve_mappings(config)
 
     # keep only asserted mapping rules
     asserted_mapping_df = rml_df.loc[rml_df['triples_map_type'] == R2RML_TRIPLES_MAP_CLASS]
@@ -47,13 +47,13 @@ def materialize_set(config, python_source=None):
 
         pool = mp.Pool(config.get_number_of_processes())
         triples = set().union(
-            *pool.starmap(_materialize_mapping_group_to_set, zip(mapping_groups, repeat(rml_df), repeat(fno_df), repeat(config), repeat(python_source))))
+            *pool.starmap(_materialize_mapping_group_to_set, zip(mapping_groups, repeat(rml_df), repeat(fnml_df), repeat(config), repeat(python_source))))
         pool.close()
         pool.join()
     else:
         triples = set()
         for mapping_group in mapping_groups:
-            triples.update(_materialize_mapping_group_to_set(mapping_group, rml_df, fno_df, config, python_source))
+            triples.update(_materialize_mapping_group_to_set(mapping_group, rml_df, fnml_df, config, python_source))
 
     logging.info(f'Number of triples generated in total: {len(triples)}.')
 

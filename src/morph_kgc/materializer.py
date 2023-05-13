@@ -14,7 +14,7 @@ from .constants import *
 from .data_source.relational_database import get_sql_data
 from .data_source.data_file import get_file_data
 from .data_source.python_data import get_ram_data
-from .fno.fno_executer import execute_fno
+from .fnml.fnml_executer import execute_fnml
 
 
 def _add_references_in_join_condition(rml_rule, references, parent_references):
@@ -61,7 +61,7 @@ def _get_data(config, rml_rule, references, python_source=None):
     return data
 
 
-def _get_references_in_rml_rule(rml_rule, rml_df, fno_df, only_subject_map=False):
+def _get_references_in_rml_rule(rml_rule, rml_df, fnml_df, only_subject_map=False):
     references = []
     if rml_rule['subject_map_type'] == R2RML_TEMPLATE:
         references.extend(get_references_in_template(rml_rule['subject_map_value']))
@@ -84,21 +84,21 @@ def _get_references_in_rml_rule(rml_rule, rml_df, fno_df, only_subject_map=False
 
     if rml_rule['subject_map_type'] == RML_STAR_QUOTED_TRIPLES_MAP and pd.isna(rml_rule['subject_join_conditions']):
         parent_rml_rule = get_rml_rule(rml_df, rml_rule['subject_map_value'])
-        references.extend(_get_references_in_rml_rule(parent_rml_rule, rml_df, fno_df))
+        references.extend(_get_references_in_rml_rule(parent_rml_rule, rml_df, fnml_df))
     if rml_rule['object_map_type'] == RML_STAR_QUOTED_TRIPLES_MAP and pd.isna(rml_rule['object_join_conditions']):
         parent_rml_rule = get_rml_rule(rml_df, rml_rule['object_map_value'])
-        references.extend(_get_references_in_rml_rule(parent_rml_rule, rml_df, fno_df))
+        references.extend(_get_references_in_rml_rule(parent_rml_rule, rml_df, fnml_df))
 
     references_subject_join, parent_references_subject_join = get_references_in_join_condition(rml_rule, 'subject_join_conditions')
     references.extend(references_subject_join)
     references_object_join, parent_references_object_join = get_references_in_join_condition(rml_rule, 'object_join_conditions')
     references.extend(references_object_join)
 
-    # extract FnO references
-    if len(fno_df):
+    # extract FNML references
+    if len(fnml_df):
         for position in ['subject', 'predicate', 'object', 'graph']:
             if rml_rule[f'{position}_map_type'] == FNML_EXECUTION:
-                references.extend(get_references_in_fno_execution(fno_df, rml_rule[f'{position}_map_value']))
+                references.extend(get_references_in_fnml_execution(fnml_df, rml_rule[f'{position}_map_value']))
 
     return references
 
@@ -190,26 +190,26 @@ def _materialize_reference(results_df, reference, config, position, columns_alia
     return results_df
 
 
-def _materialize_fno_execution(results_df, fno_execution, fno_df, config, position, columns_alias='', termtype=R2RML_LITERAL, language_tag='', datatype=''):
+def _materialize_fnml_execution(results_df, fnml_execution, fnml_df, config, position, columns_alias='', termtype=R2RML_LITERAL, language_tag='', datatype=''):
     # TODO: handle column_alias?
 
-    results_df = execute_fno(results_df, fno_df, fno_execution, config)
+    results_df = execute_fnml(results_df, fnml_df, fnml_execution, config)
 
     if config.only_write_printable_characters():
-        results_df[fno_execution] = results_df[fno_execution].apply(lambda x: remove_non_printable_characters(x))
+        results_df[fnml_execution] = results_df[fnml_execution].apply(lambda x: remove_non_printable_characters(x))
 
     if termtype.strip() == R2RML_LITERAL:
         # Natural Mapping of SQL Values (https://www.w3.org/TR/r2rml/#natural-mapping)
         if datatype == XSD_BOOLEAN:
-            results_df[fno_execution] = results_df[fno_execution].str.lower()
+            results_df[fnml_execution] = results_df[fnml_execution].str.lower()
         elif datatype == XSD_DATETIME:
-            results_df[fno_execution] = results_df[fno_execution].str.replace(' ', 'T', regex=False)
+            results_df[fnml_execution] = results_df[fnml_execution].str.replace(' ', 'T', regex=False)
         # Make integers not end with .0
         elif datatype == XSD_INTEGER:
-            results_df[fno_execution] = results_df[fno_execution].astype(float).astype(int).astype(str)
+            results_df[fnml_execution] = results_df[fnml_execution].astype(float).astype(int).astype(str)
 
-        results_df[fno_execution] = results_df[fno_execution].str.replace('\\', '\\\\', regex=False).str.replace('\n', '\\n', regex=False).str.replace('\t', '\\t', regex=False).str.replace('\b', '\\b', regex=False).str.replace('\f', '\\f', regex=False).str.replace('\r', '\\r', regex=False).str.replace('"', '\\"', regex=False).str.replace("'", "\\'", regex=False)
-        results_df[position] = '"' + results_df[fno_execution] + '"'
+        results_df[fnml_execution] = results_df[fnml_execution].str.replace('\\', '\\\\', regex=False).str.replace('\n', '\\n', regex=False).str.replace('\t', '\\t', regex=False).str.replace('\b', '\\b', regex=False).str.replace('\f', '\\f', regex=False).str.replace('\r', '\\r', regex=False).str.replace('"', '\\"', regex=False).str.replace("'", "\\'", regex=False)
+        results_df[position] = '"' + results_df[fnml_execution] + '"'
         if pd.notna(language_tag):
             results_df[position] = results_df[position] + '@' + language_tag
         elif pd.notna(datatype):
@@ -218,10 +218,10 @@ def _materialize_fno_execution(results_df, fno_execution, fno_df, config, positi
             results_df[position] = results_df[position]
     elif termtype.strip() == R2RML_IRI:
         # it is assumed that the IRI values will be correct, and they are not percent encoded
-        results_df[fno_execution] = results_df[fno_execution].apply(lambda x: x.strip())
-        results_df[position] = '<' + results_df[fno_execution] + '>'
+        results_df[fnml_execution] = results_df[fnml_execution].apply(lambda x: x.strip())
+        results_df[position] = '<' + results_df[fnml_execution] + '>'
     elif termtype.strip() == R2RML_BLANK_NODE:
-        results_df[position] = '_:' + results_df[fno_execution]
+        results_df[position] = '_:' + results_df[fnml_execution]
 
     return results_df
 
@@ -271,7 +271,7 @@ def _materialize_join_rml_rule_terms(results_df, rml_rule, parent_triples_map_ru
     return results_df
 
 
-def _materialize_rml_rule_terms(results_df, rml_rule, fno_df, config):
+def _materialize_rml_rule_terms(results_df, rml_rule, fnml_df, config):
     if rml_rule['subject_map_type'] == R2RML_TEMPLATE:
         results_df = _materialize_template(results_df, rml_rule['subject_map_value'], config, 'subject', termtype=rml_rule['subject_termtype'])
     elif rml_rule['subject_map_type'] == R2RML_CONSTANT:
@@ -279,7 +279,7 @@ def _materialize_rml_rule_terms(results_df, rml_rule, fno_df, config):
     elif rml_rule['subject_map_type'] == RML_REFERENCE:
         results_df = _materialize_reference(results_df, rml_rule['subject_map_value'], config, 'subject', termtype=rml_rule['subject_termtype'])
     elif rml_rule['subject_map_type'] == FNML_EXECUTION:
-        results_df = _materialize_fno_execution(results_df, rml_rule['subject_map_value'], fno_df, config, 'subject', termtype=rml_rule['subject_termtype'])
+        results_df = _materialize_fnml_execution(results_df, rml_rule['subject_map_value'], fnml_df, config, 'subject', termtype=rml_rule['subject_termtype'])
     if rml_rule['predicate_map_type'] == R2RML_TEMPLATE:
         results_df = _materialize_template(results_df, rml_rule['predicate_map_value'], config, 'predicate')
     elif rml_rule['predicate_map_type'] == R2RML_CONSTANT:
@@ -287,7 +287,7 @@ def _materialize_rml_rule_terms(results_df, rml_rule, fno_df, config):
     elif rml_rule['predicate_map_type'] == RML_REFERENCE:
         results_df = _materialize_reference(results_df, rml_rule['predicate_map_value'], config, 'predicate', termtype=R2RML_IRI)
     elif rml_rule['predicate_map_type'] == FNML_EXECUTION:
-        results_df = _materialize_fno_execution(results_df, rml_rule['predicate_map_value'], fno_df, config, 'predicate', termtype=R2RML_IRI)
+        results_df = _materialize_fnml_execution(results_df, rml_rule['predicate_map_value'], fnml_df, config, 'predicate', termtype=R2RML_IRI)
     if rml_rule['object_map_type'] == R2RML_TEMPLATE:
         results_df = _materialize_template(results_df, rml_rule['object_map_value'], config, 'object', termtype=rml_rule['object_termtype'], language_tag=rml_rule['object_language'], datatype=rml_rule['object_datatype'])
     elif rml_rule['object_map_type'] == R2RML_CONSTANT:
@@ -295,7 +295,7 @@ def _materialize_rml_rule_terms(results_df, rml_rule, fno_df, config):
     elif rml_rule['object_map_type'] == RML_REFERENCE:
         results_df = _materialize_reference(results_df, rml_rule['object_map_value'], config, 'object', termtype=rml_rule['object_termtype'], language_tag=rml_rule['object_language'], datatype=rml_rule['object_datatype'])
     elif rml_rule['object_map_type'] == FNML_EXECUTION:
-        results_df = _materialize_fno_execution(results_df, rml_rule['object_map_value'], fno_df, config, 'object', termtype=rml_rule['object_termtype'], language_tag=rml_rule['object_language'], datatype=rml_rule['object_datatype'])
+        results_df = _materialize_fnml_execution(results_df, rml_rule['object_map_value'], fnml_df, config, 'object', termtype=rml_rule['object_termtype'], language_tag=rml_rule['object_language'], datatype=rml_rule['object_datatype'])
 
     return results_df
 
@@ -314,8 +314,8 @@ def _merge_data(data, parent_data, rml_rule, join_condition):
         return data.merge(parent_data, how='inner', left_on=child_join_references, right_on=parent_join_references)
 
 
-def _materialize_rml_rule(rml_rule, rml_df, fno_df, config, data=None, parent_join_references=set(), nest_level=0, python_source=None):
-    references = set(_get_references_in_rml_rule(rml_rule, rml_df, fno_df))
+def _materialize_rml_rule(rml_rule, rml_df, fnml_df, config, data=None, parent_join_references=set(), nest_level=0, python_source=None):
+    references = set(_get_references_in_rml_rule(rml_rule, rml_df, fnml_df))
 
     references_subject_join, parent_references_subject_join = get_references_in_join_condition(rml_rule, 'subject_join_conditions')
     references_object_join, parent_references_object_join = get_references_in_join_condition(rml_rule, 'object_join_conditions')
@@ -329,26 +329,26 @@ def _materialize_rml_rule(rml_rule, rml_df, fno_df, config, data=None, parent_jo
             if pd.notna(rml_rule['subject_join_conditions']):
                 references.update(references_subject_join)
                 parent_triples_map_rule = get_rml_rule(rml_df, rml_rule['subject_map_value'])
-                parent_data = _materialize_rml_rule(parent_triples_map_rule, rml_df, fno_df, config, parent_join_references=parent_references_subject_join, nest_level=nest_level + 1)
+                parent_data = _materialize_rml_rule(parent_triples_map_rule, rml_df, fnml_df, config, parent_join_references=parent_references_subject_join, nest_level=nest_level + 1)
                 data = _merge_data(data, parent_data, rml_rule, 'subject_join_conditions')
                 data['subject'] = '<< ' + data['parent_triple'] + ' >>'
                 data = data.drop(columns=['parent_triple'])
             else:
                 parent_triples_map_rule = get_rml_rule(rml_df, rml_rule['subject_map_value'])
-                data = _materialize_rml_rule(parent_triples_map_rule, rml_df, fno_df, config, data=data, nest_level=nest_level + 1)
+                data = _materialize_rml_rule(parent_triples_map_rule, rml_df, fnml_df, config, data=data, nest_level=nest_level + 1)
                 data['subject'] = '<< ' + data['triple'] + ' >>'
             data['keep_subject'+str(nest_level)] = data['subject']
         if rml_rule['object_map_type'] == RML_STAR_QUOTED_TRIPLES_MAP:
             if pd.notna(rml_rule['object_join_conditions']):
                 references.update(references_object_join)
                 parent_triples_map_rule = get_rml_rule(rml_df, rml_rule['object_map_value'])
-                parent_data = _materialize_rml_rule(parent_triples_map_rule, rml_df, fno_df, config, parent_join_references=parent_references_object_join, nest_level=nest_level + 1)
+                parent_data = _materialize_rml_rule(parent_triples_map_rule, rml_df, fnml_df, config, parent_join_references=parent_references_object_join, nest_level=nest_level + 1)
                 data = _merge_data(data, parent_data, rml_rule, 'object_join_conditions')
                 data['object'] = '<< ' + data['parent_triple'] + ' >>'
                 data = data.drop(columns=['parent_triple'])
             else:
                 parent_triples_map_rule = get_rml_rule(rml_df, rml_rule['object_map_value'])
-                data = _materialize_rml_rule(parent_triples_map_rule, rml_df, fno_df, config, data=data, nest_level=nest_level + 1)
+                data = _materialize_rml_rule(parent_triples_map_rule, rml_df, fnml_df, config, data=data, nest_level=nest_level + 1)
                 data['object'] = '<< ' + data['triple'] + ' >>'
             if rml_rule['subject_map_type'] == RML_STAR_QUOTED_TRIPLES_MAP:
                 data['subject'] = data['keep_subject'+str(nest_level)]
@@ -380,7 +380,7 @@ def _materialize_rml_rule(rml_rule, rml_df, fno_df, config, data=None, parent_jo
         references.update(references_object_join)
         # parent_triples_map_rule = get_rml_rule(rml_df, rml_rule['object_parent_triples_map'])
         parent_triples_map_rule = get_rml_rule(rml_df, rml_rule['object_map_value'])
-        parent_references = set(_get_references_in_rml_rule(parent_triples_map_rule, rml_df, fno_df, only_subject_map=True))
+        parent_references = set(_get_references_in_rml_rule(parent_triples_map_rule, rml_df, fnml_df, only_subject_map=True))
 
         # add references used in the join condition
         references, parent_references = _add_references_in_join_condition(rml_rule, references, parent_references)
@@ -396,7 +396,7 @@ def _materialize_rml_rule(rml_rule, rml_df, fno_df, config, data=None, parent_jo
         if data is None:
             data = _get_data(config, rml_rule, references, python_source)
 
-        data = _materialize_rml_rule_terms(data, rml_rule, fno_df, config)
+        data = _materialize_rml_rule_terms(data, rml_rule, fnml_df, config)
 
     # TODO: this is slow reduce the number of vectorized operations
 
@@ -410,7 +410,7 @@ def _materialize_rml_rule(rml_rule, rml_df, fno_df, config, data=None, parent_jo
         elif rml_rule['graph_map_type'] == RML_REFERENCE:
             data = _materialize_reference(data, rml_rule['graph_map_value'], config, 'graph', termtype=R2RML_IRI)
         elif rml_rule['graph_map_type'] == FNML_EXECUTION:
-            data = _materialize_fno_execution(data, rml_rule['graph_map_value'], fno_df, config, 'graph', termtype=R2RML_IRI)
+            data = _materialize_fnml_execution(data, rml_rule['graph_map_value'], fnml_df, config, 'graph', termtype=R2RML_IRI)
         else:
             data['graph'] = ''
         data['triple'] = data['triple'] + ' ' + data['graph']
@@ -420,12 +420,12 @@ def _materialize_rml_rule(rml_rule, rml_df, fno_df, config, data=None, parent_jo
     return data
 
 
-def _materialize_mapping_group_to_file(mapping_group_df, rml_df, fno_df, config):
+def _materialize_mapping_group_to_file(mapping_group_df, rml_df, fnml_df, config):
 
     triples = set()
     for i, rml_rule in mapping_group_df.iterrows():
         start_time = time.time()
-        data = _materialize_rml_rule(rml_rule, rml_df, fno_df, config)
+        data = _materialize_rml_rule(rml_rule, rml_df, fnml_df, config)
         triples.update(set(data['triple']))
 
         logging.debug(f"{len(triples)} triples generated for mapping rule `{rml_rule['triples_map_id']}` "
@@ -436,11 +436,11 @@ def _materialize_mapping_group_to_file(mapping_group_df, rml_df, fno_df, config)
     return len(triples)
 
 
-def _materialize_mapping_group_to_set(mapping_group_df, rml_df, fno_df, config, python_source=None):
+def _materialize_mapping_group_to_set(mapping_group_df, rml_df, fnml_df, config, python_source=None):
 
     triples = set()
     for i, rml_rule in mapping_group_df.iterrows():
-        data = _materialize_rml_rule(rml_rule, rml_df, fno_df, config, python_source=python_source)
+        data = _materialize_rml_rule(rml_rule, rml_df, fnml_df, config, python_source=python_source)
         triples.update(set(data['triple']))
 
     return triples

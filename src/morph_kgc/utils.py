@@ -86,12 +86,12 @@ def get_rml_rule(rml_df, triples_map_id):
     return rml_rule
 
 
-def get_fno_execution(fno_df, execution_id):
+def get_fnml_execution(fnml_df, execution_id):
     """
-    Retrieves FnO execution by its id.
+    Retrieves FNML execution by its id.
     """
 
-    return fno_df[fno_df['execution'] == execution_id]
+    return fnml_df[fnml_df['execution'] == execution_id]
 
 
 def get_references_in_template(template):
@@ -108,8 +108,8 @@ def get_references_in_template(template):
     return references
 
 
-def get_references_in_fno_execution(fno_df, execution):
-    execution_rule_df = fno_df[fno_df['execution']==execution]
+def get_references_in_fnml_execution(fnml_df, execution):
+    execution_rule_df = fnml_df[fnml_df['execution']==execution]
 
     references = []
     for i, parameter in execution_rule_df.iterrows():
@@ -119,7 +119,7 @@ def get_references_in_fno_execution(fno_df, execution):
             # a list with one value
             references.extend([parameter['value_map_value']])
         elif parameter['value_map_type'] == FNML_EXECUTION:
-            references.extend(get_references_in_fno_execution(fno_df, parameter['value_map_value']))
+            references.extend(get_references_in_fnml_execution(fnml_df, parameter['value_map_value']))
 
     return references
 
