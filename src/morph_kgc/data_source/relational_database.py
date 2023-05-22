@@ -126,7 +126,7 @@ def _get_column_table_datatype(config, source_name, table_name, column_name):
 def get_rdb_reference_datatype(config, rml_rule, reference):
     inferred_data_type = ''
 
-    if rml_rule['logical_source_type'] == R2RML_TABLE_NAME:
+    if rml_rule['logical_source_type'] == RML_TABLE_NAME:
         inferred_data_type = _get_column_table_datatype(config, rml_rule['source_name'],
                                                         rml_rule['logical_source_value'], reference)
     elif rml_rule['logical_source_type'] == RML_QUERY:
@@ -157,7 +157,7 @@ def _build_sql_query(rml_rule, references):
 
     if rml_rule['logical_source_type'] == RML_QUERY:
         query = rml_rule['logical_source_value']
-    elif rml_rule['logical_source_type'] == R2RML_TABLE_NAME and len(references) > 0:
+    elif rml_rule['logical_source_type'] == RML_TABLE_NAME and len(references) > 0:
         query = 'SELECT ' # + 'DISTINCT ' # TODO: is this more efficient?
         # replacements of `.` to deal with schema-qualified names (see issue #89)
         for reference in references:

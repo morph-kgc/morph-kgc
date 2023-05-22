@@ -8,7 +8,7 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 from .built_in_functions import bif_dict
 from ..utils import get_fnml_execution, remove_null_values_from_dataframe, get_references_in_template
-from ..constants import FNML_EXECUTION, R2RML_TEMPLATE, R2RML_CONSTANT
+from ..constants import RML_EXECUTION, RML_TEMPLATE, RML_CONSTANT
 
 
 UDF_DICT_DECORATOR_CODE = """
@@ -71,7 +71,7 @@ def execute_fnml(data, fnml_df, fnml_execution, config):
 
     # handle composite functions
     for i, execution_rule in execution_rule_df.iterrows():
-        if execution_rule['value_map_type'] == FNML_EXECUTION:
+        if execution_rule['value_map_type'] == RML_EXECUTION:
             data = execute_fnml(data, fnml_df, execution_rule['value_map_value'], config)
 
     parameter_to_value_type_dict = dict(zip(execution_rule_df['parameter_map_value'], execution_rule_df['value_map_type']))
@@ -91,13 +91,13 @@ def execute_fnml(data, fnml_df, fnml_execution, config):
 
         # if parameter is optional it is not in parameter_to_value_type_dict
         if v in parameter_to_value_type_dict:
-            if parameter_to_value_type_dict[v] == R2RML_CONSTANT:
+            if parameter_to_value_type_dict[v] == RML_CONSTANT:
                 function_params[k] = [parameter_to_value_value_dict[v]] * len(data)
-            elif parameter_to_value_type_dict[v] == R2RML_TEMPLATE:
+            elif parameter_to_value_type_dict[v] == RML_TEMPLATE:
                 fnml_template_data = _materialize_fnml_template(data, parameter_to_value_value_dict[v])
                 function_params[k] = list(fnml_template_data)
             else:
-                # RML_REFERENCE or FNML_EXECUTION
+                # RML_REFERENCE or RML_EXECUTION
                 function_params[k] = list(data[parameter_to_value_value_dict[v]])
 
     exec_res = []

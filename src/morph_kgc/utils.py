@@ -16,7 +16,7 @@ import pandas as pd
 import multiprocessing as mp
 
 from itertools import product
-from .constants import AUXILIAR_UNIQUE_REPLACING_STRING, FNML_EXECUTION, R2RML_TEMPLATE, RML_REFERENCE
+from .constants import AUXILIAR_UNIQUE_REPLACING_STRING, RML_EXECUTION, RML_TEMPLATE, RML_REFERENCE
 
 
 def configure_logger(logging_level, logging_file):
@@ -113,12 +113,12 @@ def get_references_in_fnml_execution(fnml_df, execution):
 
     references = []
     for i, parameter in execution_rule_df.iterrows():
-        if parameter['value_map_type'] == R2RML_TEMPLATE:
+        if parameter['value_map_type'] == RML_TEMPLATE:
             references.extend(get_references_in_template(parameter['value_map_value']))
         elif parameter['value_map_type'] == RML_REFERENCE:
             # a list with one value
             references.extend([parameter['value_map_value']])
-        elif parameter['value_map_type'] == FNML_EXECUTION:
+        elif parameter['value_map_type'] == RML_EXECUTION:
             references.extend(get_references_in_fnml_execution(fnml_df, parameter['value_map_value']))
 
     return references

@@ -11,7 +11,7 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 ##############################################################################
 
 RML_DATAFRAME_COLUMNS = [
-    'source_name', 'triples_map_id', 'triples_map_type', 'logical_source_type', 'logical_source_value', 'iterator', 
+    'source_name', 'triples_map_id', 'triples_map_type', 'logical_source_type', 'logical_source_value', 'iterator',
     'subject_map_type', 'subject_map_value', 'subject_termtype',
     'predicate_map_type', 'predicate_map_value',
     'object_map_type', 'object_map_value', 'object_termtype', 'object_datatype', 'object_language',
@@ -34,9 +34,7 @@ FNML_DATAFRAME_COLUMNS = [
 ##############################################################################
 
 RML_PARSING_QUERY = """
-    prefix rr: <http://www.w3.org/ns/r2rml#>
-    prefix rml: <http://semweb.mmlab.be/ns/rml#>
-    prefix fnml: <http://semweb.mmlab.be/ns/fnml#>
+    prefix rml: <w3id.org/rml>
     prefix sd: <https://w3id.org/okn/o/sd/>
 
     SELECT DISTINCT 
@@ -56,54 +54,53 @@ RML_PARSING_QUERY = """
                 ?logical_source_value sd:name ?logical_source_in_memory_value.
                 BIND(CONCAT("{",?logical_source_in_memory_value,"}") AS ?logical_source_value)
             }
-            FILTER ( ?logical_source_type IN ( rml:source, rr:tableName, rml:query ) ) .
+            FILTER ( ?logical_source_type IN ( rml:source, rml:tableName, rml:query ) ) .
         }
         OPTIONAL { ?_source rml:iterator ?iterator . }
 
     # Subject -------------------------------------------------------------------------
         ?triples_map_id rml:subjectMap ?subject_map .
         ?subject_map ?subject_map_type ?subject_map_value .
-        FILTER ( ?subject_map_type IN ( rr:constant, rr:template, rml:reference, rml:quotedTriplesMap, fnml:execution ) ) .
-        OPTIONAL { ?subject_map rr:termType ?subject_termtype . }
+        FILTER ( ?subject_map_type IN ( rml:constant, rml:template, rml:reference, rml:quotedTriplesMap, rml:execution ) ) .
+        OPTIONAL { ?subject_map rml:termType ?subject_termtype . }
 
     # Predicate -----------------------------------------------------------------------
         OPTIONAL {
-            ?triples_map_id rr:predicateObjectMap ?_predicate_object_map .
-            ?_predicate_object_map rr:predicateMap ?_predicate_map .
+            ?triples_map_id rml:predicateObjectMap ?_predicate_object_map .
+            ?_predicate_object_map rml:predicateMap ?_predicate_map .
             ?_predicate_map ?predicate_map_type ?predicate_map_value .
-            FILTER ( ?predicate_map_type IN ( rr:constant, rr:template, rml:reference, fnml:execution ) ) .
+            FILTER ( ?predicate_map_type IN ( rml:constant, rml:template, rml:reference, rml:execution ) ) .
 
     # Object --------------------------------------------------------------------------
             OPTIONAL {
                 ?_predicate_object_map rml:objectMap ?object_map .
                 ?object_map ?object_map_type ?object_map_value .
-                FILTER ( ?object_map_type IN ( rr:constant, rr:template, rml:reference, rml:quotedTriplesMap, fnml:execution ) ) .
-                OPTIONAL { ?object_map rr:termType ?object_termtype . }
-                OPTIONAL { ?object_map rr:datatype ?object_datatype . }
-                OPTIONAL { ?object_map rr:language ?object_language . }
+                FILTER ( ?object_map_type IN ( rml:constant, rml:template, rml:reference, rml:quotedTriplesMap, rml:execution ) ) .
+                OPTIONAL { ?object_map rml:termType ?object_termtype . }
+                OPTIONAL { ?object_map rml:datatype ?object_datatype . }
+                OPTIONAL { ?object_map rml:language ?object_language . }
             }
             OPTIONAL {
                 ?_predicate_object_map rml:objectMap ?object_map .
-                ?object_map rr:parentTriplesMap ?object_map_value .
-                BIND ( rr:parentTriplesMap AS ?object_map_type ) .
+                ?object_map rml:parentTriplesMap ?object_map_value .
+                BIND ( rml:parentTriplesMap AS ?object_map_type ) .
             }
             OPTIONAL {
-                ?_predicate_object_map rr:graphMap ?graph_map .
+                ?_predicate_object_map rml:graphMap ?graph_map .
                 ?graph_map ?graph_map_type ?graph_map_value .
-                FILTER ( ?graph_map_type IN ( rr:constant, rr:template, rml:reference, fnml:execution ) ) .
+                FILTER ( ?graph_map_type IN ( rml:constant, rml:template, rml:reference, rml:execution ) ) .
             }
         }
     }
 """
 
-
 RML_JOIN_CONDITION_PARSING_QUERY = """
-    prefix rr: <http://www.w3.org/ns/r2rml#>
+    prefix rml: <w3id.org/rml>
 
     SELECT DISTINCT ?term_map ?join_condition ?child_value ?parent_value
     WHERE {
-        ?term_map rr:joinCondition ?join_condition .
-        ?join_condition rr:child ?child_value; rr:parent ?parent_value .
+        ?term_map rml:joinCondition ?join_condition .
+        ?join_condition rml:child ?child_value; rml:parent ?parent_value .
     }
 """
 
@@ -113,34 +110,32 @@ RML_JOIN_CONDITION_PARSING_QUERY = """
 ##############################################################################
 
 FNML_PARSING_QUERY = """
-    prefix rr: <http://www.w3.org/ns/r2rml#>
-    prefix rml: <http://semweb.mmlab.be/ns/rml#>
-    prefix fnml: <http://semweb.mmlab.be/ns/fnml#>
+    prefix rml: <w3id.org/rml>
 
     SELECT DISTINCT
         ?execution ?function_map_value ?parameter_map_value ?value_map ?value_map_type ?value_map_value
 
     WHERE {
-    
+
     # FuntionMap ----------------------------------------------------------------------
-        
-        ?execution fnml:functionMap ?function_map .        
-        ?function_map rr:constant ?function_map_value .
-        
+
+        ?execution rml:functionMap ?function_map .        
+        ?function_map rml:constant ?function_map_value .
+
         # return maps are not used in the current implementation, default is first return value
 
     # Input ---------------------------------------------------------------------------
 
         OPTIONAL {
             # OPTIONAL because a function can have 0 arguments (e.g., uuid())
-            ?execution fnml:input ?input .
-    
-            ?input fnml:parameterMap ?parameter_map .
-            ?parameter_map rr:constant ?parameter_map_value .
-    
-            ?input fnml:valueMap ?value_map .
+            ?execution rml:input ?input .
+
+            ?input rml:parameterMap ?parameter_map .
+            ?parameter_map rml:constant ?parameter_map_value .
+
+            ?input rml:valueMap ?value_map .
             ?value_map ?value_map_type ?value_map_value .
-            FILTER ( ?value_map_type IN ( rr:constant, rr:template, rml:reference, fnml:execution ) ) .
+            FILTER ( ?value_map_type IN ( rml:constant, rml:template, rml:reference, rml:execution ) ) .
         }
     }
 """
