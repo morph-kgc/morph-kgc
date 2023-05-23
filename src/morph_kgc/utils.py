@@ -16,7 +16,7 @@ import pandas as pd
 import multiprocessing as mp
 
 from itertools import product
-from .constants import AUXILIAR_UNIQUE_REPLACING_STRING, FNML_EXECUTION, R2RML_TEMPLATE, RML_REFERENCE
+from .constants import AUXILIAR_UNIQUE_REPLACING_STRING, RML_EXECUTION, RML_TEMPLATE, RML_REFERENCE
 
 
 def configure_logger(logging_level, logging_file):
@@ -113,12 +113,12 @@ def get_references_in_fnml_execution(fnml_df, execution):
 
     references = []
     for i, parameter in execution_rule_df.iterrows():
-        if parameter['value_map_type'] == R2RML_TEMPLATE:
+        if parameter['value_map_type'] == RML_TEMPLATE:
             references.extend(get_references_in_template(parameter['value_map_value']))
         elif parameter['value_map_type'] == RML_REFERENCE:
             # a list with one value
             references.extend([parameter['value_map_value']])
-        elif parameter['value_map_type'] == FNML_EXECUTION:
+        elif parameter['value_map_type'] == RML_EXECUTION:
             references.extend(get_references_in_fnml_execution(fnml_df, parameter['value_map_value']))
 
     return references
@@ -179,8 +179,8 @@ def replace_predicates_in_graph(graph, predicate_to_remove, predicate_to_add):
     """
 
     # get the triples with the predicate to be replaced
-    r2_rml_sources_query = f'SELECT ?s ?o WHERE {{?s <{predicate_to_remove}> ?o .}}'
-    subjects_objects_matched = graph.query(r2_rml_sources_query)
+    query = f'SELECT ?s ?o WHERE {{?s <{predicate_to_remove}> ?o .}}'
+    subjects_objects_matched = graph.query(query)
 
     # for each triple to be replaced add a similar one (same subject and object) but with the new predicate
     for s, o in subjects_objects_matched:
@@ -188,6 +188,25 @@ def replace_predicates_in_graph(graph, predicate_to_remove, predicate_to_add):
 
     # remove all triples in the graph that have the old predicate
     graph.remove((None, rdflib.term.URIRef(predicate_to_remove), None))
+
+    return graph
+
+
+def replace_objects_in_graph(graph, object_to_remove, object_to_add):
+    """
+    Replaces the objects object_to_remove in a graph with the object object_to_add. Both objects must be IRIs.
+    """
+
+    # get the triples with the object to be replaced
+    query = f'SELECT ?s ?p WHERE {{?s ?p <{object_to_remove}> .}}'
+    subjects_predicates_matched = graph.query(query)
+
+    # for each triple to be replaced add a similar one (same subject and predicate) but with the new object
+    for s, p in subjects_predicates_matched:
+        graph.add((s, p, rdflib.term.URIRef(object_to_add)))
+
+    # remove all triples in the graph that have the old object
+    graph.remove((None, None, rdflib.term.URIRef(object_to_remove)))
 
     return graph
 
