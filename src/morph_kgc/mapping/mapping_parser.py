@@ -80,7 +80,10 @@ def _r2rml_to_rml(mapping_graph):
     r2rml_to_rml_dict = {
         R2RML_TRIPLES_MAP_CLASS: RML_TRIPLES_MAP_CLASS,
         R2RML_LOGICAL_TABLE_CLASS: RML_LOGICAL_TABLE,
-        R2RML_DEFAULT_GRAPH: RML_DEFAULT_GRAPH
+        R2RML_DEFAULT_GRAPH: RML_DEFAULT_GRAPH,
+        R2RML_IRI: RML_IRI,
+        R2RML_LITERAL: RML_LITERAL,
+        R2RML_BLANK_NODE: RML_BLANK_NODE
     }
     for r2rml_object, rml_object in r2rml_to_rml_dict.items():
         mapping_graph = replace_objects_in_graph(mapping_graph, r2rml_object, rml_object)
