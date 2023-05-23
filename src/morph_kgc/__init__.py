@@ -21,7 +21,7 @@ from .mapping.mapping_parser import retrieve_mappings
 from .data_source.relational_database import setup_oracle
 from .materializer import _materialize_mapping_group_to_set
 from .args_parser import load_config_from_argument
-from .constants import R2RML_TRIPLES_MAP_CLASS
+from .constants import RML_TRIPLES_MAP_CLASS
 
 
 def materialize_set(config, python_source=None):
@@ -39,7 +39,7 @@ def materialize_set(config, python_source=None):
     rml_df, fnml_df = retrieve_mappings(config)
 
     # keep only asserted mapping rules
-    asserted_mapping_df = rml_df.loc[rml_df['triples_map_type'] == R2RML_TRIPLES_MAP_CLASS]
+    asserted_mapping_df = rml_df.loc[rml_df['triples_map_type'] == RML_TRIPLES_MAP_CLASS]
     mapping_groups = [group for _, group in asserted_mapping_df.groupby(by='mapping_partition')]
 
     if config.is_multiprocessing_enabled():

@@ -18,7 +18,7 @@ from .materializer import _materialize_mapping_group_to_file
 from .data_source.relational_database import setup_oracle
 from .utils import get_delta_time
 from .mapping.mapping_parser import retrieve_mappings
-from .constants import R2RML_TRIPLES_MAP_CLASS
+from .constants import RML_TRIPLES_MAP_CLASS
 from .utils import prepare_output_files
 
 
@@ -31,7 +31,7 @@ if __name__ == "__main__":
     rml_df, fnml_df = retrieve_mappings(config)
 
     # keep only asserted mapping rules
-    asserted_mapping_df = rml_df.loc[rml_df['triples_map_type'] == R2RML_TRIPLES_MAP_CLASS]
+    asserted_mapping_df = rml_df.loc[rml_df['triples_map_type'] == RML_TRIPLES_MAP_CLASS]
     mapping_groups = [group for _, group in asserted_mapping_df.groupby(by='mapping_partition')]
 
     prepare_output_files(config, rml_df)

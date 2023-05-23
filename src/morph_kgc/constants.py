@@ -205,6 +205,14 @@ RML_QUOTED_TRIPLES_MAP = f'{RML_NAMESPACE}quotedTriplesMap'
 RML_RDF_STAR_TRIPLE = f'{RML_NAMESPACE}RDFstarTriple'
 
 
+# RML-star legacy
+RML_LEGACY_STAR_MAP_CLASS = f'{RML_LEGACY_NAMESPACE}StarMap'
+RML_LEGACY_NON_ASSERTED_TRIPLES_MAP_CLASS = f'{RML_LEGACY_NAMESPACE}NonAssertedTriplesMap'
+RML_LEGACY_QUOTED_TRIPLES_MAP = f'{RML_LEGACY_NAMESPACE}quotedTriplesMap'
+RML_LEGACY_RDF_STAR_TRIPLE = f'{RML_LEGACY_NAMESPACE}RDFstarTriple'
+RML_LEGACY_SUBJECT_MAP = f'{RML_LEGACY_NAMESPACE}subjectMap'
+RML_LEGACY_OBJECT_MAP = f'{RML_LEGACY_NAMESPACE}objectMap'
+
 ##############################################################################
 ############################   RML-FNML   ####################################
 ##############################################################################
