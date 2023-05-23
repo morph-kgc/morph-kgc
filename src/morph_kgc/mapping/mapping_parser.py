@@ -73,18 +73,20 @@ def _r2rml_to_rml(mapping_graph):
         R2RML_BLANK_NODE: RML_BLANK_NODE,
         R2RML_SQL2008: RML_SQL2008,
     }
+    for r2rml_property, rml_property in r2rml_to_rml_dict.items():
+        mapping_graph = replace_predicates_in_graph(mapping_graph, r2rml_property, rml_property)
 
-    for r2rml_property, r2rml_property in dict.items():
-        mapping_graph = replace_predicates_in_graph(mapping_graph, r2rml_property, r2rml_property)
-
-    # remove R2RML classes and properties
-    mapping_graph.remove((None, None, rdflib.term.URIRef(R2RML_TRIPLES_MAP_CLASS)))
-    mapping_graph.remove((None, rdflib.term.URIRef(R2RML_R2RML_VIEW_CLASS), None))
-    mapping_graph.remove((None, rdflib.term.URIRef(R2RML_LOGICAL_TABLE_CLASS), None))
-    mapping_graph.remove((None, None, rdflib.term.URIRef(R2RML_DEFAULT_GRAPH)))
+    # replace R2RML objects with RML objects
+    r2rml_to_rml_dict = {
+        R2RML_TRIPLES_MAP_CLASS: RML_TRIPLES_MAP_CLASS,
+        R2RML_LOGICAL_TABLE_CLASS: RML_LOGICAL_TABLE,
+        R2RML_DEFAULT_GRAPH: RML_DEFAULT_GRAPH
+    }
+    for r2rml_object, rml_object in r2rml_to_rml_dict.items():
+        mapping_graph = replace_objects_in_graph(mapping_graph, r2rml_object, rml_object)
 
     # replace rml:AssertedTriplesMap with rml:TriplesMap
-    mapping_graph = replace_predicates_in_graph(mapping_graph, RML_ASSERTED_TRIPLES_MAP_CLASS, RML_TRIPLES_MAP_CLASS)
+    mapping_graph = replace_objects_in_graph(mapping_graph, RML_ASSERTED_TRIPLES_MAP_CLASS, RML_TRIPLES_MAP_CLASS)
 
     return mapping_graph
 
@@ -116,7 +118,7 @@ def _rml_legacy_to_rml(mapping_graph):
         RML_LEGACY_OBJECT_MAP: RML_OBJECT_MAP,
     }
 
-    for rml_legacy_property, rml_property in dict.items():
+    for rml_legacy_property, rml_property in rml_legacy_to_rml_dict.items():
         mapping_graph = replace_predicates_in_graph(mapping_graph, rml_legacy_property, rml_property)
 
     return mapping_graph

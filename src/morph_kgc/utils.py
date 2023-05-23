@@ -198,7 +198,7 @@ def replace_objects_in_graph(graph, object_to_remove, object_to_add):
     """
 
     # get the triples with the object to be replaced
-    query = f'SELECT ?s ?o WHERE {{?s ?p <{object_to_remove}> .}}'
+    query = f'SELECT ?s ?p WHERE {{?s ?p <{object_to_remove}> .}}'
     subjects_predicates_matched = graph.query(query)
 
     # for each triple to be replaced add a similar one (same subject and predicate) but with the new object
