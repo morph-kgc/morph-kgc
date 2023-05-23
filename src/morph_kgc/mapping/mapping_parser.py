@@ -27,6 +27,7 @@ def retrieve_mappings(config):
 def _r2rml_to_rml(mapping_graph):
     """
     Replaces R2RML rules in the graph with the corresponding RML rules.
+    Also replaces rml:AssertedTriplesMap with rml:TriplesMap.
     """
 
     # add namespace
@@ -42,40 +43,48 @@ def _r2rml_to_rml(mapping_graph):
         mapping_graph.add((logical_source, rdflib.term.URIRef(RML_REFERENCE_FORMULATION), rdflib.term.URIRef(RML_CSV)))
 
     # replace R2RML properties with the equivalent RML properties
-    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_LOGICAL_TABLE, RML_LOGICAL_SOURCE)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_TABLE_NAME, RML_TABLE_NAME)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_SQL_QUERY, RML_QUERY)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_PARENT_TRIPLES_MAP, RML_PARENT_TRIPLES_MAP)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_SUBJECT_MAP, RML_SUBJECT_MAP)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_PREDICATE_OBJECT_MAP, RML_PREDICATE_OBJECT_MAP)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_PREDICATE_MAP, RML_PREDICATE_MAP)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_OBJECT_MAP, RML_OBJECT_MAP)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_GRAPH_MAP, RML_GRAPH_MAP)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_SUBJECT_SHORTCUT, RML_SUBJECT_SHORTCUT)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_PREDICATE_SHORTCUT, RML_PREDICATE_SHORTCUT)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_OBJECT_SHORTCUT, RML_OBJECT_SHORTCUT)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_GRAPH_SHORTCUT, RML_GRAPH_SHORTCUT)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_COLUMN, RML_REFERENCE)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_TEMPLATE, RML_TEMPLATE)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_CONSTANT, RML_CONSTANT)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_CLASS, RML_CLASS)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_CHILD, RML_CHILD)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_PARENT, RML_PARENT)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_JOIN_CONDITION, RML_JOIN_CONDITION)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_DATATYPE, RML_DATATYPE)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_LANGUAGE, RML_LANGUAGE)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_SQL_VERSION, RML_SQL_VERSION)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_TERM_TYPE, RML_TERM_TYPE)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_IRI, RML_IRI)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_LITERAL, RML_LITERAL)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_BLANK_NODE, RML_BLANK_NODE)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, R2RML_SQL2008, RML_SQL2008)
+    r2rml_to_rml_dict = {
+        R2RML_LOGICAL_TABLE: RML_LOGICAL_SOURCE,
+        R2RML_TABLE_NAME: RML_TABLE_NAME,
+        R2RML_SQL_QUERY: RML_QUERY,
+        R2RML_PARENT_TRIPLES_MAP: RML_PARENT_TRIPLES_MAP,
+        R2RML_SUBJECT_MAP: RML_SUBJECT_MAP,
+        R2RML_PREDICATE_OBJECT_MAP: RML_PREDICATE_OBJECT_MAP,
+        R2RML_PREDICATE_MAP: RML_PREDICATE_MAP,
+        R2RML_OBJECT_MAP: RML_OBJECT_MAP,
+        R2RML_GRAPH_MAP: RML_GRAPH_MAP,
+        R2RML_SUBJECT_SHORTCUT: RML_SUBJECT_SHORTCUT,
+        R2RML_PREDICATE_SHORTCUT: RML_PREDICATE_SHORTCUT,
+        R2RML_OBJECT_SHORTCUT: RML_OBJECT_SHORTCUT,
+        R2RML_GRAPH_SHORTCUT: RML_GRAPH_SHORTCUT,
+        R2RML_COLUMN: RML_REFERENCE,
+        R2RML_TEMPLATE: RML_TEMPLATE,
+        R2RML_CONSTANT: RML_CONSTANT,
+        R2RML_CLASS: RML_CLASS,
+        R2RML_CHILD: RML_CHILD,
+        R2RML_PARENT: RML_PARENT,
+        R2RML_JOIN_CONDITION: RML_JOIN_CONDITION,
+        R2RML_DATATYPE: RML_DATATYPE,
+        R2RML_LANGUAGE: RML_LANGUAGE,
+        R2RML_SQL_VERSION: RML_SQL_VERSION,
+        R2RML_TERM_TYPE: RML_TERM_TYPE,
+        R2RML_IRI: RML_IRI,
+        R2RML_LITERAL: RML_LITERAL,
+        R2RML_BLANK_NODE: RML_BLANK_NODE,
+        R2RML_SQL2008: RML_SQL2008,
+    }
+
+    for r2rml_property, r2rml_property in dict.items():
+        mapping_graph = replace_predicates_in_graph(mapping_graph, r2rml_property, r2rml_property)
 
     # remove R2RML classes and properties
     mapping_graph.remove((None, None, rdflib.term.URIRef(R2RML_TRIPLES_MAP_CLASS)))
     mapping_graph.remove((None, rdflib.term.URIRef(R2RML_R2RML_VIEW_CLASS), None))
     mapping_graph.remove((None, rdflib.term.URIRef(R2RML_LOGICAL_TABLE_CLASS), None))
     mapping_graph.remove((None, None, rdflib.term.URIRef(R2RML_DEFAULT_GRAPH)))
+
+    # replace rml:AssertedTriplesMap with rml:TriplesMap
+    mapping_graph = replace_predicates_in_graph(mapping_graph, RML_ASSERTED_TRIPLES_MAP_CLASS, RML_TRIPLES_MAP_CLASS)
 
     return mapping_graph
 
@@ -84,26 +93,31 @@ def _rml_legacy_to_rml(mapping_graph):
     """
     Replace RML legacy rules in the graph with the corresponding RML rules.
     """
-    mapping_graph = replace_predicates_in_graph(mapping_graph, RML_LEGACY_LOGICAL_SOURCE, RML_LOGICAL_SOURCE)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, RML_LEGACY_SOURCE, RML_SOURCE)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, RML_LEGACY_QUERY, RML_QUERY)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, RML_LEGACY_ITERATOR, RML_ITERATOR)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, RML_LEGACY_REFERENCE, RML_REFERENCE)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, RML_LEGACY_REFERENCE_FORMULATION, RML_REFERENCE_FORMULATION)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, FNML_EXECUTION, RML_EXECUTION)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, FNML_INPUT, RML_INPUT)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, FNML_FUNCTION_MAP, RML_FUNCTION_MAP)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, FNML_RETURN_MAP, RML_RETURN_MAP)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, FNML_PARAMETER_MAP, RML_PARAMETER_MAP)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, FNML_VALUE_MAP, RML_VALUE_MAP)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, FNML_FUNCTION_SHORTCUT, RML_FUNCTION_SHORTCUT)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, FNML_RETURN_SHORTCUT, RML_RETURN_SHORTCUT)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, FNML_PARAMETER_SHORTCUT, RML_PARAMETER_SHORTCUT)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, FNML_VALUE_SHORTCUT, RML_VALUE_SHORTCUT)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, RML_LEGACY_NON_ASSERTED_TRIPLES_MAP_CLASS, RML_NON_ASSERTED_TRIPLES_MAP_CLASS)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, RML_LEGACY_QUOTED_TRIPLES_MAP, RML_QUOTED_TRIPLES_MAP)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, RML_LEGACY_SUBJECT_MAP, RML_SUBJECT_MAP)
-    mapping_graph = replace_predicates_in_graph(mapping_graph, RML_LEGACY_OBJECT_MAP, RML_OBJECT_MAP)
+    rml_legacy_to_rml_dict = {
+        RML_LEGACY_LOGICAL_SOURCE: RML_LOGICAL_SOURCE,
+        RML_LEGACY_SOURCE: RML_SOURCE,
+        RML_LEGACY_QUERY: RML_QUERY,
+        RML_LEGACY_ITERATOR: RML_ITERATOR,
+        RML_LEGACY_REFERENCE: RML_REFERENCE,
+        RML_LEGACY_REFERENCE_FORMULATION: RML_REFERENCE_FORMULATION,
+        FNML_EXECUTION: RML_EXECUTION,
+        FNML_INPUT: RML_INPUT,
+        FNML_FUNCTION_MAP: RML_FUNCTION_MAP,
+        FNML_RETURN_MAP: RML_RETURN_MAP,
+        FNML_PARAMETER_MAP: RML_PARAMETER_MAP,
+        FNML_VALUE_MAP: RML_VALUE_MAP,
+        FNML_FUNCTION_SHORTCUT: RML_FUNCTION_SHORTCUT,
+        FNML_RETURN_SHORTCUT: RML_RETURN_SHORTCUT,
+        FNML_PARAMETER_SHORTCUT: RML_PARAMETER_SHORTCUT,
+        FNML_VALUE_SHORTCUT: RML_VALUE_SHORTCUT,
+        RML_LEGACY_NON_ASSERTED_TRIPLES_MAP_CLASS: RML_NON_ASSERTED_TRIPLES_MAP_CLASS,
+        RML_LEGACY_QUOTED_TRIPLES_MAP: RML_QUOTED_TRIPLES_MAP,
+        RML_LEGACY_SUBJECT_MAP: RML_SUBJECT_MAP,
+        RML_LEGACY_OBJECT_MAP: RML_OBJECT_MAP,
+    }
+
+    for rml_legacy_property, rml_property in dict.items():
+        mapping_graph = replace_predicates_in_graph(mapping_graph, rml_legacy_property, rml_property)
 
     return mapping_graph
 
