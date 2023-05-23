@@ -134,7 +134,7 @@ R2RML_SQL2008 = f'{R2RML_NAMESPACE}SQL2008'
 ############################   RML-Core   #########################################
 ##############################################################################
 
-RML_NAMESPACE = 'w3id.org/rml'
+RML_NAMESPACE = 'http://w3id.org/rml/'
 
 RML_TRIPLES_MAP_CLASS = f'{RML_NAMESPACE}TriplesMap'
 RML_LOGICAL_SOURCE = f'{RML_NAMESPACE}logicalSource'
@@ -169,9 +169,9 @@ RML_SQL_VERSION = f'{RML_NAMESPACE}sqlVersion'
 RML_TERM_TYPE = f'{RML_NAMESPACE}termType'
 RML_DEFAULT_GRAPH = f'{RML_NAMESPACE}defaultGraph'
 
-RML_IRI = f'{R2RML_NAMESPACE}IRI'
-RML_LITERAL = f'{R2RML_NAMESPACE}Literal'
-RML_BLANK_NODE = f'{R2RML_NAMESPACE}BlankNode'
+RML_IRI = f'{RML_NAMESPACE}IRI'
+RML_LITERAL = f'{RML_NAMESPACE}Literal'
+RML_BLANK_NODE = f'{RML_NAMESPACE}BlankNode'
 
 RML_SQL2008 = f'{RML_NAMESPACE}SQL2008'
 RML_CSV = f'{RML_NAMESPACE}CSV'

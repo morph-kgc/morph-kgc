@@ -34,7 +34,7 @@ FNML_DATAFRAME_COLUMNS = [
 ##############################################################################
 
 RML_PARSING_QUERY = """
-    prefix rml: <w3id.org/rml>
+    prefix rml: <http://w3id.org/rml/>
     prefix sd: <https://w3id.org/okn/o/sd/>
 
     SELECT DISTINCT 
@@ -95,7 +95,7 @@ RML_PARSING_QUERY = """
 """
 
 RML_JOIN_CONDITION_PARSING_QUERY = """
-    prefix rml: <w3id.org/rml>
+    prefix rml: <http://w3id.org/rml/>
 
     SELECT DISTINCT ?term_map ?join_condition ?child_value ?parent_value
     WHERE {
@@ -110,7 +110,7 @@ RML_JOIN_CONDITION_PARSING_QUERY = """
 ##############################################################################
 
 FNML_PARSING_QUERY = """
-    prefix rml: <w3id.org/rml>
+    prefix rml: <http://w3id.org/rml/>
 
     SELECT DISTINCT
         ?execution ?function_map_value ?parameter_map_value ?value_map ?value_map_type ?value_map_value
