@@ -1,0 +1,36 @@
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ex: <http://example.com/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rml: <http://w3id.org/rml/> .
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix morph-kgc: <https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#> .
+@prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
+@prefix idlab-fn: <http://example.com/idlab/function/> .
+
+@base <http://example.com/base/> .
+
+<TriplesMap1>
+    rml:logicalSource [
+        rml:source "test/rml-fnml/math_round/distances.tsv" ;
+        rml:referenceFormulation rml:CSV ;
+    ];
+    rml:subjectMap [
+        rml:template "http://example.com/distance/{id}"
+    ];
+    rml:predicateObjectMap [
+        rml:predicate ex:distance;
+        rml:objectMap [
+            rml:functionExecution <#Execution> ;
+            rml:datatype xsd:integer
+        ]
+    ].
+
+<#Execution>
+    rml:function grel:math_round ;
+    rml:input
+        [
+            rml:parameter grel:param_dec_n ;
+            rml:inputValueMap [
+                rml:reference "distance_km"
+            ]
+        ] .

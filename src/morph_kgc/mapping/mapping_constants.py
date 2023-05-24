@@ -61,7 +61,7 @@ RML_PARSING_QUERY = """
     # Subject -------------------------------------------------------------------------
         ?triples_map_id rml:subjectMap ?subject_map .
         ?subject_map ?subject_map_type ?subject_map_value .
-        FILTER ( ?subject_map_type IN ( rml:constant, rml:template, rml:reference, rml:quotedTriplesMap, rml:execution ) ) .
+        FILTER ( ?subject_map_type IN ( rml:constant, rml:template, rml:reference, rml:quotedTriplesMap, rml:functionExecution ) ) .
         OPTIONAL { ?subject_map rml:termType ?subject_termtype . }
 
     # Predicate -----------------------------------------------------------------------
@@ -69,13 +69,13 @@ RML_PARSING_QUERY = """
             ?triples_map_id rml:predicateObjectMap ?_predicate_object_map .
             ?_predicate_object_map rml:predicateMap ?_predicate_map .
             ?_predicate_map ?predicate_map_type ?predicate_map_value .
-            FILTER ( ?predicate_map_type IN ( rml:constant, rml:template, rml:reference, rml:execution ) ) .
+            FILTER ( ?predicate_map_type IN ( rml:constant, rml:template, rml:reference, rml:functionExecution ) ) .
 
     # Object --------------------------------------------------------------------------
             OPTIONAL {
                 ?_predicate_object_map rml:objectMap ?object_map .
                 ?object_map ?object_map_type ?object_map_value .
-                FILTER ( ?object_map_type IN ( rml:constant, rml:template, rml:reference, rml:quotedTriplesMap, rml:execution ) ) .
+                FILTER ( ?object_map_type IN ( rml:constant, rml:template, rml:reference, rml:quotedTriplesMap, rml:functionExecution ) ) .
                 OPTIONAL { ?object_map rml:termType ?object_termtype . }
                 OPTIONAL { ?object_map rml:datatype ?object_datatype . }
                 OPTIONAL { ?object_map rml:language ?object_language . }
@@ -88,7 +88,7 @@ RML_PARSING_QUERY = """
             OPTIONAL {
                 ?_predicate_object_map rml:graphMap ?graph_map .
                 ?graph_map ?graph_map_type ?graph_map_value .
-                FILTER ( ?graph_map_type IN ( rml:constant, rml:template, rml:reference, rml:execution ) ) .
+                FILTER ( ?graph_map_type IN ( rml:constant, rml:template, rml:reference, rml:functionExecution ) ) .
             }
         }
     }
@@ -133,9 +133,9 @@ FNML_PARSING_QUERY = """
             ?input rml:parameterMap ?parameter_map .
             ?parameter_map rml:constant ?parameter_map_value .
 
-            ?input rml:valueMap ?value_map .
+            ?input rml:inputValueMap ?value_map .
             ?value_map ?value_map_type ?value_map_value .
-            FILTER ( ?value_map_type IN ( rml:constant, rml:template, rml:reference, rml:execution ) ) .
+            FILTER ( ?value_map_type IN ( rml:constant, rml:template, rml:reference, rml:functionExecution ) ) .
         }
     }
 """
