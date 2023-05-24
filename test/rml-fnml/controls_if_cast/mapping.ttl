@@ -1,0 +1,65 @@
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ex: <http://example.com/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rml: <http://w3id.org/rml/> .
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix morph-kgc: <https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#> .
+@prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
+@prefix idlab-fn: <http://example.com/idlab/function/> .
+@prefix gtfs: <http://vocab.gtfs.org/terms#> .
+
+@base <http://example.com/base/> .
+<TriplesMap1>
+    rml:logicalSource [
+        rml:source "test/rml-fnml/controls_if_cast/calendar.csv" ;
+        rml:referenceFormulation rml:CSV ;
+    ];
+    rml:subjectMap [
+        rml:template "http://transport.linkeddata.es/madrid/metro/calendar_rules/{service_id}"
+    ];
+    rml:predicateObjectMap [
+        rml:predicate gtfs:monday;
+        rml:objectMap [
+            rml:functionExecution <#Execution1> ;
+            rml:datatype xsd:boolean
+        ]
+    ];
+    rml:predicateObjectMap [
+        rml:predicate gtfs:tuesday;
+        rml:objectMap [
+            rml:functionExecution <#Execution2> ;
+            rml:datatype xsd:boolean
+        ]
+    ].
+
+<#Execution1>
+    rml:function morph-kgc:controls_if_cast ;
+    rml:input
+        [
+            rml:parameter grel:bool_b ;
+            rml:inputValueMap [
+                rml:reference "monday"
+            ]
+        ] ,
+        [
+            rml:parameter grel:any_true ;
+            rml:inputValue "true"
+        ] ,
+        [
+            rml:parameter grel:any_false ;
+            rml:inputValue "false"
+        ] .
+
+<#Execution2>
+    rml:function morph-kgc:controls_if_cast ;
+    rml:input
+        [
+            rml:parameter grel:bool_b ;
+            rml:inputValueMap [
+                rml:reference "tuesday"
+            ]
+        ] ,
+        [
+            rml:parameter grel:any_true ;
+            rml:inputValue "true"
+        ] .

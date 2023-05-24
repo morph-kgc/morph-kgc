@@ -1,0 +1,39 @@
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ex: <http://example.com/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rml: <http://w3id.org/rml/> .
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix morph-kgc: <https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#> .
+@prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
+@prefix idlab-fn: <http://example.com/idlab/function/> .
+
+@base <http://example.com/base/> .
+
+<TriplesMap1>
+    rml:logicalSource [
+        rml:source "test/rml-fnml/split_explode_null/mixed_content_list.csv";
+        rml:referenceFormulation rml:CSV
+    ];
+    rml:subjectMap [
+        rml:template "http://example.com/{ID}"
+    ];
+    rml:predicateObjectMap [
+        rml:predicate ex:col;
+        rml:objectMap [
+            rml:functionExecution <#Execution> ;
+        ]
+    ] .
+
+<#Execution>
+    rml:function morph-kgc:string_split_explode ;
+    rml:input
+        [
+            rml:parameter grel:valueParam ;
+            rml:inputValueMap [
+                rml:reference "COL"
+            ]
+        ] ,
+        [
+            rml:parameter grel:param_string_sep ;
+            rml:inputValue ";"
+        ] .

@@ -1,0 +1,59 @@
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ex: <http://example.com/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rml: <http://w3id.org/rml/> .
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix morph-kgc: <https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#> .
+@prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
+@prefix idlab-fn: <http://example.com/idlab/function/> .
+
+@base <http://example.com/base/> .
+
+<TriplesMap1>
+    rml:logicalSource [
+        rml:source "test/rml-fnml/array_get_slice/article.tsv" ;
+        rml:referenceFormulation rml:CSV ;
+    ];
+    rml:subjectMap [
+        rml:template "http://example.com/articles/{title}"
+    ];
+    rml:predicateObjectMap [
+        rml:predicate ex:firstAuthor;
+        rml:objectMap [
+            rml:functionExecution <#Execution1> ;
+        ]
+    ];
+    rml:predicateObjectMap [
+        rml:predicate ex:otherAuthors;
+        rml:objectMap [
+            rml:functionExecution <#Execution2> ;
+        ]
+    ].
+
+<#Execution1>
+    rml:function grel:array_get ;
+    rml:input
+        [
+            rml:parameter grel:param_a ;
+            rml:inputValueMap [
+                rml:reference "authors"
+            ]
+        ] ,
+        [
+            rml:parameter grel:p_int_i_from ;
+            rml:inputValue "0"
+        ] .
+
+<#Execution2>
+    rml:function grel:array_slice ;
+    rml:input
+        [
+            rml:parameter grel:param_a ;
+            rml:inputValueMap [
+                rml:reference "authors"
+            ]
+        ] ,
+        [
+            rml:parameter grel:p_int_i_from ;
+            rml:inputValue "1"
+        ] .

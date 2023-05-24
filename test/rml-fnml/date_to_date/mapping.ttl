@@ -1,0 +1,41 @@
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ex: <http://example.com/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rml: <http://w3id.org/rml/> .
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix morph-kgc: <https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#> .
+@prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
+@prefix idlab-fn: <http://example.com/idlab/function/> .
+@prefix dct: <http://purl.org/dc/terms/> .
+
+@base <http://example.com/base/> .
+
+<TriplesMap1>
+    rml:logicalSource [
+        rml:source "test/rml-fnml/date_to_date/calendar.csv" ;
+        rml:referenceFormulation rml:CSV ;
+    ];
+    rml:subjectMap [
+        rml:template "http://transport.linkeddata.es/madrid/metro/calendar_rules/{service_id}"
+    ];
+    rml:predicateObjectMap [
+        rml:predicate dct:date;
+        rml:objectMap [
+            rml:functionExecution <#Execution> ;
+            rml:datatype xsd:date
+        ]
+    ].
+
+<#Execution>
+    rml:function grel:date_toDate ;
+    rml:input
+        [
+            rml:parameter grel:valueParam ;
+            rml:inputValueMap [
+                rml:reference "start_date"
+            ]
+        ] ,
+        [
+            rml:parameter grel:param_string_pattern ;
+            rml:inputValue "%Y-%m-%d %H:%M:%S"
+        ] .
