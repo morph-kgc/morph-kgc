@@ -21,7 +21,9 @@ def get_ram_data(rml_rule, references, python_source=None):
 
     if isinstance(source_value, pd.DataFrame):
         for col in source_value.select_dtypes(include=['object']).columns:
-            source_value[col] = source_value[col].apply(lambda x: x.replace('"', ''))
+            source_value[col] = source_value[col].apply(lambda x:
+                                                        x.replace('"', '') if isinstance(x, str)
+                                                        else x)
         return source_value[references]
     elif isinstance(source_value, list):
         return pd.DataFrame(source_value, columns=references)
