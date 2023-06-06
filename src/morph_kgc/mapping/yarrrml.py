@@ -318,7 +318,7 @@ def _normalize_yarrrml_mapping(mappings):
 
     for mapping_key, mapping_value in mappings['mappings'].items():
         if 'subjects' in mapping_value and 'function' in mapping_value['subjects']:
-            mapping_value['subjects'] = _normalize_function_parameters(mapping_value['subjectst'])
+            mapping_value['subjects'] = _normalize_function_parameters(mapping_value['subjects'])
         if 'predicateobjects' in mapping_value:
             for position in ['predicates', 'objects', 'graphs']:
                 if position in mapping_value['predicateobjects'] and 'function' in mapping_value['predicateobjects'][position]:
