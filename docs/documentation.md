@@ -266,7 +266,7 @@ An **[RML-FNML](https://w3id.org/rml/fnml/spec)** mapping calling this functions
 ```ttl
 <#TM1>
     rml:logicalSource [
-        rml:source "test/fno/udf/student.csv";
+        rml:source "test/rml-fnml/udf/student.csv";
         rml:referenceFormulation ql:CSV;
     ];
     rr:subjectMap [
