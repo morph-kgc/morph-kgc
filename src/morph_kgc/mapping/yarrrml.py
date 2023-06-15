@@ -437,7 +437,8 @@ def _translate_yarrrml_to_rml(yarrrml_mapping):
                     for ref_tm in tm_id_to_norm_tm_ids[mapping_value['subjects']['quotedNonAsserted']]:
                         mapping_graph.add((subject_bnode, rdflib.term.URIRef(RML_QUOTED_TRIPLES_MAP), rdflib.term.URIRef(ref_tm)))
                         mapping_graph.add((rdflib.term.URIRef(ref_tm), rdflib.term.URIRef(RDF_TYPE), rdflib.term.URIRef(RML_NON_ASSERTED_TRIPLES_MAP_CLASS)))
-
+                elif 'function' in mapping_value['subjects']:
+                    mapping_graph = _translate_yarrrml_function_to_rml(mapping_graph, mapping_value['subjects'], subject_bnode)
                 if 'condition' in mapping_value['subjects']:
                     join_condition_bnode = rdflib.BNode()
                     mapping_graph.add((subject_bnode, rdflib.term.URIRef(RML_JOIN_CONDITION), join_condition_bnode))
