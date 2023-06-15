@@ -289,7 +289,7 @@ An **[RML-FNML](https://w3id.org/rml/fnml/spec)** mapping calling this functions
     ].
 ```
 
-The complete set of **built-in functions** can be consulted [here](https://github.com/morph-kgc/morph-kgc/blob/main/src/morph_kgc/fno/built_in_functions.py).
+The complete set of **built-in functions** can be consulted [here](https://github.com/morph-kgc/morph-kgc/blob/main/src/morph_kgc/fnml/built_in_functions.py).
 
 ### RML-star
 
