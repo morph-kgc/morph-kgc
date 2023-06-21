@@ -1,0 +1,53 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rml: <http://w3id.org/rml/> .
+@prefix ex: <http://example/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix : <http://example.org/> .
+@base <http://example.org/> .
+
+:firstTM a rml:AssertedTriplesMap ;
+    rml:logicalSource [
+        rml:source "test/issues/issue_174/data-1.csv";
+        rml:referenceFormulation rml:CSV
+    ];
+    rml:subjectMap [
+        rml:template "http://example/{c1}";
+        rml:class ex:c
+    ];
+    rml:predicateObjectMap [
+        rml:predicate ex:p ;
+        rml:objectMap [
+            rml:template "http://example/{c2}"
+        ]
+    ] .
+
+:secondTM a rml:AssertedTriplesMap ;
+    rml:logicalSource [
+        rml:source "test/issues/issue_174/data-1.csv";
+        rml:referenceFormulation rml:CSV
+    ];
+    rml:subjectMap [
+        rml:quotedTriplesMap :firstTM
+    ];
+    rml:predicateObjectMap [
+        rml:predicate ex:r ;
+        rml:objectMap [
+            rml:template "http://example/{c3}"
+        ]
+    ] .
+
+:thirdTM a rml:AssertedTriplesMap ;
+    rml:logicalSource [
+        rml:source "test/issues/issue_174/data-1.csv";
+        rml:referenceFormulation rml:CSV
+    ];
+    rml:subjectMap [
+        rml:quotedTriplesMap :secondTM
+    ];
+    rml:predicateObjectMap [
+        rml:predicate ex:q ;
+        rml:objectMap [
+            rml:reference "c4" ;
+            rml:datatype xsd:integer
+        ]
+    ] .
