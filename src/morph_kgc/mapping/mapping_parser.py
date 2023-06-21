@@ -739,6 +739,16 @@ class MappingParser:
                             'Check the mapping files, one triple map cannot be repeated in different data sources.')
 
     def _normalize_rml_star(self):
+        num_rules_before_expansion = len(self.rml_df)
+        while True:
+            self._expand_rml_star()
+            if num_rules_before_expansion == len(self.rml_df):
+                break
+            else:
+                num_rules_before_expansion = len(self.rml_df)
+                self._expand_rml_star()
+
+    def _expand_rml_star(self):
         # create a unique id for each (normalized) mapping rule
         self.rml_df.insert(0, 'id', self.rml_df.reset_index(drop=True).index.astype(str))
         self.rml_df['id'] = '#TM' + self.rml_df['id']
