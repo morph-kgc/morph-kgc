@@ -7,7 +7,7 @@
 
 :firstTM a rml:AssertedTriplesMap ;
     rml:logicalSource [
-        rml:source "test/rml-star/RMLSTARTC009a/data.csv";
+        rml:source "test/issues/issue_174/data-2.csv";
         rml:referenceFormulation rml:CSV
     ];
     rml:subjectMap [
@@ -22,7 +22,7 @@
 
 :secondTM a rml:AssertedTriplesMap ;
     rml:logicalSource [
-        rml:source "test/rml-star/RMLSTARTC009a/data.csv";
+        rml:source "test/issues/issue_174/data-2.csv";
         rml:referenceFormulation rml:CSV
     ];
     rml:subjectMap [
@@ -37,7 +37,7 @@
 
 :thirdTM a rml:AssertedTriplesMap ;
     rml:logicalSource [
-        rml:source "test/rml-star/RMLSTARTC009a/data.csv";
+        rml:source "test/issues/issue_174/data-2.csv";
         rml:referenceFormulation rml:CSV
     ];
     rml:subjectMap [

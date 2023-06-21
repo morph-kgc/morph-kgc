@@ -7,15 +7,20 @@
 
 :firstTM a rml:AssertedTriplesMap ;
     rml:logicalSource [
-        rml:source "test/rml-star/RMLSTARTC003c/data.csv";
+        rml:source "test/issues/issue_174/data-1.csv";
         rml:referenceFormulation rml:CSV
     ];
     rml:subjectMap [
-        rml:template "http://example/{c1}";
-        rml:class ex:c
+        rml:template "http://example/{c1}"
     ];
     rml:predicateObjectMap [
         rml:predicate ex:p ;
+        rml:objectMap [
+            rml:template "http://example/{c2}"
+        ]
+    ];
+    rml:predicateObjectMap [
+        rml:predicate ex:p2 ;
         rml:objectMap [
             rml:template "http://example/{c2}"
         ]
@@ -23,7 +28,7 @@
 
 :secondTM a rml:AssertedTriplesMap ;
     rml:logicalSource [
-        rml:source "test/rml-star/RMLSTARTC003c/data.csv";
+        rml:source "test/issues/issue_174/data-1.csv";
         rml:referenceFormulation rml:CSV
     ];
     rml:subjectMap [
@@ -38,7 +43,7 @@
 
 :thirdTM a rml:AssertedTriplesMap ;
     rml:logicalSource [
-        rml:source "test/rml-star/RMLSTARTC003c/data.csv";
+        rml:source "test/issues/issue_174/data-1.csv";
         rml:referenceFormulation rml:CSV
     ];
     rml:subjectMap [
