@@ -417,32 +417,32 @@ def _validate_termtypes(mapping_graph):
     query = 'SELECT DISTINCT ?termtype ?pm WHERE { ' \
             f'?pom <{RML_PREDICATE_MAP}> ?pm . ' \
             f'?pm <{RML_TERM_TYPE}> ?termtype . }}'
-    predicate_termtypes = [str(termtype) for termtype, _ in mapping_graph.query(query)]
-    if not (set(predicate_termtypes) <= {RML_IRI}):
+    predicate_termtypes = set([str(termtype) for termtype, _ in mapping_graph.query(query)])
+    if not (predicate_termtypes <= {RML_IRI}):
         raise ValueError(f'Found an invalid predicate termtype. Found values {predicate_termtypes}. '
                          f'Predicate maps must be {RML_IRI}.')
 
     query = 'SELECT DISTINCT ?termtype ?gm WHERE { ' \
             f'?pom <{RML_GRAPH_MAP}> ?gm . ' \
             f'?gm <{RML_TERM_TYPE}> ?termtype . }}'
-    graph_termtypes = [str(termtype) for termtype, _ in mapping_graph.query(query)]
-    if not (set(graph_termtypes) <= {RML_IRI}):
+    graph_termtypes = set([str(termtype) for termtype, _ in mapping_graph.query(query)])
+    if not (graph_termtypes <= {RML_IRI}):
         raise ValueError(f'Found an invalid graph termtype. Found values {graph_termtypes}. '
                          f'Graph maps must be {RML_IRI}.')
 
     query = 'SELECT DISTINCT ?termtype ?sm WHERE { ' \
             f'?tm <{RML_SUBJECT_MAP}> ?sm . ' \
             f'?sm <{RML_TERM_TYPE}> ?termtype . }}'
-    subject_termtypes = [str(termtype) for termtype, _ in mapping_graph.query(query)]
-    if not (set(subject_termtypes) <= {RML_IRI, RML_BLANK_NODE, RML_RDF_STAR_TRIPLE}):
+    subject_termtypes = set([str(termtype) for termtype, _ in mapping_graph.query(query)])
+    if not (subject_termtypes <= {RML_IRI, RML_BLANK_NODE, RML_RDF_STAR_TRIPLE}):
         raise ValueError(f'Found an invalid subject termtype. Found values {subject_termtypes}. '
                          f'Subject maps must be {RML_IRI}, {RML_BLANK_NODE} or {RML_RDF_STAR_TRIPLE}.')
 
     query = 'SELECT DISTINCT ?termtype ?om WHERE { ' \
             f'?pom <{RML_OBJECT_MAP}> ?om . ' \
             f'?om <{RML_TERM_TYPE}> ?termtype . }}'
-    object_termtypes = [str(termtype) for termtype, _ in mapping_graph.query(query)]
-    if not (set(object_termtypes) <= {RML_IRI, RML_BLANK_NODE, RML_LITERAL, RML_RDF_STAR_TRIPLE}):
+    object_termtypes = set([str(termtype) for termtype, _ in mapping_graph.query(query)])
+    if not (object_termtypes <= {RML_IRI, RML_BLANK_NODE, RML_LITERAL, RML_RDF_STAR_TRIPLE}):
         raise ValueError(f'Found an invalid object termtype. Found values {object_termtypes}. Object maps must be '
                          f'{RML_IRI}, {RML_BLANK_NODE}, {RML_LITERAL} or {RML_RDF_STAR_TRIPLE}.')
 
@@ -766,8 +766,7 @@ class MappingParser:
 
         # for quoted maps and ref object maps, add a new rule for each normalized rule they are referencing
         for position in ['subject', 'object']:
-            quoted_tm_df = self.rml_df.loc[
-                self.rml_df[f'{position}_map_type'].isin([RML_QUOTED_TRIPLES_MAP, RML_PARENT_TRIPLES_MAP])]
+            quoted_tm_df = self.rml_df.loc[self.rml_df[f'{position}_map_type'] == RML_QUOTED_TRIPLES_MAP]
             for i, rml_rule in quoted_tm_df.iterrows():
                 for tm_id in tm_to_id_list_dict[rml_rule[f'{position}_map_value']]:
                     rml_rule[f'{position}_map_value'] = tm_id
