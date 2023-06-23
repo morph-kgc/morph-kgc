@@ -766,8 +766,7 @@ class MappingParser:
 
         # for quoted maps and ref object maps, add a new rule for each normalized rule they are referencing
         for position in ['subject', 'object']:
-            quoted_tm_df = self.rml_df.loc[
-                self.rml_df[f'{position}_map_type'].isin([RML_QUOTED_TRIPLES_MAP, RML_PARENT_TRIPLES_MAP])]
+            quoted_tm_df = self.rml_df.loc[self.rml_df[f'{position}_map_type'] == RML_QUOTED_TRIPLES_MAP]
             for i, rml_rule in quoted_tm_df.iterrows():
                 for tm_id in tm_to_id_list_dict[rml_rule[f'{position}_map_value']]:
                     rml_rule[f'{position}_map_value'] = tm_id
