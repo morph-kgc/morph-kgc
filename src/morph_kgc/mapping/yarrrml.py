@@ -1,4 +1,3 @@
-
 __author__ = "Julián Arenas-Guerrero"
 __credits__ = ["Julián Arenas-Guerrero"]
 
@@ -444,9 +443,9 @@ def _translate_yarrrml_to_rml(yarrrml_mapping):
                     mapping_graph.add((subject_bnode, rdflib.term.URIRef(RML_JOIN_CONDITION), join_condition_bnode))
                     for parameter in mapping_value['subjects']['condition']['parameters']:
                         if parameter[0] == 'str1':
-                            mapping_graph.add((join_condition_bnode, rdflib.term.URIRef(RML_CHILD), rdflib.term.Literal(parameter[1])))
+                            mapping_graph.add((join_condition_bnode, rdflib.term.URIRef(RML_CHILD), rdflib.term.Literal(parameter[1][2:-1])))
                         elif parameter[0] == 'str2':
-                            mapping_graph.add((join_condition_bnode, rdflib.term.URIRef(RML_PARENT), rdflib.term.Literal(parameter[1])))
+                            mapping_graph.add((join_condition_bnode, rdflib.term.URIRef(RML_PARENT), rdflib.term.Literal(parameter[1][2:-1])))
         else:
             # it is a blank node
             subject_bnode = rdflib.BNode()
@@ -487,9 +486,9 @@ def _translate_yarrrml_to_rml(yarrrml_mapping):
                                 mapping_graph.add((object_bnode, rdflib.term.URIRef(RML_JOIN_CONDITION), join_condition_bnode))
                                 for parameter in mapping_value['predicateobjects'][position]['condition']['parameters']:
                                     if parameter[0] == 'str1':
-                                        mapping_graph.add((join_condition_bnode, rdflib.term.URIRef(RML_CHILD), rdflib.term.Literal(parameter[1])))
+                                        mapping_graph.add((join_condition_bnode, rdflib.term.URIRef(RML_CHILD), rdflib.term.Literal(parameter[1][2:-1])))
                                     elif parameter[0] == 'str2':
-                                        mapping_graph.add((join_condition_bnode, rdflib.term.URIRef(RML_PARENT), rdflib.term.Literal(parameter[1])))
+                                        mapping_graph.add((join_condition_bnode, rdflib.term.URIRef(RML_PARENT), rdflib.term.Literal(parameter[1][2:-1])))
                     elif 'quoted' in mapping_value['predicateobjects'][position] or 'quotedNonAsserted' in mapping_value['predicateobjects'][position]:
                         object_bnode = rdflib.BNode()
                         mapping_graph.add((predicateobject_bnode, rdflib.term.URIRef(property), object_bnode))
@@ -507,9 +506,9 @@ def _translate_yarrrml_to_rml(yarrrml_mapping):
                             mapping_graph.add((object_bnode, rdflib.term.URIRef(RML_JOIN_CONDITION), join_condition_bnode))
                             for parameter in mapping_value['predicateobjects'][position]['condition']['parameters']:
                                 if parameter[0] == 'str1':
-                                    mapping_graph.add((join_condition_bnode, rdflib.term.URIRef(RML_CHILD), rdflib.term.Literal(parameter[1])))
+                                    mapping_graph.add((join_condition_bnode, rdflib.term.URIRef(RML_CHILD), rdflib.term.Literal(parameter[1][2:-1])))
                                 elif parameter[0] == 'str2':
-                                    mapping_graph.add((join_condition_bnode, rdflib.term.URIRef(RML_PARENT), rdflib.term.Literal(parameter[1])))
+                                    mapping_graph.add((join_condition_bnode, rdflib.term.URIRef(RML_PARENT), rdflib.term.Literal(parameter[1][2:-1])))
                     else:
                         # object dict
                         object_bnode = rdflib.BNode()
