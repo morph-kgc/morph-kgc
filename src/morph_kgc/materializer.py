@@ -178,8 +178,6 @@ def _materialize_reference(results_df, reference, config, position, columns_alia
             results_df[position] = results_df[position] + '@' + language_tag
         elif pd.notna(datatype):
             results_df[position] = results_df[position] + '^^<' + datatype + '>'
-        else:
-            results_df[position] = results_df[position]
     elif termtype.strip() == RML_IRI:
         # it is assumed that the IRI values will be correct, and they are not percent encoded
         results_df['reference_results'] = results_df['reference_results'].apply(lambda x: x.strip())
