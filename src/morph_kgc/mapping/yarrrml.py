@@ -58,6 +58,8 @@ def _add_template(mapping_graph, term_map_bnode, yarrrml_template):
     elif '$(' in yarrrml_template:
         rml_template = _template_to_rml(yarrrml_template)
         mapping_graph.add((term_map_bnode, rdflib.term.URIRef(RML_TEMPLATE), rdflib.term.Literal(rml_template)))
+    elif 'a' == yarrrml_template:
+        mapping_graph.add((term_map_bnode, rdflib.term.URIRef(RML_CONSTANT), rdflib.term.URIRef(RDF_TYPE)))
     else:
         # a YARRRML template may have 0 references
         # in that case the YARRRML template corresponds to an RML constant
