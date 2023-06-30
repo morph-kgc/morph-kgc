@@ -358,6 +358,15 @@ def _translate_yarrrml_function_to_rml(mapping_graph, function, term_map):
         mapping_graph.add((term_map, rdflib.term.URIRef(RML_DATATYPE), rdflib.term.URIRef(function['datatype'])))
     elif 'language' in function:
         mapping_graph.add((term_map, rdflib.term.URIRef(RML_LANGUAGE), rdflib.term.URIRef(function['language'])))
+    elif 'type' in function:
+        if function['type'] == 'iri':
+            mapping_graph.add((term_map, rdflib.term.URIRef(RML_TERM_TYPE), rdflib.term.URIRef(RML_IRI)))
+        elif function['type'] == 'literal':
+            mapping_graph.add((term_map, rdflib.term.URIRef(RML_TERM_TYPE), rdflib.term.URIRef(RML_LITERAL)))
+        elif function['type'] == 'blanknode':
+            mapping_graph.add((term_map, rdflib.term.URIRef(RML_TERM_TYPE), rdflib.term.URIRef(RML_BLANK_NODE)))
+        else:
+            raise ValueError(f"Found an invalid termtype `{function['type']}` in YARRRML mapping.")
 
     function_bnode = rdflib.term.BNode()
     mapping_graph.add((execution_bnode, rdflib.term.URIRef(RML_FUNCTION_MAP), function_bnode))
