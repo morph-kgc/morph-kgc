@@ -12,7 +12,7 @@ Morph-KGC adopts the **[W3C](https://www.w3.org/)** Recommendation **[R2RML](htt
 
 ### Usability
 
-Morph-KGC natively supports **[YARRRML](https://rml.io/yarrrml/spec/)**, a user-friendly serialization of **[RML](https://w3id.org/rml/core/spec)** that eases mapping development. Morph-KGC can natively process **[YARRRML](https://rml.io/yarrrml/spec/)**, there is no need of previous mapping translation.
+Morph-KGC supports **[YARRRML](https://rml.io/yarrrml/spec/)**, a user-friendly serialization of **[RML](https://w3id.org/rml/core/spec)** that eases mapping development. Morph-KGC natively processes **[YARRRML](https://rml.io/yarrrml/spec/)**, there is no need of previous mapping translation.
 
 ### Reliability
 
