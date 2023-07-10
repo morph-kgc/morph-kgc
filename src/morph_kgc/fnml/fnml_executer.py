@@ -56,7 +56,8 @@ def _materialize_fnml_template(data, template):
         data['reference_results'] = data[reference]
 
         splitted_template = template.split('{' + reference + '}')
-        data['aux_fnml_template_data'] = data['aux_fnml_template_data'] + splitted_template[0] + data['reference_results']
+        data['aux_fnml_template_data'] = data['aux_fnml_template_data'] + splitted_template[0] + data[
+            'reference_results']
         template = str('{' + reference + '}').join(splitted_template[1:])
     if template:
         # add what remains in the template after the last reference
@@ -74,8 +75,10 @@ def execute_fnml(data, fnml_df, fnml_execution, config):
         if execution_rule['value_map_type'] == RML_EXECUTION:
             data = execute_fnml(data, fnml_df, execution_rule['value_map_value'], config)
 
-    parameter_to_value_type_dict = dict(zip(execution_rule_df['parameter_map_value'], execution_rule_df['value_map_type']))
-    parameter_to_value_value_dict = dict(zip(execution_rule_df['parameter_map_value'], execution_rule_df['value_map_value']))
+    parameter_to_value_type_dict = dict(
+        zip(execution_rule_df['parameter_map_value'], execution_rule_df['value_map_type']))
+    parameter_to_value_value_dict = dict(
+        zip(execution_rule_df['parameter_map_value'], execution_rule_df['value_map_value']))
 
     # prepare function and execute
     if function_id in bif_dict:

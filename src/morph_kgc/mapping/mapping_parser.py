@@ -252,7 +252,8 @@ def _complete_termtypes(mapping_graph):
             f'OPTIONAL {{ ?om <{RML_EXECUTION}> ?execution . }} . ' \
             f'OPTIONAL {{ ?om <{RML_LANGUAGE}> ?language . }} . ' \
             f'OPTIONAL {{ ?om <{RML_DATATYPE}> ?datatype . }} . ' \
-            'FILTER ( !bound(?termtype) && ( bound(?reference) || bound(?execution) || bound(?language) || bound(?datatype) ) ) }'
+            'FILTER ( !bound(?termtype) && (' \
+            'bound(?reference) || bound(?execution) || bound(?language) || bound(?datatype) ) ) }'
     for om, _ in mapping_graph.query(query):
         mapping_graph.add((om, rdflib.term.URIRef(RML_TERM_TYPE), rdflib.term.URIRef(RML_LITERAL)))
 

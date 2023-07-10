@@ -25,7 +25,7 @@ RML_DATAFRAME_COLUMNS = [
 ##############################################################################
 
 FNML_DATAFRAME_COLUMNS = [
-    'execution', 'function_map_value', 'parameter_map_value', 'value_map_type', 'value_map_value'
+    'function_execution', 'function_map_value', 'parameter_map_value', 'value_map_type', 'value_map_value'
 ]
 
 
@@ -61,7 +61,8 @@ RML_PARSING_QUERY = """
     # Subject -------------------------------------------------------------------------
         ?triples_map_id rml:subjectMap ?subject_map .
         ?subject_map ?subject_map_type ?subject_map_value .
-        FILTER ( ?subject_map_type IN ( rml:constant, rml:template, rml:reference, rml:quotedTriplesMap, rml:functionExecution ) ) .
+        FILTER ( ?subject_map_type IN (
+                            rml:constant, rml:template, rml:reference, rml:quotedTriplesMap, rml:functionExecution ) ) .
         OPTIONAL { ?subject_map rml:termType ?subject_termtype . }
 
     # Predicate -----------------------------------------------------------------------
@@ -75,7 +76,8 @@ RML_PARSING_QUERY = """
             OPTIONAL {
                 ?_predicate_object_map rml:objectMap ?object_map .
                 ?object_map ?object_map_type ?object_map_value .
-                FILTER ( ?object_map_type IN ( rml:constant, rml:template, rml:reference, rml:quotedTriplesMap, rml:functionExecution ) ) .
+                FILTER ( ?object_map_type IN (
+                            rml:constant, rml:template, rml:reference, rml:quotedTriplesMap, rml:functionExecution ) ) .
                 OPTIONAL { ?object_map rml:termType ?object_termtype . }
                 OPTIONAL { ?object_map rml:datatype ?object_datatype . }
                 OPTIONAL { ?object_map rml:language ?object_language . }
@@ -113,13 +115,13 @@ FNML_PARSING_QUERY = """
     prefix rml: <http://w3id.org/rml/>
 
     SELECT DISTINCT
-        ?execution ?function_map_value ?parameter_map_value ?value_map ?value_map_type ?value_map_value
+        ?function_execution ?function_map_value ?parameter_map_value ?value_map_type ?value_map_value
 
     WHERE {
 
     # FuntionMap ----------------------------------------------------------------------
 
-        ?execution rml:functionMap ?function_map .        
+        ?function_execution rml:functionMap ?function_map .        
         ?function_map rml:constant ?function_map_value .
 
         # return maps are not used in the current implementation, default is first return value
@@ -128,7 +130,7 @@ FNML_PARSING_QUERY = """
 
         OPTIONAL {
             # OPTIONAL because a function can have 0 arguments (e.g., uuid())
-            ?execution rml:input ?input .
+            ?function_execution rml:input ?input .
 
             ?input rml:parameterMap ?parameter_map .
             ?parameter_map rml:constant ?parameter_map_value .

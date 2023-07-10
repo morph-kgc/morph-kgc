@@ -46,8 +46,9 @@ def materialize_set(config, python_source=None):
         logging.debug(f'Parallelizing with {config.get_number_of_processes()} cores.')
 
         pool = mp.Pool(config.get_number_of_processes())
-        triples = set().union(
-            *pool.starmap(_materialize_mapping_group_to_set, zip(mapping_groups, repeat(rml_df), repeat(fnml_df), repeat(config), repeat(python_source))))
+        triples = set().union(*pool.starmap(_materialize_mapping_group_to_set,
+                                            zip(mapping_groups, repeat(rml_df), repeat(fnml_df), repeat(config),
+                                                repeat(python_source))))
         pool.close()
         pool.join()
     else:

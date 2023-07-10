@@ -42,8 +42,8 @@ if __name__ == "__main__":
         logging.debug(f'Parallelizing with {config.get_number_of_processes()} cores.')
 
         pool = mp.Pool(config.get_number_of_processes())
-        num_triples = sum(
-            pool.starmap(_materialize_mapping_group_to_file, zip(mapping_groups, repeat(rml_df), repeat(fnml_df), repeat(config))))
+        num_triples = sum(pool.starmap(_materialize_mapping_group_to_file,
+                                       zip(mapping_groups, repeat(rml_df), repeat(fnml_df), repeat(config))))
         pool.close()
         pool.join()
     else:

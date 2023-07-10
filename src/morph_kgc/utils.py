@@ -91,7 +91,7 @@ def get_fnml_execution(fnml_df, execution_id):
     Retrieves FNML execution by its id.
     """
 
-    return fnml_df[fnml_df['execution'] == execution_id]
+    return fnml_df[fnml_df['function_execution'] == execution_id]
 
 
 def get_references_in_template(template):
@@ -101,15 +101,18 @@ def get_references_in_template(template):
 
     # Curly braces that do not enclose column names MUST be escaped by a backslash character (“\”).
     # This also applies to curly braces within column names.
-    template = template.replace('\\{', AUXILIAR_UNIQUE_REPLACING_STRING).replace('\\}', AUXILIAR_UNIQUE_REPLACING_STRING)
+    template = template.replace('\\{', AUXILIAR_UNIQUE_REPLACING_STRING).replace('\\}',
+                                                                                 AUXILIAR_UNIQUE_REPLACING_STRING)
     references = re.findall('\\{([^}]+)', template)
-    references = [reference.replace(AUXILIAR_UNIQUE_REPLACING_STRING, '\\{').replace(AUXILIAR_UNIQUE_REPLACING_STRING, '\\}') for reference in references]
+    references = [
+        reference.replace(AUXILIAR_UNIQUE_REPLACING_STRING, '\\{').replace(AUXILIAR_UNIQUE_REPLACING_STRING, '\\}') for
+        reference in references]
 
     return references
 
 
 def get_references_in_fnml_execution(fnml_df, execution):
-    execution_rule_df = fnml_df[fnml_df['execution']==execution]
+    execution_rule_df = fnml_df[fnml_df['function_execution'] == execution]
 
     references = []
     for i, parameter in execution_rule_df.iterrows():
