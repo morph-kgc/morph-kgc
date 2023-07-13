@@ -517,18 +517,22 @@ class MappingParser:
         mapping_file_paths = self.config.get_mappings_files(section_name)
         # load mapping rules to the graph
         for f in mapping_file_paths:
-            try:
-                if f.endswith('.yarrrml') or f.endswith('.yml') or f.endswith('.yaml'):
-                    mapping_graph += load_yarrrml(f)
-                else:
-                    # mapping is in an RDF serialization
-                    mapping_graph.parse(f, format=os.path.splitext(f)[1][1:].strip())
-            except:
-                # if a file extension such as .rml or .r2rml is used, assume it is turtle (issue #80)
+            if f.endswith('.yarrrml') or f.endswith('.yml') or f.endswith('.yaml'):
                 try:
-                    mapping_graph.parse(f)
-                except Exception as n3_mapping_parse_exception:
-                    raise Exception(n3_mapping_parse_exception)
+                    mapping_graph += load_yarrrml(f)
+                except Exception as yaml_parse_exception:
+                    raise Exception(yaml_parse_exception)
+            else:
+                # mapping is in an RDF serialization
+                try:
+                    # provide file extension when parsing
+                    mapping_graph.parse(f, format=os.path.splitext(f)[1][1:].strip())
+                except:
+                    # if a file extension such as .rml or .r2rml is used, assume it is turtle (issue #80)
+                    try:
+                        mapping_graph.parse(f)
+                    except Exception as n3_mapping_parse_exception:
+                        raise Exception(n3_mapping_parse_exception)
 
         # convert R2RML to RML
         mapping_graph = _r2rml_to_rml(mapping_graph)
