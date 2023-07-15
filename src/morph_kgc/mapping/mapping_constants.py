@@ -85,6 +85,7 @@ RML_PARSING_QUERY = """
             OPTIONAL {
                 ?_predicate_object_map rml:objectMap ?object_map .
                 ?object_map rml:parentTriplesMap ?object_map_value .
+                OPTIONAL { ?object_map rml:termType ?object_termtype . }
                 BIND ( rml:parentTriplesMap AS ?object_map_type ) .
             }
             OPTIONAL {

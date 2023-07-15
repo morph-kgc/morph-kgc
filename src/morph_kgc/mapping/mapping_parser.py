@@ -257,6 +257,14 @@ def _complete_termtypes(mapping_graph):
     for om, _ in mapping_graph.query(query):
         mapping_graph.add((om, rdflib.term.URIRef(RML_TERM_TYPE), rdflib.term.URIRef(RML_LITERAL)))
 
+    # complete referencing object maps with the termtype coming from the subject of the parent
+    query = 'SELECT DISTINCT ?term_map ?termtype WHERE { ' \
+            f'?term_map <{RML_PARENT_TRIPLES_MAP}> ?parent_tm . ' \
+            f'?parent_tm <{RML_SUBJECT_MAP}> ?parent_subject_map . ' \
+            f'?parent_subject_map <{RML_TERM_TYPE}> ?termtype . }}'
+    for term_map, termtype in mapping_graph.query(query):
+        mapping_graph.add((term_map, rdflib.term.URIRef(RML_TERM_TYPE), rdflib.term.URIRef(termtype)))
+
     # now all missing termtypes are IRIs
     for term_map_property in [RML_SUBJECT_MAP, RML_PREDICATE_MAP, RML_OBJECT_MAP, RML_GRAPH_MAP]:
         query = 'SELECT DISTINCT ?term_map ?x WHERE { ' \

@@ -338,7 +338,6 @@ class MappingPartitioner:
         self.rml_df['mapping_partition'] = self.rml_df['subject_partition'].astype(str) + '-' + \
             self.rml_df['predicate_partition'].astype(str) + '-' + \
             self.rml_df['object_partition'].astype(str) + '-' + self.rml_df['graph_partition'].astype(str)
-        self.rml_df.sort_values(by='mapping_partition', ascending=False).to_csv('a.csv', index=False)
 
         # drop the auxiliary columns that were created just to generate the mapping partition
         self.rml_df.drop([
@@ -386,14 +385,12 @@ class MappingPartitioner:
                 self.rml_df.at[i, 'object_invariant'] = get_invariant_of_template(str(rml_rule['object_map_value']))
             # elif pd.notna(rml_rule['object_parent_triples_map']) and rml_rule['object_parent_triples_map']!="":
             elif rml_rule['object_map_type'] == RML_PARENT_TRIPLES_MAP:
-
                 # get the invariant for referencing object maps
-                # parent_rml_rule = get_rml_rule(self.rml_df, rml_rule['object_parent_triples_map'])
                 parent_rml_rule = get_rml_rule(self.rml_df, rml_rule['object_map_value'])
 
-                if rml_rule['subject_map_type'] == RML_CONSTANT:
+                if parent_rml_rule['subject_map_type'] == RML_CONSTANT:
                     self.rml_df.at[i, 'object_invariant'] = str(parent_rml_rule['subject_map_value'])
-                elif rml_rule['subject_map_type'] == RML_TEMPLATE:
+                elif parent_rml_rule['subject_map_type'] == RML_TEMPLATE:
                     self.rml_df.at[i, 'object_invariant'] = \
                         get_invariant_of_template(str(parent_rml_rule['subject_map_value']))
 
