@@ -55,7 +55,7 @@ def _generate_maximal_partition_for_a_position_ordering(rml_df, position_orderin
                     current_invariant = AUXILIAR_UNIQUE_REPLACING_STRING
                     current_global_group = rml_rule['mapping_partition']
 
-                if rml_rule['subject_termtype'] == R2RML_BLANK_NODE:
+                if rml_rule['subject_termtype'] == RML_BLANK_NODE:
                     rml_df.at[i, 'mapping_partition'] = f"{rml_df.at[i, 'mapping_partition']}-0"
                 elif rml_rule['subject_invariant'].startswith(current_invariant):
                     rml_df.at[i, 'mapping_partition'] = f"{rml_df.at[i, 'mapping_partition']}-{current_group}"
@@ -70,7 +70,7 @@ def _generate_maximal_partition_for_a_position_ordering(rml_df, position_orderin
             rml_df.sort_values(by=['mapping_partition', 'predicate_invariant'], inplace=True, ascending=True)
 
             # if all predicates are constant terms we can use full string comparison instead of startswith
-            enforce_invariant_non_subset = set(rml_df['predicate_map_value']) == set(R2RML_CONSTANT)
+            enforce_invariant_non_subset = set(rml_df['predicate_map_value']) == set(RML_CONSTANT)
 
             for i, rml_rule in rml_df.iterrows():
                 if current_global_group != rml_rule['mapping_partition']:
@@ -100,9 +100,9 @@ def _generate_maximal_partition_for_a_position_ordering(rml_df, position_orderin
                     current_invariant = AUXILIAR_UNIQUE_REPLACING_STRING
                     current_global_group = rml_rule['mapping_partition']
 
-                if rml_rule['object_termtype'] == R2RML_BLANK_NODE:
+                if rml_rule['object_termtype'] == RML_BLANK_NODE:
                     rml_df.at[i, 'mapping_partition'] = f"{rml_df.at[i, 'mapping_partition']}-0"
-                elif rml_rule['object_termtype'] == R2RML_LITERAL:
+                elif rml_rule['object_termtype'] == RML_LITERAL:
                     # str() is necessary for NULL literal types
                     if str(rml_rule['literal_type']) != current_literal_type:
                         current_group += 1
@@ -121,7 +121,7 @@ def _generate_maximal_partition_for_a_position_ordering(rml_df, position_orderin
             rml_df.sort_values(by=['mapping_partition', 'graph_invariant'], inplace=True, ascending=True)
 
             # if all graph are constant terms we can use full string comparison instead of startswith
-            enforce_invariant_non_subset = set(rml_df['graph_map_value']) == set(R2RML_CONSTANT)
+            enforce_invariant_non_subset = set(rml_df['graph_map_value']) == set(RML_CONSTANT)
 
             for i, rml_rule in rml_df.iterrows():
                 if current_global_group != rml_rule['mapping_partition']:
@@ -255,7 +255,7 @@ class MappingPartitioner:
         # if it does, then it is in the same mapping partition than the previous mapping rule
         # if it does not, then the mapping rule is in a new mapping partition
         for i, rml_rule in self.rml_df.iterrows():
-            if rml_rule['subject_termtype'] == R2RML_BLANK_NODE:
+            if rml_rule['subject_termtype'] == RML_BLANK_NODE:
                 self.rml_df.at[i, 'subject_partition'] = '0'
             elif rml_rule['subject_invariant'].startswith(current_invariant):
                 self.rml_df.at[i, 'subject_partition'] = str(current_group)
@@ -272,7 +272,7 @@ class MappingPartitioner:
         current_invariant = AUXILIAR_UNIQUE_REPLACING_STRING
 
         # if all predicates are constant terms we can use full string comparison instead of startswith
-        enforce_invariant_non_subset = set(self.rml_df['predicate_map_value']) == set(R2RML_CONSTANT)
+        enforce_invariant_non_subset = set(self.rml_df['predicate_map_value']) == set(RML_CONSTANT)
 
         if enforce_invariant_non_subset:
             logging.debug('All predicate maps are constant-valued, invariant subset is not enforced.')
@@ -297,9 +297,9 @@ class MappingPartitioner:
         current_invariant = AUXILIAR_UNIQUE_REPLACING_STRING
 
         for i, rml_rule in self.rml_df.iterrows():
-            if rml_rule['object_termtype'] == R2RML_BLANK_NODE:
+            if rml_rule['object_termtype'] == RML_BLANK_NODE:
                 self.rml_df.at[i, 'object_partition'] = '0'
-            elif rml_rule['object_termtype'] == R2RML_LITERAL:
+            elif rml_rule['object_termtype'] == RML_LITERAL:
                 # str() is necessary for NULL literal types
                 if str(rml_rule['literal_type']) != current_literal_type:
                     current_group += 1
@@ -320,7 +320,7 @@ class MappingPartitioner:
         current_invariant = AUXILIAR_UNIQUE_REPLACING_STRING
 
         # if all graph are constant terms we can use full string comparison instead of startswith
-        enforce_invariant_non_subset = set(self.rml_df['graph_map_value']) == set(R2RML_CONSTANT)
+        enforce_invariant_non_subset = set(self.rml_df['graph_map_value']) == set(RML_CONSTANT)
 
         if enforce_invariant_non_subset:
             logging.debug('All graph maps are constant-valued, invariant subset is not enforced.')
@@ -369,41 +369,41 @@ class MappingPartitioner:
 
         for i, rml_rule in self.rml_df.iterrows():
             # SUBJECT
-            if rml_rule['subject_map_type'] == R2RML_TEMPLATE:
+            if rml_rule['subject_map_type'] == RML_TEMPLATE:
                 self.rml_df.at[i, 'subject_invariant'] = \
                     get_invariant_of_template(str(rml_rule['subject_map_value']))
-            elif rml_rule['subject_map_type'] == R2RML_CONSTANT:
+            elif rml_rule['subject_map_type'] == RML_CONSTANT:
                 self.rml_df.at[i, 'subject_invariant'] = str(rml_rule['subject_map_value'])
             # PREDICATE
-            if rml_rule['predicate_map_type'] == R2RML_CONSTANT:
+            if rml_rule['predicate_map_type'] == RML_CONSTANT:
                 self.rml_df.at[i, 'predicate_invariant'] = str(rml_rule['predicate_map_value'])
-            elif rml_rule['predicate_map_type'] == R2RML_TEMPLATE:
+            elif rml_rule['predicate_map_type'] == RML_TEMPLATE:
                 self.rml_df.at[i, 'predicate_invariant'] = \
                     get_invariant_of_template(str(rml_rule['predicate_map_value']))
 
             # OBJECT
-            if rml_rule['object_map_type'] == R2RML_CONSTANT:
+            if rml_rule['object_map_type'] == RML_CONSTANT:
                 self.rml_df.at[i, 'object_invariant'] = str(rml_rule['object_map_value'])
-            elif rml_rule['object_map_type'] == R2RML_TEMPLATE:
+            elif rml_rule['object_map_type'] == RML_TEMPLATE:
                 self.rml_df.at[i, 'object_invariant'] = \
                     get_invariant_of_template(str(rml_rule['object_map_value']))
             # elif pd.notna(rml_rule['object_parent_triples_map']) and rml_rule['object_parent_triples_map']!="":
-            elif rml_rule['object_map_type'] == R2RML_PARENT_TRIPLES_MAP:
+            elif rml_rule['object_map_type'] == RML_PARENT_TRIPLES_MAP:
 
                 # get the invariant for referencing object maps
                 # parent_rml_rule = get_rml_rule(self.rml_df, rml_rule['object_parent_triples_map'])
                 parent_rml_rule = get_rml_rule(self.rml_df, rml_rule['object_map_value'])
 
 
-                if rml_rule['subject_map_type'] == R2RML_CONSTANT:
+                if rml_rule['subject_map_type'] == RML_CONSTANT:
                     self.rml_df.at[i, 'object_invariant'] = str(parent_rml_rule['subject_map_value'])
-                elif rml_rule['subject_map_type'] == R2RML_TEMPLATE:
+                elif rml_rule['subject_map_type'] == RML_TEMPLATE:
                     self.rml_df.at[i, 'object_invariant'] = \
                         get_invariant_of_template(str(parent_rml_rule['subject_map_value']))
 
             # GRAPH
-            if rml_rule['graph_map_type'] == R2RML_CONSTANT:
+            if rml_rule['graph_map_type'] == RML_CONSTANT:
                 self.rml_df.at[i, 'graph_invariant'] = str(rml_rule['graph_map_value'])
-            elif rml_rule['graph_map_type'] == R2RML_TEMPLATE:
+            elif rml_rule['graph_map_type'] == RML_TEMPLATE:
                 self.rml_df.at[i, 'graph_invariant'] = \
                     get_invariant_of_template(str(rml_rule['graph_map_value']))
