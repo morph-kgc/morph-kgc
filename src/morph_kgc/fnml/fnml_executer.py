@@ -91,7 +91,6 @@ def execute_fnml(data, fnml_df, fnml_execution, config):
 
     function_params = {}
     for k, v in function_decorator_parameters.items():
-
         # if parameter is optional it is not in parameter_to_value_type_dict
         if v in parameter_to_value_type_dict:
             if parameter_to_value_type_dict[v] == RML_CONSTANT:

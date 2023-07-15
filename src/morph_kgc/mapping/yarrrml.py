@@ -488,18 +488,21 @@ def _translate_yarrrml_to_rml(yarrrml_mapping):
                         mapping_graph = _translate_yarrrml_function_to_rml(mapping_graph, mapping_value['predicateobjects'][position], property_bnode)
                     elif 'mappings' in mapping_value['predicateobjects'][position]:
                         # referencing object map
-                        for ref_tm in tm_id_to_norm_tm_ids[mapping_value['predicateobjects'][position]['mappings']]:
-                            object_bnode = rdflib.BNode()
-                            mapping_graph.add((predicateobject_bnode, rdflib.term.URIRef(property), object_bnode))
-                            mapping_graph.add((object_bnode, rdflib.term.URIRef(RML_PARENT_TRIPLES_MAP), rdflib.term.URIRef(ref_tm)))
-                            if 'condition' in mapping_value['predicateobjects'][position] and 'parameters' in mapping_value['predicateobjects'][position]['condition']:
-                                join_condition_bnode = rdflib.BNode()
-                                mapping_graph.add((object_bnode, rdflib.term.URIRef(RML_JOIN_CONDITION), join_condition_bnode))
-                                for parameter in mapping_value['predicateobjects'][position]['condition']['parameters']:
-                                    if parameter[0] == 'str1':
-                                        mapping_graph.add((join_condition_bnode, rdflib.term.URIRef(RML_CHILD), rdflib.term.Literal(parameter[1][2:-1])))
-                                    elif parameter[0] == 'str2':
-                                        mapping_graph.add((join_condition_bnode, rdflib.term.URIRef(RML_PARENT), rdflib.term.Literal(parameter[1][2:-1])))
+
+                        # just a single normalized triples map is needed (only the subject map is used)
+                        ref_tm = list(tm_id_to_norm_tm_ids[mapping_value['predicateobjects'][position]['mappings']])[0]
+
+                        object_bnode = rdflib.BNode()
+                        mapping_graph.add((predicateobject_bnode, rdflib.term.URIRef(property), object_bnode))
+                        mapping_graph.add((object_bnode, rdflib.term.URIRef(RML_PARENT_TRIPLES_MAP), rdflib.term.URIRef(ref_tm)))
+                        if 'condition' in mapping_value['predicateobjects'][position] and 'parameters' in mapping_value['predicateobjects'][position]['condition']:
+                            join_condition_bnode = rdflib.BNode()
+                            mapping_graph.add((object_bnode, rdflib.term.URIRef(RML_JOIN_CONDITION), join_condition_bnode))
+                            for parameter in mapping_value['predicateobjects'][position]['condition']['parameters']:
+                                if parameter[0] == 'str1':
+                                    mapping_graph.add((join_condition_bnode, rdflib.term.URIRef(RML_CHILD), rdflib.term.Literal(parameter[1][2:-1])))
+                                elif parameter[0] == 'str2':
+                                    mapping_graph.add((join_condition_bnode, rdflib.term.URIRef(RML_PARENT), rdflib.term.Literal(parameter[1][2:-1])))
                     elif 'quoted' in mapping_value['predicateobjects'][position] or 'quotedNonAsserted' in mapping_value['predicateobjects'][position]:
                         object_bnode = rdflib.BNode()
                         mapping_graph.add((predicateobject_bnode, rdflib.term.URIRef(property), object_bnode))
