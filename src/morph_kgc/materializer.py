@@ -148,10 +148,6 @@ def _materialize_template(results_df, template, config, position, columns_alias=
             results_df[position] = results_df[position] + '@' + language_tag
         elif pd.notna(datatype):
             results_df[position] = results_df[position] + '^^<' + datatype + '>'
-        else:
-            results_df[position] = results_df[position]
-    elif termtype.strip() == RML_BLANK_NODE:
-        results_df[position] = results_df[position]
 
     return results_df
 
@@ -212,8 +208,6 @@ def _materialize_fnml_execution(results_df, fnml_execution, fnml_df, config, pos
             results_df[position] = results_df[position] + '@' + language_tag
         elif pd.notna(datatype):
             results_df[position] = results_df[position] + '^^<' + datatype + '>'
-        else:
-            results_df[position] = results_df[position]
     elif termtype.strip() == RML_IRI:
         # it is assumed that the IRI values will be correct, and they are not percent encoded
         results_df[fnml_execution] = results_df[fnml_execution].apply(lambda x: x.strip())
