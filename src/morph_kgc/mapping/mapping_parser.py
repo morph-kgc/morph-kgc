@@ -18,10 +18,10 @@ def retrieve_mappings(config):
     mappings_parser = MappingParser(config)
 
     start_time = time.time()
-    rml_df, fno_df = mappings_parser.parse_mappings()
+    rml_df, fnml_df = mappings_parser.parse_mappings()
     logging.info(f'Mappings processed in {get_delta_time(start_time)} seconds.')
 
-    return rml_df, fno_df
+    return rml_df, fnml_df
 
 
 def _r2rml_to_rml(mapping_graph):
@@ -351,7 +351,7 @@ def _transform_mappings_into_dataframe(mapping_graph, section_name):
     # parse the mappings with the parsing queries
     rml_query_results = mapping_graph.query(RML_PARSING_QUERY)
     join_query_results = mapping_graph.query(RML_JOIN_CONDITION_PARSING_QUERY)
-    fno_query_results = mapping_graph.query(FNML_PARSING_QUERY)
+    fnml_query_results = mapping_graph.query(FNML_PARSING_QUERY)
 
     # RML in graph to DataFrame
     rml_df = pd.DataFrame(rml_query_results.bindings)
@@ -385,11 +385,11 @@ def _transform_mappings_into_dataframe(mapping_graph, section_name):
     rml_df = rml_df.drop(columns=['subject_map', 'object_map'])
 
     # FNML in graph to DataFrame
-    fno_df = pd.DataFrame(fno_query_results.bindings)
-    fno_df.columns = fno_df.columns.map(str)
-    fno_df = fno_df.applymap(str)
+    fnml_df = pd.DataFrame(fnml_query_results.bindings)
+    fnml_df.columns = fnml_df.columns.map(str)
+    fnml_df = fnml_df.applymap(str)
 
-    return rml_df, fno_df
+    return rml_df, fnml_df
 
 
 def _is_delimited_identifier(identifier):
@@ -460,7 +460,7 @@ class MappingParser:
 
     def __init__(self, config):
         self.rml_df = pd.DataFrame(columns=RML_DATAFRAME_COLUMNS)
-        self.fno_df = pd.DataFrame(columns=FNML_DATAFRAME_COLUMNS)
+        self.fnml_df = pd.DataFrame(columns=FNML_DATAFRAME_COLUMNS)
         self.config = config
 
     def __str__(self):
@@ -488,7 +488,7 @@ class MappingParser:
         mapping_partitioner = MappingPartitioner(self.rml_df, self.config)
         self.rml_df = mapping_partitioner.partition_mappings()
 
-        return self.rml_df, self.fno_df
+        return self.rml_df, self.fnml_df
 
     def _get_from_r2_rml(self):
         """
@@ -497,19 +497,19 @@ class MappingParser:
         each mapping file is parsed in parallel.
         """
 
-        # before parsing was paralellized
+        # previously parsing was paralellized
         #if self.config.is_multiprocessing_enabled() and self.config.has_multiple_data_sources():
         #    pool = mp.Pool(self.config.get_number_of_processes())
         #    rml_dfs = pool.map(self._parse_data_source_mapping_files, self.config.get_data_sources_sections())
         #    self.rml_df = pd.concat([self.rml_df, pd.concat(rml_dfs)])
         #else:
         for section_name in self.config.get_data_sources_sections():
-            data_source_rml_df, data_source_fno_df = self._parse_data_source_mapping_files(section_name)
+            data_source_rml_df, data_source_fnml_df = self._parse_data_source_mapping_files(section_name)
             self.rml_df = pd.concat([self.rml_df, data_source_rml_df])
-            self.fno_df = pd.concat([self.fno_df, data_source_fno_df])
+            self.fnml_df = pd.concat([self.fnml_df, data_source_fnml_df])
 
         self.rml_df = self.rml_df.reset_index(drop=True)
-        self.fno_df = self.fno_df.reset_index(drop=True)
+        self.fnml_df = self.fnml_df.reset_index(drop=True)
 
     def _parse_data_source_mapping_files(self, section_name):
         """
