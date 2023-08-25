@@ -37,7 +37,7 @@ classifiers = [
   'Topic :: Utilities',
   'Topic :: Scientific/Engineering :: Interface Engine/Protocol Translator',
 ]
-requires-python = '>=3.7'
+requires-python = '>=3.8'
 dynamic = ['version']
 dependencies = [
   'pandas>=1.4.0, <2.0.0',
