@@ -46,7 +46,7 @@ def get_file_data(rml_rule, references):
         return _read_sas(rml_rule)
     elif file_source_type == SPSS:
         return _read_spss(rml_rule, references)
-    elif file_source_type == JSON:
+    elif file_source_type in JSON:
         return _read_json(rml_rule, references)
     elif file_source_type == XML:
         return _read_xml(rml_rule, references)

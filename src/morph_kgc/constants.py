@@ -30,7 +30,7 @@ ORC = 'ORC'
 STATA = 'DTA'
 SAS = ['XPT', 'SAS7BDAT']
 SPSS = 'SAV'
-JSON = 'JSON'
+JSON = ['JSON', 'GEOJSON']
 XML = 'XML'
 
 # DBMSs
