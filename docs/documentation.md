@@ -197,7 +197,7 @@ The properties to be specified for **relational databases** are listed below. Al
 Example **`db_url`** values (see **[here](https://docs.sqlalchemy.org/en/20/core/engines.html#database-urls)** all the information):
 
 - **[MySQL](https://www.mysql.com/)**: _mysql+pymysql://username:password@host:port/db_name_
-- **[PostgreSQL](https://www.postgresql.org/)**: _postgresql+psycopg2://username:password@host:port/db_name_
+- **[PostgreSQL](https://www.postgresql.org/)**: _postgresql+psycopg://username:password@host:port/db_name_
 - **[Oracle](https://www.oracle.com/database/)**: _oracle+cx_oracle://username:password@host:port/db_name_
 - **[Microsoft SQL Server](https://www.microsoft.com/sql-server)**: _mssql+pymssql://username:password@host:port/db_name_
 - **[MariaDB](https://mariadb.org/)**: _mariadb+pymysql://username:password@host:port/db_name_
