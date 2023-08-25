@@ -1,7 +1,7 @@
 ---
 name: Submit Question
 about: 'Ask a question about Morph-KGC'
-title: 'QST: '
+title: ''
 labels: question
 assignees: ArenasGuerreroJulian
 
