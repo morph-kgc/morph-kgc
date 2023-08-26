@@ -16,9 +16,9 @@
 ## Features :sparkles:
 
 - Supports the **[R2RML](https://www.w3.org/TR/r2rml/)** and **[RML](https://w3id.org/rml/core/spec)** mapping languages.
-- Transformation functions with **[RML-FNML](https://w3id.org/rml/fnml/spec)**.
-- [RDF-star](https://w3c.github.io/rdf-star/cg-spec/2021-12-17.html) generation with **[RML-star](https://w3id.org/rml/star/spec)**.
 - User-friendly mappings with **[YARRRML](https://rml.io/yarrrml/spec/)**.
+- Transformation functions with **[RML-FNML](https://w3id.org/rml/fnml/spec)**, including **Python user-defined functions**.
+- [RDF-star](https://w3c.github.io/rdf-star/cg-spec/2021-12-17.html) generation with **[RML-star](https://w3id.org/rml/star/spec)**.
 - **[RML views](https://oa.upm.es/73463/1/_2023___ESWC__RML_Tabular_Views.pdf)** over tabular data sources and **[JSON](https://www.json.org)** files.
 - Integration with **[RDFLib](https://rdflib.readthedocs.io)** and **[Oxigraph](https://pyoxigraph.readthedocs.io/en/latest/)**.
 - **Optimized** to materialize large knowledge graphs.
