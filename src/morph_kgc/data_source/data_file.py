@@ -95,7 +95,7 @@ def _read_feather(rml_rule, references):
 
 
 def _read_orc(rml_rule, references):
-    return pd.read_orc(rml_rule['logical_source_value'], encoding='utf-8', columns=references)
+    return pd.read_orc(rml_rule['logical_source_value'], columns=references)
 
 
 def _read_stata(rml_rule, references):
