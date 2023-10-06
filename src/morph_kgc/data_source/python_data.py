@@ -37,9 +37,9 @@ def get_ram_data(rml_rule, references, python_source=None):
         raise ValueError(f'Found an invalid in-memory data structure.')
 
 
-def _check_if_json(json):
+def _check_if_json(json_file):
     try:
-        json.loads(json)
+        json.loads(json_file)
     except ValueError as e:
         return False
     return True
