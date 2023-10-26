@@ -35,7 +35,7 @@ FNML_DATAFRAME_COLUMNS = [
 
 RML_PARSING_QUERY = """
     prefix rml: <http://w3id.org/rml/>
-    prefix sd: <https://w3id.org/okn/o/sd/>
+    prefix sd: <https://w3id.org/okn/o/sd#>
 
     SELECT DISTINCT 
         ?triples_map_id ?triples_map_type ?logical_source_type ?logical_source_value ?iterator 

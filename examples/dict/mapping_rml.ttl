@@ -9,7 +9,7 @@
 @prefix foaf: <http://xmlns.com/foaf/0.1/>.
 @base <http://example.com/ns#>.
 @prefix schema: <http://schema.org/>.
-@prefix sd: <https://w3id.org/okn/o/sd/>.
+@prefix sd: <https://w3id.org/okn/o/sd#>.
 @prefix kg4di: <https://w3id.org/kg4di/definedBy>.
 
 
