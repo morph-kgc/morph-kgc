@@ -5,7 +5,7 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix rml: <http://semweb.mmlab.be/ns/rml#> .
 @prefix ql: <http://semweb.mmlab.be/ns/ql#> .
-@prefix sd: <https://w3id.org/okn/o/sd/>.
+@prefix sd: <https://w3id.org/okn/o/sd#>.
 @prefix kg4di: <https://w3id.org/kg4di/definedBy>.
 @base <http://example.com/base/> .
 

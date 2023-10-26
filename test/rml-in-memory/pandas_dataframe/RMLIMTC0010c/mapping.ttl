@@ -6,7 +6,7 @@
 @prefix ql: <http://semweb.mmlab.be/ns/ql#> .
 @prefix activity: <http://example.com/activity/> .
 @base <http://example.com/base/> .
-@prefix sd: <https://w3id.org/okn/o/sd/>.
+@prefix sd: <https://w3id.org/okn/o/sd#>.
 @prefix kg4di: <https://w3id.org/kg4di/definedBy>.
 
 <TriplesMap1>
