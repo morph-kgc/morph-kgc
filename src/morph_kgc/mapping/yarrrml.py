@@ -7,8 +7,8 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 
 import rdflib
-import ruamel.yaml as yaml
 
+from ruamel.yaml import YAML
 from copy import deepcopy
 from random import randint
 
@@ -544,7 +544,8 @@ def _translate_yarrrml_to_rml(yarrrml_mapping):
 
 def load_yarrrml(yarrrml_file):
     with open(yarrrml_file) as f:
-        yarrrml_mapping = yaml.safe_load(f)
+        yaml = YAML(typ='safe', pure=True)
+        yarrrml_mapping = yaml.load(f)
 
     yarrrml_mapping = _normalize_yarrrml_key_names(yarrrml_mapping)
 
