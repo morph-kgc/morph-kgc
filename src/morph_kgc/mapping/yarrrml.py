@@ -114,7 +114,11 @@ def _add_default_prefixes(mappings):
         'xsd': XSD_NAMESPACE,
         'rdfs': RDFS_NAMESPACE
     }
-    mappings['prefixes'].update(default_prefixes)
+
+    if 'prefixes' in mappings:
+        mappings['prefixes'].update(default_prefixes)
+    else:
+        mappings['prefixes'] = default_prefixes
 
     return mappings
 
@@ -545,9 +549,8 @@ def load_yarrrml(yarrrml_file):
     yarrrml_mapping = _normalize_yarrrml_key_names(yarrrml_mapping)
 
     yarrrml_mapping = _add_default_prefixes(yarrrml_mapping)
-    if 'prefixes' in yarrrml_mapping:
-        yarrrml_mapping = _expand_prefixes_in_yarrrml_templates(yarrrml_mapping, yarrrml_mapping['prefixes'])
-        yarrrml_mapping.pop('prefixes')
+    yarrrml_mapping = _expand_prefixes_in_yarrrml_templates(yarrrml_mapping, yarrrml_mapping['prefixes'])
+    yarrrml_mapping.pop('prefixes')
 
     yarrrml_mapping = _normalize_yarrrml_mapping(yarrrml_mapping)
     rml_mapping = _translate_yarrrml_to_rml(yarrrml_mapping)
