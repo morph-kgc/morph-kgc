@@ -15,6 +15,7 @@ from itertools import repeat
 
 from .args_parser import load_config_from_command_line
 from .materializer import _materialize_mapping_group_to_file
+from .materializer import _materialize_mapping_group_to_kafka
 from .data_source.relational_database import setup_oracle
 from .utils import get_delta_time
 from .mapping.mapping_parser import retrieve_mappings
@@ -38,17 +39,25 @@ if __name__ == "__main__":
 
     start_time = time.time()
     num_triples = 0
+    result = 0
     if config.is_multiprocessing_enabled():
         logging.debug(f'Parallelizing with {config.get_number_of_processes()} cores.')
 
         pool = mp.Pool(config.get_number_of_processes())
         num_triples = sum(pool.starmap(_materialize_mapping_group_to_file,
                                        zip(mapping_groups, repeat(rml_df), repeat(fnml_df), repeat(config))))
+        result = sum(pool.starmap(_materialize_mapping_group_to_kafka,
+                                       zip(mapping_groups, repeat(rml_df), repeat(fnml_df), repeat(config))))
         pool.close()
         pool.join()
     else:
         for mapping_group in mapping_groups:
             num_triples += _materialize_mapping_group_to_file(mapping_group, rml_df, fnml_df, config)
+            result += _materialize_mapping_group_to_kafka(mapping_group, rml_df, fnml_df, config)
 
     logging.info(f'Number of triples generated in total: {num_triples}.')
     logging.info(f'Materialization finished in {get_delta_time(start_time)} seconds.')
+    if result == 0:
+        logging.info(f'RDF triples materialized and sent to Kafka topic.')
+    else:
+        logging.info(f'Output Kafka server or topic is empty. Skipping Kafka publishing.')

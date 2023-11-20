@@ -9,6 +9,8 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 import re
 import os
 import logging
+from kafka import KafkaProducer
+
 import rdflib
 import time
 import numpy as np
@@ -275,3 +277,34 @@ def normalize_hierarchical_data(data):
             yield from normalize_hierarchical_data(i)
     else:
         yield data
+
+def triples_to_kafka(triples, config):
+    """
+    Writes triples to kafka.
+    """
+    kafka_producer = None
+    output_kafka_server = config.get_output_kafka_server().strip('"')
+    output_kafka_topic = config.get_output_kafka_topic().strip('"')
+
+    if not output_kafka_server or not output_kafka_topic:
+        logging.info('Output Kafka server or topic is empty.')
+        return 1
+    try:
+        kafka_producer = KafkaProducer(bootstrap_servers=output_kafka_server)
+
+        rdf_ntriples = '.\n'.join(triples)
+        if rdf_ntriples:
+            # only add final dot if at least one triple was generated
+            rdf_ntriples += '.'
+
+            # Send the RDF triples to Kafka
+            kafka_producer.send(output_kafka_topic, value=rdf_ntriples.encode('utf-8'))
+
+        return 0
+    except Exception as e:
+            logging.error(f'Error during materialization or Kafka publishing: {e}')
+            return f'Error: {e}'
+    finally:
+        # Close the Kafka producer
+        if kafka_producer:
+            kafka_producer.close()
