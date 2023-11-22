@@ -244,6 +244,7 @@ The supported DBMSs are **[MySQL](https://www.mysql.com/)**, **[PostgreSQL](http
 - **[PostgreSQL](https://www.postgresql.org/)**: `pip install morph-kgc[postgresql]`.
 - **[Microsoft SQL Server](https://www.microsoft.com/sql-server)**: `pip install morph-kgc[mssql]`.
 - **[Oracle](https://www.oracle.com/database/)**: `pip install morph-kgc[oracle]`.
+- **[SQLite](https://www.sqlite.org)**: `pip install morph-kgc[sqlite]`.
 
 To run Morph-KGC with [Oracle](https://www.oracle.com/database/), the libraries of the [Oracle Client](https://www.oracle.com/database/technologies/instant-client/downloads.html) need to be loaded. See [cx_Oracle Installation](https://cx-oracle.readthedocs.io/en/latest/user_guide/installation.html) to install these libraries. See [cx_Oracle Initialization](https://cx-oracle.readthedocs.io/en/latest/user_guide/initialization.html) to setup the initialization of [Oracle](https://www.oracle.com/database/). Depending on the selected option, provide the properties `oracle_client_lib_dir` and `oracle_client_config_dir` in the [`CONFIGURATION`](https://morph-kgc.readthedocs.io/en/latest/documentation/#engine-configuration) section accordingly.
 
