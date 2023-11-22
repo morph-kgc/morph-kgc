@@ -44,7 +44,7 @@ python3 -m morph_kgc path/to/config.ini
 
 ### Library
 
-Morph-KGC can be used as a **library**, providing different methods to materialize the **[RDF](https://www.w3.org/TR/rdf11-concepts/)** or **[RDF-star](https://w3c.github.io/rdf-star/cg-spec/2021-12-17.html)** knowledge graph. It integrates with **[RDFLib](https://rdflib.readthedocs.io/en/stable/)** and **[Oxigraph](https://pyoxigraph.readthedocs.io/en/latest/)** to easily create and work with knowledge graphs in **[Python](https://www.python.org/)**.
+Morph-KGC can be used as a **library**, providing different methods to materialize the **[RDF](https://www.w3.org/TR/rdf11-concepts/)** or **[RDF-star](https://w3c.github.io/rdf-star/cg-spec/2021-12-17.html)** knowledge graph. It integrates with **[RDFLib](https://rdflib.readthedocs.io/en/stable/)**, **[Oxigraph](https://pyoxigraph.readthedocs.io/en/latest/)** and **[Kafka](https://kafka-python.readthedocs.io)** to easily create and work with knowledge graphs in **[Python](https://www.python.org/)**.
 
 The methods in the **API** accept the **config as a string or as the path to an INI file**.
 
@@ -115,6 +115,20 @@ graph = morph_kgc.materialize_set('/path/to/config.ini')
 print(len(graph))
 ```
 
+#### [Kafka](https://kafka-python.readthedocs.io)
+
+**`morph_kgc.materialize_kafka(config)`**
+
+Materialize the knowledge graph to a **[Kafka](https://kafka-python.readthedocs.io)** topic. To use this method, ensure that the config file includes the `output_kafka_server` and `output_kafka_topic` parameters.
+
+```Python
+# generate the triples and sent them to Kafka topic
+
+graph = morph_kgc.materialize_kafka(config)
+# or
+graph = morph_kgc.materialize_kafka('/path/to/config.ini')
+```
+
 ## Configuration
 
 The configuration of Morph-KGC is done via an **[INI file](https://en.wikipedia.org/wiki/INI_file)**. This configuration file can contain the following sections:
@@ -155,6 +169,8 @@ The execution of Morph-KGC can be **tuned** via the **`CONFIGURATION`** section 
 |-----------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **`output_file`**                       | File to write the resulting knowledge graph to.                                                                                                                                                                                              | **Default:** _knowledge-graph.nt_                                                                                                                                       |
 | **`output_dir`**                        | Directory to write the resulting knowledge graph to. If it is specified, `output_file` will be ignored and multiple output files will generated, one for each mapping partition.                                                             | **Default:**                                                                                                                                                            |
+| **`output_kafka_server`**               | Kafka server address for sending the resulting knowledge graph.                                                                                                                                                                              | **Default:**                                                                                                                                                            |
+| **`output_kafka_topic`**                | Kafka topic to send the resulting knowledge graph to.                                                                                                                                                                                        | **Default:**                                                                                                                                                            |
 | **`na_values`**                         | Set of values to be interpreted as _NULL_ when retrieving data from the input sources. The set of values must be separated by commas.                                                                                                        | **Default:** ,_nan_                                                                                                                                                     |
 | **`output_format`**                     | RDF serialization to use for the resulting knowledge graph.                                                                                                                                                                                  | **Valid:** _[N-TRIPLES](https://www.w3.org/TR/n-triples/)_, _[N-QUADS](https://www.w3.org/TR/n-quads/)_<br>**Default:** _[N-TRIPLES](https://www.w3.org/TR/n-triples/)_ |
 | **`only_printable_chars`**              | Remove characters in the genarated RDF that are not printable.                                                                                                                                                                               | **Valid:** _yes_, _no_, _true_, _false_, _on_, _off_, _1_, _0_<br>**Default:** _no_                                                                                     |

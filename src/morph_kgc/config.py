@@ -60,6 +60,11 @@ FILE_PATH = 'file_path'
 DATABASE_URL = 'db_url'
 CONNECT_ARGS = 'connect_args'
 
+##############################################################################
+##########################  KAFKA PARAMETERS  ################################
+##############################################################################
+OUTPUT_KAFKA_SERVER = 'output_kafka_server'
+OUTPUT_KAFKA_TOPIC = 'output_kafka_topic'
 
 ##############################################################################
 ########################   ARGUMENTS DEFAULT VALUES   ########################
@@ -76,6 +81,8 @@ DEFAULT_NUMBER_OF_PROCESSES = 2 * mp.cpu_count()
 DEFAULT_NA_VALUES = ',nan' # ',#N/A,N/A,#N/A N/A,n/a,NA,<NA>,#NA,NULL,null,NaN,nan,None'
 DEFAULT_ONLY_PRINTABLE_CHARS = 'no'
 DEFAULT_UDFS = ''
+DEFAULT_OUTPUT_KAFKA_SERVER = ''
+DEFAULT_OUTPUT_KAFKA_TOPIC = ''
 
 # ORACLE
 DEFAULT_ORACLE_CLIENT_LIB_DIR = ''
@@ -102,9 +109,11 @@ CONFIGURATION_OPTIONS_EMPTY_VALID = {
             ORACLE_CLIENT_LIB_DIR: DEFAULT_ORACLE_CLIENT_LIB_DIR,
             ORACLE_CLIENT_CONFIG_DIR: DEFAULT_ORACLE_CLIENT_LIB_DIR,
             UDFS: DEFAULT_UDFS,
+            OUTPUT_KAFKA_SERVER: DEFAULT_OUTPUT_KAFKA_SERVER,
+            OUTPUT_KAFKA_TOPIC: DEFAULT_OUTPUT_KAFKA_TOPIC,
         }
 
-# input parameters that are to be replaced with the default vale if they are empty
+# input parameters that are to be replaced with the default value if they are empty
 CONFIGURATION_OPTIONS_EMPTY_NON_VALID = {
             OUTPUT_DIR: DEFAULT_OUTPUT_DIR,
             OUTPUT_FORMAT: DEFAULT_OUTPUT_FORMAT,
@@ -287,6 +296,12 @@ class Config(ConfigParser):
 
         return file_path.as_posix()
 
+    def get_output_kafka_server(self):
+        return self.get(self.configuration_section, OUTPUT_KAFKA_SERVER)
+
+    def get_output_kafka_topic(self):
+        return self.get(self.configuration_section, OUTPUT_KAFKA_TOPIC)
+    
     def set_mapping_partitioning(self, mapping_partitioning):
         self.set(self.configuration_section, MAPPING_PARTITIONING, mapping_partitioning.upper())
 

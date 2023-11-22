@@ -9,6 +9,8 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 import re
 import os
 import logging
+import sys
+
 import rdflib
 import time
 import numpy as np
@@ -125,21 +127,6 @@ def get_references_in_fnml_execution(fnml_df, execution):
             references.extend(get_references_in_fnml_execution(fnml_df, parameter['value_map_value']))
 
     return references
-
-
-def triples_to_file(triples, config, mapping_group=None):
-    """
-    Writes triples to file.
-    """
-
-    lock = mp.Lock()    # necessary for issue #65
-    with lock:
-        f = open(config.get_output_file_path(mapping_group), 'a', encoding='utf-8')
-        for triple in triples:
-            f.write(f'{triple} .\n')
-        f.flush()
-        os.fsync(f.fileno())
-        f.close()
 
 
 def remove_non_printable_characters(string):
@@ -275,3 +262,51 @@ def normalize_hierarchical_data(data):
             yield from normalize_hierarchical_data(i)
     else:
         yield data
+
+
+def triples_to_file(triples, config, mapping_group=None):
+    """
+    Writes triples to file.
+    """
+
+    lock = mp.Lock()    # necessary for issue #65
+    with lock:
+        f = open(config.get_output_file_path(mapping_group), 'a', encoding='utf-8')
+        for triple in triples:
+            f.write(f'{triple} .\n')
+        f.flush()
+        os.fsync(f.fileno())
+        f.close()
+
+
+def triples_to_kafka(triples, config):
+    """
+    Writes triples to Kafka.
+    """
+    from kafka import KafkaProducer
+
+    kafka_producer = None
+    output_kafka_server = config.get_output_kafka_server()
+    output_kafka_topic = config.get_output_kafka_topic()
+
+    if not output_kafka_server or not output_kafka_topic:
+        logging.error('Output Kafka server or topic is empty.')
+        sys.exit()
+    try:
+        kafka_producer = KafkaProducer(bootstrap_servers=output_kafka_server)
+
+        if triples:
+            rdf_ntriples = '.\n'.join(triples)
+            rdf_ntriples += '.'
+
+            # send the triples to Kafka
+            kafka_producer.send(output_kafka_topic, value=rdf_ntriples.encode('utf-8'))
+
+        return len(triples)
+    except Exception as e:
+            logging.error(f'Error during materialization or Kafka publishing: {e}')
+            return f'Error: {e}'
+    finally:
+        # close the Kafka producer
+        if kafka_producer:
+            kafka_producer.close()

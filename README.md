@@ -19,8 +19,8 @@
 - User-friendly mappings with **[YARRRML](https://rml.io/yarrrml/spec/)**.
 - Transformation functions with **[RML-FNML](https://w3id.org/rml/fnml/spec)**, including **Python user-defined functions**.
 - [RDF-star](https://w3c.github.io/rdf-star/cg-spec/2021-12-17.html) generation with **[RML-star](https://w3id.org/rml/star/spec)**.
-- **[RML views](https://oa.upm.es/73463/1/_2023___ESWC__RML_Tabular_Views.pdf)** over tabular data sources and **[JSON](https://www.json.org)** files.
-- Integration with **[RDFLib](https://rdflib.readthedocs.io)** and **[Oxigraph](https://pyoxigraph.readthedocs.io/en/latest/)**.
+- **[RML views](https://oa.upm.es/73463/1/_2023___ESWC__RML_Tabular_Views.pdf)** over tabular data sources and [JSON](https://www.json.org) files.
+- Integration with **[RDFLib](https://rdflib.readthedocs.io)**, **[Oxigraph](https://pyoxigraph.readthedocs.io/en/latest/)** and **[Kafka](https://kafka-python.readthedocs.io)**.
 - **Optimized** to materialize large knowledge graphs.
 - **Remote** data and mapping files.
 - Input data formats:
@@ -54,7 +54,7 @@ python3 -m morph_kgc config.ini
 
 Check the **[documentation](https://morph-kgc.readthedocs.io/en/latest/documentation/#configuration)** to see how to generate the configuration **INI file**. **[Here](https://github.com/morph-kgc/morph-kgc/blob/main/examples/configuration-file/default_config.ini)** you can also see an example INI file.
 
-It is also possible to run Morph-KGC as a **library** with **[RDFLib](https://rdflib.readthedocs.io)** and **[Oxigraph](https://pyoxigraph.readthedocs.io/en/latest/)**:
+It is also possible to run Morph-KGC as a **library** with **[RDFLib](https://rdflib.readthedocs.io)**, **[Oxigraph](https://pyoxigraph.readthedocs.io/en/latest/)** and **[Kafka](https://kafka-python.readthedocs.io)**:
 ```python
 import morph_kgc
 
