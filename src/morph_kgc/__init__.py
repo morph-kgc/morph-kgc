@@ -67,8 +67,7 @@ def materialize(config, python_source=None):
 
     graph = Graph()
     if triples:
-        rdf_ntriples = '.\n'.join(triples)
-        rdf_ntriples += '.'
+        rdf_ntriples = '.\n'.join(triples) + '.'
         graph.parse(data=rdf_ntriples, format='nquads')
 
     return graph
@@ -79,47 +78,36 @@ def materialize_oxigraph(config, python_source=None):
 
     graph = Store()
     if triples:
-        rdf_ntriples = '.\n'.join(triples)
-        rdf_ntriples += '.'
+        rdf_ntriples = '.\n'.join(triples) + '.'
         graph.bulk_load(BytesIO(rdf_ntriples.encode()), 'application/n-quads')
 
     return graph
 
 
 def materialize_kafka(config, python_source=None):
-    
     kafka_producer = None
 
     try:
-    
         triples = materialize_set(config, python_source)
-        config = load_config_from_argument(config)
-        output_kafka_server = config.get_output_kafka_server().strip('"')
-        output_kafka_topic = config.get_output_kafka_topic().strip('"')
+        output_kafka_server = config.get_output_kafka_server()
+        output_kafka_topic = config.get_output_kafka_topic()
 
         if not output_kafka_server or not output_kafka_topic:
-            logging.warning('Output Kafka server or topic is empty.')
-            return "Skipping Kafka publishing."
+            logging.error('Output Kafka server or topic is empty.')
+            sys.exit()
         
         kafka_producer = KafkaProducer(bootstrap_servers=output_kafka_server)
-        kafka_producer.send(output_kafka_topic, value=b'RDF triples materialized:')
-        logging.info(f'Connected to Kafka broker at {output_kafka_server}')
 
-        rdf_ntriples = '.\n'.join(triples)
-        if rdf_ntriples:
-            # only add final dot if at least one triple was generated
-            rdf_ntriples += '.'
+        if triples:
+            rdf_ntriples = '.\n'.join(triples) + '.'
 
-            # Send the RDF triples to Kafka
+            # send the RDF triples to Kafka
             kafka_producer.send(output_kafka_topic, value=rdf_ntriples.encode('utf-8'))
 
         logging.info(f'RDF triples materialized and sent to Kafka topic: {output_kafka_topic}.')
-
-        return "Materialization and Kafka publishing complete."
     except Exception as e:
             logging.error(f'Error during materialization or Kafka publishing: {e}')
-            return f'Error: {e}'
     finally:
-        # Close the Kafka producer
+        # close the Kafka producer
         if kafka_producer:
             kafka_producer.close()
