@@ -39,7 +39,6 @@ if __name__ == "__main__":
 
     start_time = time.time()
     num_triples = 0
-    result = 0
     if config.is_multiprocessing_enabled():
         logging.debug(f'Parallelizing with {config.get_number_of_processes()} cores.')
 
