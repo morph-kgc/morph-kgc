@@ -101,10 +101,6 @@ If you used Morph-KGC in your work, please cite the **[SWJ paper](https://conten
 }
 ```
 
-## Contributors :woman_technologist:
-
-See the full list of contributors **[here](https://github.com/morph-kgc/morph-kgc/graphs/contributors)**.
-
 ## Sponsor :shield:
 
 <p align="center">
