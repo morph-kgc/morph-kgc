@@ -15,7 +15,6 @@ from rdflib import Graph
 from pyoxigraph import Store
 from io import BytesIO
 from itertools import repeat
-from kafka import KafkaProducer
 
 from .args_parser import load_config_from_command_line
 from .mapping.mapping_parser import retrieve_mappings
@@ -85,6 +84,8 @@ def materialize_oxigraph(config, python_source=None):
 
 
 def materialize_kafka(config, python_source=None):
+    from kafka import KafkaProducer
+
     kafka_producer = None
 
     try:

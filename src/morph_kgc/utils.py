@@ -17,7 +17,6 @@ import numpy as np
 import pandas as pd
 import multiprocessing as mp
 
-from kafka import KafkaProducer
 from itertools import product
 from .constants import AUXILIAR_UNIQUE_REPLACING_STRING, RML_EXECUTION, RML_TEMPLATE, RML_REFERENCE
 
@@ -284,6 +283,8 @@ def triples_to_kafka(triples, config):
     """
     Writes triples to Kafka.
     """
+    from kafka import KafkaProducer
+
     kafka_producer = None
     output_kafka_server = config.get_output_kafka_server()
     output_kafka_topic = config.get_output_kafka_topic()
