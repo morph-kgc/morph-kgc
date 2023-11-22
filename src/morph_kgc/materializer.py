@@ -412,8 +412,16 @@ def _materialize_rml_rule(rml_rule, rml_df, fnml_df, config, data=None, parent_j
     return data
 
 
-def _materialize_mapping_group_to_file(mapping_group_df, rml_df, fnml_df, config):
+def _materialize_mapping_group_to_set(mapping_group_df, rml_df, fnml_df, config, python_source=None):
+    triples = set()
+    for i, rml_rule in mapping_group_df.iterrows():
+        data = _materialize_rml_rule(rml_rule, rml_df, fnml_df, config, python_source=python_source)
+        triples.update(set(data['triple']))
 
+    return triples
+
+
+def _materialize_mapping_group_to_file(mapping_group_df, rml_df, fnml_df, config):
     triples = set()
     for i, rml_rule in mapping_group_df.iterrows():
         start_time = time.time()
@@ -428,17 +436,7 @@ def _materialize_mapping_group_to_file(mapping_group_df, rml_df, fnml_df, config
     return len(triples)
 
 
-def _materialize_mapping_group_to_set(mapping_group_df, rml_df, fnml_df, config, python_source=None):
-
-    triples = set()
-    for i, rml_rule in mapping_group_df.iterrows():
-        data = _materialize_rml_rule(rml_rule, rml_df, fnml_df, config, python_source=python_source)
-        triples.update(set(data['triple']))
-
-    return triples
-
 def _materialize_mapping_group_to_kafka(mapping_group_df, rml_df, fnml_df, config, python_source=None):
-
     triples = set()
     for i, rml_rule in mapping_group_df.iterrows():
         start_time = time.time()
@@ -448,5 +446,6 @@ def _materialize_mapping_group_to_kafka(mapping_group_df, rml_df, fnml_df, confi
         logging.debug(f"{len(triples)} triples generated for mapping rule `{rml_rule['triples_map_id']}` "
                       f"in {get_delta_time(start_time)} seconds.")
         
-    result = triples_to_kafka(triples, config)
-    return result
+    triples_to_kafka(triples, config)
+
+    return len(triples)

@@ -66,9 +66,8 @@ def materialize(config, python_source=None):
     triples = materialize_set(config, python_source)
 
     graph = Graph()
-    rdf_ntriples = '.\n'.join(triples)
-    if rdf_ntriples:
-        # only add final dot if at least one triple was generated
+    if triples:
+        rdf_ntriples = '.\n'.join(triples)
         rdf_ntriples += '.'
         graph.parse(data=rdf_ntriples, format='nquads')
 
@@ -79,9 +78,8 @@ def materialize_oxigraph(config, python_source=None):
     triples = materialize_set(config, python_source)
 
     graph = Store()
-    rdf_ntriples = '.\n'.join(triples)
-    if rdf_ntriples:
-        # only add final dot if at least one triple was generated
+    if triples:
+        rdf_ntriples = '.\n'.join(triples)
         rdf_ntriples += '.'
         graph.bulk_load(BytesIO(rdf_ntriples.encode()), 'application/n-quads')
 

@@ -113,7 +113,7 @@ CONFIGURATION_OPTIONS_EMPTY_VALID = {
             OUTPUT_KAFKA_TOPIC: DEFAULT_OUTPUT_KAFKA_TOPIC,
         }
 
-# input parameters that are to be replaced with the default vale if they are empty
+# input parameters that are to be replaced with the default value if they are empty
 CONFIGURATION_OPTIONS_EMPTY_NON_VALID = {
             OUTPUT_DIR: DEFAULT_OUTPUT_DIR,
             OUTPUT_FORMAT: DEFAULT_OUTPUT_FORMAT,

@@ -66,6 +66,7 @@ excel = ['openpyxl>=3.0.0, <4.0.0', 'odfpy>=1.4.1, <2.0.0']
 tabular = ['pyarrow>=11.0.0, <14.0.0']
 spss = ['pyreadstat>=1.2.0, <2.0.0']
 all = [
+  'morph_kgc[kafka]',
   'morph_kgc[mysql]',
   'morph_kgc[postgresql]',
   'morph_kgc[oracle]',
