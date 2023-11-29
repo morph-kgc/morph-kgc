@@ -15,7 +15,6 @@ ENV PYTHONUNBUFFERED=1 \
 
 ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
-# syntax=docker/dockerfile:1
 FROM python-base as builder-base
 RUN apt-get update \
     && apt-get install --no-install-recommends -y \
@@ -26,13 +25,20 @@ RUN apt-get install -y freetds-dev libkrb5-dev libssl-dev libffi-dev libgssapi-k
 RUN --mount=type=cache,target=/root/.cache \
     curl -sSL https://install.python-poetry.org | python3 -
 
+# Install Rust
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:$PATH"
+
+# Check Rust installation
+RUN rustc --version && cargo --version
+
 WORKDIR $PYSETUP_PATH
 COPY poetry.lock pyproject.toml ./
-RUN poetry remove pyoxigraph
+#RUN poetry remove pyoxigraph
 ARG optional_dependencies
 RUN --mount=type=cache,target=/root/.cache \
     poetry install --extras "$optional_dependencies"
-RUN pip install pyoxigraph
+#RUN poetry add pyoxigraph
 FROM python-base as development
 WORKDIR /app
 COPY --from=builder-base $POETRY_HOME $POETRY_HOME
