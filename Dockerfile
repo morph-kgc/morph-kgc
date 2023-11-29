@@ -25,13 +25,6 @@ RUN apt-get install -y freetds-dev libkrb5-dev libssl-dev libffi-dev libgssapi-k
 RUN --mount=type=cache,target=/root/.cache \
     curl -sSL https://install.python-poetry.org | python3 -
 
-# Install Rust
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-ENV PATH="/root/.cargo/bin:$PATH"
-
-# Check Rust installation
-RUN rustc --version && cargo --version
-
 WORKDIR $PYSETUP_PATH
 COPY poetry.lock pyproject.toml ./
 #RUN poetry remove pyoxigraph
