@@ -450,12 +450,12 @@ docker build -t morph-kgc-app --build-arg optional_dependencies="sqlite kafka" .
 
 In this example, optional dependencies "kafka" and "sqlite" are being installed. You can adjust the list of dependencies based on your needs.
 
-Once the Docker image is built with the necessary dependencies, run a container. Mount the local directory containing required files like config.ini to the /app/files directory within the container.
+Once the Docker image is built with the necessary dependencies, run a container. Mount the local directory containing required files like the mapping to the /app/files directory within the container.
 
-Replace /path/to/your/files with the path to the directory containing your files.
+Replace /path/to/your/files with the path to the directory containing your configuration files.
 
 ```
-docker run -v $(pwd)/path/to/your/files:/app/files morph-kgc-app
+docker run -v $(pwd)/path/to/your/files:/app/files morph-kgc-app /path/to/your/config.ini
 ```
 
 ![OEG](assets/logo-oeg.png){ width="150" align=left } ![UPM](assets/logo-upm.png){ width="161" align=right }
