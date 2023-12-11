@@ -86,6 +86,8 @@ def _normalize_yarrrml_key_names(mappings):
                 mappings['inversepredicates'] = mappings.pop(key)
             elif key in ['object', 'o']:
                 mappings['objects'] = mappings.pop(key)
+            elif key in ['graph', 'g']:
+                mappings['graphs'] = mappings.pop(key)
             elif key in ['fn', 'f']:
                 mappings['function'] = mappings.pop(key)
             elif key in ['pms']:
