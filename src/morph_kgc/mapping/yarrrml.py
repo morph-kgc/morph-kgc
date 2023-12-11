@@ -256,17 +256,6 @@ def _normalize_yarrrml_mapping(mappings):
     for property in ['sources', 'subjects', 'predicateobjects']:
         mappings = _normalize_property_in_mapping(mappings, property)
 
-    # move graphs in subjects to predicateobjects
-    for mapping_key, mapping_value in mappings['mappings'].items():
-        if 'graphs' in mapping_value and 'predicateobjects' in mapping_value:
-            if 'graphs' in mapping_value['predicateobjects']:
-                # there are graphs in the subjects and the predicateobjects
-                graphs_subject_list = mapping_value['graphs'] if type(mapping_value['graphs']) is list else [mapping_value['graphs']]
-                mapping_value['predicateobjects']['graphs'] = mapping_value['predicateobjects']['graphs'] if type(mapping_value['predicateobjects']['graphs']) is list else [mapping_value['predicateobjects']['graphs']]
-                mapping_value['predicateobjects']['graphs'].extend(graphs_subject_list)
-            else:
-                mapping_value['predicateobjects']['graphs'] = mapping_value['graphs']
-            mapping_value.pop('graphs')
     # predicateobject shortcuts [foaf: firstName, $(firstname)] to dict
     #- [foaf: firstName, $(firstname), xsd: string]
     #- [[foaf: knows, rdfs: label], $(colleague)~iri]
@@ -287,6 +276,21 @@ def _normalize_yarrrml_mapping(mappings):
                     else:
                         predicateobject_dict['objects']['datatype'] = lang_datatype
                 mapping_value['predicateobjects'] = predicateobject_dict
+
+    # move graphs in subjects to predicateobjects
+    for mapping_key, mapping_value in mappings['mappings'].items():
+        if 'graphs' in mapping_value and 'predicateobjects' in mapping_value:
+            if 'graphs' in mapping_value['predicateobjects']:
+                # there are graphs in the subjects and the predicateobjects
+                graphs_subject_list = mapping_value['graphs'] if type(mapping_value['graphs']) is list else [
+                    mapping_value['graphs']]
+                mapping_value['predicateobjects']['graphs'] = mapping_value['predicateobjects']['graphs'] if type(
+                    mapping_value['predicateobjects']['graphs']) is list else [
+                    mapping_value['predicateobjects']['graphs']]
+                mapping_value['predicateobjects']['graphs'].extend(graphs_subject_list)
+            else:
+                mapping_value['predicateobjects']['graphs'] = mapping_value['graphs']
+            mapping_value.pop('graphs')
 
     # expand objects: [[$(firstname), en~lang], [$(lastname), nl~lang]] (Example 83 in YARRRML spec)
     for mapping_key, mapping_value in mappings['mappings'].items():
@@ -557,5 +561,6 @@ def load_yarrrml(yarrrml_file):
 
     yarrrml_mapping = _normalize_yarrrml_mapping(yarrrml_mapping)
     rml_mapping = _translate_yarrrml_to_rml(yarrrml_mapping)
+    rml_mapping.serialize('a.ttl')
 
     return rml_mapping
