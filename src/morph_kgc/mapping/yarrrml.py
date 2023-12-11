@@ -86,6 +86,8 @@ def _normalize_yarrrml_key_names(mappings):
                 mappings['inversepredicates'] = mappings.pop(key)
             elif key in ['object', 'o']:
                 mappings['objects'] = mappings.pop(key)
+            elif key in ['graph', 'g']:
+                mappings['graphs'] = mappings.pop(key)
             elif key in ['fn', 'f']:
                 mappings['function'] = mappings.pop(key)
             elif key in ['pms']:
@@ -472,7 +474,7 @@ def _translate_yarrrml_to_rml(yarrrml_mapping):
         if 'graphs' in mapping_value:
             graph_bnode = rdflib.BNode()
             mapping_graph.add((triples_map_iri, rdflib.term.URIRef(RML_GRAPH_MAP), graph_bnode))
-            mapping_graph = _add_template(mapping_graph, subject_bnode, mapping_value['graphs'])
+            mapping_graph = _add_template(mapping_graph, graph_bnode, mapping_value['graphs'])
 
         ####################### PREDICATE OBJECTS ############
         if 'predicateobjects' in mapping_value:
