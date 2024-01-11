@@ -4,7 +4,7 @@
 # Based on https://github.com/python-poetry/poetry/discussions/1879?sort=top#discussioncomment-216865
 # Extended by https://gist.github.com/usr-ein/c42d98abca3cb4632ab0c2c6aff8c88a
 
-FROM python:3.9-slim as python-base
+FROM python:3.8-slim as python-base
 
     # python
 ENV PYTHONUNBUFFERED=1 \
