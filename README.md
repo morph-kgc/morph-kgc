@@ -92,12 +92,17 @@ Morph-KGC is available under the **[Apache License 2.0](https://github.com/morph
 If you used Morph-KGC in your work, please cite the **[SWJ paper](https://content.iospress.com/download/semantic-web/sw223135?id=semantic-web%2Fsw223135)**:
 
 ```bib
-@article{arenas2022morph,
-  title   = {{Morph-KGC: Scalable knowledge graph materialization with mapping partitions}},
-  author  = {Arenas-Guerrero, Julián and Chaves-Fraga, David and Toledo, Jhon and Pérez, María S. and Corcho, Oscar},
-  journal = {Semantic Web},
-  year    = {2022},
-  doi     = {10.3233/SW-223135}
+@article{arenas2024morph,
+  title     = {{Morph-KGC: Scalable knowledge graph materialization with mapping partitions}},
+  author    = {Arenas-Guerrero, Julián and Chaves-Fraga, David and Toledo, Jhon and Pérez, María S. and Corcho, Oscar},
+  journal   = {Semantic Web},
+  publisher = {IOS Press},
+  issn      = {2210-4968},
+  year      = {2024},
+  doi       = {10.3233/SW-223135},
+  volume    = {15},
+  number    = {1},
+  pages     = {1-20}
 }
 ```
 
