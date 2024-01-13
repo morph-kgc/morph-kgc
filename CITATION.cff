@@ -21,7 +21,9 @@ preferred-citation:
   type: article
   journal: Semantic Web
   doi: 10.3233/SW-223135
-  year: 2022
+  year: 2024
+  volume: 15
+  issue: 1
 identifiers:
   - description: "Collection of archived snapshots for Morph-KGC"
     type: doi
