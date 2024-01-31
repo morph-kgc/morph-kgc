@@ -11,7 +11,7 @@
 
 ### Conferences
 
-- **[Boosting Knowledge Graph Generation from Tabular Data with RML Views](https://oa.upm.es/73463/1/_2023___ESWC__RML_Tabular_Views.pdf)**  
+- **[Boosting Knowledge Graph Generation from Tabular Data with RML Views](https://2023.eswc-conferences.org/wp-content/uploads/2023/05/paper_Arenas-Guerrero_2023_Boosting.pdf)**  
 **ESWC** | **2023** | Julián Arenas-Guerrero, Ahmad Alobaid, María Navas-Loro, María S. Pérez, Oscar Corcho
 
 ## Intellectual Property
