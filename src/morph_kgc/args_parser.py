@@ -30,7 +30,7 @@ def _parse_arguments():
 
     parser = argparse.ArgumentParser(
         description='Generate Knowledge Graphs from Heterogeneous Data Sources.',
-        epilog="Copyright © 2020-2023 Julián Arenas-Guerrero",
+        epilog="Copyright © 2020 Julián Arenas-Guerrero",
         allow_abbrev=False,
         prog='python3 -m morph_kgc',
         argument_default=argparse.SUPPRESS
@@ -38,7 +38,7 @@ def _parse_arguments():
 
     parser.add_argument('config', type=_existing_file_path, help='path to the configuration file')
     parser.add_argument('-v', '--version', action='version',
-                        version=f'Morph-KGC {__version__} | Copyright © 2020-2023 Julián Arenas-Guerrero')
+                        version=f'Morph-KGC {__version__} | Copyright © 2020 Julián Arenas-Guerrero')
 
     return parser.parse_args()
 
