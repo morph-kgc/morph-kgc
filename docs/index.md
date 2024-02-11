@@ -39,7 +39,7 @@ The **documentation** is licensed under **[CC BY-SA 4.0](https://creativecommons
 
 - **[Julián Arenas-Guerrero](https://github.com/arenas-guerrero-julian/) - [julian.arenas.guerrero@upm.es](mailto:julian.arenas.guerrero@upm.es)**
 
-*[Ontology Engineering Group](https://oeg.fi.upm.es/)*, *[Universidad Politécnica de Madrid](https://www.upm.es/internacional)*.
+*[Universidad Politécnica de Madrid](https://www.upm.es/internacional)*.
 
 ## Citing
 
