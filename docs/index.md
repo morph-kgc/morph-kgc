@@ -23,7 +23,7 @@
     - **In-memory data structures**: **[Python Dictionaries](https://docs.python.org/3/tutorial/datastructures.html#dictionaries)**, **[DataFrames](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html)**.
 	- **Cloud data lake solutions**: **[Databricks](https://www.databricks.com/)**.
 
-## Organizations That Use Morph-KGC
+## Organizations that use Morph-KGC
 
 <figure markdown>
   ![BASF](assets/BASF.png){ width="300" align=left }
