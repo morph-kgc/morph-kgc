@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://github.com/morph-kgc/morph-kgc/blob/main/docs/assets/logo.png" height="100" alt="morph">
+<img src="https://github.com/morph-kgc/morph-kgc/blob/main/logo/logo.png" height="100" alt="morph">
 </p>
 
 [![License](https://img.shields.io/pypi/l/morph-kgc.svg)](https://github.com/morph-kgc/morph-kgc/blob/main/LICENSE)
@@ -109,5 +109,5 @@ If you used Morph-KGC in your work, please cite the **[SWJ paper](https://conten
 ## Sponsor :shield:
 
 <p align="center">
-<img src="https://github.com/morph-kgc/morph-kgc/blob/main/docs/assets/BASF.png" height="100" alt="BASF">
+<img src="https://github.com/morph-kgc/morph-kgc-docs/blob/main/docs/assets/BASF.png" height="100" alt="BASF">
 </p>
