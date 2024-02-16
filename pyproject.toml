@@ -3,11 +3,11 @@ requires = ['hatchling>=1.11.0']
 build-backend = 'hatchling.build'
 
 [project.urls]
-Documentation = 'https://morph-kgc.readthedocs.io/en/latest/documentation/'
+Documentation = 'https://morph-kgc.readthedocs.io'
 Source = 'https://github.com/morph-kgc/morph-kgc'
 Tracker = 'https://github.com/morph-kgc/morph-kgc/issues'
 CI = 'https://github.com/morph-kgc/morph-kgc/actions'
-Homepage = 'https://morph-kgc.readthedocs.io/en/latest/'
+Homepage = 'https://morph-kgc.readthedocs.io'
 History = 'https://github.com/morph-kgc/morph-kgc/releases'
 #Sponsor = ''
 
