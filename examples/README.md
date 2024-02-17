@@ -17,7 +17,7 @@ To start a docker container with the MySQL instance containing the data, run the
 docker run --name mysql-gtfs1 -p 3306:3306 -d -e MYSQL_ROOT_PASSWORD=gtfs oegdataintegration/mysql-gtfs1:1.0
 ```
 
-Note that the MySQL driver needs to be installed, as detailed in the **[documentation](https://morph-kgc.readthedocs.io/en/latest/documentation/#relational-databases_1)**. You just need to run the following:
+Note that the MySQL driver needs to be installed. You just need to install Morph-KGC in the following way:
 ```
 pip install pymysql
 pip install cryptography
