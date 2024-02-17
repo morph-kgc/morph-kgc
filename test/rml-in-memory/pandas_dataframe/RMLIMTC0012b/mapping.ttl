@@ -1,15 +1,13 @@
-@prefix rr: <http://www.w3.org/ns/r2rml#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix ex: <http://example.com/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
-@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@prefix rml: <http://w3id.org/rml/> .
 @prefix sd: <https://w3id.org/okn/o/sd#>.
 @prefix kg4di: <https://w3id.org/kg4di/definedBy>.
 @base <http://example.com/base/> .
 
 <TriplesMap1>
-  a rr:TriplesMap;
+  a rml:TriplesMap;
 
   rml:logicalSource [
     rml:source [
@@ -22,25 +20,25 @@
 				];
 			];
 		];
-    rml:referenceFormulation ql:DataFrame;
+    rml:referenceFormulation rml:DataFrame;
   ];
 
-  rr:subjectMap [
-    rr:template "{fname}{lname}";
-    rr:termType rr:BlankNode ;
+  rml:subjectMap [
+    rml:template "{fname}{lname}";
+    rml:termType rml:BlankNode ;
   ];
 
-  rr:predicateObjectMap [
-    rr:predicate foaf:name ;
-    rr:objectMap [
-      rr:template "{fname} {lname}";
-      rr:termType rr:Literal ;
+  rml:predicateObjectMap [
+    rml:predicate foaf:name ;
+    rml:objectMap [
+      rml:template "{fname} {lname}";
+      rml:termType rml:Literal ;
     ]
   ];
   .
 
 <TriplesMap2>
-  a rr:TriplesMap;
+  a rml:TriplesMap;
 
   rml:logicalSource [
     rml:source [
@@ -53,22 +51,22 @@
 				];
 			];
 		];
-    rml:referenceFormulation ql:DataFrame;
+    rml:referenceFormulation rml:DataFrame;
 ];
 
-  rr:subjectMap [
-    rr:template "{fname}{lname}";
-    rr:termType rr:BlankNode;
+  rml:subjectMap [
+    rml:template "{fname}{lname}";
+    rml:termType rml:BlankNode;
   ];
 
-  rr:predicateObjectMap
+  rml:predicateObjectMap
   [
-    rr:predicate	ex:city ;
-    rr:objectMap    [
+    rml:predicate	ex:city ;
+    rml:objectMap    [
       rml:reference "city";
     ]
 ];
 .
 
-ql:DataFrame a rml:ReferenceFormulation;
+rml:DataFrame a rml:ReferenceFormulation;
 	kg4di:definedBy "Pandas".

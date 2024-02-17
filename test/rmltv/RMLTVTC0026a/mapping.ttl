@@ -1,9 +1,8 @@
-@prefix rr: <http://www.w3.org/ns/r2rml#> .
 @prefix ex: <http://example.com/> .
-@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix rml: <http://w3id.org/rml/> .
 
 <TriplesMap1>
-    a rr:TriplesMap;
+    a rml:TriplesMap;
  	rml:logicalSource [
                      rml:query """
                        SELECT ID, UNNEST(COL::VARCHAR[]) AS COL
@@ -11,10 +10,10 @@
                        """
                        ];
 
-	rr:subjectMap [ rr:template "http://example.com/{ID}" ];
-	rr:predicateObjectMap
+	rml:subjectMap [ rml:template "http://example.com/{ID}" ];
+	rml:predicateObjectMap
     [
-      rr:predicate		ex:col;
-      rr:objectMap		[ rml:reference "COL" ];
+      rml:predicate		ex:col;
+      rml:objectMap		[ rml:reference "COL" ];
     ];
 .

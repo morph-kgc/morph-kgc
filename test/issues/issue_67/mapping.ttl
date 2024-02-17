@@ -1,36 +1,34 @@
-@prefix rr: <http://www.w3.org/ns/r2rml#> .
-@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
-@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@prefix rml: <http://w3id.org/rml/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix ex: <http://www.example.com/> .
 
 <#TriplesMap1>
-    a rr:TriplesMap;
+    a rml:TriplesMap;
     rml:logicalSource [
         rml:source "test/issues/issue_67/data.csv";
-        rml:referenceFormulation ql:CSV
+        rml:referenceFormulation rml:CSV
     ];
-    rr:subjectMap [
-        rr:template "http://example.com/{id}";
+    rml:subjectMap [
+        rml:template "http://example.com/{id}";
     ];
-    rr:predicateObjectMap [
-        rr:predicate ex:boolean;
-        rr:objectMap [
-            rr:column "column1";
-            rr:datatype xsd:boolean
+    rml:predicateObjectMap [
+        rml:predicate ex:boolean;
+        rml:objectMap [
+            rml:reference "column1";
+            rml:datatype xsd:boolean
         ];
     ];
-    rr:predicateObjectMap [
-        rr:predicate ex:dateTime;
-        rr:objectMap [
-            rr:column "column2";
-            rr:datatype xsd:dateTime
+    rml:predicateObjectMap [
+        rml:predicate ex:dateTime;
+        rml:objectMap [
+            rml:reference "column2";
+            rml:datatype xsd:dateTime
         ];
     ];
-    rr:predicateObjectMap [
-        rr:predicate ex:integer;
-        rr:objectMap [
-            rr:column "column3";
-            rr:datatype xsd:integer
+    rml:predicateObjectMap [
+        rml:predicate ex:integer;
+        rml:objectMap [
+            rml:reference "column3";
+            rml:datatype xsd:integer
         ];
     ].

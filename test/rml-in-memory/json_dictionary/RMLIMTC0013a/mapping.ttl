@@ -1,15 +1,13 @@
-@prefix rr: <http://www.w3.org/ns/r2rml#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix ex: <http://example.com/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
-@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@prefix rml: <http://w3id.org/rml/> .
 @prefix sd: <https://w3id.org/okn/o/sd#>.
 @prefix kg4di: <https://w3id.org/kg4di/definedBy>.
 @base <http://example.com/base/> .
 
 <TriplesMap1>
-  a rr:TriplesMap;
+  a rml:TriplesMap;
 
   rml:logicalSource [
     rml:source [
@@ -21,17 +19,17 @@
 				];
 			];
 		];
-		rml:referenceFormulation ql:Dictionary;
+		rml:referenceFormulation rml:Dictionary;
     rml:iterator "$.persons[*]"
   ];
 
-  rr:subjectMap [ rr:template "http://example.com/Person/{ID}/{Name}/{DateOfBirth}"];
+  rml:subjectMap [ rml:template "http://example.com/Person/{ID}/{Name}/{DateOfBirth}"];
 
-  rr:predicateObjectMap
+  rml:predicateObjectMap
     [
-      rr:predicate		ex:BirthDay ;
-      rr:objectMap		[ rml:reference "DateOfBirth" ]
+      rml:predicate		ex:BirthDay ;
+      rml:objectMap		[ rml:reference "DateOfBirth" ]
     ].
 
-ql:Dictionary a rml:ReferenceFormulation;
+rml:Dictionary a rml:ReferenceFormulation;
 	kg4di:definedBy "Python".

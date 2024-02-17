@@ -1,6 +1,5 @@
-@prefix rr: <http://www.w3.org/ns/r2rml#> .
 @prefix ex: <http://example.com/> .
-@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix rml: <http://w3id.org/rml/> .
 
 <#title>
     rml:logicalSource [
@@ -10,19 +9,19 @@
             """
     ];
 
-    rr:subjectMap [ rr:template "http://data.example.com/movie/{id}" ; rr:class ex:Movie; ] ;
+    rml:subjectMap [ rml:template "http://data.example.com/movie/{id}" ; rml:class ex:Movie; ] ;
 
-    rr:predicateObjectMap [
-        rr:predicate ex:title ;
-        rr:objectMap [
-            rr:column "title"
+    rml:predicateObjectMap [
+        rml:predicate ex:title ;
+        rml:objectMap [
+            rml:reference "title"
         ] ;
     ] ;
 
-    rr:predicateObjectMap [
-        rr:predicate ex:title ;
-        rr:objectMap [
-            rr:column "aka_title" ;
+    rml:predicateObjectMap [
+        rml:predicate ex:title ;
+        rml:objectMap [
+            rml:reference "aka_title" ;
         ] ;
     ] ;
 .

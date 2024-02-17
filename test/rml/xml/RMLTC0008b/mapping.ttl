@@ -1,60 +1,58 @@
-@prefix rr: <http://www.w3.org/ns/r2rml#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix ex: <http://example.com/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
-@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@prefix rml: <http://w3id.org/rml/> .
 @prefix activity: <http://example.com/activity/> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @base <http://example.com/base/> .
 
 <TriplesMap2>
-  a rr:TriplesMap;
+  a rml:TriplesMap;
   rml:logicalSource [
     rml:source "test/rml/xml/RMLTC0008b/student.xml";
-    rml:referenceFormulation ql:XPath;
+    rml:referenceFormulation rml:XPath;
     rml:iterator "/students/student"
   ];
 
-  rr:subjectMap [ rr:template "http://example.com/{Sport}" ];
+  rml:subjectMap [ rml:template "http://example.com/{Sport}" ];
 
-  rr:predicateObjectMap [
-    rr:predicate rdf:type ;
-    rr:object activity:Sport ;
+  rml:predicateObjectMap [
+    rml:predicate rdf:type ;
+    rml:object activity:Sport ;
   ] .
 
 <TriplesMap1>
-  a rr:TriplesMap;
+  a rml:TriplesMap;
 
   rml:logicalSource [
     rml:source "test/rml/xml/RMLTC0008b/student.xml";
-    rml:referenceFormulation ql:XPath;
+    rml:referenceFormulation rml:XPath;
     rml:iterator "/students/student"
   ];
 
-  rr:subjectMap [ rr:template "http://example.com/Student/{ID}/{Name}" ];
+  rml:subjectMap [ rml:template "http://example.com/Student/{ID}/{Name}" ];
 
-  rr:predicateObjectMap [
-    rr:predicate rdf:type ;
-    rr:object foaf:Person ;
+  rml:predicateObjectMap [
+    rml:predicate rdf:type ;
+    rml:object foaf:Person ;
   ];
 
-  rr:predicateObjectMap [
-    rr:predicate ex:id ;
-    rr:objectMap [ rml:reference "ID"; ]
+  rml:predicateObjectMap [
+    rml:predicate ex:id ;
+    rml:objectMap [ rml:reference "ID"; ]
   ];
 
-  rr:predicateObjectMap [
-    rr:predicate foaf:name ;
-    rr:objectMap [ rml:reference "Name" ]
+  rml:predicateObjectMap [
+    rml:predicate foaf:name ;
+    rml:objectMap [ rml:reference "Name" ]
   ];
 
-  rr:predicateObjectMap [
-    rr:predicate ex:Sport ;
-    rr:objectMap <RefObjectMap1>
+  rml:predicateObjectMap [
+    rml:predicate ex:Sport ;
+    rml:objectMap <RefObjectMap1>
   ] .
 
 
 <RefObjectMap1>
-  a rr:RefObjectMap;
-  rr:parentTriplesMap <TriplesMap2> .
+  a rml:RefObjectMap;
+  rml:parentTriplesMap <TriplesMap2> .

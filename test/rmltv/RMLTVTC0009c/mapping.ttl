@@ -1,9 +1,8 @@
-@prefix rr: <http://www.w3.org/ns/r2rml#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
-@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix rml: <http://w3id.org/rml/> .
 
 <TriplesMap1>
-   a rr:TriplesMap;
+   a rml:TriplesMap;
 
    rml:logicalSource [ rml:query """
         SELECT "Name", COUNT("Sport")
@@ -11,11 +10,11 @@
         GROUP BY "Name"
         """ ];
 
-    rr:subjectMap [ rr:template "http://example.com/resource/student_{Name}"; ];
+    rml:subjectMap [ rml:template "http://example.com/resource/student_{Name}"; ];
 
-    rr:predicateObjectMap
+    rml:predicateObjectMap
     [
-      rr:predicate	foaf:name ;
-      rr:objectMap	[ rml:reference "Name"; ];
+      rml:predicate	foaf:name ;
+      rml:objectMap	[ rml:reference "Name"; ];
     ];
   .

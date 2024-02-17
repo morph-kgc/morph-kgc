@@ -1,10 +1,9 @@
-@prefix rr: <http://www.w3.org/ns/r2rml#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix rml: <http://w3id.org/rml/> .
 
 
 <TriplesMap1>
-    a rr:TriplesMap;
+    a rml:TriplesMap;
 
 	rml:logicalSource [  rml:query """
 						SELECT "Code", "Name", "Lan"
@@ -12,17 +11,17 @@
 						WHERE "Lan" = 'EN';
                        """ ] ;
 
-    rr:subjectMap [ rr:template "http://example.com/{Code}" ];
+    rml:subjectMap [ rml:template "http://example.com/{Code}" ];
 
-    rr:predicateObjectMap
+    rml:predicateObjectMap
     [
-      rr:predicate	rdfs:label;
-      rr:objectMap	[ rr:column "Name"; rr:language "en" ]
+      rml:predicate	rdfs:label;
+      rml:objectMap	[ rml:reference "Name"; rml:language "en" ]
     ]
     .
 
 <TriplesMap2>
-    a rr:TriplesMap;
+    a rml:TriplesMap;
 
 	rml:logicalSource [  rml:query """
                        SELECT "Code", "Name", "Lan"
@@ -30,11 +29,11 @@
 					   WHERE "Lan" = 'ES';
                        """ ] ;
 
-    rr:subjectMap [ rr:template "http://example.com/{Code}" ];
+    rml:subjectMap [ rml:template "http://example.com/{Code}" ];
 
-    rr:predicateObjectMap
+    rml:predicateObjectMap
     [
-      rr:predicate rdfs:label;
-      rr:objectMap    [ rr:column "Name"; rr:language "es" ]
+      rml:predicate rdfs:label;
+      rml:objectMap    [ rml:reference "Name"; rml:language "es" ]
     ]
     .
