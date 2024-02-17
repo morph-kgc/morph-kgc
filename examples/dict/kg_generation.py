@@ -65,7 +65,7 @@ data_dict = {"variable1": users_dict,
 
 config = """
     [DataSource]
-    mappings=./mapping_rml.ttl
+    mappings=./mapping.rml.ttl
 """
 
 g_rdflib = morph_kgc.materialize('./config.ini', data_dict)

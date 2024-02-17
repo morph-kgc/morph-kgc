@@ -1,0 +1,97 @@
+@prefix rml: <http://w3id.org/rml/>.
+@prefix sd: <https://w3id.org/okn/o/sd#>.
+@prefix insta: <http://instagram.com/data/>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix kg4di: <https://w3id.org/kg4di/definedBy>.
+@base <http://example.com/ns#>.
+
+
+<people_0> a rml:TriplesMap;
+
+	rml:logicalSource [
+		a rml:LogicalSource;
+		rml:source [
+			a sd:DatasetSpecification;
+			sd:name "variable1";
+			sd:hasDataTransformation [
+				sd:hasSourceCode [
+					sd:programmingLanguage "Python3.9";
+				];
+			];
+		];
+		rml:referenceFormulation rml:Dictionary;
+		rml:iterator "$.users[*]";
+	];
+	rml:subjectMap [
+		a rml:SubjectMap;
+		rml:template "http://instagram.com/data/user{id}";
+	];
+	rml:predicateObjectMap [
+		rml:predicateMap [
+			a rml:PredicateMap;
+			rml:constant rdf:type;
+		];
+		rml:objectMap [
+			a rml:ObjectMap;
+			rml:constant insta:User;
+		];
+	];
+	rml:predicateObjectMap [
+		rml:predicateMap [
+			a rml:PredicateMap;
+			rml:constant insta:username;
+		];
+		rml:objectMap [
+			a rml:ObjectMap;
+			rml:reference "username";
+		];
+	];
+	rml:predicateObjectMap [
+		rml:predicateMap [
+			a rml:PredicateMap;
+			rml:constant insta:name;
+		];
+		rml:objectMap [
+			a rml:ObjectMap;
+			rml:template "{name} {surname}";
+			rml:datatype rdfs:Literal
+		];
+	].
+
+
+<followers_0> a rml:TriplesMap;
+
+	rml:logicalSource [
+		a rml:LogicalSource;
+		rml:source [
+			a sd:DatasetSpecification;
+			sd:name "variable2";
+			sd:hasDataTransformation [
+				sd:hasSourceCode [
+					sd:programmingLanguage "Python3.9";
+				];
+			];
+		];
+		rml:referenceFormulation rml:Dictionary;
+		rml:iterator "$.followers[*]";
+	];
+	rml:subjectMap [
+		a rml:SubjectMap;
+		rml:template "http://instagram.com/data/user{id}";
+	];
+	rml:predicateObjectMap [
+		rml:predicateMap [
+			a rml:PredicateMap;
+			rml:constant insta:follows;
+		];
+		rml:objectMap [
+			a rml:ObjectMap;
+			rml:template "http://instagram.com/data/user{follows}";
+			rml:termType rml:IRI
+		];
+	].
+
+rml:Dictionary a rml:ReferenceFormulation;
+	kg4di:definedBy "Python".
