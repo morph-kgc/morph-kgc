@@ -9,7 +9,6 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 import json
 import duckdb
 import pandas as pd
-import numpy as np
 import elementpath
 import xml.etree.ElementTree as et
 import urllib.request
@@ -156,7 +155,8 @@ def _read_json(rml_rule, references):
 
     # add columns with null values for those references in the mapping rule that are not present in the data file
     missing_references_in_df = list(set(references).difference(set(json_df.columns)))
-    json_df[missing_references_in_df] = np.nan
+    json_df[missing_references_in_df] = None
+    json_df.dropna(axis=0, how='any', inplace=True)
 
     return json_df
 
@@ -220,7 +220,7 @@ def _read_xml(rml_rule, references):
 
     # add columns with null values for those references in the mapping rule that are not present in the data file
     missing_references_in_df = list(set(references).difference(set(xml_df.columns)))
-    xml_df[missing_references_in_df] = np.nan
+    xml_df[missing_references_in_df] = None
     xml_df.dropna(axis=0, how='any', inplace=True)
 
     for reference in references:

@@ -387,7 +387,7 @@ def _transform_mappings_into_dataframe(mapping_graph, section_name):
     # FNML in graph to DataFrame
     fnml_df = pd.DataFrame(fnml_query_results.bindings)
     fnml_df.columns = fnml_df.columns.map(str)
-    fnml_df = fnml_df.applymap(str)
+    fnml_df = fnml_df.map(str)
 
     return rml_df, fnml_df
 
@@ -482,7 +482,7 @@ class MappingParser:
         logging.info(f'{len(self.rml_df)} mapping rules retrieved.')
 
         # replace empty strings with NaN
-        self.rml_df = self.rml_df.replace(r'^\s*$', np.nan, regex=True)
+        self.rml_df = self.rml_df.infer_objects(copy=False).replace(r'^\s*$', None, regex=True)
 
         # generate mapping partitions
         mapping_partitioner = MappingPartitioner(self.rml_df, self.config)
@@ -803,7 +803,7 @@ class MappingParser:
             if rml_rule['object_map_type'] == RML_PARENT_TRIPLES_MAP:
                 parent_triples_map_rule = get_rml_rule(self.rml_df, rml_rule['object_map_value'])
                 if rml_rule['logical_source_value'] == parent_triples_map_rule['logical_source_value'] and str(
-                        # str() is to be able to compare np.nan
+                        # str() is to be able to compare None
                         rml_rule['iterator']) == str(parent_triples_map_rule['iterator']):
 
                     remove_join = True
@@ -821,5 +821,5 @@ class MappingParser:
                         self.rml_df.at[i, 'object_map_type'] = parent_triples_map_rule.at['subject_map_type']
                         self.rml_df.at[i, 'object_map_value'] = parent_triples_map_rule.at['subject_map_value']
                         self.rml_df.at[i, 'object_termtype'] = parent_triples_map_rule.at['subject_termtype']
-                        self.rml_df.at[i, 'object_join_conditions'] = np.nan
+                        self.rml_df.at[i, 'object_join_conditions'] = None
                         logging.debug(f"Removed self-join from mapping rule `{rml_rule['triples_map_id']}`.")
