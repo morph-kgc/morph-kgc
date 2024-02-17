@@ -1,0 +1,45 @@
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix ex: <http://example.com/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rml: <http://w3id.org/rml/> .
+
+@base <http://example.com/base/> .
+
+<TriplesMap1>
+  a rml:TriplesMap;
+
+  rml:logicalSource [
+    rml:source "test/rml-core/json/RMLTC0015b/country_en.json";
+    rml:referenceFormulation rml:JSONPath;
+    rml:iterator "$.countries[*]"
+  ];
+
+  rml:subjectMap [ rml:template "http://example.com/{Code}" ];
+
+  rml:predicateObjectMap [
+    rml:predicate rdfs:label;
+    rml:objectMap [
+      rml:reference "Name";
+      rml:language "english"
+    ]
+  ] .
+
+<TriplesMap2>
+  a rml:TriplesMap;
+
+  rml:logicalSource [
+    rml:source "test/rml-core/json/RMLTC0015b/country_en.json";
+    rml:referenceFormulation rml:JSONPath;
+    rml:iterator "$.countries[*]"
+  ];
+
+  rml:subjectMap [ rml:template "http://example.com/{Code}" ];
+
+  rml:predicateObjectMap [
+    rml:predicate rdfs:label;
+    rml:objectMap [
+      rml:reference "Name";
+      rml:language "spanish"
+    ]
+  ].

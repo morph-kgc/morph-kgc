@@ -1,0 +1,51 @@
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ex: <http://example.com/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rml: <http://w3id.org/rml/> .
+@prefix activity: <http://example.com/activity/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://example.com/base/> .
+
+<TriplesMap1>
+  a rml:TriplesMap;
+
+  rml:logicalSource [
+    rml:source "test/rml-core/xml/RMLTC0009a/student.xml";
+    rml:referenceFormulation rml:XPath;
+    rml:iterator "/students/student"
+  ];
+
+  rml:subjectMap [ rml:template "http://example.com/resource/student_{ID}" ];
+
+  rml:predicateObjectMap [
+    rml:predicate foaf:name ;
+    rml:objectMap [ rml:reference "Name" ]
+  ] ;
+
+  rml:predicateObjectMap [
+    rml:predicate <http://example.com/ontology/practises> ;
+    rml:objectMap [
+      a rml:RefObjectMap ;
+      rml:parentTriplesMap <TriplesMap2>;
+      rml:joinCondition [
+        rml:child "Sport" ;
+        rml:parent "ID" ;
+      ]
+    ]
+  ] .
+
+<TriplesMap2>
+  a rml:TriplesMap;
+
+  rml:logicalSource [
+    rml:source "test/rml-core/xml/RMLTC0009a/sport.xml";
+    rml:referenceFormulation rml:XPath;
+    rml:iterator "/sports/sport"
+  ];
+
+  rml:subjectMap [ rml:template "http://example.com/resource/sport_{ID}" ];
+
+  rml:predicateObjectMap [
+    rml:predicate rdfs:label ;
+    rml:objectMap [ rml:reference "Name" ];
+  ].

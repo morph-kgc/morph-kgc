@@ -1,14 +1,12 @@
-@prefix rr: <http://www.w3.org/ns/r2rml#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix ex: <http://example.com/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
-@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@prefix rml: <http://w3id.org/rml/> .
 @base <http://example.com/base/> .
 @prefix sd: <https://w3id.org/okn/o/sd#>.
 @prefix kg4di: <https://w3id.org/kg4di/definedBy>.
 
-<TriplesMap1> a rr:TriplesMap;
+<TriplesMap1> a rml:TriplesMap;
 
   rml:logicalSource [
     rml:source [
@@ -21,20 +19,20 @@
 				];
 			];
 		];
-    rml:referenceFormulation ql:DataFrame;
+    rml:referenceFormulation rml:DataFrame;
   ];
 
-  rr:subjectMap [
-    rr:template "http://example.com/Student/{ID}/{FirstName}";
-    rr:graph rr:defaultGraph
+  rml:subjectMap [
+    rml:template "http://example.com/Student/{ID}/{FirstName}";
+    rml:graph rml:defaultGraph
   ];
 
-  rr:predicateObjectMap [
-    rr:predicate foaf:name;
-    rr:objectMap [
+  rml:predicateObjectMap [
+    rml:predicate foaf:name;
+    rml:objectMap [
       rml:reference "FirstName"
     ]
   ].
 
-ql:DataFrame a rml:ReferenceFormulation;
+rml:DataFrame a rml:ReferenceFormulation;
 	kg4di:definedBy "Pandas".

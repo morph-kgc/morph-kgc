@@ -1,0 +1,26 @@
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ex: <http://example.com/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rml: <http://w3id.org/rml/> .
+
+@base <http://example.com/base/> .
+
+<TriplesMap1>
+  a rml:TriplesMap;
+
+  rml:logicalSource [
+    rml:source "test/rml-core/csv/RMLTC0001a/student.csv";
+    rml:referenceFormulation rml:CSV
+  ];
+
+  rml:subjectMap [
+    rml:template "http://example.com/{Name}"
+  ];
+
+  rml:predicateObjectMap [
+    rml:predicate foaf:name;
+    rml:objectMap [
+      rml:reference "Name"
+    ]
+  ].
+

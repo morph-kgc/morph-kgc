@@ -1,0 +1,27 @@
+@prefix ex: <http://example.com/> .
+@prefix rml: <http://w3id.org/rml/> .
+
+<#title>
+    rml:logicalSource [
+        rml:query """
+            SELECT TITLE.id AS id, TITLE.title AS title, AKA_TITLE.title AS aka_title
+            FROM 'test/rml-tv/RMLTVTC0028a/title.csv' AS TITLE INNER JOIN 'test/rml-tv/RMLTVTC0028a/aka_title.csv' AS AKA_TITLE ON TITLE.id=AKA_TITLE.movie_id
+            """
+    ];
+
+    rml:subjectMap [ rml:template "http://data.example.com/movie/{id}" ; rml:class ex:Movie; ] ;
+
+    rml:predicateObjectMap [
+        rml:predicate ex:title ;
+        rml:objectMap [
+            rml:reference "title"
+        ] ;
+    ] ;
+
+    rml:predicateObjectMap [
+        rml:predicate ex:title ;
+        rml:objectMap [
+            rml:reference "aka_title" ;
+        ] ;
+    ] ;
+.

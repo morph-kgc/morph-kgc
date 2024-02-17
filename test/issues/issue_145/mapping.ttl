@@ -1,9 +1,7 @@
-@prefix rr: <http://www.w3.org/ns/r2rml#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix ex: <http://example.com/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
-@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@prefix rml: <http://w3id.org/rml/> .
 @prefix fnml: <http://semweb.mmlab.be/ns/fnml#> .
 @prefix fno: <https://w3id.org/function/ontology#> .
 @prefix morph-kgc: <https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#> .
@@ -17,14 +15,14 @@
 <TriplesMap1>
     rml:logicalSource [
         rml:source "test/issues/issue_145/data.csv" ;
-        rml:referenceFormulation ql:CSV ;
+        rml:referenceFormulation rml:CSV ;
     ];
-    rr:subjectMap [
-        rr:template "http://transport.linkeddata.es/madrid/metro/calendar_rules/{service_id}"
+    rml:subjectMap [
+        rml:template "http://transport.linkeddata.es/madrid/metro/calendar_rules/{service_id}"
     ];
-    rr:predicateObjectMap [
-        rr:predicate dct:example;
-        rr:objectMap [
+    rml:predicateObjectMap [
+        rml:predicate dct:example;
+        rml:objectMap [
             fnml:execution <#Execution>
         ]
     ].
@@ -48,6 +46,6 @@
 
             fnml:parameter grel:param_string_sep ;
             fnml:valueMap [
-                rr:template "-"
+                rml:template "-"
             ]
         ] .

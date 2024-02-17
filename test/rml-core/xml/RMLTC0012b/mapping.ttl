@@ -1,0 +1,52 @@
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ex: <http://example.com/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rml: <http://w3id.org/rml/> .
+
+@base <http://example.com/base/> .
+
+<TriplesMap1>
+  a rml:TriplesMap;
+
+  rml:logicalSource [
+    rml:source "test/rml-core/xml/RMLTC0012b/persons.xml";
+    rml:referenceFormulation rml:XPath;
+    rml:iterator "/Persons/Person"
+  ];
+
+  rml:subjectMap [
+    rml:template "{fname}{lname}";
+    rml:termType rml:BlankNode ;
+  ];
+
+  rml:predicateObjectMap [
+    rml:predicate foaf:name ;
+    rml:objectMap [
+      rml:template "{fname} {lname}";
+      rml:termType rml:Literal ;
+    ]
+  ];
+  .
+
+<TriplesMap2>
+  a rml:TriplesMap;
+
+  rml:logicalSource [
+    rml:source "test/rml-core/xml/RMLTC0012b/lives.xml";
+    rml:referenceFormulation rml:XPath;
+    rml:iterator "/Lives/Live"
+  ];
+
+  rml:subjectMap [
+    rml:template "{fname}{lname}";
+    rml:termType rml:BlankNode;
+  ];
+
+  rml:predicateObjectMap
+  [
+    rml:predicate	ex:city ;
+    rml:objectMap    [
+      rml:reference "city";
+    ]
+];
+.

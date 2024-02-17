@@ -1,0 +1,19 @@
+@prefix ex: <http://example.com/> .
+@prefix rml: <http://w3id.org/rml/> .
+
+<TriplesMap1> a rml:TriplesMap;
+
+  rml:logicalSource [
+    rml:referenceFormulation rml:SQL2008;
+    rml:query "SELECT Name, Name FROM 'test/rml-tv/RMLTVTC0002h/student.csv'";
+    rml:tableName "student";
+  ];
+
+  rml:subjectMap [
+      rml:template "http://example.com/{ID}/{Name}";
+    ];
+
+    rml:predicateObjectMap [
+      rml:predicate ex:id ;
+      rml:objectMap [ rml:reference "IDs" ]
+    ].

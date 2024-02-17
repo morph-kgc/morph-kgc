@@ -1,0 +1,63 @@
+@prefix ex: <http://example.com/> .
+@prefix rml: <http://w3id.org/rml/> .
+
+<TriplesMap1>
+    a rml:TriplesMap;
+
+    rml:logicalSource [ rml:query """
+       SELECT "Student"."ID" as ID,
+              "Student"."FirstName" as FirstName,
+              "Student"."LastName" as LastName,
+              "Sport"."Description" as Description,
+              "Sport"."ID" as Sport_ID
+       FROM 'test/rml-tv/RMLTVTC0011a/student.csv' AS "Student", 'test/rml-tv/RMLTVTC0011a/sport.csv' AS "Sport",'test/rml-tv/RMLTVTC0011a/student_sport.csv' AS "Student_Sport"
+       WHERE "Student"."ID" = "Student_Sport"."ID_Student"
+       AND "Sport"."ID" = "Student_Sport"."ID_Sport";
+       """; ];
+
+    rml:subjectMap [ rml:template "http://example.com/{ID}/{FirstName};{LastName}" ];
+
+    rml:predicateObjectMap
+    [
+      rml:predicate	ex:id ;
+      rml:objectMap	[ rml:reference "ID"; ]
+    ];
+
+    rml:predicateObjectMap
+    [
+      rml:predicate	ex:firstName ;
+      rml:objectMap	[ rml:reference "FirstName" ]
+    ];
+
+    rml:predicateObjectMap
+    [
+      rml:predicate	ex:lastName ;
+      rml:objectMap	[ rml:reference "LastName" ]
+    ];
+
+    rml:predicateObjectMap
+    [
+      rml:predicate	ex:plays ;
+      rml:objectMap	[ rml:template "http://example.com/{Sport_ID}/{Description}" ]
+    ]
+    .
+
+<TriplesMap2>
+    a rml:TriplesMap;
+
+	rml:logicalSource [ rml:source  "test/rml-tv/RMLTVTC0011a/sport.csv" ];
+
+    rml:subjectMap [ rml:template "http://example.com/{ID}/{Description}"; ];
+
+    rml:predicateObjectMap
+    [
+      rml:predicate	ex:id ;
+      rml:objectMap	[ rml:reference "ID"; ]
+    ];
+
+    rml:predicateObjectMap
+    [
+      rml:predicate	ex:description ;
+      rml:objectMap	[ rml:reference "Description" ]
+    ]
+    .
