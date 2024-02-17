@@ -1,0 +1,238 @@
+prefixes:
+  rml: http://w3id.org/rml/
+  foaf: http://xmlns.com/foaf/0.1/
+  xsd: http://www.w3.org/2001/XMLSchema#
+  rdfs: http://www.w3.org/2000/01/rdf-schema#
+  dc: http://purl.org/dc/elements/1.1/
+  rev: http://purl.org/stuff/rev#
+  gtfs: http://vocab.gtfs.org/terms#
+  geo: http://www.w3.org/2003/01/geo/wgs84_pos#
+  schema: http://schema.org/
+  dct: http://purl.org/dc/terms/
+  rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns#
+
+mappings:
+  stoptimes:
+    sources:
+      - [data/STOP_TIMES.csv~csv]
+    s: http://transport.linkeddata.es/madrid/metro/stoptimes/$(trip_id)-$(stop_id)-$(arrival_time)
+    po:
+      - [a, gtfs:StopTime]
+      - [gtfs:arrivalTime, $(arrival_time)]
+      - [gtfs:departureTime, $(departure_time)]
+      - [gtfs:stopSequence, $(stop_sequence),xsd:integer]
+      - [gtfs:headsign, $(stop_headsign)]
+      - [gtfs:pickupType, http://transport.linkeddata.es/resource/PickupType/$(pickup_type)~iri]
+      - [gtfs:dropOffType, http://transport.linkeddata.es/resource/DropOffType/$(drop_off_type)~iri]
+      - [gtfs:distanceTraveled, $(shape_dist_traveled)]
+      - p: gtfs:trip
+        o:
+          - mapping: trips
+            condition:
+              function: equal
+              parameters:
+                - [str1, $(trip_id)]
+                - [str2, $(trip_id)]
+      - p: gtfs:stop
+        o:
+          - mapping: stops
+            condition:
+              function: equal
+              parameters:
+                - [str1, $(stop_id)]
+                - [str2, $(stop_id)]
+
+  trips:
+    sources:
+      - [data/TRIPS.csv~csv]
+    s: http://transport.linkeddata.es/madrid/metro/trips/$(trip_id)
+    po:
+      - [a, gtfs:Trip]
+      - [gtfs:headsign, $(trip_headsign)]
+      - [gtfs:shortName, $(trip_short_name)]
+      - [gtfs:direction, $(direction_id)]
+      - [gtfs:block, $(block_id)]
+      - [gtfs:wheelchairAccessible,http://transport.linkeddata.es/resource/WheelchairBoardingStatus/$(wheelchair_accessible)~iri]
+      - p: gtfs:service
+        o:
+          - mapping: services1
+            condition:
+              function: equal
+              parameters:
+                - [str1, $(service_id)]
+                - [str2, $(service_id)]
+          - mapping: services2
+            condition:
+              function: equal
+              parameters:
+                - [str1, $(service_id)]
+                - [str2, $(service_id)]
+      - p: gtfs:route
+        o:
+          - mapping: routes
+            condition:
+              function: equal
+              parameters:
+                - [str1, $(route_id)]
+                - [str2, $(route_id)]
+      - p: gtfs:shape
+        o:
+          - mapping: shapes
+            condition:
+              function: equal
+              parameters:
+                - [str1, $(shape_id)]
+                - [str2, $(shape_id)]
+
+  routes:
+    sources:
+      - [data/ROUTES.csv~csv]
+    s: http://transport.linkeddata.es/madrid/metro/routes/$(route_id)
+    po:
+      - [a, gtfs:Route]
+      - [gtfs:shortName, $(route_short_name)]
+      - [gtfs:longName, $(route_long_name)]
+      - [dct:description, $(route_desc)]
+      - [gtfs:routeType, http://transport.linkeddata.es/resource/RouteType/$(route_type)~iri]
+      - [gtfs:routeUrl, $(route_url)~iri]
+      - [gtfs:color, $(route_color)]
+      - [gtfs:textColor, $(route_text_color)]
+      - p: gtfs:agency
+        o:
+          - mapping: agency
+            condition:
+              function: equal
+              parameters:
+                - [str1, $(agency_id)]
+                - [str2, $(agency_id)]
+
+  agency:
+    sources:
+      - [data/AGENCY.csv~csv]
+    s: http://transport.linkeddata.es/madrid/agency/$(agency_id)
+    po:
+      - [a, gtfs:Agency]
+      - [foaf:page, $(agency_url)~iri]
+      - [foaf:name,$(agency_name)]
+      - [gtfs:timeZone,$(agency_timezone)]
+      - [dct:language,$(agency_lang)]
+      - [foaf:phone,$(agency_phone)]
+      - [gtfs:fareUrl,$(agency_fare_url)~iri]
+
+  stops:
+    sources:
+      - [data/STOPS.csv~csv]
+    s: http://transport.linkeddata.es/madrid/metro/stops/$(stop_id)
+    po:
+      - [a,gtfs:Stop]
+      - [gtfs:code,$(stop_code)]
+      - [dct:identifier,$(stop_id)]
+      - [foaf:name,$(stop_name)]
+      - [dct:description,$(stop_desc)]
+      - [geo:lat,$(stop_lat),xsd:integer]
+      - [geo:long,$(stop_lon),xsd:integer]
+      - [gtfs:zone,$(zone_id)]
+      - [foaf:page,$(stop_url)~iri]
+      - [gtfs:locationType,http://transport.linkeddata.es/resource/LocationType/$(location_type)~iri]
+      - [gtfs:timeZone,$(stop_timezone)]
+      - [gtfs:wheelchairAccessible,http://transport.linkeddata.es/resource/WheelchairBoardingStatus/$(wheelchair_boarding)~iri]
+      - p: gtfs:parentStation
+        o:
+          - mapping: stops
+            condition:
+              function: equal
+              parameters:
+                - [str1, $(parent_station)]
+                - [str2, $(stop_id)]
+
+  services1:
+    sources:
+      - [data/CALENDAR.csv~csv]
+    s: http://transport.linkeddata.es/madrid/metro/services/$(service_id)
+    po:
+      - [a, gtfs:Service]
+      - [gtfs:serviceRule, http://transport.linkeddata.es/madrid/metro/calendar_rules/$(service_id)]
+
+  services2:
+    sources:
+      - [data/CALENDAR_DATES.csv~csv]
+    s: http://transport.linkeddata.es/madrid/metro/services/$(service_id)
+    po:
+      - [a, gtfs:Service]
+      - [gtfs:serviceRule, http://transport.linkeddata.es/madrid/metro/calendar_date_rule/$(service_id)-$(date)]
+
+  calendar_date_rules:
+    sources:
+      - [data/CALENDAR_DATES.csv~csv]
+    s: http://transport.linkeddata.es/madrid/metro/calendar_date_rule/$(service_id)-$(date)
+    po:
+      - [a, gtfs:CalendarDateRule]
+      - [dct:date, $(date), xsd:date]
+      - [gtfs:dateAddition, $(exception_type)]
+
+  calendar_rules:
+    sources:
+      - [data/CALENDAR.csv~csv]
+    s: http://transport.linkeddata.es/madrid/metro/calendar_rules/$(service_id)
+    po:
+      - [a, gtfs:CalendarRule]
+      - [gtfs:monday, $(monday)]
+      - [gtfs:tuesday, $(tuesday)]
+      - [gtfs:wednesday, $(wednesday)]
+      - [gtfs:thursday, $(thursday)]
+      - [gtfs:friday, $(friday)]
+      - [gtfs:saturday, $(saturday)]
+      - [gtfs:sunday, $(sunday)]
+      - [schema:startDate, $(start_date), xsd:date]
+      - [schema:endDate, $(end_date), xsd:date]
+
+  feed:
+    sources:
+      - [data/FEED_INFO.csv~csv]
+    s: http://transport.linkeddata.es/madrid/metro/feed/$(feed_publisher_name)
+    po:
+      - [a, gtfs:Feed]
+      - [dct:publisher,$(feed_publisher_name)]
+      - [foaf:page,$(feed_publisher_url)~iri]
+      - [dct:language,$(feed_lang)]
+      - [schema:startDate,$(feed_start_date), xsd:date]
+      - [schema:endDate,$(feed_end_date), xsd:date]
+      - [schema:version,$(feed_version)]
+
+  shapes:
+    sources:
+      - [data/SHAPES.csv~csv]
+    s: http://transport.linkeddata.es/madrid/metro/shape/$(shape_id)
+    po:
+      - [a, gtfs:Shape]
+      - [gtfs:shapePoint,http://transport.linkeddata.es/madrid/metro/shape_point/$(shape_id)-$(shape_pt_sequence)]
+
+  shapePoints:
+    sources:
+      - [data/SHAPES.csv~csv]
+    s: http://transport.linkeddata.es/madrid/metro/shape_point/$(shape_id)-$(shape_pt_sequence)
+    po:
+      - [a, gtfs:ShapePoint]
+      - [geo:lat,$(shape_pt_lat),xsd:integer]
+      - [geo:long,$(shape_pt_lon),xsd:integer]
+      - [gtfs:pointSequence,$(shape_pt_sequence)]
+      - [gtfs:distanceTraveled,$(shape_dist_traveled)]
+
+  frequencies:
+    sources:
+      - [data/FREQUENCIES.csv~csv]
+    s: http://transport.linkeddata.es/madrid/metro/frequency/$(trip_id)-$(start_time)
+    po:
+      - [a, gtfs:Frequency]
+      - [gtfs:startTime,$(start_time)]
+      - [gtfs:endTime,$(end_time)]
+      - [gtfs:headwaySeconds,$(headway_secs),xsd:integer]
+      - [gtfs:exactTimes,$(exact_times)]
+      - p: gtfs:trip
+        o:
+          - mapping: trips
+            condition:
+              function: equal
+              parameters:
+                - [str1, $(trip_id)]
+                - [str2, $(trip_id)]
