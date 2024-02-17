@@ -1,0 +1,19 @@
+@prefix ex: <http://example.com/> .
+@prefix rml: <http://w3id.org/rml/> .
+
+<TriplesMap1>
+    a rml:TriplesMap;
+ 	rml:logicalSource [
+                     rml:query """
+                       SELECT ID, UNNEST(COL::VARCHAR[]) AS COL
+                       FROM 'test/rml-tv/RMLTVTC0026a/mixed_content_list.csv'
+                       """
+                       ];
+
+	rml:subjectMap [ rml:template "http://example.com/{ID}" ];
+	rml:predicateObjectMap
+    [
+      rml:predicate		ex:col;
+      rml:objectMap		[ rml:reference "COL" ];
+    ];
+.

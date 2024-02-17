@@ -1,0 +1,20 @@
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix rml: <http://w3id.org/rml/> .
+
+<TriplesMap1>
+    a rml:TriplesMap;
+ 	rml:logicalSource [
+                     rml:query """
+                       SELECT "ID", "FirstName", "LastName"
+                       FROM 'test/rml-tv/RMLTVTC0019a/employee.csv'
+                       WHERE "ID" < 20
+                       """
+                       ];
+
+	rml:subjectMap [ rml:reference "FirstName" ];
+	rml:predicateObjectMap
+    [
+      rml:predicate		foaf:name;
+      rml:objectMap		[ rml:reference "FirstName" ];
+    ];
+.

@@ -1,0 +1,21 @@
+@prefix ex: <http://example.com/ns#> .
+@prefix rml: <http://w3id.org/rml/> .
+
+<TriplesMap4>
+	a rml:TriplesMap;
+    rml:logicalSource [ rml:query """
+
+        SELECT "EMP".*, (CASE "job"
+            WHEN 'CLERK' THEN 'general-office'
+            WHEN 'NIGHTGUARD' THEN 'security'
+            WHEN 'ENGINEER' THEN 'engineering'
+        END) AS "ROLE" FROM 'test/rml-tv/RMLTVTC0014d/emp.csv' AS "EMP"
+
+        """ ];
+    rml:subjectMap [
+        rml:template "http://data.example.com/employee/{empno}";
+    ];
+    rml:predicateObjectMap [
+        rml:predicate ex:role;
+        rml:objectMap [ rml:template "http://data.example.com/roles/{ROLE}" ];
+    ].
