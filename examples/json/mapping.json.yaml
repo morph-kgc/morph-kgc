@@ -1,14 +1,15 @@
 prefixes:
   ex: "https://w3id.org/okn/os/o/"
+
 sources:
   main-source: ['data.json~jsonpath', '$.*']
   author-source: ['data.json~jsonpath', '$.*.author[*]']
   pid-source: ['data.json~jsonpath', '$.*.pid[*]']
+
 mappings:
   Author:
     sources:
       - author-source
-
     s: https://w3id.org/okn/os/i/author/$(fullname)
     po:
       - [a, ex:Author]
@@ -16,6 +17,7 @@ mappings:
       - [ex:name, $(name)]
       - [ex:surname, $(surname)]
       - [ex:$(pid.id.scheme)ID, $(pid.id.value)]
+
   Paper:
     sources:
       - main-source
@@ -24,7 +26,7 @@ mappings:
       - [a, ex:Paper]
       - [ex:title, $(maintitle)]
       - [ex:subtitle, $(subtitle)]
-      - [ex:description, $(description),$(language.code)~lang]
+      - [ex:description, $(description)]
       - [ex:language, $(language.label)]
       - [ex:format, $(format)]
       - [ex:publicationDate, $(publicationdate)]
@@ -43,6 +45,7 @@ mappings:
                parameters:
                  - [str1, $(id)]
                  - [str2, $(id)]
+
   idTypeOpenAire:
     sources:
       - pid-source
@@ -51,6 +54,7 @@ mappings:
       - [a, ex:idType]
       - [ex:source,OpenAire]
       - [ex:identifier,$(id)]
+
   idTypePaperResource:
     sources:
       - pid-source
