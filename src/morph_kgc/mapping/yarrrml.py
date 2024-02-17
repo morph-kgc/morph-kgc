@@ -561,6 +561,5 @@ def load_yarrrml(yarrrml_file):
 
     yarrrml_mapping = _normalize_yarrrml_mapping(yarrrml_mapping)
     rml_mapping = _translate_yarrrml_to_rml(yarrrml_mapping)
-    rml_mapping.serialize('a.ttl')
 
     return rml_mapping
