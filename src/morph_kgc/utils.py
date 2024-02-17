@@ -13,7 +13,6 @@ import sys
 
 import rdflib
 import time
-import numpy as np
 import pandas as pd
 import multiprocessing as mp
 
@@ -239,9 +238,9 @@ def remove_null_values_from_dataframe(data, config, references, column=None):
     if config.get_na_values():  # if there is some NULL values to replace
         if column:
             # only replace nulls in the given column
-            data[column] = data[column].replace(config.get_na_values(), np.NaN)
+            data[column] = data[column].replace(config.get_na_values(), None)
         else:
-            data = data.replace(config.get_na_values(), np.NaN)
+            data = data.replace(config.get_na_values(), None)
         data = data.dropna(axis=0, how='any', subset=references)
 
     return data

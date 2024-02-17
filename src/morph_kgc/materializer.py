@@ -33,7 +33,7 @@ def _preprocess_data(data, rml_rule, references, config):
             data = normalize_oracle_identifier_casing(data, references)
 
     # TODO: can this be removed?
-    data = data.applymap(str)
+    data = data.map(str)
 
     data = remove_null_values_from_dataframe(data, config, references)
     data = data.convert_dtypes(convert_boolean=False)

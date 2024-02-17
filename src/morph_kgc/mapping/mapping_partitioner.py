@@ -179,7 +179,7 @@ class MappingPartitioner:
 
         logging.info(f"Mapping partition with {len(set(self.rml_df['mapping_partition']))} groups generated.")
         logging.info('Maximum number of rules within mapping group: '
-                     f"{self.rml_df['mapping_partition'].value_counts()[0]}.")
+                     f"{self.rml_df['mapping_partition'].value_counts().iloc[0]}.")
 
         return self.rml_df
 
@@ -190,8 +190,6 @@ class MappingPartitioner:
 
         self.rml_df['literal_type'] = self.rml_df['object_language'] + self.rml_df['object_datatype']
         self.rml_df['mapping_partition'] = ''
-
-        rml_df = self.rml_df.copy()
 
         position_orderings = list(permutations(['S', 'P', 'O', 'G']))
 
