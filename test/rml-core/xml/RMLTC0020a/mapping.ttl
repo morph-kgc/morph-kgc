@@ -1,0 +1,25 @@
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ex: <http://example.com/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rml:    <http://w3id.org/rml/> .
+@prefix ql:     <http://semweb.mmlab.be/ns/ql#> .
+
+@base <http://example.com/base/> .
+
+<TriplesMap1>
+  a rml:TriplesMap;
+  rml:logicalSource [
+    rml:source "test/rml-core/xml/RMLTC0020a/student.xml";
+    rml:referenceFormulation rml:XPath;
+    rml:iterator "/students/student"
+  ];
+
+    rml:subjectMap [     rml:template "{Name}";
+                        rml:termType rml:IRI ];
+
+    rml:predicateObjectMap
+    [
+    	rml:predicate rdf:type;
+    	rml:object foaf:Person;
+    ].

@@ -1,0 +1,27 @@
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix ex: <http://example.com/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rml: <http://w3id.org/rml/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+@base <http://example.com/base/> .
+
+<TriplesMap1>
+  a rml:TriplesMap;
+
+  rml:logicalSource [
+    rml:source "test/rml-core/json/RMLTC0020a/student.json";
+    rml:referenceFormulation rml:JSONPath;
+    rml:iterator "$.students[*]"
+  ];
+
+  rml:subjectMap [
+    rml:template "{Name}";
+    rml:termType rml:IRI
+  ];
+
+  rml:predicateObjectMap [
+    rml:predicate rdf:type;
+    rml:object foaf:Person
+  ].

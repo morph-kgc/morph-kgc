@@ -1,0 +1,25 @@
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix ex: <http://example.com/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rml: <http://w3id.org/rml/> .
+
+@base <http://example.com/base/> .
+
+<TriplesMap1>
+  a rml:TriplesMap;
+
+  rml:logicalSource [
+    rml:source "test/rml-core/xml/RMLTC0019a/persons.xml";
+    rml:referenceFormulation rml:XPath;
+    rml:iterator "/persons/person"
+  ];
+
+  rml:subjectMap [ rml:reference "FirstName" ];
+
+  rml:predicateObjectMap [
+    rml:predicate foaf:name;
+    rml:objectMap [
+      rml:reference "FirstName"
+    ]
+  ] .
