@@ -22,7 +22,6 @@ authors = [
 license = 'Apache-2.0'
 classifiers = [
   'Programming Language :: Python :: 3',
-  'Programming Language :: Python :: 3.8',
   'Programming Language :: Python :: 3.9',
   'Programming Language :: Python :: 3.10',
   'Programming Language :: Python :: 3.11',
@@ -37,7 +36,7 @@ classifiers = [
   'Topic :: Utilities',
   'Topic :: Scientific/Engineering :: Interface Engine/Protocol Translator',
 ]
-requires-python = '>=3.8'
+requires-python = '>=3.9'
 dynamic = ['version']
 dependencies = [
   'pandas>=2.0.0, <3.0.0',
