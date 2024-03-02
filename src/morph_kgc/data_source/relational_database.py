@@ -9,9 +9,6 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 import logging
 import pandas as pd
 
-from sqlalchemy import create_engine
-from sqlalchemy.pool import NullPool
-
 from ..constants import *
 
 
@@ -86,6 +83,9 @@ def _replace_query_enclosing_characters(sql_query, db_dialect):
 
 
 def _relational_db_connection(config, source_name):
+    from sqlalchemy import create_engine
+    from sqlalchemy.pool import NullPool
+
     connect_args = eval(config.get_connect_args(source_name)) if config.has_connect_args(source_name) else {}
 
     db_connection = create_engine(config.get_database_url(source_name), connect_args=connect_args, poolclass=NullPool)
