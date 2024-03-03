@@ -143,6 +143,13 @@ def to_title_case(string):
 
 
 @bif(
+    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#reverse',
+    string='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam')
+def reverse(string):
+    return string[::-1]
+
+
+@bif(
     fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#string_trim',
     string='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam')
 def string_trim(string):
