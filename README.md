@@ -114,7 +114,7 @@ Morph-KGC is available under the **[Apache License 2.0](https://github.com/morph
 
 ## Citing :speech_balloon:
 
-If you used Morph-KGC in your work, please cite the **[SWJ paper](https://content.iospress.com/download/semantic-web/sw223135?id=semantic-web%2Fsw223135)**:
+If you used Morph-KGC in your work, please cite the **[SWJ paper](https://www.doi.org/10.3233/SW-223135)**:
 
 ```bib
 @article{arenas2024morph,
