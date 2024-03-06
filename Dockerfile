@@ -23,15 +23,18 @@ ARG optional_dependencies
 RUN hatch dep show requirements >> requirements.txt
 RUN python -m pip install -r requirements.txt
 
-RUN echo '#!/bin/bash\n\
-    IFS=',' read -ra optional_dependencies <<< "$1"\n\
-    for DEP in "${optional_dependencies[@]}"; do\n\
-        hatch dep show requirements --feature "$DEP" >> requirements_optional.txt\n\
-    done\n\
-    python -m pip install -r requirements_optional.txt' > create_and_install_optional_requirements.sh
-
-RUN chmod +x create_and_install_optional_requirements.sh
-RUN ./create_and_install_optional_requirements.sh "$optional_dependencies"
+RUN if [ -n "$optional_dependencies" ]; then \
+        echo '#!/bin/bash\n\
+            IFS=',' read -ra optional_dependencies <<< "$1"\n\
+            for DEP in "${optional_dependencies[@]}"; do\n\
+                hatch dep show requirements --feature "$DEP" >> requirements_optional.txt\n\
+            done\n\
+            python -m pip install -r requirements_optional.txt' > create_and_install_optional_requirements.sh; \
+        chmod +x create_and_install_optional_requirements.sh; \
+        ./create_and_install_optional_requirements.sh "$optional_dependencies"; \
+    else \
+        echo "No optional dependencies specified."; \
+    fi
 
 
 ################################
