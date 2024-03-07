@@ -76,31 +76,6 @@ config = """
          """
 g_rdflib = morph_kgc.materialize(config)
 ```
-## Docker Containerization
-
-We've added a Dockerfile to simplify the containerization of Morph-KGC. This allows you to package the application with all its dependencies into a self-contained Docker container.
-
-### Image Building
-
-You can specify optional dependencies during the container build process using the `optional_dependencies` argument. Simply provide a comma-separated list of the dependencies you wish to include. For example:
-
-```bash
-docker build -t morph-kgc .
-```
-
-To include optional dependencies, use for example:
-```bash
-docker build -t morph-kgc --build-arg optional_dependencies="sqlite,kafka" .
-```
-
-### Docker execution
-The container is designed to mount a local directory containing the required files. To run the container, use the following command, replacing $(pwd)/files with the path to the local directory containing your files:
-
-```bash
-docker run -v $(pwd)/files:/app/files morph-kgc files/config.ini
-```
-
-This will mount the local directory to /app/files within the container and execute the application using the provided config.ini file.
 
 ## License :unlock:
 
