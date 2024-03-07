@@ -85,19 +85,19 @@ We've added a Dockerfile to simplify the containerization of Morph-KGC. This all
 You can specify optional dependencies during the container build process using the `optional_dependencies` argument. Simply provide a comma-separated list of the dependencies you wish to include. For example:
 
 ```bash
-docker build -t morph-kgc-app .
+docker build -t morph-kgc .
 ```
 
 To include optional dependencies, use for example:
 ```bash
-docker build -t morph-kgc-app --build-arg optional_dependencies="sqlite,kafka" .
+docker build -t morph-kgc --build-arg optional_dependencies="sqlite,kafka" .
 ```
 
-## Docker execution
+### Docker execution
 The container is designed to mount a local directory containing the required files. To run the container, use the following command, replacing $(pwd)/files with the path to the local directory containing your files:
 
 ```bash
-docker run -v $(pwd)/files:/app/files morph-kgc-app files/config.ini
+docker run -v $(pwd)/files:/app/files morph-kgc files/config.ini
 ```
 
 This will mount the local directory to /app/files within the container and execute the application using the provided config.ini file.
