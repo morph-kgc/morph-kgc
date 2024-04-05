@@ -307,12 +307,19 @@ def _normalize_yarrrml_mapping(mappings):
     for property in ['predicates', 'objects', 'graphs']:
         mappings = _normalize_property_in_predicateobjects(mappings, property)
 
-    # create `value` in objects and expand ~iri
+    # create `value` in objects and expand ~iri ~blanknode ~literal
     for mapping_key, mapping_value in mappings['mappings'].items():
         if 'predicateobjects' in mapping_value:
+            if 'subjects' in mapping_value:
+                if type(mapping_value['subjects']) is str:
+                    if mapping_value['subjects'].endswith(('~iri', '~blanknode')):
+                        value, termtype = mapping_value['subjects'].split('~')
+                        mapping_value['subjects'] = {'value': value, 'type': termtype}
+                    else:
+                        mapping_value['subjects'] = {'value': mapping_value['subjects']}
             if 'objects' in mapping_value['predicateobjects']:
                 if type(mapping_value['predicateobjects']['objects']) is str:
-                    if mapping_value['predicateobjects']['objects'].endswith('~iri'):
+                    if mapping_value['predicateobjects']['objects'].endswith(('~iri', '~literal', '~blanknode')):
                         value, termtype = mapping_value['predicateobjects']['objects'].split('~')
                         mapping_value['predicateobjects']['objects'] = {'value': value, 'type': termtype}
                     else:
