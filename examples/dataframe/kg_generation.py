@@ -27,7 +27,7 @@ config = """
     mappings=./mapping.rml.ttl
 """
 
-g_rdflib = morph_kgc.materialize('./config.ini', data_dict)
+g_rdflib = morph_kgc.materialize(config, data_dict)
 
 print("Knowledge graphs triples:")
 for s,p,o in g_rdflib.triples((None, None, None)):
