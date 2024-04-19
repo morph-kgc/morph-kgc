@@ -5,6 +5,7 @@ __license__ = "Apache-2.0"
 __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"
 
+
 from falcon.uri import encode_value
 from urllib.parse import quote
 
@@ -91,13 +92,8 @@ def _materialize_template(results_df, template, config, position, columns_alias=
     # Curly braces that do not enclose column names MUST be escaped by a backslash character (“\”).
     # This also applies to curly braces within column names.
     template = template.replace('\\{', '{').replace('\\}', '}')
-
-    if termtype.strip() == RML_IRI:
-        results_df[position] = '<'
-    elif termtype.strip() == RML_LITERAL:
-        results_df[position] = '"'
-    elif termtype.strip() == RML_BLANK_NODE:
-        results_df[position] = '_:'
+    # formatting according to the termtype is done at the end
+    results_df[position] = ''
 
     for reference in references:
         results_df['reference_results'] = results_df[columns_alias + reference]
@@ -124,9 +120,11 @@ def _materialize_template(results_df, template, config, position, columns_alias=
         results_df[position] = results_df[position] + template
 
     if termtype.strip() == RML_IRI:
-        results_df[position] = results_df[position] + '>'
+        results_df[position] = '<' + results_df[position] + '>'
+    elif termtype.strip() == RML_BLANK_NODE:
+        results_df[position] = '_:' + results_df[position]
     elif termtype.strip() == RML_LITERAL:
-        results_df[position] = results_df[position] + '"'
+        results_df[position] = '"' + results_df[position] + '"'
         if pd.notna(language_tag):
             results_df[position] = results_df[position] + '@' + language_tag
         elif pd.notna(datatype):
@@ -322,10 +320,8 @@ def _materialize_rml_rule(rml_rule, rml_df, fnml_df, config, data=None, parent_j
                           python_source=None):
     references = set(_get_references_in_rml_rule(rml_rule, rml_df, fnml_df))
 
-    references_subject_join, parent_references_subject_join = get_references_in_join_condition(rml_rule,
-                                                                                               'subject_join_conditions')
-    references_object_join, parent_references_object_join = get_references_in_join_condition(rml_rule,
-                                                                                             'object_join_conditions')
+    references_subject_join, parent_references_subject_join = get_references_in_join_condition(rml_rule, 'subject_join_conditions')
+    references_object_join, parent_references_object_join = get_references_in_join_condition(rml_rule, 'object_join_conditions')
     references.update(parent_join_references)
 
     if rml_rule['subject_map_type'] == RML_QUOTED_TRIPLES_MAP or rml_rule['object_map_type'] == RML_QUOTED_TRIPLES_MAP:
