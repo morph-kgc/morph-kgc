@@ -5,7 +5,7 @@ __license__ = "Apache-2.0"
 __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"
 
-
+import pandas as pd
 from falcon.uri import encode_value
 from urllib.parse import quote
 
@@ -324,7 +324,13 @@ def _materialize_rml_rule(rml_rule, rml_df, fnml_df, config, data=None, parent_j
     references_object_join, parent_references_object_join = get_references_in_join_condition(rml_rule, 'object_join_conditions')
     references.update(parent_join_references)
 
-    if rml_rule['subject_map_type'] == RML_QUOTED_TRIPLES_MAP or rml_rule['object_map_type'] == RML_QUOTED_TRIPLES_MAP:
+    # handle the case in which all term maps are constant-valued
+    if rml_rule['subject_map_type'] == RML_CONSTANT and rml_rule['predicate_map_type'] == RML_CONSTANT and rml_rule['object_map_type']:
+        # create a dataframe with 1 row
+        data = pd.DataFrame({'placeholder': ['placeholder']})
+        data = _materialize_rml_rule_terms(data, rml_rule, fnml_df, config)
+
+    elif rml_rule['subject_map_type'] == RML_QUOTED_TRIPLES_MAP or rml_rule['object_map_type'] == RML_QUOTED_TRIPLES_MAP:
         if data is None:
             data = _get_data(config, rml_rule, references, python_source)
 
