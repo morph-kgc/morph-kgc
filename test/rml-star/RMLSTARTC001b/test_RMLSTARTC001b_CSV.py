@@ -9,8 +9,6 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 import os
 import morph_kgc
 
-from pyoxigraph import Store
-
 
 def test_RMLSTARTC001b():
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'output.nq')) as file:
