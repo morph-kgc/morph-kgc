@@ -14,7 +14,9 @@ RML_DATAFRAME_COLUMNS = [
     'source_name', 'triples_map_id', 'triples_map_type', 'logical_source_type', 'logical_source_value', 'iterator',
     'subject_map_type', 'subject_map_value', 'subject_termtype',
     'predicate_map_type', 'predicate_map_value',
-    'object_map_type', 'object_map_value', 'object_termtype', 'object_datatype', 'object_language',
+    'object_map_type', 'object_map_value', 'object_termtype',
+    'lang_datatype', 'lang_datatype_map_type', 'lang_datatype_map_value',
+    'datatype_map_type', 'datatype_map_value',
     'graph_map_type', 'graph_map_value',
     'subject_join_conditions', 'object_join_conditions'
 ]
@@ -41,7 +43,8 @@ RML_PARSING_QUERY = """
         ?triples_map_id ?triples_map_type ?logical_source_type ?logical_source_value ?iterator 
         ?subject_map_type ?subject_map_value ?subject_map ?subject_termtype
         ?predicate_map_type ?predicate_map_value
-        ?object_map_type ?object_map_value ?object_map ?object_termtype ?object_datatype ?object_language
+        ?object_map_type ?object_map_value ?object_map ?object_termtype
+        ?lang_datatype ?lang_datatype_map_type ?lang_datatype_map_value
         ?graph_map_type ?graph_map_value
 
     WHERE {
@@ -79,8 +82,12 @@ RML_PARSING_QUERY = """
                 FILTER ( ?object_map_type IN (
                             rml:constant, rml:template, rml:reference, rml:quotedTriplesMap, rml:functionExecution ) ) .
                 OPTIONAL { ?object_map rml:termType ?object_termtype . }
-                OPTIONAL { ?object_map rml:datatype ?object_datatype . }
-                OPTIONAL { ?object_map rml:language ?object_language . }
+                OPTIONAL {
+                    ?object_map ?lang_datatype ?lang_datatype_map .
+                    ?lang_datatype_map ?lang_datatype_map_type ?lang_datatype_map_value .
+                    # remove xsd:string data types as it is equivalent to not specifying any data type
+                    FILTER ( ?lang_datatype_map_value != <http://www.w3.org/2001/XMLSchema#string> ) .
+                }
             }
             OPTIONAL {
                 ?_predicate_object_map rml:objectMap ?object_map .

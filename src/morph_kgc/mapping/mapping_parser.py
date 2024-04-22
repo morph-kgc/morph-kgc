@@ -64,8 +64,8 @@ def _r2rml_to_rml(mapping_graph):
         R2RML_CHILD: RML_CHILD,
         R2RML_PARENT: RML_PARENT,
         R2RML_JOIN_CONDITION: RML_JOIN_CONDITION,
-        R2RML_DATATYPE: RML_DATATYPE,
-        R2RML_LANGUAGE: RML_LANGUAGE,
+        R2RML_DATATYPE: RML_DATATYPE_SHORTCUT,
+        R2RML_LANGUAGE: RML_LANGUAGE_SHORTCUT,
         R2RML_SQL_VERSION: RML_SQL_VERSION,
         R2RML_TERM_TYPE: RML_TERM_TYPE,
         R2RML_IRI: RML_IRI,
@@ -137,6 +137,8 @@ def _expand_constant_shortcut_properties(mapping_graph):
         RML_SUBJECT_SHORTCUT: RML_SUBJECT_MAP,
         RML_PREDICATE_SHORTCUT: RML_PREDICATE_MAP,
         RML_OBJECT_SHORTCUT: RML_OBJECT_MAP,
+        RML_LANGUAGE_SHORTCUT: RML_LANGUAGE_MAP,
+        RML_DATATYPE_SHORTCUT: RML_DATATYPE_MAP,
         RML_GRAPH_SHORTCUT: RML_GRAPH_MAP,
         RML_FUNCTION_SHORTCUT: RML_FUNCTION_MAP,
         RML_RETURN_SHORTCUT: RML_RETURN_MAP,
@@ -250,8 +252,8 @@ def _complete_termtypes(mapping_graph):
             f'OPTIONAL {{ ?om <{RML_TERM_TYPE}> ?termtype . }} . ' \
             f'OPTIONAL {{ ?om <{RML_REFERENCE}> ?reference . }} . ' \
             f'OPTIONAL {{ ?om <{RML_EXECUTION}> ?execution . }} . ' \
-            f'OPTIONAL {{ ?om <{RML_LANGUAGE}> ?language . }} . ' \
-            f'OPTIONAL {{ ?om <{RML_DATATYPE}> ?datatype . }} . ' \
+            f'OPTIONAL {{ ?om <{RML_LANGUAGE_MAP}> ?language . }} . ' \
+            f'OPTIONAL {{ ?om <{RML_DATATYPE_MAP}> ?datatype . }} . ' \
             'FILTER ( !bound(?termtype) && (' \
             'bound(?reference) || bound(?execution) || bound(?language) || bound(?datatype) ) ) }'
     for om, _ in mapping_graph.query(query):
@@ -316,7 +318,7 @@ def _remove_string_datatypes(mapping_graph):
     Removes xsd:string data types. xsd:string is equivalent to not specifying any data type.
     """
 
-    mapping_graph.remove((None, rdflib.term.URIRef(RML_DATATYPE), rdflib.term.URIRef(XSD_STRING)))
+    mapping_graph.remove((None, rdflib.term.URIRef(RML_CONSTANT), rdflib.term.URIRef(XSD_STRING)))
 
     return mapping_graph
 
@@ -556,8 +558,6 @@ class MappingParser:
         mapping_graph = _complete_pom_with_default_graph(mapping_graph)
         # if a term as no associated rr:termType, complete it according to R2RML specification
         mapping_graph = _complete_termtypes(mapping_graph)
-        # remove xsd:string data types as it is equivalent to not specifying any data type
-        mapping_graph = _remove_string_datatypes(mapping_graph)
         # add rr:TriplesMap typing
         mapping_graph = _complete_triples_map_class(mapping_graph)
         # check termtypes are correct

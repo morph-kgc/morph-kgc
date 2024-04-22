@@ -235,7 +235,8 @@ class MappingPartitioner:
         self.rml_df['object_partition'] = ''
         self.rml_df['graph_partition'] = ''
 
-        self.rml_df['literal_type'] = self.rml_df['object_language'] + self.rml_df['object_datatype']
+        # TODO: update!
+        self.rml_df['literal_type'] = self.rml_df['lang_datatype']
 
         # generate partial mapping partition for subjects, predicates, objects and graphs
 
