@@ -20,7 +20,7 @@ def retrieve_mappings(config):
     start_time = time.time()
     rml_df, fnml_df = mappings_parser.parse_mappings()
     logging.info(f'Mappings processed in {get_delta_time(start_time)} seconds.')
-    rml_df.to_csv('a.csv', index=False)
+
     return rml_df, fnml_df
 
 
