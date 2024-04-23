@@ -188,7 +188,11 @@ class MappingPartitioner:
         Generates a mapping partition with the maximum number of mapping groups.
         """
 
-        self.rml_df['literal_type'] = self.rml_df['object_language'] + self.rml_df['object_datatype']
+        if {RML_REFERENCE, RML_TEMPLATE}.intersection(set(self.rml_df['lang_datatype_map_type'])):
+            self.rml_df['literal_type'] = self.rml_df['lang_datatype']
+        else:
+            self.rml_df['literal_type'] = self.rml_df['lang_datatype_map_value']
+
         self.rml_df['mapping_partition'] = ''
 
         position_orderings = list(permutations(['S', 'P', 'O', 'G']))
@@ -235,8 +239,10 @@ class MappingPartitioner:
         self.rml_df['object_partition'] = ''
         self.rml_df['graph_partition'] = ''
 
-        # TODO: update!
-        self.rml_df['literal_type'] = self.rml_df['lang_datatype']
+        if {RML_REFERENCE, RML_TEMPLATE}.intersection(set(self.rml_df['lang_datatype_map_type'])):
+            self.rml_df['literal_type'] = self.rml_df['lang_datatype']
+        else:
+            self.rml_df['literal_type'] = self.rml_df['lang_datatype_map_value']
 
         # generate partial mapping partition for subjects, predicates, objects and graphs
 

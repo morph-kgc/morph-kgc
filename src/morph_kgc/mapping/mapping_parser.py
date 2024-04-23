@@ -20,7 +20,7 @@ def retrieve_mappings(config):
     start_time = time.time()
     rml_df, fnml_df = mappings_parser.parse_mappings()
     logging.info(f'Mappings processed in {get_delta_time(start_time)} seconds.')
-
+    rml_df.to_csv('a.csv', index=False)
     return rml_df, fnml_df
 
 
@@ -687,7 +687,7 @@ class MappingParser:
                     # datatype inference only applies to literals
                     str(rml_rule['object_termtype']) == RML_LITERAL) and (
                     # if the literal has a language tag or an overridden datatype, datatype inference does not apply
-                    pd.isna(rml_rule['object_datatype']) and pd.isna(rml_rule['object_language'])):
+                    pd.isna(rml_rule['lang_datatype'])):
 
                 if rml_rule['object_map_type'] == RML_REFERENCE:
                     inferred_data_type = get_rdb_reference_datatype(self.config, rml_rule,
@@ -697,7 +697,9 @@ class MappingParser:
                         # no data type was inferred
                         continue
 
-                    self.rml_df.at[i, 'object_datatype'] = inferred_data_type
+                    self.rml_df.at[i, 'lang_datatype'] = RML_DATATYPE_MAP
+                    self.rml_df.at[i, 'lang_datatype_map_type'] = RML_CONSTANT
+                    self.rml_df.at[i, 'lang_datatype_map_value'] = inferred_data_type
                     if self.rml_df.at[i, 'logical_source_type'] == RML_TABLE_NAME:
                         logging.debug(f"`{inferred_data_type}` datatype inferred for column "
                                       f"`{rml_rule['object_map_value']}` of table "
@@ -716,18 +718,12 @@ class MappingParser:
         datatypes are used properly. Also checks that different data sources do not have triples map with the same id.
         """
 
+        """
         # if there is a datatype or language tag then the object map termtype must be a rr:Literal
         if len(self.rml_df.loc[(self.rml_df['object_termtype'] != RML_LITERAL) &
-                                    pd.notna(self.rml_df['object_datatype']) &
-                                    pd.notna(self.rml_df['object_language'])]) > 0:
+                               pd.notna(self.rml_df['lang_datatype'])]) > 0:
             raise Exception('Found object maps with a language tag or a datatype, '
-                            'but that do not have termtype rr:Literal.')
-
-        # language tags and datatypes cannot be used simultaneously, language tags are used if both are given
-        if len(self.rml_df.loc[pd.notna(self.rml_df['object_language']) &
-                                    pd.notna(self.rml_df['object_datatype'])]) > 0:
-            logging.warning('Found object maps with a language tag and a datatype. Both of them cannot be used '
-                            'simultaneously for the same object map, and the language tag has preference.')
+                            'but that do not have termtype rml:Literal.')
 
         # check that language tags are valid
         language_tags = set(self.rml_df['object_language'].dropna())
@@ -738,6 +734,7 @@ class MappingParser:
             if len(language_tag.split('-')[0]) > 3:
                 raise ValueError(f'Found invalid language tag `{language_tag}`. '
                                  'Language tags must be in the IANA Language Subtag Registry.')
+        """
 
         # check that a triples map id is not repeated in different data sources
         # Get unique source names and triples map identifiers

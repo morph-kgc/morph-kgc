@@ -16,7 +16,6 @@ RML_DATAFRAME_COLUMNS = [
     'predicate_map_type', 'predicate_map_value',
     'object_map_type', 'object_map_value', 'object_termtype',
     'lang_datatype', 'lang_datatype_map_type', 'lang_datatype_map_value',
-    'datatype_map_type', 'datatype_map_value',
     'graph_map_type', 'graph_map_value',
     'subject_join_conditions', 'object_join_conditions'
 ]
@@ -87,6 +86,7 @@ RML_PARSING_QUERY = """
                     ?lang_datatype_map ?lang_datatype_map_type ?lang_datatype_map_value .
                     # remove xsd:string data types as it is equivalent to not specifying any data type
                     FILTER ( ?lang_datatype_map_value != <http://www.w3.org/2001/XMLSchema#string> ) .
+                    FILTER ( ?lang_datatype_map_type IN ( rml:constant, rml:template, rml:reference, rml:functionExecution ) ) .
                 }
             }
             OPTIONAL {
