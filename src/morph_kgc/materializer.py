@@ -5,7 +5,7 @@ __license__ = "Apache-2.0"
 __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"
 
-import pandas as pd
+
 from falcon.uri import encode_value
 from urllib.parse import quote
 
@@ -63,7 +63,7 @@ def _get_data(config, rml_rule, references, python_source=None):
 def _get_references_in_rml_rule(rml_rule, rml_df, fnml_df, only_subject_map=False):
     references = []
 
-    positions = ['subject'] if only_subject_map else ['subject', 'predicate', 'object', 'graph']
+    positions = ['subject'] if only_subject_map else ['subject', 'predicate', 'object', 'graph', 'lang_datatype']
     for position in positions:
         if rml_rule[f'{position}_map_type'] == RML_TEMPLATE:
             references.extend(get_references_in_template(rml_rule[f'{position}_map_value']))
@@ -85,8 +85,11 @@ def _get_references_in_rml_rule(rml_rule, rml_df, fnml_df, only_subject_map=Fals
     return references
 
 
-def _materialize_template(results_df, template, config, position, columns_alias='', termtype=RML_IRI, language_tag='',
-                          datatype=''):
+def _materialize_template(results_df, template, expression_type, config, position, columns_alias='', termtype='', datatype=''):
+    if expression_type == RML_REFERENCE:
+        # convert RML reference to template
+        template = f'{{{template}}}'
+
     references = get_references_in_template(template)
 
     # Curly braces that do not enclose column names MUST be escaped by a backslash character (“\”).
@@ -102,13 +105,22 @@ def _materialize_template(results_df, template, config, position, columns_alias=
             results_df['reference_results'] = results_df['reference_results'].apply(
                 lambda x: remove_non_printable_characters(x))
 
-        if termtype.strip() == RML_IRI:
+        if termtype.strip() == RML_IRI and expression_type == RML_TEMPLATE:
             if config.get_safe_percent_encoding():
                 results_df['reference_results'] = results_df['reference_results'].apply(
                     lambda x: quote(x, safe=config.get_safe_percent_encoding()))
             else:
                 results_df['reference_results'] = results_df['reference_results'].apply(lambda x: encode_value(x))
         elif termtype.strip() == RML_LITERAL:
+            # Natural Mapping of SQL Values (https://www.w3.org/TR/r2rml/#natural-mapping)
+            if datatype == XSD_BOOLEAN:
+                results_df['reference_results'] = results_df['reference_results'].str.lower()
+            elif datatype == XSD_DATETIME:
+                results_df['reference_results'] = results_df['reference_results'].str.replace(' ', 'T', regex=False)
+                # Make integers not end with .0
+            elif datatype == XSD_INTEGER:
+                results_df['reference_results'] = results_df['reference_results'].astype(float).astype(int).astype(str)
+
             # TODO: this can be avoided for most cases (if '\\' in data_value)
             results_df['reference_results'] = results_df['reference_results'].str.replace('\\', '\\\\', regex=False).str.replace('\n', '\\n', regex=False).str.replace('\t', '\\t', regex=False).str.replace('\b', '\\b', regex=False).str.replace('\f', '\\f', regex=False).str.replace('\r', '\\r', regex=False).str.replace('"', '\\"', regex=False).str.replace("'", "\\'", regex=False)
 
@@ -125,50 +137,15 @@ def _materialize_template(results_df, template, config, position, columns_alias=
         results_df[position] = '_:' + results_df[position]
     elif termtype.strip() == RML_LITERAL:
         results_df[position] = '"' + results_df[position] + '"'
-        if pd.notna(language_tag):
-            results_df[position] = results_df[position] + '@' + language_tag
-        elif pd.notna(datatype):
-            results_df[position] = results_df[position] + '^^<' + datatype + '>'
-
-    return results_df
-
-
-def _materialize_reference(results_df, reference, config, position, columns_alias='', termtype=RML_LITERAL,
-                           language_tag='', datatype=''):
-    results_df['reference_results'] = results_df[columns_alias + reference]
-
-    if config.only_write_printable_characters():
-        results_df['reference_results'] = results_df['reference_results'].apply(
-            lambda x: remove_non_printable_characters(x))
-
-    if termtype.strip() == RML_LITERAL:
-        # Natural Mapping of SQL Values (https://www.w3.org/TR/r2rml/#natural-mapping)
-        if datatype == XSD_BOOLEAN:
-            results_df['reference_results'] = results_df['reference_results'].str.lower()
-        elif datatype == XSD_DATETIME:
-            results_df['reference_results'] = results_df['reference_results'].str.replace(' ', 'T', regex=False)
-        # Make integers not end with .0
-        elif datatype == XSD_INTEGER:
-            results_df['reference_results'] = results_df['reference_results'].astype(float).astype(int).astype(str)
-
-        results_df['reference_results'] = results_df['reference_results'].str.replace('\\', '\\\\', regex=False).str.replace('\n', '\\n', regex=False).str.replace('\t', '\\t', regex=False).str.replace('\b', '\\b', regex=False).str.replace('\f', '\\f', regex=False).str.replace('\r', '\\r', regex=False).str.replace('"', '\\"', regex=False).str.replace("'", "\\'", regex=False)
-        results_df[position] = '"' + results_df['reference_results'] + '"'
-        if pd.notna(language_tag):
-            results_df[position] = results_df[position] + '@' + language_tag
-        elif pd.notna(datatype):
-            results_df[position] = results_df[position] + '^^<' + datatype + '>'
-    elif termtype.strip() == RML_IRI:
-        # it is assumed that the IRI values will be correct, and they are not percent encoded
-        results_df['reference_results'] = results_df['reference_results'].apply(lambda x: x.strip())
-        results_df[position] = '<' + results_df['reference_results'] + '>'
-    elif termtype.strip() == RML_BLANK_NODE:
-        results_df[position] = '_:' + results_df['reference_results']
+    else:
+        # this case is for language and datatype maps, do nothing
+        pass
 
     return results_df
 
 
 def _materialize_fnml_execution(results_df, fnml_execution, fnml_df, config, position, columns_alias='',
-                                termtype=RML_LITERAL, language_tag='', datatype=''):
+                                termtype=RML_LITERAL, datatype=''):
     # TODO: handle column_alias?
 
     results_df = execute_fnml(results_df, fnml_df, fnml_execution, config)
@@ -188,10 +165,6 @@ def _materialize_fnml_execution(results_df, fnml_execution, fnml_df, config, pos
 
         results_df[fnml_execution] = results_df[fnml_execution].str.replace('\\', '\\\\', regex=False).str.replace('\n', '\\n', regex=False).str.replace('\t', '\\t', regex=False).str.replace('\b', '\\b', regex=False).str.replace('\f', '\\f', regex=False).str.replace('\r', '\\r', regex=False).str.replace('"', '\\"', regex=False).str.replace("'", "\\'", regex=False)
         results_df[position] = '"' + results_df[fnml_execution] + '"'
-        if pd.notna(language_tag):
-            results_df[position] = results_df[position] + '@' + language_tag
-        elif pd.notna(datatype):
-            results_df[position] = results_df[position] + '^^<' + datatype + '>'
     elif termtype.strip() == RML_IRI:
         # it is assumed that the IRI values will be correct, and they are not percent encoded
         results_df[fnml_execution] = results_df[fnml_execution].apply(lambda x: x.strip())
@@ -202,102 +175,41 @@ def _materialize_fnml_execution(results_df, fnml_execution, fnml_df, config, pos
     return results_df
 
 
-def _materialize_constant(results_df, constant, position, termtype=RML_IRI, language_tag='', datatype=''):
-    complete_constant = ''
-    if termtype.strip() == RML_IRI:
-        complete_constant = '<' + constant + '>'
-    elif termtype.strip() == RML_LITERAL:
-        complete_constant = '"' + constant + '"'
-
-        if pd.notna(language_tag):
-            complete_constant = complete_constant + '@' + language_tag
-        elif pd.notna(datatype):
-            complete_constant = complete_constant + '^^<' + datatype + '>'
-        else:
-            complete_constant = complete_constant
-    elif termtype.strip() == RML_BLANK_NODE:
-        complete_constant = '_:' + constant
-
-    results_df[position] = complete_constant
-
-    return results_df
-
-
-def _materialize_join_rml_rule_terms(results_df, rml_rule, parent_triples_map_rule, config):
-    if rml_rule['subject_map_type'] == RML_TEMPLATE:
-        results_df = _materialize_template(results_df, rml_rule['subject_map_value'], config, 'subject',
+def _materialize_rml_rule_terms(results_df, rml_rule, fnml_df, config, columns_alias=''):
+    if rml_rule['subject_map_type'] in [RML_TEMPLATE, RML_CONSTANT, RML_REFERENCE]:
+        results_df = _materialize_template(results_df, rml_rule['subject_map_value'], rml_rule['subject_map_type'], config, 'subject',
                                            termtype=rml_rule['subject_termtype'])
-    elif rml_rule['subject_map_type'] == RML_CONSTANT:
-        results_df = _materialize_constant(results_df, rml_rule['subject_map_value'], 'subject',
-                                           termtype=rml_rule['subject_termtype'])
-    elif rml_rule['subject_map_type'] == RML_REFERENCE:
-        results_df = _materialize_reference(results_df, rml_rule['subject_map_value'], config, 'subject',
-                                            termtype=rml_rule['subject_termtype'])
-    if rml_rule['predicate_map_type'] == RML_TEMPLATE:
-        results_df = _materialize_template(results_df, rml_rule['predicate_map_value'], config, 'predicate')
-    elif rml_rule['predicate_map_type'] == RML_CONSTANT:
-        results_df = _materialize_constant(results_df, rml_rule['predicate_map_value'], 'predicate')
-    elif rml_rule['predicate_map_type'] == RML_REFERENCE:
-        results_df = _materialize_reference(results_df, rml_rule['predicate_map_value'], config, 'predicate',
-                                            termtype=RML_IRI)
-    if parent_triples_map_rule['subject_map_type'] == RML_TEMPLATE:
-        results_df = _materialize_template(results_df, parent_triples_map_rule['subject_map_value'], config, 'object',
-                                           termtype=parent_triples_map_rule['subject_termtype'],
-                                           columns_alias='parent_')
-    elif parent_triples_map_rule['subject_map_type'] == RML_CONSTANT:
-        results_df = _materialize_constant(results_df, parent_triples_map_rule['subject_map_value'], 'object',
-                                           termtype=parent_triples_map_rule['subject_termtype'])
-    elif parent_triples_map_rule['subject_map_type'] == RML_REFERENCE:
-        results_df = _materialize_reference(results_df, parent_triples_map_rule['subject_map_value'], config, 'object',
-                                            termtype=parent_triples_map_rule['subject_termtype'],
-                                            columns_alias='parent_')
-
-    return results_df
-
-
-def _materialize_rml_rule_terms(results_df, rml_rule, fnml_df, config):
-    if rml_rule['subject_map_type'] == RML_TEMPLATE:
-        results_df = _materialize_template(results_df, rml_rule['subject_map_value'], config, 'subject',
-                                           termtype=rml_rule['subject_termtype'])
-    elif rml_rule['subject_map_type'] == RML_CONSTANT:
-        results_df = _materialize_constant(results_df, rml_rule['subject_map_value'], 'subject',
-                                           termtype=rml_rule['subject_termtype'])
-    elif rml_rule['subject_map_type'] == RML_REFERENCE:
-        results_df = _materialize_reference(results_df, rml_rule['subject_map_value'], config, 'subject',
-                                            termtype=rml_rule['subject_termtype'])
     elif rml_rule['subject_map_type'] == RML_EXECUTION:
         results_df = _materialize_fnml_execution(results_df, rml_rule['subject_map_value'], fnml_df, config, 'subject',
                                                  termtype=rml_rule['subject_termtype'])
-    if rml_rule['predicate_map_type'] == RML_TEMPLATE:
-        results_df = _materialize_template(results_df, rml_rule['predicate_map_value'], config, 'predicate')
-    elif rml_rule['predicate_map_type'] == RML_CONSTANT:
-        results_df = _materialize_constant(results_df, rml_rule['predicate_map_value'], 'predicate')
-    elif rml_rule['predicate_map_type'] == RML_REFERENCE:
-        results_df = _materialize_reference(results_df, rml_rule['predicate_map_value'], config, 'predicate',
-                                            termtype=RML_IRI)
+    if rml_rule['predicate_map_type'] in [RML_TEMPLATE, RML_CONSTANT, RML_REFERENCE]:
+        results_df = _materialize_template(results_df, rml_rule['predicate_map_value'], rml_rule['predicate_map_type'], config, 'predicate', termtype=RML_IRI)
     elif rml_rule['predicate_map_type'] == RML_EXECUTION:
         results_df = _materialize_fnml_execution(results_df, rml_rule['predicate_map_value'], fnml_df, config,
                                                  'predicate', termtype=RML_IRI)
-    if rml_rule['object_map_type'] == RML_TEMPLATE:
-        results_df = _materialize_template(results_df, rml_rule['object_map_value'], config, 'object',
-                                           termtype=rml_rule['object_termtype'],
-                                           language_tag=rml_rule['object_language'],
-                                           datatype=rml_rule['object_datatype'])
-    elif rml_rule['object_map_type'] == RML_CONSTANT:
-        results_df = _materialize_constant(results_df, rml_rule['object_map_value'], 'object',
-                                           termtype=rml_rule['object_termtype'],
-                                           language_tag=rml_rule['object_language'],
-                                           datatype=rml_rule['object_datatype'])
-    elif rml_rule['object_map_type'] == RML_REFERENCE:
-        results_df = _materialize_reference(results_df, rml_rule['object_map_value'], config, 'object',
-                                            termtype=rml_rule['object_termtype'],
-                                            language_tag=rml_rule['object_language'],
-                                            datatype=rml_rule['object_datatype'])
+    if rml_rule['object_map_type'] in [RML_TEMPLATE, RML_CONSTANT, RML_REFERENCE]:
+        results_df = _materialize_template(results_df, rml_rule['object_map_value'], rml_rule['object_map_type'], config, 'object',
+                                           columns_alias=columns_alias, termtype=rml_rule['object_termtype'], datatype=rml_rule['lang_datatype_map_value'])
     elif rml_rule['object_map_type'] == RML_EXECUTION:
         results_df = _materialize_fnml_execution(results_df, rml_rule['object_map_value'], fnml_df, config, 'object',
-                                                 termtype=rml_rule['object_termtype'],
-                                                 language_tag=rml_rule['object_language'],
-                                                 datatype=rml_rule['object_datatype'])
+                                                 termtype=rml_rule['object_termtype'], datatype=rml_rule['lang_datatype_map_value'])
+
+    if rml_rule['lang_datatype'] == RML_LANGUAGE_MAP:
+        if rml_rule['lang_datatype_map_type'] in [RML_TEMPLATE, RML_CONSTANT, RML_REFERENCE]:
+            results_df = _materialize_template(results_df, rml_rule['lang_datatype_map_value'], rml_rule['lang_datatype_map_type'],
+                                               config, 'lang_datatype')
+        elif rml_rule['lang_datatype_map_type'] == RML_EXECUTION:
+            results_df = _materialize_fnml_execution(results_df, rml_rule['lang_datatype_map_value'], fnml_df, config,
+                                                     'lang_datatype')
+        results_df['object'] = results_df['object'] + '@' + results_df['lang_datatype']
+    elif rml_rule['lang_datatype'] == RML_DATATYPE_MAP:
+        if rml_rule['lang_datatype_map_type'] in [RML_TEMPLATE, RML_CONSTANT, RML_REFERENCE]:
+            results_df = _materialize_template(results_df, rml_rule['lang_datatype_map_value'], rml_rule['lang_datatype_map_type'],
+                                               config, 'lang_datatype', termtype=RML_IRI)
+        elif rml_rule['lang_datatype_map_type'] == RML_EXECUTION:
+            results_df = _materialize_fnml_execution(results_df, rml_rule['lang_datatype_map_value'], fnml_df, config,
+                                                     'lang_datatype', termtype=RML_IRI)
+        results_df['object'] = results_df['object'] + '^^' + results_df['lang_datatype']
 
     return results_df
 
@@ -325,7 +237,7 @@ def _materialize_rml_rule(rml_rule, rml_df, fnml_df, config, data=None, parent_j
     references.update(parent_join_references)
 
     # handle the case in which all term maps are constant-valued
-    if rml_rule['subject_map_type'] == RML_CONSTANT and rml_rule['predicate_map_type'] == RML_CONSTANT and rml_rule['object_map_type']:
+    if rml_rule['subject_map_type'] == RML_CONSTANT and rml_rule['predicate_map_type'] == RML_CONSTANT and rml_rule['object_map_type'] == RML_CONSTANT and rml_rule['graph_map_type'] == RML_CONSTANT:
         # create a dataframe with 1 row
         data = pd.DataFrame({'placeholder': ['placeholder']})
         data = _materialize_rml_rule_terms(data, rml_rule, fnml_df, config)
@@ -368,36 +280,7 @@ def _materialize_rml_rule(rml_rule, rml_df, fnml_df, config, data=None, parent_j
             if rml_rule['subject_map_type'] == RML_QUOTED_TRIPLES_MAP:
                 data['subject'] = data['keep_subject' + str(nest_level)]
 
-        if rml_rule['subject_map_type'] == RML_TEMPLATE:
-            data = _materialize_template(data, rml_rule['subject_map_value'], config, 'subject',
-                                         termtype=rml_rule['subject_termtype'])
-        elif rml_rule['subject_map_type'] == RML_CONSTANT:
-            data = _materialize_constant(data, rml_rule['subject_map_value'], 'subject',
-                                         termtype=rml_rule['subject_termtype'])
-        elif rml_rule['subject_map_type'] == RML_REFERENCE:
-            data = _materialize_reference(data, rml_rule['subject_map_value'], config, 'subject',
-                                          termtype=rml_rule['subject_termtype'])
-
-        if rml_rule['object_map_type'] == RML_TEMPLATE:
-            data = _materialize_template(data, rml_rule['object_map_value'], config, 'object',
-                                         termtype=rml_rule['object_termtype'], language_tag=rml_rule['object_language'],
-                                         datatype=rml_rule['object_datatype'])
-        elif rml_rule['object_map_type'] == RML_CONSTANT:
-            data = _materialize_constant(data, rml_rule['object_map_value'], 'object',
-                                         termtype=rml_rule['object_termtype'], language_tag=rml_rule['object_language'],
-                                         datatype=rml_rule['object_datatype'])
-        elif rml_rule['object_map_type'] == RML_REFERENCE:
-            data = _materialize_reference(data, rml_rule['object_map_value'], config, 'object',
-                                          termtype=rml_rule['object_termtype'],
-                                          language_tag=rml_rule['object_language'],
-                                          datatype=rml_rule['object_datatype'])
-
-        if rml_rule['predicate_map_type'] == RML_TEMPLATE:
-            data = _materialize_template(data, rml_rule['predicate_map_value'], config, 'predicate')
-        elif rml_rule['predicate_map_type'] == RML_CONSTANT:
-            data = _materialize_constant(data, rml_rule['predicate_map_value'], 'predicate')
-        elif rml_rule['predicate_map_type'] == RML_REFERENCE:
-            data = _materialize_reference(data, rml_rule['predicate_map_value'], config, 'predicate', termtype=RML_IRI)
+        data = _materialize_rml_rule_terms(data, rml_rule, fnml_df, config)
 
     # elif pd.notna(rml_rule['object_parent_triples_map']):
     elif rml_rule['object_map_type'] == RML_PARENT_TRIPLES_MAP:
@@ -416,7 +299,11 @@ def _materialize_rml_rule(rml_rule, rml_df, fnml_df, config, data=None, parent_j
 
         parent_data = _get_data(config, parent_triples_map_rule, parent_references, python_source)
         merged_data = _merge_data(data, parent_data, rml_rule, 'object_join_conditions')
-        data = _materialize_join_rml_rule_terms(merged_data, rml_rule, parent_triples_map_rule, config)
+
+        rml_rule['object_map_type'] = parent_triples_map_rule['subject_map_type']
+        rml_rule['object_map_value'] = parent_triples_map_rule['subject_map_value']
+
+        data = _materialize_rml_rule_terms(merged_data, rml_rule, fnml_df, config, columns_alias='parent_')
     else:
 
         if data is None:
@@ -425,19 +312,13 @@ def _materialize_rml_rule(rml_rule, rml_df, fnml_df, config, data=None, parent_j
         data = _materialize_rml_rule_terms(data, rml_rule, fnml_df, config)
 
     # TODO: this is slow reduce the number of vectorized operations
-
     data['triple'] = data['subject'] + ' ' + data['predicate'] + ' ' + data['object']
 
     if nest_level == 0 and config.get_output_format() == NQUADS:
-        if rml_rule['graph_map_type'] == RML_TEMPLATE:
-            data = _materialize_template(data, rml_rule['graph_map_value'], config, 'graph')
-        elif rml_rule['graph_map_type'] == RML_CONSTANT and rml_rule['graph_map_value'] != RML_DEFAULT_GRAPH:
-            data = _materialize_constant(data, rml_rule['graph_map_value'], 'graph')
-        elif rml_rule['graph_map_type'] == RML_REFERENCE:
-            data = _materialize_reference(data, rml_rule['graph_map_value'], config, 'graph', termtype=RML_IRI)
+        if rml_rule['graph_map_type'] in [RML_TEMPLATE, RML_CONSTANT, RML_REFERENCE] and rml_rule['graph_map_value'] != RML_DEFAULT_GRAPH:
+            data = _materialize_template(data, rml_rule['graph_map_value'], rml_rule['graph_map_type'], config, 'graph', termtype=RML_IRI)
         elif rml_rule['graph_map_type'] == RML_EXECUTION:
-            data = _materialize_fnml_execution(data, rml_rule['graph_map_value'], fnml_df, config, 'graph',
-                                               termtype=RML_IRI)
+            data = _materialize_fnml_execution(data, rml_rule['graph_map_value'], fnml_df, config, 'graph', termtype=RML_IRI)
         else:
             data['graph'] = ''
         data['triple'] = data['triple'] + ' ' + data['graph']

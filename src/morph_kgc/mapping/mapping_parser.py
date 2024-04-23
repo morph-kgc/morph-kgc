@@ -64,8 +64,8 @@ def _r2rml_to_rml(mapping_graph):
         R2RML_CHILD: RML_CHILD,
         R2RML_PARENT: RML_PARENT,
         R2RML_JOIN_CONDITION: RML_JOIN_CONDITION,
-        R2RML_DATATYPE: RML_DATATYPE,
-        R2RML_LANGUAGE: RML_LANGUAGE,
+        R2RML_DATATYPE: RML_DATATYPE_SHORTCUT,
+        R2RML_LANGUAGE: RML_LANGUAGE_SHORTCUT,
         R2RML_SQL_VERSION: RML_SQL_VERSION,
         R2RML_TERM_TYPE: RML_TERM_TYPE,
         R2RML_IRI: RML_IRI,
@@ -137,6 +137,8 @@ def _expand_constant_shortcut_properties(mapping_graph):
         RML_SUBJECT_SHORTCUT: RML_SUBJECT_MAP,
         RML_PREDICATE_SHORTCUT: RML_PREDICATE_MAP,
         RML_OBJECT_SHORTCUT: RML_OBJECT_MAP,
+        RML_LANGUAGE_SHORTCUT: RML_LANGUAGE_MAP,
+        RML_DATATYPE_SHORTCUT: RML_DATATYPE_MAP,
         RML_GRAPH_SHORTCUT: RML_GRAPH_MAP,
         RML_FUNCTION_SHORTCUT: RML_FUNCTION_MAP,
         RML_RETURN_SHORTCUT: RML_RETURN_MAP,
@@ -250,8 +252,8 @@ def _complete_termtypes(mapping_graph):
             f'OPTIONAL {{ ?om <{RML_TERM_TYPE}> ?termtype . }} . ' \
             f'OPTIONAL {{ ?om <{RML_REFERENCE}> ?reference . }} . ' \
             f'OPTIONAL {{ ?om <{RML_EXECUTION}> ?execution . }} . ' \
-            f'OPTIONAL {{ ?om <{RML_LANGUAGE}> ?language . }} . ' \
-            f'OPTIONAL {{ ?om <{RML_DATATYPE}> ?datatype . }} . ' \
+            f'OPTIONAL {{ ?om <{RML_LANGUAGE_MAP}> ?language . }} . ' \
+            f'OPTIONAL {{ ?om <{RML_DATATYPE_MAP}> ?datatype . }} . ' \
             'FILTER ( !bound(?termtype) && (' \
             'bound(?reference) || bound(?execution) || bound(?language) || bound(?datatype) ) ) }'
     for om, _ in mapping_graph.query(query):
@@ -316,7 +318,7 @@ def _remove_string_datatypes(mapping_graph):
     Removes xsd:string data types. xsd:string is equivalent to not specifying any data type.
     """
 
-    mapping_graph.remove((None, rdflib.term.URIRef(RML_DATATYPE), rdflib.term.URIRef(XSD_STRING)))
+    mapping_graph.remove((None, rdflib.term.URIRef(RML_CONSTANT), rdflib.term.URIRef(XSD_STRING)))
 
     return mapping_graph
 
@@ -556,8 +558,6 @@ class MappingParser:
         mapping_graph = _complete_pom_with_default_graph(mapping_graph)
         # if a term as no associated rr:termType, complete it according to R2RML specification
         mapping_graph = _complete_termtypes(mapping_graph)
-        # remove xsd:string data types as it is equivalent to not specifying any data type
-        mapping_graph = _remove_string_datatypes(mapping_graph)
         # add rr:TriplesMap typing
         mapping_graph = _complete_triples_map_class(mapping_graph)
         # check termtypes are correct
@@ -687,7 +687,7 @@ class MappingParser:
                     # datatype inference only applies to literals
                     str(rml_rule['object_termtype']) == RML_LITERAL) and (
                     # if the literal has a language tag or an overridden datatype, datatype inference does not apply
-                    pd.isna(rml_rule['object_datatype']) and pd.isna(rml_rule['object_language'])):
+                    pd.isna(rml_rule['lang_datatype'])):
 
                 if rml_rule['object_map_type'] == RML_REFERENCE:
                     inferred_data_type = get_rdb_reference_datatype(self.config, rml_rule,
@@ -697,7 +697,9 @@ class MappingParser:
                         # no data type was inferred
                         continue
 
-                    self.rml_df.at[i, 'object_datatype'] = inferred_data_type
+                    self.rml_df.at[i, 'lang_datatype'] = RML_DATATYPE_MAP
+                    self.rml_df.at[i, 'lang_datatype_map_type'] = RML_CONSTANT
+                    self.rml_df.at[i, 'lang_datatype_map_value'] = inferred_data_type
                     if self.rml_df.at[i, 'logical_source_type'] == RML_TABLE_NAME:
                         logging.debug(f"`{inferred_data_type}` datatype inferred for column "
                                       f"`{rml_rule['object_map_value']}` of table "
@@ -716,18 +718,12 @@ class MappingParser:
         datatypes are used properly. Also checks that different data sources do not have triples map with the same id.
         """
 
+        """
         # if there is a datatype or language tag then the object map termtype must be a rr:Literal
         if len(self.rml_df.loc[(self.rml_df['object_termtype'] != RML_LITERAL) &
-                                    pd.notna(self.rml_df['object_datatype']) &
-                                    pd.notna(self.rml_df['object_language'])]) > 0:
+                               pd.notna(self.rml_df['lang_datatype'])]) > 0:
             raise Exception('Found object maps with a language tag or a datatype, '
-                            'but that do not have termtype rr:Literal.')
-
-        # language tags and datatypes cannot be used simultaneously, language tags are used if both are given
-        if len(self.rml_df.loc[pd.notna(self.rml_df['object_language']) &
-                                    pd.notna(self.rml_df['object_datatype'])]) > 0:
-            logging.warning('Found object maps with a language tag and a datatype. Both of them cannot be used '
-                            'simultaneously for the same object map, and the language tag has preference.')
+                            'but that do not have termtype rml:Literal.')
 
         # check that language tags are valid
         language_tags = set(self.rml_df['object_language'].dropna())
@@ -738,6 +734,7 @@ class MappingParser:
             if len(language_tag.split('-')[0]) > 3:
                 raise ValueError(f'Found invalid language tag `{language_tag}`. '
                                  'Language tags must be in the IANA Language Subtag Registry.')
+        """
 
         # check that a triples map id is not repeated in different data sources
         # Get unique source names and triples map identifiers
