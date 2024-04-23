@@ -144,10 +144,7 @@ def _materialize_template(results_df, template, expression_type, config, positio
     return results_df
 
 
-def _materialize_fnml_execution(results_df, fnml_execution, fnml_df, config, position, columns_alias='',
-                                termtype=RML_LITERAL, datatype=''):
-    # TODO: handle column_alias?
-
+def _materialize_fnml_execution(results_df, fnml_execution, fnml_df, config, position, termtype=RML_LITERAL, datatype=''):
     results_df = execute_fnml(results_df, fnml_df, fnml_execution, config)
 
     if config.only_write_printable_characters():
