@@ -1,0 +1,15 @@
+name: morph-kgc
+
+morph_kgc_config: config/config.ini
+configmap_config: configmap-config
+configmap_mapping: configmap-mapping
+
+image:
+  repository: morph-kgc
+  tag: latest
+  pullPolicy: IfNotPresent
+
+cronJob:
+  enabled: false
+  schedule: "* * * * *"
+
