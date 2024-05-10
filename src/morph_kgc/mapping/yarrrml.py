@@ -372,9 +372,9 @@ def _translate_yarrrml_function_to_rml(mapping_graph, function, term_map):
     mapping_graph.add((term_map, rdflib.term.URIRef(RML_EXECUTION), execution_bnode))
 
     if 'datatype' in function:
-        mapping_graph.add((term_map, rdflib.term.URIRef(RML_DATATYPE), rdflib.term.URIRef(function['datatype'])))
+        mapping_graph.add((term_map, rdflib.term.URIRef(RML_DATATYPE_SHORTCUT), rdflib.term.URIRef(function['datatype'])))
     elif 'language' in function:
-        mapping_graph.add((term_map, rdflib.term.URIRef(RML_LANGUAGE), rdflib.term.URIRef(function['language'])))
+        mapping_graph.add((term_map, rdflib.term.URIRef(RML_LANGUAGE_SHORTCUT), rdflib.term.URIRef(function['language'])))
     elif 'type' in function:
         if function['type'] == 'iri':
             mapping_graph.add((term_map, rdflib.term.URIRef(RML_TERM_TYPE), rdflib.term.URIRef(RML_IRI)))
@@ -556,9 +556,9 @@ def _translate_yarrrml_to_rml(yarrrml_mapping):
                             mapping_graph.add((predicateobject_bnode, rdflib.term.URIRef(property), object_bnode))
                             mapping_graph = _add_template(mapping_graph, object_bnode, mapping_value['predicateobjects'][position]['value'])
                             if 'language' in mapping_value['predicateobjects'][position]:
-                                mapping_graph.add((object_bnode, rdflib.term.URIRef(RML_LANGUAGE), rdflib.term.Literal(mapping_value['predicateobjects'][position]['language'])))
+                                mapping_graph.add((object_bnode, rdflib.term.URIRef(RML_LANGUAGE_SHORTCUT), rdflib.term.Literal(mapping_value['predicateobjects'][position]['language'])))
                             elif 'datatype' in mapping_value['predicateobjects'][position]:
-                                mapping_graph.add((object_bnode, rdflib.term.URIRef(RML_DATATYPE), rdflib.term.URIRef(mapping_value['predicateobjects'][position]['datatype'])))
+                                mapping_graph.add((object_bnode, rdflib.term.URIRef(RML_DATATYPE_SHORTCUT), rdflib.term.URIRef(mapping_value['predicateobjects'][position]['datatype'])))
                             elif 'type' in mapping_value['predicateobjects'][position]:
                                 if mapping_value['predicateobjects'][position]['type'] == 'iri':
                                     mapping_graph.add((object_bnode, rdflib.term.URIRef(RML_TERM_TYPE), rdflib.term.URIRef(RML_IRI)))
