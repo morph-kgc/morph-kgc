@@ -32,7 +32,7 @@
 
 ## Documentation :bookmark_tabs:
 
-**[Read the documentation](https://morph-kgc.readthedocs.io/)**.
+**[Read the documentation](https://morph-kgc.readthedocs.io/en/stable/documentation/)**.
 
 ## Tutorial :woman_teacher:
 
