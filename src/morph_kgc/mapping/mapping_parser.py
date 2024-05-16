@@ -11,7 +11,7 @@ from ..constants import *
 from ..utils import *
 from ..mapping.mapping_constants import *
 from ..mapping.mapping_partitioner import MappingPartitioner
-from ..data_source.relational_database import get_rdb_reference_datatype
+from ..data_source.relational_db import get_rdb_reference_datatype
 
 
 def retrieve_mappings(config):
@@ -591,7 +591,7 @@ class MappingParser:
         """
 
         for i, rml_rule in self.rml_df.iterrows():
-            if self.config.has_database_url(rml_rule['source_name']):
+            if self.config.has_db_url(rml_rule['source_name']):
                 self.rml_df.at[i, 'source_type'] = RDB
             elif self.rml_df.at[i, 'logical_source_type'] == RML_QUERY:
                 # it is a query, but it is not an RDB, hence it is a tabular view

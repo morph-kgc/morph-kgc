@@ -11,7 +11,7 @@ from urllib.parse import quote
 
 from .utils import *
 from .constants import *
-from .data_source.relational_database import get_sql_data
+from .data_source.relational_db import get_sql_data
 from .data_source.data_file import get_file_data
 from .data_source.python_data import get_ram_data
 from .fnml.fnml_executer import execute_fnml
@@ -29,7 +29,7 @@ def _add_references_in_join_condition(rml_rule, references, parent_references):
 def _preprocess_data(data, rml_rule, references, config):
     # deal with ORACLE
     if rml_rule['source_type'] == RDB:
-        if config.get_database_url(rml_rule['source_name']).lower().startswith(ORACLE.lower()):
+        if config.get_db_url(rml_rule['source_name']).lower().startswith(ORACLE.lower()):
             data = normalize_oracle_identifier_casing(data, references)
 
     # TODO: can this be removed?
