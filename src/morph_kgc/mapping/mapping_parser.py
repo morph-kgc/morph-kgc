@@ -593,6 +593,8 @@ class MappingParser:
         for i, rml_rule in self.rml_df.iterrows():
             if self.config.has_db_url(rml_rule['source_name']):
                 self.rml_df.at[i, 'source_type'] = RDB
+            elif self.config.has_pg_db_url(rml_rule['source_name']):
+                self.rml_df.at[i, 'source_type'] = PGDB
             elif self.rml_df.at[i, 'logical_source_type'] == RML_QUERY:
                 # it is a query, but it is not an RDB, hence it is a tabular view
                 # assign CSV (it can also be Apache Parquet but format is automatically inferred)

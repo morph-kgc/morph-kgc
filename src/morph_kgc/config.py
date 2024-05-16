@@ -58,6 +58,7 @@ WRITE_PARSED_MAPPINGS_PATH = 'write_parsed_mappings_path'
 MAPPINGS = 'mappings'
 FILE_PATH = 'file_path'
 DB_URL = 'db_url'
+PG_DB_URL = 'pg_url'
 CONNECT_ARGS = 'connect_args'
 
 ##############################################################################
@@ -359,3 +360,9 @@ class Config(ConfigParser):
 
     def has_db_url(self, source_section):
         return self.has_option(source_section, DB_URL)
+
+    def get_pg_db_url(self, source_section):
+        return self.get(source_section, PG_DB_URL)
+
+    def has_pg_db_url(self, source_section):
+        return self.has_option(source_section, PG_DB_URL)
