@@ -4,7 +4,7 @@
 <TriplesMap1> a rml:TriplesMap;
 
   rml:logicalSource [
-    rml:referenceFormulation rml:SQL2008;
+    rml:referenceFormulation rml:CSV;
     rml:query """
         SELECT CONCAT('Student', ID) AS StudentId, ID, Name FROM 'test/rml-tv/RMLTVTC0002d/student.csv'
     """;

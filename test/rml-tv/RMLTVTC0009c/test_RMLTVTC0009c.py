@@ -13,7 +13,7 @@ from rdflib.graph import Graph
 from rdflib import compare
 
 
-def test_RMLTVTC0002i_CSV():
+def test_RMLTVTC0009c():
     g = Graph()
     g.parse(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'output.nq'))
 

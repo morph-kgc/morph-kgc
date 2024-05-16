@@ -12,6 +12,7 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 RML_DATAFRAME_COLUMNS = [
     'source_name', 'triples_map_id', 'triples_map_type', 'logical_source_type', 'logical_source_value', 'iterator',
+    'reference_formulation',
     'subject_map_type', 'subject_map_value', 'subject_termtype',
     'predicate_map_type', 'predicate_map_value',
     'object_map_type', 'object_map_value', 'object_termtype',
@@ -39,7 +40,7 @@ RML_PARSING_QUERY = """
     prefix sd: <https://w3id.org/okn/o/sd#>
 
     SELECT DISTINCT 
-        ?triples_map_id ?triples_map_type ?logical_source_type ?logical_source_value ?iterator 
+        ?triples_map_id ?triples_map_type ?logical_source_type ?logical_source_value ?iterator ?reference_formulation
         ?subject_map_type ?subject_map_value ?subject_map ?subject_termtype
         ?predicate_map_type ?predicate_map_value
         ?object_map_type ?object_map_value ?object_map ?object_termtype
@@ -59,6 +60,7 @@ RML_PARSING_QUERY = """
             FILTER ( ?logical_source_type IN ( rml:source, rml:tableName, rml:query ) ) .
         }
         OPTIONAL { ?_source rml:iterator ?iterator . }
+        OPTIONAL { ?_source rml:referenceFormulation ?reference_formulation . }
 
     # Subject -------------------------------------------------------------------------
         ?triples_map_id rml:subjectMap ?subject_map .

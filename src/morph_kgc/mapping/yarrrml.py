@@ -15,6 +15,16 @@ from random import randint
 from ..constants import *
 
 
+# dictionary mapping reference formulations in YARRRML to RML
+REFERENCE_FORMULATION_DICT = {
+    'csv': RML_CSV,
+    'jsonpath': RML_JSONPATH,
+    'xpath': RML_XPATH,
+    'cypher': RML_CYPHER,
+    'sql2008': RML_SQL2008
+}
+
+
 def _template_to_rml(yarrrml_template):
     rml_template = ''
 
@@ -45,7 +55,8 @@ def _add_source(mapping_graph, source, source_bnode):
     if 'iterator' in source:
         mapping_graph.add((source_bnode, rdflib.term.URIRef(RML_ITERATOR), rdflib.term.Literal(source['iterator'])))
     if 'referenceFormulation' in source:
-        mapping_graph.add((source_bnode, rdflib.term.URIRef(RML_REFERENCE_FORMULATION), rdflib.term.Literal(source['referenceFormulation'])))
+        mapping_graph.add((source_bnode, rdflib.term.URIRef(RML_REFERENCE_FORMULATION),
+                           rdflib.term.Literal(REFERENCE_FORMULATION_DICT[source['referenceFormulation'].lower()])))
 
     return mapping_graph
 

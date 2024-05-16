@@ -18,7 +18,7 @@ def get_pg_data(config, rml_rule, references):
         user, password = user_password.split(':')
 
         driver = neo4j.GraphDatabase.driver(db_url, auth=(user, password))
-        return driver.execute_query(rml_rule['logical_source_value'], database=db, result_transformer_=neo4j.Result.to_df)
+        return driver.execute_query(rml_rule['logical_source_value'], database=db, result_transformer=neo4j.Result.to_df)
     else:
         import kuzu
 
