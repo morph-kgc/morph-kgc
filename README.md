@@ -29,6 +29,7 @@
     - **Hierarchical files**: [JSON](https://www.json.org), [XML](https://www.w3.org/TR/xml/).
     - **In-memory data structures**: [Python Dictionaries](https://docs.python.org/3/tutorial/datastructures.html#dictionaries), [DataFrames](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html).
 	- **Cloud data lake solutions**: [Databricks](https://www.databricks.com/).
+    - **Property graph databases**: [Neo4j](https://neo4j.com/), [Kùzu](https://kuzudb.com).
 
 ## Documentation :bookmark_tabs:
 
