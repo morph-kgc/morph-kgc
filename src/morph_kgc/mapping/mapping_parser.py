@@ -11,7 +11,7 @@ from ..constants import *
 from ..utils import *
 from ..mapping.mapping_constants import *
 from ..mapping.mapping_partitioner import MappingPartitioner
-from ..data_source.relational_database import get_rdb_reference_datatype
+from ..data_source.relational_db import get_rdb_reference_datatype
 
 
 def retrieve_mappings(config):
@@ -528,10 +528,7 @@ class MappingParser:
         # load mapping rules to the graph
         for f in mapping_file_paths:
             if f.endswith('.yarrrml') or f.endswith('.yml') or f.endswith('.yaml'):
-                try:
-                    mapping_graph += load_yarrrml(f)
-                except Exception as yaml_parse_exception:
-                    raise Exception(yaml_parse_exception)
+                mapping_graph += load_yarrrml(f)
             else:
                 # mapping is in an RDF serialization
                 try:
@@ -539,10 +536,7 @@ class MappingParser:
                     mapping_graph.parse(f, format=os.path.splitext(f)[1][1:].strip())
                 except:
                     # if a file extension such as .rml or .r2rml is used, assume it is turtle (issue #80)
-                    try:
-                        mapping_graph.parse(f)
-                    except Exception as n3_mapping_parse_exception:
-                        raise Exception(n3_mapping_parse_exception)
+                    mapping_graph.parse(f)
 
         # convert R2RML to RML
         mapping_graph = _r2rml_to_rml(mapping_graph)
@@ -591,8 +585,10 @@ class MappingParser:
         """
 
         for i, rml_rule in self.rml_df.iterrows():
-            if self.config.has_database_url(rml_rule['source_name']):
+            if self.config.has_db_url(rml_rule['source_name']):
                 self.rml_df.at[i, 'source_type'] = RDB
+            elif self.config.has_pg_db_url(rml_rule['source_name']):
+                self.rml_df.at[i, 'source_type'] = PGDB
             elif self.rml_df.at[i, 'logical_source_type'] == RML_QUERY:
                 # it is a query, but it is not an RDB, hence it is a tabular view
                 # assign CSV (it can also be Apache Parquet but format is automatically inferred)
