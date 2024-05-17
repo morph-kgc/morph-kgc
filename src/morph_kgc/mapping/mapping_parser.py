@@ -40,7 +40,7 @@ def _r2rml_to_rml(mapping_graph):
     query = f'SELECT ?logical_source ?x WHERE {{ ?logical_source <{R2RML_SQL_QUERY}> ?x . }} '
     for logical_source, _ in mapping_graph.query(query):
         mapping_graph.add((logical_source, rdflib.term.URIRef(RML_SQL_VERSION), rdflib.term.URIRef(RML_SQL2008)))
-        mapping_graph.add((logical_source, rdflib.term.URIRef(RML_REFERENCE_FORMULATION), rdflib.term.URIRef(RML_CSV)))
+        mapping_graph.add((logical_source, rdflib.term.URIRef(RML_REFERENCE_FORMULATION), rdflib.term.URIRef(RML_SQL2008)))
 
     # replace R2RML properties with the equivalent RML properties
     r2rml_to_rml_dict = {
@@ -579,30 +579,43 @@ class MappingParser:
 
     def _complete_source_types(self):
         """
-        Adds a column with the source type. The source type is inferred for RDB through the parameter db_url provided
-        in the mapping file. If db_url is not provided but the logical source is rml:query, then it is an RML tabular
-        view. For data files the source type is inferred from the file extension.
+        Adds a column with the source type and removes reference formulation column.
+        The source type is inferred for RDB through the parameter db_url provided in the mapping file.
+        If db_url is not provided but the logical source is rml:query, then it is an RML tabular view.
+        For data files the source type is inferred from the file extension.
         """
 
         for i, rml_rule in self.rml_df.iterrows():
-            if self.config.has_db_url(rml_rule['source_name']):
+            if pd.notna(rml_rule['reference_formulation']) and 'SQL' in rml_rule['reference_formulation'].upper():
                 self.rml_df.at[i, 'source_type'] = RDB
-            elif self.config.has_pg_db_url(rml_rule['source_name']):
+            elif pd.notna(rml_rule['reference_formulation']) and 'CYPHER' in rml_rule['reference_formulation'].upper():
                 self.rml_df.at[i, 'source_type'] = PGDB
-            elif self.rml_df.at[i, 'logical_source_type'] == RML_QUERY:
-                # it is a query, but it is not an RDB, hence it is a tabular view
+            elif self.config.has_db_url(rml_rule['source_name']):
+                # if db_url but no reference formulation, assume it is a relational database
+                self.rml_df.at[i, 'source_type'] = RDB
+            elif rml_rule['logical_source_type'] == RML_QUERY:
+                # it is a query, but it is not a DB (because no db_url), hence it is a tabular view
                 # assign CSV (it can also be Apache Parquet but format is automatically inferred)
                 self.rml_df.at[i, 'source_type'] = CSV
-            elif self.rml_df.at[i, 'logical_source_type'] == RML_SOURCE \
+            elif rml_rule['logical_source_type'] == RML_SOURCE \
                     and self.rml_df.at[i, 'logical_source_value'].startswith('{') \
                     and self.rml_df.at[i, 'logical_source_value'].endswith('}'):
                 # it is an in-memory data structure
                 self.rml_df.at[i, 'source_type'] = PYTHON_SOURCE
-            elif self.rml_df.at[i, 'logical_source_type'] == RML_SOURCE:
+            elif rml_rule['logical_source_type'] == RML_SOURCE:
+                # it is a file, infer source type from file extension
                 file_extension = os.path.splitext(str(rml_rule['logical_source_value']))[1][1:].strip()
-                self.rml_df.at[i, 'source_type'] = file_extension.upper()
+                if file_extension.upper() in FILE_SOURCE_TYPES:
+                    self.rml_df.at[i, 'source_type'] = file_extension.upper()
+                elif pd.notna(rml_rule['reference_formulation']):
+                    # if file extension is not recognized, use reference formulation
+                    self.rml_df.at[i, 'source_type'] = rml_rule['reference_formulation'].replace(RML_NAMESPACE, '').upper()
+                else:
+                    raise Exception('No source type could be retrieved for some mapping rules.')
             else:
                 raise Exception('No source type could be retrieved for some mapping rules.')
+
+        self.rml_df.drop(columns='reference_formulation', inplace=True)
 
     def _complete_rml_source_with_config_file_paths(self):
         """
