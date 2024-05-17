@@ -588,12 +588,13 @@ class MappingParser:
         for i, rml_rule in self.rml_df.iterrows():
             if pd.notna(rml_rule['reference_formulation']) and 'SQL' in rml_rule['reference_formulation'].upper():
                 self.rml_df.at[i, 'source_type'] = RDB
-            elif pd.notna(rml_rule['reference_formulation']) and 'Cypher' in rml_rule['reference_formulation'].upper():
+            elif pd.notna(rml_rule['reference_formulation']) and 'CYPHER' in rml_rule['reference_formulation'].upper():
                 self.rml_df.at[i, 'source_type'] = PGDB
             elif self.config.has_db_url(rml_rule['source_name']):
+                # if db_url but no reference formulation, assume it is a relational database
                 self.rml_df.at[i, 'source_type'] = RDB
             elif rml_rule['logical_source_type'] == RML_QUERY:
-                # it is a query, but it is not an RDB, hence it is a tabular view
+                # it is a query, but it is not a DB (because no db_url), hence it is a tabular view
                 # assign CSV (it can also be Apache Parquet but format is automatically inferred)
                 self.rml_df.at[i, 'source_type'] = CSV
             elif rml_rule['logical_source_type'] == RML_SOURCE \
@@ -602,10 +603,12 @@ class MappingParser:
                 # it is an in-memory data structure
                 self.rml_df.at[i, 'source_type'] = PYTHON_SOURCE
             elif rml_rule['logical_source_type'] == RML_SOURCE:
+                # it is a file, infer source type from file extension
                 file_extension = os.path.splitext(str(rml_rule['logical_source_value']))[1][1:].strip()
                 if file_extension.upper() in FILE_SOURCE_TYPES:
                     self.rml_df.at[i, 'source_type'] = file_extension.upper()
                 elif pd.notna(rml_rule['reference_formulation']):
+                    # if file extension is not recognized, use reference formulation
                     self.rml_df.at[i, 'source_type'] = rml_rule['reference_formulation'].replace(RML_NAMESPACE, '').upper()
                 else:
                     raise Exception('No source type could be retrieved for some mapping rules.')

@@ -7,7 +7,7 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 
 def get_pg_data(config, rml_rule, references):
-    db_url = config.get_pg_db_url(rml_rule['source_name'])
+    db_url = config.get_db_url(rml_rule['source_name'])
     if '://' in db_url:
         import neo4j
 
@@ -22,7 +22,7 @@ def get_pg_data(config, rml_rule, references):
     else:
         import kuzu
 
-        db = kuzu.Database(config.get_pg_db_url(rml_rule['source_name']))
+        db = kuzu.Database(config.get_db_url(rml_rule['source_name']))
         conn = kuzu.Connection(db)
 
         return conn.execute(rml_rule['logical_source_value']).get_as_df()
