@@ -1,0 +1,47 @@
+prefixes:
+  kb-ingredientname: http://idea.rpi.edu/heals/kb/ingredientname/
+  owl: http://www.w3.org/2002/07/owl#
+  usda: http://idea.rpi.edu/heals/kb/usda#
+  nutriment: http://idea.rpi.edu/heals/kb/nutriment/
+  ex: http://example.com/
+  grel: http://users.ugent.be/~bjdmeest/function/grel.ttl#
+  idlab-fn: https://w3id.org/imec/idlab/function#
+  morph-kgc: https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#
+  rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns#
+
+sources:
+  data1:
+    access: test/issues/issue_254/data-1.csv
+    referenceFormulation: csv
+  data2:
+    access: test/issues/issue_254/data-2.csv
+    referenceFormulation: csv
+
+mappings:
+  nutriment_amount:
+    sources:
+      - data1
+    s:
+      - function: morph-kgc:concat
+        parameters:
+          - parameter: grel:valueParam1
+            value: "nutriment:"
+          - parameter: grel:valueParam2
+            value: "awesome"
+    po:
+      - p: rdf:type
+        o:
+          mapping: nutriment
+          condition:
+            function: equal
+            parameters:
+              - [str1, $(Nutr_No), s]
+              - [str2, $(Nutr_No), o]
+
+  nutriment:
+    sources:
+      - data2
+    s: usda:$(Nutr_No)
+    po:
+      - p: rdf:type
+        o: nutriment:$(NutrDesc)
