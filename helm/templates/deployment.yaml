@@ -1,0 +1,69 @@
+{{- if .Values.cronJob.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Values.name }}
+  labels:
+    app: {{ .Values.name }}
+spec:
+  schedule: "{{ .Values.cronJob.schedule }}"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: {{ .Values.name }}
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              args:
+                - {{ .Values.morph_kgc_config }}
+              volumeMounts:
+                - name: config-volume-config
+                  mountPath: /app/config
+                - name: config-volume-mapping
+                  mountPath: /app/config/files
+          imagePullSecrets:
+            - name: registry-credentials
+          volumes:
+            - name: config-volume-mapping
+              configMap:
+                name: {{ .Values.configmap_mapping }}
+            - name: config-volume-config
+              configMap:
+                name: {{ .Values.configmap_config }}
+          restartPolicy: OnFailure           
+{{- else }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Values.name }}
+  labels:
+    app: {{ .Values.name }}
+spec:
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}
+    spec:
+      containers:
+        - name: {{ .Values.name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - {{ .Values.morph_kgc_config }}
+          volumeMounts:
+            - name: config-volume-config
+              mountPath: /app/config
+            - name: config-volume-mapping
+              mountPath: /app/config/files
+      imagePullSecrets:
+        - name: registry-credentials
+      volumes:
+        - name: config-volume-mapping
+          configMap:
+            name: {{ .Values.configmap_mapping }}
+        - name: config-volume-config
+          configMap:
+            name: {{ .Values.configmap_config }}
+      restartPolicy: OnFailure
+{{- end }}

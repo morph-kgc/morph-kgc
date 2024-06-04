@@ -13,7 +13,7 @@ from rdflib.graph import Graph
 from rdflib import compare
 
 
-def test_RMLTVTC0002g_CSV():
+def test_RMLTVTC0002h():
     try:
         mapping_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mapping.ttl')
         config = f'[DataSource]\nmappings={mapping_path}'

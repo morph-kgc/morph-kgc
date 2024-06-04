@@ -15,6 +15,16 @@ from random import randint
 from ..constants import *
 
 
+# dictionary mapping reference formulations in YARRRML to RML
+REFERENCE_FORMULATION_DICT = {
+    'csv': RML_CSV,
+    'jsonpath': RML_JSONPATH,
+    'xpath': RML_XPATH,
+    'cypher': RML_CYPHER,
+    'sql2008': RML_SQL2008
+}
+
+
 def _template_to_rml(yarrrml_template):
     rml_template = ''
 
@@ -45,7 +55,8 @@ def _add_source(mapping_graph, source, source_bnode):
     if 'iterator' in source:
         mapping_graph.add((source_bnode, rdflib.term.URIRef(RML_ITERATOR), rdflib.term.Literal(source['iterator'])))
     if 'referenceFormulation' in source:
-        mapping_graph.add((source_bnode, rdflib.term.URIRef(RML_REFERENCE_FORMULATION), rdflib.term.Literal(source['referenceFormulation'])))
+        mapping_graph.add((source_bnode, rdflib.term.URIRef(RML_REFERENCE_FORMULATION),
+                           rdflib.term.Literal(REFERENCE_FORMULATION_DICT[source['referenceFormulation'].lower()])))
 
     return mapping_graph
 
@@ -307,12 +318,19 @@ def _normalize_yarrrml_mapping(mappings):
     for property in ['predicates', 'objects', 'graphs']:
         mappings = _normalize_property_in_predicateobjects(mappings, property)
 
-    # create `value` in objects and expand ~iri
+    # create `value` in objects and expand ~iri ~blanknode ~literal
     for mapping_key, mapping_value in mappings['mappings'].items():
         if 'predicateobjects' in mapping_value:
+            if 'subjects' in mapping_value:
+                if type(mapping_value['subjects']) is str:
+                    if mapping_value['subjects'].endswith(('~iri', '~blanknode')):
+                        value, termtype = mapping_value['subjects'].split('~')
+                        mapping_value['subjects'] = {'value': value, 'type': termtype}
+                    else:
+                        mapping_value['subjects'] = {'value': mapping_value['subjects']}
             if 'objects' in mapping_value['predicateobjects']:
                 if type(mapping_value['predicateobjects']['objects']) is str:
-                    if mapping_value['predicateobjects']['objects'].endswith('~iri'):
+                    if mapping_value['predicateobjects']['objects'].endswith(('~iri', '~literal', '~blanknode')):
                         value, termtype = mapping_value['predicateobjects']['objects'].split('~')
                         mapping_value['predicateobjects']['objects'] = {'value': value, 'type': termtype}
                     else:
@@ -351,10 +369,10 @@ def _normalize_yarrrml_mapping(mappings):
 
                 for inverse_predicate in inverse_predicates:
                     inverse_mapping_value = mapping_value.copy()
-                    inverse_mapping_value['subjects'] = mapping_value['predicateobjects']['objects']['value']
+                    inverse_mapping_value['subjects'] = mapping_value['predicateobjects']['objects']
                     inverse_mapping_value['predicateobjects'] = {}
-                    inverse_mapping_value['predicateobjects']['objects'] = {'value': mapping_value['subjects'], 'type': 'iri'}
                     inverse_mapping_value['predicates'] = inverse_predicate
+                    inverse_mapping_value['predicateobjects']['objects'] = mapping_value['subjects']
                     mappings['mappings'][f'{mapping_key}_inverse{randint(0,1000000)}'] = inverse_mapping_value
 
     return mappings
@@ -365,9 +383,9 @@ def _translate_yarrrml_function_to_rml(mapping_graph, function, term_map):
     mapping_graph.add((term_map, rdflib.term.URIRef(RML_EXECUTION), execution_bnode))
 
     if 'datatype' in function:
-        mapping_graph.add((term_map, rdflib.term.URIRef(RML_DATATYPE), rdflib.term.URIRef(function['datatype'])))
+        mapping_graph.add((term_map, rdflib.term.URIRef(RML_DATATYPE_SHORTCUT), rdflib.term.URIRef(function['datatype'])))
     elif 'language' in function:
-        mapping_graph.add((term_map, rdflib.term.URIRef(RML_LANGUAGE), rdflib.term.URIRef(function['language'])))
+        mapping_graph.add((term_map, rdflib.term.URIRef(RML_LANGUAGE_SHORTCUT), rdflib.term.URIRef(function['language'])))
     elif 'type' in function:
         if function['type'] == 'iri':
             mapping_graph.add((term_map, rdflib.term.URIRef(RML_TERM_TYPE), rdflib.term.URIRef(RML_IRI)))
@@ -459,6 +477,9 @@ def _translate_yarrrml_to_rml(yarrrml_mapping):
                         mapping_graph.add((rdflib.term.URIRef(ref_tm), rdflib.term.URIRef(RDF_TYPE), rdflib.term.URIRef(RML_NON_ASSERTED_TRIPLES_MAP_CLASS)))
                 elif 'function' in mapping_value['subjects']:
                     mapping_graph = _translate_yarrrml_function_to_rml(mapping_graph, mapping_value['subjects'], subject_bnode)
+                else:
+                    mapping_graph = _add_template(mapping_graph, subject_bnode, mapping_value['subjects']['value'])
+
                 if 'condition' in mapping_value['subjects']:
                     join_condition_bnode = rdflib.BNode()
                     mapping_graph.add((subject_bnode, rdflib.term.URIRef(RML_JOIN_CONDITION), join_condition_bnode))
@@ -467,6 +488,13 @@ def _translate_yarrrml_to_rml(yarrrml_mapping):
                             mapping_graph.add((join_condition_bnode, rdflib.term.URIRef(RML_CHILD), rdflib.term.Literal(parameter[1][2:-1])))
                         elif parameter[0] == 'str2':
                             mapping_graph.add((join_condition_bnode, rdflib.term.URIRef(RML_PARENT), rdflib.term.Literal(parameter[1][2:-1])))
+                if 'type' in mapping_value['subjects']:
+                    if mapping_value['subjects']['type'] == 'iri':
+                        mapping_graph.add((subject_bnode, rdflib.term.URIRef(RML_TERM_TYPE), rdflib.term.URIRef(RML_IRI)))
+                    elif mapping_value['subjects']['type'] == 'blanknode':
+                        mapping_graph.add((subject_bnode, rdflib.term.URIRef(RML_TERM_TYPE), rdflib.term.URIRef(RML_BLANK_NODE)))
+                    else:
+                        raise ValueError(f"Found an invalid termtype `{mapping_value['subjects']['type']}` in YARRRML mapping.")
         else:
             # it is a blank node
             subject_bnode = rdflib.BNode()
@@ -487,63 +515,59 @@ def _translate_yarrrml_to_rml(yarrrml_mapping):
 
             for position, property in zip(['predicates', 'objects', 'graphs'], [RML_PREDICATE_MAP, RML_OBJECT_MAP, RML_GRAPH_MAP]):
                 if position in mapping_value['predicateobjects']:
+                    term_map_bnode = rdflib.BNode()
                     if type(mapping_value['predicateobjects'][position]) is str:
                         # template
-                        property_bnode = rdflib.BNode()
-                        mapping_graph.add((predicateobject_bnode, rdflib.term.URIRef(property), property_bnode))
-                        mapping_graph = _add_template(mapping_graph, property_bnode, mapping_value['predicateobjects'][position])
-                    elif 'function' in mapping_value['predicateobjects'][position]:
-                        property_bnode = rdflib.BNode()
-                        mapping_graph.add((predicateobject_bnode, rdflib.term.URIRef(property), property_bnode))
-                        mapping_graph = _translate_yarrrml_function_to_rml(mapping_graph, mapping_value['predicateobjects'][position], property_bnode)
-                    elif 'mappings' in mapping_value['predicateobjects'][position]:
-                        # referencing object map
+                        mapping_graph.add((predicateobject_bnode, rdflib.term.URIRef(property), term_map_bnode))
+                        mapping_graph = _add_template(mapping_graph, term_map_bnode, mapping_value['predicateobjects'][position])
+                    elif type(mapping_value['predicateobjects'][position]) is dict:
+                        if 'function' in mapping_value['predicateobjects'][position]:
+                            mapping_graph.add((predicateobject_bnode, rdflib.term.URIRef(property), term_map_bnode))
+                            mapping_graph = _translate_yarrrml_function_to_rml(mapping_graph, mapping_value['predicateobjects'][position], term_map_bnode)
+                        elif 'mappings' in mapping_value['predicateobjects'][position]:
+                            # referencing object map
 
-                        # just a single normalized triples map is needed (only the subject map is used)
-                        ref_tm = list(tm_id_to_norm_tm_ids[mapping_value['predicateobjects'][position]['mappings']])[0]
+                            # just a single normalized triples map is needed (only the subject map is used)
+                            ref_tm = list(tm_id_to_norm_tm_ids[mapping_value['predicateobjects'][position]['mappings']])[0]
 
-                        object_bnode = rdflib.BNode()
-                        mapping_graph.add((predicateobject_bnode, rdflib.term.URIRef(property), object_bnode))
-                        mapping_graph.add((object_bnode, rdflib.term.URIRef(RML_PARENT_TRIPLES_MAP), rdflib.term.URIRef(ref_tm)))
-                        if 'condition' in mapping_value['predicateobjects'][position] and 'parameters' in mapping_value['predicateobjects'][position]['condition']:
-                            join_condition_bnode = rdflib.BNode()
-                            mapping_graph.add((object_bnode, rdflib.term.URIRef(RML_JOIN_CONDITION), join_condition_bnode))
-                            for parameter in mapping_value['predicateobjects'][position]['condition']['parameters']:
-                                if parameter[0] == 'str1':
-                                    mapping_graph.add((join_condition_bnode, rdflib.term.URIRef(RML_CHILD), rdflib.term.Literal(parameter[1][2:-1])))
-                                elif parameter[0] == 'str2':
-                                    mapping_graph.add((join_condition_bnode, rdflib.term.URIRef(RML_PARENT), rdflib.term.Literal(parameter[1][2:-1])))
-                    elif 'quoted' in mapping_value['predicateobjects'][position] or 'quotedNonAsserted' in mapping_value['predicateobjects'][position]:
-                        object_bnode = rdflib.BNode()
-                        mapping_graph.add((predicateobject_bnode, rdflib.term.URIRef(property), object_bnode))
-                        if 'quoted' in mapping_value['predicateobjects'][position]:
-                            for ref_tm in tm_id_to_norm_tm_ids[mapping_value['predicateobjects'][position]['quoted']]:
-                                mapping_graph.add((object_bnode, rdflib.term.URIRef(RML_QUOTED_TRIPLES_MAP), rdflib.term.URIRef(ref_tm)))
-                        elif 'quotedNonAsserted' in mapping_value['predicateobjects'][position]:
-                            # only non asserted triples maps are typed
-                            for ref_tm in tm_id_to_norm_tm_ids[mapping_value['predicateobjects'][position]['quotedNonAsserted']]:
-                                mapping_graph.add((object_bnode, rdflib.term.URIRef(RML_QUOTED_TRIPLES_MAP), rdflib.term.URIRef(ref_tm)))
-                                mapping_graph.add((rdflib.term.URIRef(ref_tm), rdflib.term.URIRef(RDF_TYPE), rdflib.term.URIRef(RML_NON_ASSERTED_TRIPLES_MAP_CLASS)))
+                            mapping_graph.add((predicateobject_bnode, rdflib.term.URIRef(property), term_map_bnode))
+                            mapping_graph.add((term_map_bnode, rdflib.term.URIRef(RML_PARENT_TRIPLES_MAP), rdflib.term.URIRef(ref_tm)))
+                        elif 'quoted' in mapping_value['predicateobjects'][position] or 'quotedNonAsserted' in mapping_value['predicateobjects'][position]:
+                            mapping_graph.add((predicateobject_bnode, rdflib.term.URIRef(property), term_map_bnode))
+                            if 'quoted' in mapping_value['predicateobjects'][position]:
+                                for ref_tm in tm_id_to_norm_tm_ids[mapping_value['predicateobjects'][position]['quoted']]:
+                                    mapping_graph.add((term_map_bnode, rdflib.term.URIRef(RML_QUOTED_TRIPLES_MAP), rdflib.term.URIRef(ref_tm)))
+                            elif 'quotedNonAsserted' in mapping_value['predicateobjects'][position]:
+                                # only non asserted triples maps are typed
+                                for ref_tm in tm_id_to_norm_tm_ids[mapping_value['predicateobjects'][position]['quotedNonAsserted']]:
+                                    mapping_graph.add((term_map_bnode, rdflib.term.URIRef(RML_QUOTED_TRIPLES_MAP), rdflib.term.URIRef(ref_tm)))
+                                    mapping_graph.add((rdflib.term.URIRef(ref_tm), rdflib.term.URIRef(RDF_TYPE), rdflib.term.URIRef(RML_NON_ASSERTED_TRIPLES_MAP_CLASS)))
+                        else:
+                            # object dict
+                            mapping_graph.add((predicateobject_bnode, rdflib.term.URIRef(property), term_map_bnode))
+                            mapping_graph = _add_template(mapping_graph, term_map_bnode, mapping_value['predicateobjects'][position]['value'])
 
                         if 'condition' in mapping_value['predicateobjects'][position]:
                             join_condition_bnode = rdflib.BNode()
-                            mapping_graph.add((object_bnode, rdflib.term.URIRef(RML_JOIN_CONDITION), join_condition_bnode))
+                            mapping_graph.add((term_map_bnode, rdflib.term.URIRef(RML_JOIN_CONDITION), join_condition_bnode))
                             for parameter in mapping_value['predicateobjects'][position]['condition']['parameters']:
                                 if parameter[0] == 'str1':
                                     mapping_graph.add((join_condition_bnode, rdflib.term.URIRef(RML_CHILD), rdflib.term.Literal(parameter[1][2:-1])))
                                 elif parameter[0] == 'str2':
                                     mapping_graph.add((join_condition_bnode, rdflib.term.URIRef(RML_PARENT), rdflib.term.Literal(parameter[1][2:-1])))
-                    else:
-                        # object dict
-                        object_bnode = rdflib.BNode()
-                        mapping_graph.add((predicateobject_bnode, rdflib.term.URIRef(property), object_bnode))
-                        mapping_graph = _add_template(mapping_graph, object_bnode, mapping_value['predicateobjects'][position]['value'])
                         if 'language' in mapping_value['predicateobjects'][position]:
-                            mapping_graph.add((object_bnode, rdflib.term.URIRef(RML_LANGUAGE), rdflib.term.Literal(mapping_value['predicateobjects'][position]['language'])))
-                        if 'datatype' in mapping_value['predicateobjects'][position]:
-                            mapping_graph.add((object_bnode, rdflib.term.URIRef(RML_DATATYPE), rdflib.term.URIRef(mapping_value['predicateobjects'][position]['datatype'])))
-                        if 'type' in mapping_value['predicateobjects'][position] and mapping_value['predicateobjects'][position]['type'] == 'iri':
-                            mapping_graph.add((object_bnode, rdflib.term.URIRef(RML_TERM_TYPE), rdflib.term.URIRef(RML_IRI)))
+                            mapping_graph.add((term_map_bnode, rdflib.term.URIRef(RML_LANGUAGE_SHORTCUT), rdflib.term.Literal(mapping_value['predicateobjects'][position]['language'])))
+                        elif 'datatype' in mapping_value['predicateobjects'][position]:
+                            mapping_graph.add((term_map_bnode, rdflib.term.URIRef(RML_DATATYPE_SHORTCUT), rdflib.term.URIRef(mapping_value['predicateobjects'][position]['datatype'])))
+                        elif 'type' in mapping_value['predicateobjects'][position]:
+                            if mapping_value['predicateobjects'][position]['type'] == 'iri':
+                                mapping_graph.add((term_map_bnode, rdflib.term.URIRef(RML_TERM_TYPE), rdflib.term.URIRef(RML_IRI)))
+                            elif mapping_value['predicateobjects'][position]['type'] == 'literal':
+                                mapping_graph.add((term_map_bnode, rdflib.term.URIRef(RML_TERM_TYPE), rdflib.term.URIRef(RML_LITERAL)))
+                            elif mapping_value['predicateobjects'][position]['type'] == 'blanknode':
+                                mapping_graph.add((term_map_bnode, rdflib.term.URIRef(RML_TERM_TYPE), rdflib.term.URIRef(RML_BLANK_NODE)))
+                            else:
+                                raise ValueError(f"Found an invalid termtype `{mapping_value['predicateobjects'][position]['type']}` in YARRRML mapping.")
 
     return mapping_graph
 

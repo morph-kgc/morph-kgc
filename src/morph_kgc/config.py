@@ -57,7 +57,7 @@ WRITE_PARSED_MAPPINGS_PATH = 'write_parsed_mappings_path'
 
 MAPPINGS = 'mappings'
 FILE_PATH = 'file_path'
-DATABASE_URL = 'db_url'
+DB_URL = 'db_url'
 CONNECT_ARGS = 'connect_args'
 
 ##############################################################################
@@ -301,7 +301,7 @@ class Config(ConfigParser):
 
     def get_output_kafka_topic(self):
         return self.get(self.configuration_section, OUTPUT_KAFKA_TOPIC)
-    
+
     def set_mapping_partitioning(self, mapping_partitioning):
         self.set(self.configuration_section, MAPPING_PARTITIONING, mapping_partitioning.upper())
 
@@ -354,8 +354,8 @@ class Config(ConfigParser):
 
         return mapping_file_paths
 
-    def get_database_url(self, source_section):
-        return self.get(source_section, DATABASE_URL)
+    def get_db_url(self, source_section):
+        return self.get(source_section, DB_URL)
 
-    def has_database_url(self, source_section):
-        return self.has_option(source_section, DATABASE_URL)
+    def has_db_url(self, source_section):
+        return self.has_option(source_section, DB_URL)

@@ -11,7 +11,7 @@ from ..constants import *
 from ..utils import *
 from ..mapping.mapping_constants import *
 from ..mapping.mapping_partitioner import MappingPartitioner
-from ..data_source.relational_database import get_rdb_reference_datatype
+from ..data_source.relational_db import get_rdb_reference_datatype
 
 
 def retrieve_mappings(config):
@@ -40,7 +40,7 @@ def _r2rml_to_rml(mapping_graph):
     query = f'SELECT ?logical_source ?x WHERE {{ ?logical_source <{R2RML_SQL_QUERY}> ?x . }} '
     for logical_source, _ in mapping_graph.query(query):
         mapping_graph.add((logical_source, rdflib.term.URIRef(RML_SQL_VERSION), rdflib.term.URIRef(RML_SQL2008)))
-        mapping_graph.add((logical_source, rdflib.term.URIRef(RML_REFERENCE_FORMULATION), rdflib.term.URIRef(RML_CSV)))
+        mapping_graph.add((logical_source, rdflib.term.URIRef(RML_REFERENCE_FORMULATION), rdflib.term.URIRef(RML_SQL2008)))
 
     # replace R2RML properties with the equivalent RML properties
     r2rml_to_rml_dict = {
@@ -64,8 +64,8 @@ def _r2rml_to_rml(mapping_graph):
         R2RML_CHILD: RML_CHILD,
         R2RML_PARENT: RML_PARENT,
         R2RML_JOIN_CONDITION: RML_JOIN_CONDITION,
-        R2RML_DATATYPE: RML_DATATYPE,
-        R2RML_LANGUAGE: RML_LANGUAGE,
+        R2RML_DATATYPE: RML_DATATYPE_SHORTCUT,
+        R2RML_LANGUAGE: RML_LANGUAGE_SHORTCUT,
         R2RML_SQL_VERSION: RML_SQL_VERSION,
         R2RML_TERM_TYPE: RML_TERM_TYPE,
         R2RML_IRI: RML_IRI,
@@ -137,6 +137,8 @@ def _expand_constant_shortcut_properties(mapping_graph):
         RML_SUBJECT_SHORTCUT: RML_SUBJECT_MAP,
         RML_PREDICATE_SHORTCUT: RML_PREDICATE_MAP,
         RML_OBJECT_SHORTCUT: RML_OBJECT_MAP,
+        RML_LANGUAGE_SHORTCUT: RML_LANGUAGE_MAP,
+        RML_DATATYPE_SHORTCUT: RML_DATATYPE_MAP,
         RML_GRAPH_SHORTCUT: RML_GRAPH_MAP,
         RML_FUNCTION_SHORTCUT: RML_FUNCTION_MAP,
         RML_RETURN_SHORTCUT: RML_RETURN_MAP,
@@ -250,8 +252,8 @@ def _complete_termtypes(mapping_graph):
             f'OPTIONAL {{ ?om <{RML_TERM_TYPE}> ?termtype . }} . ' \
             f'OPTIONAL {{ ?om <{RML_REFERENCE}> ?reference . }} . ' \
             f'OPTIONAL {{ ?om <{RML_EXECUTION}> ?execution . }} . ' \
-            f'OPTIONAL {{ ?om <{RML_LANGUAGE}> ?language . }} . ' \
-            f'OPTIONAL {{ ?om <{RML_DATATYPE}> ?datatype . }} . ' \
+            f'OPTIONAL {{ ?om <{RML_LANGUAGE_MAP}> ?language . }} . ' \
+            f'OPTIONAL {{ ?om <{RML_DATATYPE_MAP}> ?datatype . }} . ' \
             'FILTER ( !bound(?termtype) && (' \
             'bound(?reference) || bound(?execution) || bound(?language) || bound(?datatype) ) ) }'
     for om, _ in mapping_graph.query(query):
@@ -316,7 +318,7 @@ def _remove_string_datatypes(mapping_graph):
     Removes xsd:string data types. xsd:string is equivalent to not specifying any data type.
     """
 
-    mapping_graph.remove((None, rdflib.term.URIRef(RML_DATATYPE), rdflib.term.URIRef(XSD_STRING)))
+    mapping_graph.remove((None, rdflib.term.URIRef(RML_CONSTANT), rdflib.term.URIRef(XSD_STRING)))
 
     return mapping_graph
 
@@ -526,10 +528,7 @@ class MappingParser:
         # load mapping rules to the graph
         for f in mapping_file_paths:
             if f.endswith('.yarrrml') or f.endswith('.yml') or f.endswith('.yaml'):
-                try:
-                    mapping_graph += load_yarrrml(f)
-                except Exception as yaml_parse_exception:
-                    raise Exception(yaml_parse_exception)
+                mapping_graph += load_yarrrml(f)
             else:
                 # mapping is in an RDF serialization
                 try:
@@ -537,10 +536,7 @@ class MappingParser:
                     mapping_graph.parse(f, format=os.path.splitext(f)[1][1:].strip())
                 except:
                     # if a file extension such as .rml or .r2rml is used, assume it is turtle (issue #80)
-                    try:
-                        mapping_graph.parse(f)
-                    except Exception as n3_mapping_parse_exception:
-                        raise Exception(n3_mapping_parse_exception)
+                    mapping_graph.parse(f)
 
         # convert R2RML to RML
         mapping_graph = _r2rml_to_rml(mapping_graph)
@@ -556,8 +552,6 @@ class MappingParser:
         mapping_graph = _complete_pom_with_default_graph(mapping_graph)
         # if a term as no associated rr:termType, complete it according to R2RML specification
         mapping_graph = _complete_termtypes(mapping_graph)
-        # remove xsd:string data types as it is equivalent to not specifying any data type
-        mapping_graph = _remove_string_datatypes(mapping_graph)
         # add rr:TriplesMap typing
         mapping_graph = _complete_triples_map_class(mapping_graph)
         # check termtypes are correct
@@ -585,28 +579,43 @@ class MappingParser:
 
     def _complete_source_types(self):
         """
-        Adds a column with the source type. The source type is inferred for RDB through the parameter db_url provided
-        in the mapping file. If db_url is not provided but the logical source is rml:query, then it is an RML tabular
-        view. For data files the source type is inferred from the file extension.
+        Adds a column with the source type and removes reference formulation column.
+        The source type is inferred for RDB through the parameter db_url provided in the mapping file.
+        If db_url is not provided but the logical source is rml:query, then it is an RML tabular view.
+        For data files the source type is inferred from the file extension.
         """
 
         for i, rml_rule in self.rml_df.iterrows():
-            if self.config.has_database_url(rml_rule['source_name']):
+            if pd.notna(rml_rule['reference_formulation']) and 'SQL' in rml_rule['reference_formulation'].upper():
                 self.rml_df.at[i, 'source_type'] = RDB
-            elif self.rml_df.at[i, 'logical_source_type'] == RML_QUERY:
-                # it is a query, but it is not an RDB, hence it is a tabular view
+            elif pd.notna(rml_rule['reference_formulation']) and 'CYPHER' in rml_rule['reference_formulation'].upper():
+                self.rml_df.at[i, 'source_type'] = PGDB
+            elif self.config.has_db_url(rml_rule['source_name']):
+                # if db_url but no reference formulation, assume it is a relational database
+                self.rml_df.at[i, 'source_type'] = RDB
+            elif rml_rule['logical_source_type'] == RML_QUERY:
+                # it is a query, but it is not a DB (because no db_url), hence it is a tabular view
                 # assign CSV (it can also be Apache Parquet but format is automatically inferred)
                 self.rml_df.at[i, 'source_type'] = CSV
-            elif self.rml_df.at[i, 'logical_source_type'] == RML_SOURCE \
+            elif rml_rule['logical_source_type'] == RML_SOURCE \
                     and self.rml_df.at[i, 'logical_source_value'].startswith('{') \
                     and self.rml_df.at[i, 'logical_source_value'].endswith('}'):
                 # it is an in-memory data structure
                 self.rml_df.at[i, 'source_type'] = PYTHON_SOURCE
-            elif self.rml_df.at[i, 'logical_source_type'] == RML_SOURCE:
+            elif rml_rule['logical_source_type'] == RML_SOURCE:
+                # it is a file, infer source type from file extension
                 file_extension = os.path.splitext(str(rml_rule['logical_source_value']))[1][1:].strip()
-                self.rml_df.at[i, 'source_type'] = file_extension.upper()
+                if file_extension.upper() in FILE_SOURCE_TYPES:
+                    self.rml_df.at[i, 'source_type'] = file_extension.upper()
+                elif pd.notna(rml_rule['reference_formulation']):
+                    # if file extension is not recognized, use reference formulation
+                    self.rml_df.at[i, 'source_type'] = rml_rule['reference_formulation'].replace(RML_NAMESPACE, '').upper()
+                else:
+                    raise Exception('No source type could be retrieved for some mapping rules.')
             else:
                 raise Exception('No source type could be retrieved for some mapping rules.')
+
+        self.rml_df.drop(columns='reference_formulation', inplace=True)
 
     def _complete_rml_source_with_config_file_paths(self):
         """
@@ -687,7 +696,7 @@ class MappingParser:
                     # datatype inference only applies to literals
                     str(rml_rule['object_termtype']) == RML_LITERAL) and (
                     # if the literal has a language tag or an overridden datatype, datatype inference does not apply
-                    pd.isna(rml_rule['object_datatype']) and pd.isna(rml_rule['object_language'])):
+                    pd.isna(rml_rule['lang_datatype'])):
 
                 if rml_rule['object_map_type'] == RML_REFERENCE:
                     inferred_data_type = get_rdb_reference_datatype(self.config, rml_rule,
@@ -697,7 +706,9 @@ class MappingParser:
                         # no data type was inferred
                         continue
 
-                    self.rml_df.at[i, 'object_datatype'] = inferred_data_type
+                    self.rml_df.at[i, 'lang_datatype'] = RML_DATATYPE_MAP
+                    self.rml_df.at[i, 'lang_datatype_map_type'] = RML_CONSTANT
+                    self.rml_df.at[i, 'lang_datatype_map_value'] = inferred_data_type
                     if self.rml_df.at[i, 'logical_source_type'] == RML_TABLE_NAME:
                         logging.debug(f"`{inferred_data_type}` datatype inferred for column "
                                       f"`{rml_rule['object_map_value']}` of table "
@@ -716,18 +727,12 @@ class MappingParser:
         datatypes are used properly. Also checks that different data sources do not have triples map with the same id.
         """
 
+        """
         # if there is a datatype or language tag then the object map termtype must be a rr:Literal
         if len(self.rml_df.loc[(self.rml_df['object_termtype'] != RML_LITERAL) &
-                                    pd.notna(self.rml_df['object_datatype']) &
-                                    pd.notna(self.rml_df['object_language'])]) > 0:
+                               pd.notna(self.rml_df['lang_datatype'])]) > 0:
             raise Exception('Found object maps with a language tag or a datatype, '
-                            'but that do not have termtype rr:Literal.')
-
-        # language tags and datatypes cannot be used simultaneously, language tags are used if both are given
-        if len(self.rml_df.loc[pd.notna(self.rml_df['object_language']) &
-                                    pd.notna(self.rml_df['object_datatype'])]) > 0:
-            logging.warning('Found object maps with a language tag and a datatype. Both of them cannot be used '
-                            'simultaneously for the same object map, and the language tag has preference.')
+                            'but that do not have termtype rml:Literal.')
 
         # check that language tags are valid
         language_tags = set(self.rml_df['object_language'].dropna())
@@ -738,6 +743,7 @@ class MappingParser:
             if len(language_tag.split('-')[0]) > 3:
                 raise ValueError(f'Found invalid language tag `{language_tag}`. '
                                  'Language tags must be in the IANA Language Subtag Registry.')
+        """
 
         # check that a triples map id is not repeated in different data sources
         # Get unique source names and triples map identifiers

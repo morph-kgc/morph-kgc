@@ -88,7 +88,7 @@ def _relational_db_connection(config, source_name):
 
     connect_args = eval(config.get_connect_args(source_name)) if config.has_connect_args(source_name) else {}
 
-    db_connection = create_engine(config.get_database_url(source_name), connect_args=connect_args, poolclass=NullPool)
+    db_connection = create_engine(config.get_db_url(source_name), connect_args=connect_args, poolclass=NullPool)
     db_dialect = db_connection.dialect.name.upper()
 
     return db_connection, db_dialect
