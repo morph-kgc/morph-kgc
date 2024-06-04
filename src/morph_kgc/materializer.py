@@ -299,7 +299,6 @@ def _materialize_rml_rule(rml_rule, rml_df, fnml_df, config, data=None, parent_j
 
         parent_data = _get_data(config, parent_triples_map_rule, parent_references, python_source)
         merged_data = _merge_data(data, parent_data, rml_rule, 'object_join_conditions')
-        merged_data = _materialize_rml_rule_terms(merged_data, rml_rule, fnml_df, config)
 
         rml_rule['object_map_type'] = parent_triples_map_rule['subject_map_type']
         rml_rule['object_map_value'] = parent_triples_map_rule['subject_map_value']
