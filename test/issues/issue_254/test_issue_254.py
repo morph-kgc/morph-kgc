@@ -5,6 +5,7 @@ __license__ = "Apache-2.0"
 __maintainer__ = "Mahmoud Nassif"
 __email__ = "mahmoud.abounassif@gmail.com"
 
+
 import os
 import morph_kgc
 
@@ -12,11 +13,8 @@ from rdflib.graph import Graph
 
 
 def test_issue_254_a():
-    """
-    When
-    """
     g = Graph()
-    g.parse(os.path.join(os.path.dirname(os.path.realpath(__file__)), "output-a.trig"))
+    g.parse(os.path.join(os.path.dirname(os.path.realpath(__file__)), "output-a.nq"))
 
     mapping_path = os.path.join(
         os.path.dirname(os.path.realpath(__file__)), "mapping-a.yarrr.yml"
