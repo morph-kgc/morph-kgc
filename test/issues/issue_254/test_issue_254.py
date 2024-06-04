@@ -14,10 +14,10 @@ from rdflib.graph import Graph
 
 def test_issue_254_a():
     g = Graph()
-    g.parse(os.path.join(os.path.dirname(os.path.realpath(__file__)), "output-a.nq"))
+    g.parse(os.path.join(os.path.dirname(os.path.realpath(__file__)), "output.nq"))
 
     mapping_path = os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), "mapping-a.yarrr.yml"
+        os.path.dirname(os.path.realpath(__file__)), "mapping.yarrr.yml"
     )
     config = f"[CONFIGURATION]\noutput_format=N-QUADS\nnumber_of_processes=1\n[DataSource]\nmappings={mapping_path}"
     g_morph = morph_kgc.materialize(config)
