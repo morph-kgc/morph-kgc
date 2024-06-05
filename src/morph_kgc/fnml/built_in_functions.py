@@ -44,6 +44,12 @@ def string_escape(string, mode):
         # TODO: not valid mode
         pass
 
+@bif(
+    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#string_indexOf',
+    string='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter',
+    substring='http://users.ugent.be/~bjdmeest/function/grel.ttl#string_sub')
+def string_index_of(string, substring):
+    return string.index(substring)
 
 @bif(
     fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#string_toString',
