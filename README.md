@@ -90,20 +90,31 @@ Morph-KGC is available under the **[Apache License 2.0](https://github.com/morph
 
 ## Citing :speech_balloon:
 
-If you used Morph-KGC in your work, please cite the **[SWJ paper](https://www.doi.org/10.3233/SW-223135)**:
+If you used Morph-KGC in your work, please cite the **[SoftwareX](https://www.sciencedirect.com/science/article/pii/S2352711024000803)** or **[SWJ](https://www.doi.org/10.3233/SW-223135)** papers:
 
 ```bib
+@article{arenas2024rmlfnml,
+  title = {{An RML-FNML module for Python user-defined functions in Morph-KGC}},
+  author = {Julián Arenas-Guerrero and Paola Espinoza-Arias and José Antonio Bernabé-Diaz and Prashant Deshmukh and José Luis Sánchez-Fernández and Oscar Corcho},
+  journal = {SoftwareX},
+  year = {2024},
+  volume = {26},
+  pages = {101709},
+  issn = {2352-7110},
+  publisher = {Elsevier},
+  doi = {10.1016/j.softx.2024.101709}
+}
 @article{arenas2024morph,
   title     = {{Morph-KGC: Scalable knowledge graph materialization with mapping partitions}},
   author    = {Arenas-Guerrero, Julián and Chaves-Fraga, David and Toledo, Jhon and Pérez, María S. and Corcho, Oscar},
   journal   = {Semantic Web},
-  publisher = {IOS Press},
-  issn      = {2210-4968},
   year      = {2024},
-  doi       = {10.3233/SW-223135},
   volume    = {15},
   number    = {1},
-  pages     = {1-20}
+  pages     = {1-20},
+  issn      = {2210-4968},
+  publisher = {IOS Press},
+  doi       = {10.3233/SW-223135}
 }
 ```
 
