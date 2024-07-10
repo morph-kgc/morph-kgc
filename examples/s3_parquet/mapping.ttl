@@ -1,0 +1,21 @@
+@prefix rml: <http://w3id.org/rml/> .
+@prefix ex: <http://example.org/ex#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<triples_map> a rml:TriplesMap;
+
+    rml:logicalSource [
+        a rml:LogicalSource;
+        rr:sqlVersion rr:SQL2008;
+    ];
+
+    rml:subjectMap [
+        rml:template "http://example.org/ex#{id}"
+    ];
+
+    rml:predicateObjectMap [
+        rml:predicate dcterms:identifier  ;
+        rml:objectMap [ rml:reference "id" ]
+    ];
+.
