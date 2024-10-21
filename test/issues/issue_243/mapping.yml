@@ -1,0 +1,12 @@
+external:
+  Name: John
+
+mappings:
+  person:
+    sources:
+      access: test/issues/issue_243/data.csv
+      referenceFormulation: csv
+    subjects: http://example.org/$(ID)
+    po:
+      - [http://example.com/name, $(_Name)]
+      - [http://example.com/name, $(\_Name)]
