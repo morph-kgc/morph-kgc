@@ -136,6 +136,24 @@ def _add_default_prefixes(mappings):
     return mappings
 
 
+def _replace_yarrrml_external_references(mappings, external_references):
+    if type(mappings) is dict:
+        for key, value in mappings.items():
+            mappings[key] = _replace_yarrrml_external_references(value, external_references)
+    elif type(mappings) is list:
+        for i, value in enumerate(mappings):
+            mappings[i] = _replace_yarrrml_external_references(value, external_references)
+    elif type(mappings) is str:
+        for external_references_key, external_references_value in external_references.items():
+            if mappings == f'$(_{external_references_key})':
+                mappings = external_references_value
+            elif mappings == f'$(\_{external_references_key})':
+                # comply with example 210 in YARRRML spec
+                mappings = f'$(_{external_references_key})'
+
+    return mappings
+
+
 def _expand_prefixes_in_yarrrml_templates(mappings, prefixes):
     if type(mappings) is dict:
         for key, value in mappings.items():
@@ -580,6 +598,9 @@ def load_yarrrml(yarrrml_file):
     yarrrml_mapping = _normalize_yarrrml_key_names(yarrrml_mapping)
 
     yarrrml_mapping = _add_default_prefixes(yarrrml_mapping)
+    if 'external' in yarrrml_mapping:
+        yarrrml_mapping = _replace_yarrrml_external_references(yarrrml_mapping, yarrrml_mapping['external'])
+        yarrrml_mapping.pop('external')
     yarrrml_mapping = _expand_prefixes_in_yarrrml_templates(yarrrml_mapping, yarrrml_mapping['prefixes'])
     yarrrml_mapping.pop('prefixes')
 
