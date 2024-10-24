@@ -149,6 +149,8 @@ def _read_json(rml_rule, references):
         jsonpath_expression += reference.split('.')[0] + ','
     jsonpath_expression = jsonpath_expression[:-1] + ')'
 
+    jsonpath_expression = jsonpath_expression .replace(" ", "").replace("'", '"')    # this is a workaround for #283
+
     jsonpath_result = JSONPath(jsonpath_expression).parse(json_data)
     # normalize and remove nulls
     json_df = pd.json_normalize([json_object for json_object in normalize_hierarchical_data(jsonpath_result) if None not in json_object.values()])
