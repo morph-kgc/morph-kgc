@@ -18,7 +18,6 @@ from itertools import repeat
 
 from .args_parser import load_config_from_command_line
 from .mapping.mapping_parser import retrieve_mappings
-from .data_source.relational_db import setup_oracle
 from .materializer import _materialize_mapping_group_to_set
 from .args_parser import load_config_from_argument
 from .constants import RML_TRIPLES_MAP_CLASS
@@ -33,8 +32,6 @@ def materialize_set(config, python_source=None):
             f'Parallelization is not supported for {sys.platform} when running as a library. '
             f'If you need to speed up your data integration pipeline, please run through the command line.')
         config.set_number_of_processes('1')
-
-    setup_oracle(config)
 
     rml_df, fnml_df = retrieve_mappings(config)
 

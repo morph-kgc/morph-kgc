@@ -44,9 +44,6 @@ UDFS = 'udfs'
 LOGGING_LEVEL = 'logging_level'
 LOGGING_FILE = 'logging_file'
 
-ORACLE_CLIENT_LIB_DIR = 'oracle_client_lib_dir'
-ORACLE_CLIENT_CONFIG_DIR = 'oracle_client_config_dir'
-
 READ_PARSED_MAPPINGS_PATH = 'read_parsed_mappings_path'
 WRITE_PARSED_MAPPINGS_PATH = 'write_parsed_mappings_path'
 
@@ -219,12 +216,6 @@ class Config(ConfigParser):
     def is_write_parsed_mappings_file_provided(self):
         return bool(self.get(self.configuration_section, WRITE_PARSED_MAPPINGS_PATH))
 
-    def is_oracle_client_lib_dir_provided(self):
-        return bool(self.get(self.configuration_section, ORACLE_CLIENT_LIB_DIR))
-
-    def is_oracle_client_config_dir_provided(self):
-        return bool(self.get(self.configuration_section, ORACLE_CLIENT_CONFIG_DIR))
-
     def infer_sql_datatypes(self):
         return self.getboolean(self.configuration_section, INFER_SQL_DATATYPES)
 
@@ -251,12 +242,6 @@ class Config(ConfigParser):
 
     def get_parsed_mappings_write_path(self):
         return self.get(self.configuration_section, WRITE_PARSED_MAPPINGS_PATH)
-
-    def get_oracle_client_lib_dir(self):
-        return self.get(self.configuration_section, ORACLE_CLIENT_LIB_DIR)
-
-    def get_oracle_client_config_dir(self):
-        return self.get(self.configuration_section, ORACLE_CLIENT_CONFIG_DIR)
 
     def get_mapping_partitioning(self):
         return self.get(self.configuration_section, MAPPING_PARTITIONING)

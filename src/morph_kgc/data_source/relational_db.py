@@ -184,16 +184,3 @@ def get_sql_data(config, rml_rule, references):
     logging.debug(f"SQL query for mapping rule `{rml_rule['triples_map_id']}`: [{sql_query}]")
 
     return pd.read_sql_query(sql_query, con=db_connection, coerce_float=False)
-
-
-def setup_oracle(config):
-    if config.is_oracle_client_config_dir_provided() or config.is_oracle_client_lib_dir_provided():
-        import cx_Oracle
-
-    if config.is_oracle_client_config_dir_provided() and config. is_oracle_client_lib_dir_provided():
-        cx_Oracle.init_oracle_client(lib_dir=config.get_oracle_client_lib_dir(),
-                                     config_dir=config.get_oracle_client_config_dir())
-    elif config.is_oracle_client_config_dir_provided():
-        cx_Oracle.init_oracle_client(config_dir=config.get_oracle_client_config_dir())
-    elif config.is_oracle_client_lib_dir_provided():
-        cx_Oracle.init_oracle_client(lib_dir=config.get_oracle_client_lib_dir())
