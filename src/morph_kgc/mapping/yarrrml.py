@@ -147,8 +147,8 @@ def _replace_yarrrml_external_references(mappings, external_references):
         for external_references_key, external_references_value in external_references.items():
             if mappings == f'$(_{external_references_key})':
                 mappings = external_references_value
-            elif mappings == f'$(\_{external_references_key})':
-                # comply with example 210 in YARRRML spec
+            elif mappings == f'$(\\_{external_references_key})':
+                # comply with example 110 in YARRRML spec
                 mappings = f'$(_{external_references_key})'
 
     return mappings
