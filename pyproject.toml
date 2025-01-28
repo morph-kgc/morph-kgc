@@ -66,6 +66,7 @@ tabular = ['pyarrow>=14.0.0, <16.0.0']
 spss = ['pyreadstat>=1.2.0, <2.0.0']
 kuzu = ['kuzu>=0.4.2, <2.0.0']
 neo4j = ['neo4j>=5.20.0, <6.0.0']
+snowflake =['snowflake-sqlalchemy>=1.7.3, <2.0.0']
 all = [
   'morph_kgc[kafka]',
   'morph_kgc[mysql]',
@@ -77,4 +78,5 @@ all = [
   'morph_kgc[spss]',
   'morph_kgc[kuzu]',
   'morph_kgc[neo4j]',
+  'morph_kgc[snowflake]',
 ]
