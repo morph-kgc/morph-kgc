@@ -16,7 +16,7 @@
 ## Features :sparkles:
 
 - User-friendly mappings with **[YARRRML](https://rml.io/yarrrml/spec/)**.
-- Transformation functions with **[RML-FNML](https://w3id.org/rml/fnml/spec)**, including **Python user-defined functions**.
+- Transformation functions with **[RML-FNML](https://w3id.org/rml/fnml/spec)**, including **Python UDFs**.
 - [RDF-star](https://w3c.github.io/rdf-star/cg-spec/2021-12-17.html) generation with **[RML-star](https://w3id.org/rml/star/spec)**.
 - **[RML views](https://2023.eswc-conferences.org/wp-content/uploads/2023/05/paper_Arenas-Guerrero_2023_Boosting.pdf)** over tabular data sources and [JSON](https://www.json.org) files.
 - Integration with **[RDFLib](https://rdflib.readthedocs.io)**, **[Oxigraph](https://pyoxigraph.readthedocs.io/en)** and [Kafka](https://kafka-python.readthedocs.io).
