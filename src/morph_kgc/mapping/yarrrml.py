@@ -212,7 +212,7 @@ def _normalize_property_in_predicateobjects(mappings, property):
 
 
 def _normalize_function_parameters(term_map):
-    if 'parameters' in term_map:
+    if type(term_map) is dict and 'parameters' in term_map:
         if type(term_map['parameters']) is list:
             for i, parameter in enumerate(term_map['parameters']):
                 if type(parameter) is list:
@@ -220,10 +220,10 @@ def _normalize_function_parameters(term_map):
                 elif type(parameter) is dict:
                     term_map['parameters'][i] = parameter
 
-                if 'function' in term_map['parameters'][i]['value']:
-                    term_map['parameters'][i]['parameter'] = term_map['parameters'][i]['parameter']
+                if type(term_map['parameters'][i]['value']) is dict and 'function' in term_map['parameters'][i]['value']:
+                    #term_map['parameters'][i]['parameter'] = term_map['parameters'][i]['parameter']
                     term_map['parameters'][i]['value'] = _normalize_function_parameters(term_map['parameters'][i]['value'])
-    elif term_map['function'].endswith(')'):
+    elif type(term_map) is str and term_map['function'].endswith(')'):
         # inline function examples 99 & 101 YARRRML spec
         inline_function = term_map['function']
         function_id = inline_function.split('(')[0]
@@ -364,9 +364,9 @@ def _normalize_yarrrml_mapping(mappings):
     #############################################################################
 
     for mapping_key, mapping_value in mappings['mappings'].items():
-        if 'subjects' in mapping_value and 'function' in mapping_value['subjects']:
+        if 'subjects' in mapping_value and type(mapping_value['subjects']) is dict and 'function' in mapping_value['subjects']:
             mapping_value['subjects'] = _normalize_function_parameters(mapping_value['subjects'])
-        if 'predicateobjects' in mapping_value:
+        if type(mapping_value) is dict and 'predicateobjects' in mapping_value:
             for position in ['predicates', 'objects', 'graphs']:
                 if position in mapping_value['predicateobjects'] and 'function' in mapping_value['predicateobjects'][position]:
                     mapping_value['predicateobjects'][position] = _normalize_function_parameters(mapping_value['predicateobjects'][position])
@@ -430,7 +430,7 @@ def _translate_yarrrml_function_to_rml(mapping_graph, function, term_map):
             value_bnode = rdflib.term.BNode()
             mapping_graph.add((input_bnode, rdflib.term.URIRef(RML_VALUE_MAP), value_bnode))
 
-            if 'function' in parameter['value']:
+            if type(parameter['value']) is dict and 'function' in parameter['value']:
                 # composite function
                 mapping_graph.add((parameter_bnode, rdflib.term.URIRef(RML_CONSTANT), rdflib.term.URIRef(parameter['parameter'])))
                 mapping_graph = _translate_yarrrml_function_to_rml(mapping_graph, parameter['value'], value_bnode)
