@@ -1,18 +1,88 @@
----
-name: Bug Report
-about: Create a report to help us improve
-title: ''
-labels: bug, development
+name: Bug report
+description: Create a report to help us improve
+labels:
+  - bug
+body:
+  - type: textarea
+    attributes:
+      label: What happens?
+      description: A short, clear and concise description of what the bug is.
+    validations:
+      required: true
 
----
+  - type: textarea
+    attributes:
+      label: To reproduce
+      description: |
+        Please provide steps to reproduce the behavior, preferably a [minimal reproducible example](https://en.wikipedia.org/wiki/Minimal_reproducible_example). Please adhere to the following guidelines:
 
-####  What Happens?
-A clear and concise description of what the bug is.
+        * Format the code, mappings, data and output as [code blocks](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks) using triple backticks:
 
-#### To Reproduce
-Steps to reproduce the behavior. If possible include sample data, mappings and configuration used.
+          ````
+          ```
+          CODE HERE
+          ```
+          ````
+        * Make sure that the script, mappings, data and output are provided in separate code blocks.
+        * If applicable, provide the script with the Python user-defined functions.
+        * Confirm if the issue is reproducible via command line or executing as a library.
+    validations:
+      required: true
 
-#### Environment (please complete the following information):
- - OS: [e.g. Ubuntu 22.04 LTS]
- - Python version: [e.g. 3.10]
- - Morph-KGC version: [e.g. 1.5.0]
+  - type: markdown
+    attributes:
+      value: "## Environment:"
+  - type: input
+    attributes:
+      label: "OS:"
+      placeholder: e.g., Ubuntu
+      description: Please include operating system version.
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: "Morph-KGC Version:"
+      placeholder: e.g., 2.8.1
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: "## Identity Disclosure:"
+  - type: input
+    attributes:
+      label: "Full Name:"
+      placeholder: e.g., Alan Turing
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: "Affiliation:"
+      placeholder: e.g., Universidad Politécnica de Madrid
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        If the above is not given and is not obvious from your GitHub profile page, we might close your issue without further review. Please refer to the [reasoning behind this rule](https://berthub.eu/articles/posts/anonymous-help/) if you have questions.
+
+        ## Before submitting:
+
+  - type: dropdown
+    attributes:
+      label: Did you include all relevant data sets for reproducing the issue?
+      options:
+        - "No - Other reason (please specify in the issue body)"
+        - "No - I cannot share the data sets because they are confidential"
+        - "No - I cannot easily share my data sets due to their large size"
+        - "Not applicable - the reproduction does not require a data set"
+        - "Yes"
+      default: 0
+    validations:
+      required: true
+
+  - type: checkboxes
+    attributes:
+      label: Did you include all mappings and code required to reproduce the issue?
+      options:
+        - label: Yes, I have
