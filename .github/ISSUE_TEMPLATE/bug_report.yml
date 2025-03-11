@@ -19,11 +19,12 @@ body:
         * Format the code, mappings, data and output as [code blocks](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks) using triple backticks:
 
           ````
-          ```
-          CODE HERE
+          ```ttl
+          MAPPINGS HERE
           ```
           ````
         * Make sure that the script, mappings, data and output are provided in separate code blocks.
+        * Enable syntax highlighting in the code block after the baticks (`ttl` for RML and RDF; `yml` for YARRRML; `python` for code; `csv`, `json` or `xml` for data...) 
         * If applicable, provide the script with the Python user-defined functions.
         * Confirm if the issue is reproducible via command line or executing as a library.
     validations:
