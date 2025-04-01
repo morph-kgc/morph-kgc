@@ -117,9 +117,9 @@ def _materialize_template(results_df, template, expression_type, config, positio
         elif termtype.strip() == RML_LITERAL:
             # Natural Mapping of SQL Values (https://www.w3.org/TR/r2rml/#natural-mapping)
             if datatype == XSD_BOOLEAN:
-                results_df['reference_results'] = results_df['reference_results'].str.lower()
+                results_df['reference_results'] = results_df['reference_results'].astype(str).str.lower()
             elif datatype == XSD_DATETIME:
-                results_df['reference_results'] = results_df['reference_results'].str.replace(' ', 'T', regex=False)
+                results_df['reference_results'] = results_df['reference_results'].astype(str).str.replace(' ', 'T', regex=False)
                 # Make integers not end with .0
             elif datatype == XSD_INTEGER:
                 results_df['reference_results'] = results_df['reference_results'].astype(float).astype(int).astype(str)
