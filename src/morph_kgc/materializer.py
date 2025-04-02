@@ -150,7 +150,7 @@ def _materialize_template(results_df, template, expression_type, config, positio
 def _materialize_fnml_execution(results_df, fnml_execution, fnml_df, config, position, termtype=RML_LITERAL, datatype=''):
     results_df = execute_fnml(results_df, fnml_df, fnml_execution, config)
 
-    results_df[fnml_execution].astype(str)
+    results_df[fnml_execution] = results_df[fnml_execution].astype(str)
 
     if config.only_write_printable_characters():
         results_df[fnml_execution] = results_df[fnml_execution].apply(lambda x: remove_non_printable_characters(x))
