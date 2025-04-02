@@ -1,0 +1,43 @@
+udf@prefix ex: <http://www.example.org/> .
+@prefix sd: <https://w3id.org/okn/o/sd#>.
+@prefix rml: <http://w3id.org/rml/> .
+@prefix rr: <http://www.w3.org/ns/r2rml#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ex-fn: <http://www.example.org/mapping-functions/> .
+
+ex:source a rml:LogicalSource;
+    rml:iterator "$[*]";
+    rml:source [
+			a sd:DatasetSpecification;
+			sd:name "data";
+			sd:hasDataTransformation [
+				sd:hasSoftwareRequirements "pandas>=1.1.0";
+				sd:hasSourceCode [
+					sd:programmingLanguage "Python3.9";
+				];
+			];
+		];
+    rml:referenceFormulation rml:CSV .
+
+<#test>
+    rml:logicalSource ex:source;
+    rr:subjectMap [
+        rr:template "http://www.example.org/Node/{id}"
+    ] ;
+    rr:predicateObjectMap [
+        rr:predicate ex:dateTime ;
+        rr:objectMap [
+            rml:functionExecution <#executionFn> ;
+            rr:datatype xsd:dateTime  
+        ]
+    ] .
+
+<#executionFn> a rml:FunctionExecution ; 
+    rml:function ex-fn:timestampToXSDDatetime;
+    rml:input 
+        [
+            rml:parameter ex-fn:timestamp ;
+            rml:inputValueMap  [ 
+                rml:reference "date" ;
+            ]
+        ] .
