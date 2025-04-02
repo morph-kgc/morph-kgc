@@ -28,8 +28,8 @@ def test_issue_316_a():
     ), mode='r') as f:
         json_data = json.loads(f.read())
     
-    config = f"[CONFIGURATION]\nudfs={udfs_path}\n[DataSource]\n[DataSource]\nmappings={mapping_path}"
-    g_morph = morph_kgc.materialize(config, data={'data': json_data})
+    config = f"[CONFIGURATION]\nudfs={udfs_path}\n[DataSource]\nmappings={mapping_path}"
+    g_morph = morph_kgc.materialize(config, {'data': json_data})
 
     assert set(g) == set(g_morph)
 
@@ -49,7 +49,7 @@ def test_issue_316_b():
     ), mode='r') as f:
         json_data = json.loads(f.read())
     
-    config = f"[CONFIGURATION]\nudfs={udfs_path}\n[DataSource]\n[DataSource]\nmappings={mapping_path}"
-    g_morph = morph_kgc.materialize(config, data={'data': json_data})
+    config = f"[CONFIGURATION]\nudfs={udfs_path}\n[DataSource]\nmappings={mapping_path}"
+    g_morph = morph_kgc.materialize(config, {'data': json_data})
 
     assert set(g) == set(g_morph)
