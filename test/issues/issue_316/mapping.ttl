@@ -1,4 +1,4 @@
-udf@prefix ex: <http://www.example.org/> .
+@prefix ex: <http://www.example.org/> .
 @prefix sd: <https://w3id.org/okn/o/sd#>.
 @prefix rml: <http://w3id.org/rml/> .
 @prefix rr: <http://www.w3.org/ns/r2rml#>.
@@ -22,7 +22,8 @@ ex:source a rml:LogicalSource;
 <#test>
     rml:logicalSource ex:source;
     rr:subjectMap [
-        rr:template "http://www.example.org/Node/{id}"
+        rr:template "http://www.example.org/Node/{id}" ;
+        rr:class ex:Node
     ] ;
     rr:predicateObjectMap [
         rr:predicate ex:dateTime ;
