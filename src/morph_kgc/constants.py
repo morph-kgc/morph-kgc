@@ -296,3 +296,5 @@ RDF_TYPE = f'{RDF_NAMESPACE}type'
 RDFS_NAMESPACE = 'http://www.w3.org/2000/01/rdf-schema#'
 
 AUXILIAR_UNIQUE_REPLACING_STRING = 'zzyy_xxww\u200B'
+
+LOGGING_NAMESPACE = 'morph_kgc'

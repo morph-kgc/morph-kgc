@@ -114,6 +114,7 @@ CONFIGURATION_OPTIONS_EMPTY_NON_VALID = {
             NUMBER_OF_PROCESSES: DEFAULT_NUMBER_OF_PROCESSES
         }
 
+LOGGER = logging.getLogger(LOGGING_NAMESPACE)
 
 def _is_option_provided(config, option, empty_value_is_valid=False):
     """
@@ -186,10 +187,10 @@ class Config(ConfigParser):
                 f'It must be in: {[MAXIMAL_PARTITIONING] + [PARTIAL_AGGREGATIONS_PARTITIONING] + NO_PARTITIONING}.')
 
     def log_config_info(self):
-        logging.debug(f'CONFIGURATION: {dict(self.items(self.configuration_section))}')
+        LOGGER.debug(f'CONFIGURATION: {dict(self.items(self.configuration_section))}')
 
         for data_source_section in self.get_data_sources_sections():
-            logging.debug(f'DATA SOURCE `{data_source_section}`: {dict(self.items(data_source_section))}')
+            LOGGER.debug(f'DATA SOURCE `{data_source_section}`: {dict(self.items(data_source_section))}')
 
     #################################################################################
     #######################   CONFIGURATION SECTION METHODS   #######################

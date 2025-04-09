@@ -13,13 +13,14 @@ from ..mapping.mapping_constants import *
 from ..mapping.mapping_partitioner import MappingPartitioner
 from ..data_source.relational_db import get_rdb_reference_datatype
 
+LOGGER = logging.getLogger(LOGGING_NAMESPACE)
 
 def retrieve_mappings(config):
     mappings_parser = MappingParser(config)
 
     start_time = time.time()
     rml_df, fnml_df = mappings_parser.parse_mappings()
-    logging.info(f'Mappings processed in {get_delta_time(start_time)} seconds.')
+    LOGGER.info(f'Mappings processed in {get_delta_time(start_time)} seconds.')
 
     return rml_df, fnml_df
 
@@ -481,7 +482,7 @@ class MappingParser:
         self._infer_datatypes()
         self.validate_mappings()
 
-        logging.info(f'{len(self.rml_df)} mapping rules retrieved.')
+        LOGGER.info(f'{len(self.rml_df)} mapping rules retrieved.')
 
         # replace empty strings with NaN
         self.rml_df = self.rml_df.infer_objects(copy=False).replace(r'^\s*$', None, regex=True)
@@ -710,12 +711,12 @@ class MappingParser:
                     self.rml_df.at[i, 'lang_datatype_map_type'] = RML_CONSTANT
                     self.rml_df.at[i, 'lang_datatype_map_value'] = inferred_data_type
                     if self.rml_df.at[i, 'logical_source_type'] == RML_TABLE_NAME:
-                        logging.debug(f"`{inferred_data_type}` datatype inferred for column "
+                        LOGGER.debug(f"`{inferred_data_type}` datatype inferred for column "
                                       f"`{rml_rule['object_map_value']}` of table "
                                       f"`{rml_rule['logical_source_value']}` "
                                       f"in data source `{rml_rule['source_name']}`.")
                     elif self.rml_df.at[i, 'logical_source_type'] == RML_QUERY:
-                        logging.debug(f"`{inferred_data_type}` datatype inferred for reference "
+                        LOGGER.debug(f"`{inferred_data_type}` datatype inferred for reference "
                                       f"`{rml_rule['object_map_value']}` in query "
                                       f"[{rml_rule['logical_source_value']}] "
                                       f"in data source `{rml_rule['source_name']}`.")
@@ -828,4 +829,4 @@ class MappingParser:
                         self.rml_df.at[i, 'object_map_value'] = parent_triples_map_rule.at['subject_map_value']
                         self.rml_df.at[i, 'object_termtype'] = parent_triples_map_rule.at['subject_termtype']
                         self.rml_df.at[i, 'object_join_conditions'] = None
-                        logging.debug(f"Removed self-join from mapping rule `{rml_rule['triples_map_id']}`.")
+                        LOGGER.debug(f"Removed self-join from mapping rule `{rml_rule['triples_map_id']}`.")

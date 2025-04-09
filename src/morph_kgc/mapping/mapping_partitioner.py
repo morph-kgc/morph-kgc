@@ -14,6 +14,7 @@ from itertools import permutations
 from ..constants import *
 from ..utils import get_rml_rule
 
+LOGGER = logging.getLogger(LOGGING_NAMESPACE)
 
 def get_invariant_of_template(template):
     """
@@ -175,10 +176,10 @@ class MappingPartitioner:
             # assign empty partition
             self.rml_df['mapping_partition'] = '0-0-0-0'
         else:
-            logging.error('Selected mapping partitioning algorithm is not valid.')
+            LOGGER.error('Selected mapping partitioning algorithm is not valid.')
 
-        logging.info(f"Mapping partition with {len(set(self.rml_df['mapping_partition']))} groups generated.")
-        logging.info('Maximum number of rules within mapping group: '
+        LOGGER.info(f"Mapping partition with {len(set(self.rml_df['mapping_partition']))} groups generated.")
+        LOGGER.info('Maximum number of rules within mapping group: '
                      f"{self.rml_df['mapping_partition'].value_counts().iloc[0]}.")
 
         return self.rml_df
@@ -279,7 +280,7 @@ class MappingPartitioner:
         # if all predicates are constant terms we can use full string comparison instead of startswith
         enforce_invariant_non_subset = set(self.rml_df['predicate_map_type']) == {RML_CONSTANT}
         if enforce_invariant_non_subset:
-            logging.debug('All predicate maps are constant-valued, invariant subset is not enforced.')
+            LOGGER.debug('All predicate maps are constant-valued, invariant subset is not enforced.')
 
         for i, rml_rule in self.rml_df.iterrows():
             if enforce_invariant_non_subset and rml_rule['predicate_invariant'] == current_invariant:
@@ -326,7 +327,7 @@ class MappingPartitioner:
         # if all graph are constant terms we can use full string comparison instead of startswith
         enforce_invariant_non_subset = set(self.rml_df['graph_map_type']) == {RML_CONSTANT}
         if enforce_invariant_non_subset:
-            logging.debug('All graph maps are constant-valued, invariant subset is not enforced.')
+            LOGGER.debug('All graph maps are constant-valued, invariant subset is not enforced.')
 
         for i, rml_rule in self.rml_df.iterrows():
             if enforce_invariant_non_subset and rml_rule['graph_invariant'] == current_invariant:

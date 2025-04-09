@@ -17,6 +17,7 @@ from .data_source.data_file import get_file_data
 from .data_source.python_data import get_ram_data
 from .fnml.fnml_executer import execute_fnml
 
+LOGGER = logging.getLogger(LOGGING_NAMESPACE)
 
 def _add_references_in_join_condition(rml_rule, references, parent_references):
     references_join, parent_references_join = get_references_in_join_condition(rml_rule, 'object_join_conditions')
@@ -346,7 +347,7 @@ def _materialize_mapping_group_to_file(mapping_group_df, rml_df, fnml_df, config
         data = _materialize_rml_rule(rml_rule, rml_df, fnml_df, config)
         triples.update(set(data['triple']))
 
-        logging.debug(f"{len(triples)} triples generated for mapping rule `{rml_rule['triples_map_id']}` "
+        LOGGER.debug(f"{len(triples)} triples generated for mapping rule `{rml_rule['triples_map_id']}` "
                       f"in {get_delta_time(start_time)} seconds.")
 
     triples_to_file(triples, config, mapping_group_df.iloc[0]['mapping_partition'])
@@ -361,7 +362,7 @@ def _materialize_mapping_group_to_kafka(mapping_group_df, rml_df, fnml_df, confi
         data = _materialize_rml_rule(rml_rule, rml_df, fnml_df, config, python_source=python_source)
         triples.update(set(data['triple']))
 
-        logging.debug(f"{len(triples)} triples generated for mapping rule `{rml_rule['triples_map_id']}` "
+        LOGGER.debug(f"{len(triples)} triples generated for mapping rule `{rml_rule['triples_map_id']}` "
                       f"in {get_delta_time(start_time)} seconds.")
 
     triples_to_kafka(triples, config)

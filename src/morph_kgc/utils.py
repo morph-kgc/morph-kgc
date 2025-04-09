@@ -17,7 +17,9 @@ import pandas as pd
 import multiprocessing as mp
 
 from itertools import product
-from .constants import AUXILIAR_UNIQUE_REPLACING_STRING, RML_EXECUTION, RML_TEMPLATE, RML_REFERENCE
+from .constants import AUXILIAR_UNIQUE_REPLACING_STRING, LOGGING_NAMESPACE, RML_EXECUTION, RML_TEMPLATE, RML_REFERENCE
+
+LOGGER = logging.getLogger(LOGGING_NAMESPACE)
 
 
 def configure_logger(logging_level, logging_file):
@@ -289,7 +291,7 @@ def triples_to_kafka(triples, config):
     output_kafka_topic = config.get_output_kafka_topic()
 
     if not output_kafka_server or not output_kafka_topic:
-        logging.error('Output Kafka server or topic is empty.')
+        LOGGER.error('Output Kafka server or topic is empty.')
         sys.exit()
     try:
         kafka_producer = KafkaProducer(bootstrap_servers=output_kafka_server)
@@ -303,7 +305,7 @@ def triples_to_kafka(triples, config):
 
         return len(triples)
     except Exception as e:
-            logging.error(f'Error during materialization or Kafka publishing: {e}')
+            LOGGER.error(f'Error during materialization or Kafka publishing: {e}')
             return f'Error: {e}'
     finally:
         # close the Kafka producer

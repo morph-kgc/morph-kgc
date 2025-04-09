@@ -18,9 +18,10 @@ from .materializer import _materialize_mapping_group_to_file
 from .materializer import _materialize_mapping_group_to_kafka
 from .utils import get_delta_time
 from .mapping.mapping_parser import retrieve_mappings
-from .constants import RML_TRIPLES_MAP_CLASS
+from .constants import LOGGING_NAMESPACE, RML_TRIPLES_MAP_CLASS
 from .utils import prepare_output_files
 
+LOGGER = logging.getLogger(LOGGING_NAMESPACE)
 
 if __name__ == "__main__":
 
@@ -37,7 +38,7 @@ if __name__ == "__main__":
     start_time = time.time()
     num_triples = 0
     if config.is_multiprocessing_enabled():
-        logging.debug(f'Parallelizing with {config.get_number_of_processes()} cores.')
+        LOGGER.debug(f'Parallelizing with {config.get_number_of_processes()} cores.')
 
         pool = mp.Pool(config.get_number_of_processes())
         if not config.get_output_kafka_server():
@@ -55,5 +56,5 @@ if __name__ == "__main__":
             else:
                 num_triples += _materialize_mapping_group_to_kafka(mapping_group, rml_df, fnml_df, config)
 
-    logging.info(f'Number of triples generated in total: {num_triples}.')
-    logging.info(f'Materialization finished in {get_delta_time(start_time)} seconds.')
+    LOGGER.info(f'Number of triples generated in total: {num_triples}.')
+    LOGGER.info(f'Materialization finished in {get_delta_time(start_time)} seconds.')

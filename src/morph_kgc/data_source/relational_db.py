@@ -11,6 +11,7 @@ import pandas as pd
 
 from ..constants import *
 
+LOGGER = logging.getLogger(LOGGING_NAMESPACE)
 
 # PostgresSQL data types: https://www.postgresql.org/docs/14/datatype.html
 # Oracle data types: https://docs.oracle.com/cd/A58617_01/server.804/a58241/ch5.htm
@@ -181,6 +182,6 @@ def get_sql_data(config, rml_rule, references):
     db_connection, db_dialect = _relational_db_connection(config, rml_rule['source_name'])
     sql_query = _replace_query_enclosing_characters(sql_query, db_dialect)
 
-    logging.debug(f"SQL query for mapping rule `{rml_rule['triples_map_id']}`: [{sql_query}]")
+    LOGGER.debug(f"SQL query for mapping rule `{rml_rule['triples_map_id']}`: [{sql_query}]")
 
     return pd.read_sql_query(sql_query, con=db_connection, coerce_float=False)

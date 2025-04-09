@@ -20,15 +20,16 @@ from .args_parser import load_config_from_command_line
 from .mapping.mapping_parser import retrieve_mappings
 from .materializer import _materialize_mapping_group_to_set
 from .args_parser import load_config_from_argument
-from .constants import RML_TRIPLES_MAP_CLASS
+from .constants import RML_TRIPLES_MAP_CLASS, LOGGING_NAMESPACE
 
+LOGGER = logging.getLogger(LOGGING_NAMESPACE)
 
 def materialize_set(config, python_source=None):
     config = load_config_from_argument(config)
 
     # parallelization when running as a library is only enabled for Linux see #94
     if 'linux' not in sys.platform:
-        logging.info(
+        LOGGER.info(
             f'Parallelization is not supported for {sys.platform} when running as a library. '
             f'If you need to speed up your data integration pipeline, please run through the command line.')
         config.set_number_of_processes('1')
@@ -40,7 +41,7 @@ def materialize_set(config, python_source=None):
     mapping_groups = [group for _, group in asserted_mapping_df.groupby(by='mapping_partition')]
 
     if config.is_multiprocessing_enabled():
-        logging.debug(f'Parallelizing with {config.get_number_of_processes()} cores.')
+        LOGGER.debug(f'Parallelizing with {config.get_number_of_processes()} cores.')
 
         pool = mp.Pool(config.get_number_of_processes())
         triples = set().union(*pool.starmap(_materialize_mapping_group_to_set,
@@ -53,7 +54,7 @@ def materialize_set(config, python_source=None):
         for mapping_group in mapping_groups:
             triples.update(_materialize_mapping_group_to_set(mapping_group, rml_df, fnml_df, config, python_source))
 
-    logging.info(f'Number of triples generated in total: {len(triples)}.')
+    LOGGER.info(f'Number of triples generated in total: {len(triples)}.')
 
     return triples
 
@@ -91,7 +92,7 @@ def materialize_kafka(config, python_source=None):
         output_kafka_topic = config.get_output_kafka_topic()
 
         if not output_kafka_server or not output_kafka_topic:
-            logging.error('Output Kafka server or topic is empty.')
+            LOGGER.error('Output Kafka server or topic is empty.')
             sys.exit()
 
         kafka_producer = KafkaProducer(bootstrap_servers=output_kafka_server)
@@ -102,9 +103,9 @@ def materialize_kafka(config, python_source=None):
             # send the RDF triples to Kafka
             kafka_producer.send(output_kafka_topic, value=rdf_ntriples.encode('utf-8'))
 
-        logging.info(f'RDF triples materialized and sent to Kafka topic: {output_kafka_topic}.')
+        LOGGER.info(f'RDF triples materialized and sent to Kafka topic: {output_kafka_topic}.')
     except Exception as e:
-            logging.error(f'Error during materialization or Kafka publishing: {e}')
+            LOGGER.error(f'Error during materialization or Kafka publishing: {e}')
     finally:
         # close the Kafka producer
         if kafka_producer:
