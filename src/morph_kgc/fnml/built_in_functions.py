@@ -1,4 +1,6 @@
 __author__ = "Julián Arenas-Guerrero"
+import re
+
 __credits__ = ["Julián Arenas-Guerrero"]
 
 __license__ = "Apache-2.0"
@@ -21,9 +23,10 @@ def bif(fun_id, **params):
 
     def wrapper(funct):
         bif_dict[fun_id] = {}
-        bif_dict[fun_id]['function'] = funct
-        bif_dict[fun_id]['parameters'] = params
+        bif_dict[fun_id]["function"] = funct
+        bif_dict[fun_id]["parameters"] = params
         return funct
+
     return wrapper
 
 
@@ -33,35 +36,108 @@ def bif(fun_id, **params):
 
 
 @bif(
-    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#escape',
-    string='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter',
-    mode='http://users.ugent.be/~bjdmeest/function/grel.ttl#modeParameter')
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#escape",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
+    mode="http://users.ugent.be/~bjdmeest/function/grel.ttl#modeParameter",
+)
 def string_escape(string, mode):
-    if mode == 'html':
+    if mode == "html":
         import html
+
         return html.escape(string)
+    elif mode == "xml":
+        from xml.sax.saxutils import escape
+
+        return escape(string)
+    elif mode == "url":
+        import urllib.parse
+
+        return urllib.parse.quote(string, safe="")
+    elif mode == "javascript":
+        import json
+
+        return json.dumps(string)[1:-1]
+    elif mode == "csv":
+        import csv
+        import io
+
+        output = io.StringIO()
+        writer = csv.writer(output, quoting=csv.QUOTE_ALL)
+        writer.writerow([string])
+        return output.getvalue().strip()
     else:
         # TODO: not valid mode
         pass
-# Not defined by GREL
-@bif(
-    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#string_indexOf',
-    string='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter',
-    substring='http://users.ugent.be/~bjdmeest/function/grel.ttl#string_sub')
-def string_index_of(string, substring):
-    return string.index(substring)
+
 
 @bif(
-    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#string_toString',
-    string='http://users.ugent.be/~bjdmeest/function/grel.ttl#p_any_e')
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_unescape",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
+    mode="http://users.ugent.be/~bjdmeest/function/grel.ttl#modeParameter",
+)
+def string_unescape(string, mode):
+    if mode == "html":
+        import html
+
+        return html.unescape(string)
+    elif mode == "xml":
+        from xml.sax.saxutils import unescape
+
+        return unescape(string)
+    elif mode == "url":
+        import urllib.parse
+
+        return urllib.parse.unquote(string)
+    elif mode == "javascript":
+        import json
+
+        return json.loads(string)[1:-1]
+    else:
+        # TODO: not valid mode
+        pass
+
+
+# Not defined by GREL
+@bif(
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_indexOf",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
+    substring="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_sub",
+)
+def string_index_of(string, substring):
+    return string.index(substring) if substring in string else -1
+
+
+@bif(
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_lastIndexOf",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
+    substring="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_sub",
+)
+def string_lastindex_of(string: str, substring: str):
+    return string.rindex(substring) if substring in string else -1
+
+
+@bif(
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_toString",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#p_any_e",
+)
 def string_to_string(string):
     return str(string)
 
 
 @bif(
-    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#date_toDate',
-    string='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter',
-    format_code='http://users.ugent.be/~bjdmeest/function/grel.ttl#p_string_pattern' )
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_diff",
+    diff_string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter2",
+)
+def string_diff(string: str, diff_string: str):
+    return string if not string.startswith(diff_string) else string[len(diff_string) :]
+
+
+@bif(
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#date_toDate",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
+    format_code="http://users.ugent.be/~bjdmeest/function/grel.ttl#p_string_pattern",
+)
 def date_to_date(string, format_code):
     from datetime import datetime
 
@@ -69,25 +145,116 @@ def date_to_date(string, format_code):
 
 
 @bif(
-    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#string_split',
-    string='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter',
-    separator='http://users.ugent.be/~bjdmeest/function/grel.ttl#p_string_sep' )
-def string_split(string, separator):
-    return str(string.split(separator))
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_length",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
+)
+def string_length(string):
+    return str(len(string))
 
 
 @bif(
-    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#array_get',
-    string_list='http://users.ugent.be/~bjdmeest/function/grel.ttl#p_array_a',
-    start='http://users.ugent.be/~bjdmeest/function/grel.ttl#param_int_i_from',
-    end='http://users.ugent.be/~bjdmeest/function/grel.ttl#param_int_i_opt_to')
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_splitByLengths",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
+    i_1="http://users.ugent.be/~bjdmeest/function/grel.ttl#p_int_i  ",
+    i_2="http://users.ugent.be/~bjdmeest/function/grel.ttl#p_int_i2 ",
+    rep_i="http://users.ugent.be/~bjdmeest/function/grel.ttl#p_rep_i  ",
+)
+def string_split_by_lengths(string, i_1, i_2, p_rep_i):
+    split_1 = string[: int(i_1)]
+    split_2 = string[int(i_1) : int(i_1) + int(i_2)]
+    split_3 = string[int(i_1) + int(i_2) : int(i_1) + int(i_2) + (int(p_rep_i))]
+    return str([split_1, split_2, split_3])
+
+
+@bif(
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_split",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
+    separator="http://users.ugent.be/~bjdmeest/function/grel.ttl#p_string_sep",
+)
+@bif(
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_smartSplit",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
+    separator="http://users.ugent.be/~bjdmeest/function/grel.ttl#p_opt_sep",
+)
+def string_split(string, separator=None):
+    if separator is None:
+        if "\t" in string:
+            separator = "\t"
+        elif "," in string:
+            separator = ","
+        else:
+            return string
+    return string.split(separator)
+
+
+@bif(
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_substring",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
+    param_int_i_from="http://users.ugent.be/~bjdmeest/function/grel.ttl#param_int_i_from",
+    param_int_i_opt_to="http://users.ugent.be/~bjdmeest/function/grel.ttl#param_int_i_opt_to",
+)
+def string_sub_string(string, param_int_i_from, param_int_i_opt_to=None):
+    print(
+        f"param_int_i_from: {param_int_i_from}, param_int_i_opt_to: {param_int_i_opt_to}"
+    )
+    param_int_i_from = int(param_int_i_from)
+    param_int_i_opt_to = int(param_int_i_opt_to) if param_int_i_opt_to else None
+    return string[param_int_i_from:param_int_i_opt_to]
+
+
+@bif(
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_splitByCharType",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
+)
+def string_split_by_chartype(string):
+    return re.findall(r"[A-Z]+|[a-z]+|\s|[0-9]", string)
+
+
+@bif(
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_partition",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
+    fragment="http://users.ugent.be/~bjdmeest/function/grel.ttl#p_fragment",
+    omit_fragment="http://users.ugent.be/~bjdmeest/function/grel.ttl#p_bool_opt_b",
+)
+def string_partition(string, fragment, omit_fragment=False):
+    if fragment not in string:
+        return ["", string]
+    if str(omit_fragment).lower() == "false":
+        return string.partition(fragment)
+    else:
+        parts = string.partition(fragment)
+        return [parts[0], parts[2]]
+
+
+@bif(
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_rpartition",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
+    fragment="http://users.ugent.be/~bjdmeest/function/grel.ttl#p_fragment",
+    omit_fragment="http://users.ugent.be/~bjdmeest/function/grel.ttl#p_bool_opt_b",
+)
+def string_rpartition(string: str, fragment, omit_fragment=False):
+    if fragment not in string:
+        return ["", string]
+    if str(omit_fragment).lower() == "false":
+        return string.rpartition(fragment)
+    else:
+        parts = string.rpartition(fragment)
+        return [parts[0], parts[2]]
+
+
+@bif(
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#array_get",
+    string_list="http://users.ugent.be/~bjdmeest/function/grel.ttl#p_array_a",
+    start="http://users.ugent.be/~bjdmeest/function/grel.ttl#param_int_i_from",
+    end="http://users.ugent.be/~bjdmeest/function/grel.ttl#param_int_i_opt_to",
+)
 def string_array_get(string_list, start, end=None):
     # it does not explode
 
     try:
-        string_list = eval(string_list) # it is a list
+        string_list = eval(string_list)  # it is a list
     except:
-        pass # it is a string
+        pass  # it is a string
 
     start = int(start)
     if end:
@@ -98,17 +265,18 @@ def string_array_get(string_list, start, end=None):
 
 
 @bif(
-    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#array_slice',
-    string_list='http://users.ugent.be/~bjdmeest/function/grel.ttl#p_array_a',
-    start='http://users.ugent.be/~bjdmeest/function/grel.ttl#param_int_i_from',
-    end='http://users.ugent.be/~bjdmeest/function/grel.ttl#param_int_i_opt_to')
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#array_slice",
+    string_list="http://users.ugent.be/~bjdmeest/function/grel.ttl#p_array_a",
+    start="http://users.ugent.be/~bjdmeest/function/grel.ttl#param_int_i_from",
+    end="http://users.ugent.be/~bjdmeest/function/grel.ttl#param_int_i_opt_to",
+)
 def string_array_slice(string_list, start, end=None):
     # it does not explode
 
     try:
-        string_list = eval(string_list) # it is a list
+        string_list = eval(string_list)  # it is a list
     except:
-        pass # it is a string
+        pass  # it is a string
 
     start = int(start)
     if end:
@@ -119,54 +287,128 @@ def string_array_slice(string_list, start, end=None):
 
 
 @bif(
-    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#string_replace',
-    string='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter',
-    old_substring='http://users.ugent.be/~bjdmeest/function/grel.ttl#p_string_find',
-    new_substring='http://users.ugent.be/~bjdmeest/function/grel.ttl#p_string_replace')
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_contains",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
+    substring="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_sub",
+)
+def string_contains(string, substring):
+    return str(substring in string).lower()
+
+
+@bif(
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_chomp",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
+    separator="http://users.ugent.be/~bjdmeest/function/grel.ttl#p_string_sep",
+)
+def string_contains(string: str, separator: str):
+    return (
+        string[0 : len(string) - len(separator)]
+        if str(string).endswith(separator)
+        else string
+    )
+
+
+@bif(
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_replace",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
+    old_substring="http://users.ugent.be/~bjdmeest/function/grel.ttl#p_string_find",
+    new_substring="http://users.ugent.be/~bjdmeest/function/grel.ttl#p_string_replace",
+)
+@bif(
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_replaceChars",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
+    old_substring="http://users.ugent.be/~bjdmeest/function/grel.ttl#p_string_find",
+    new_substring="http://users.ugent.be/~bjdmeest/function/grel.ttl#p_string_replace",
+)
 def string_replace(string, old_substring, new_substring):
     return string.replace(old_substring, new_substring)
 
 
 @bif(
-    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#toLowerCase',
-    string='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter')
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_match",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
+    regex="http://users.ugent.be/~bjdmeest/function/grel.ttl#p_string_regex",
+)
+def string_match(string, regex):
+    return (
+        re.findall(regex[1:-1], string)
+        if regex[0] == "/" and regex[-1] == "/"
+        else re.findall(regex, string)
+    )
+
+
+@bif(
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_trim",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
+)
+def string_trim(string: str):
+    return string.strip()
+
+
+@bif(
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_startsWith",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
+    substring="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_sub",
+)
+def string_starts_with(string: str, substring: str):
+    return str(string.startswith(substring)).lower()
+
+
+@bif(
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_endsWith",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
+    substring="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_sub",
+)
+def string_ends_with(string: str, substring: str):
+    return str(string.endswith(substring)).lower()
+
+
+@bif(
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_trim",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
+)
+def string_trim(string: str):
+    return string.strip()
+
+
+@bif(
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#toLowerCase",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
+)
 def to_lower_case(string):
     return string.lower()
 
 
 @bif(
-    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#toUpperCase',
-    string='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter')
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#toUpperCase",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
+)
 def to_upper_case(string):
     return string.upper()
 
 
 @bif(
-    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#toTitleCase',
-    string='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter')
-def to_title_case(string):
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#toTitleCase",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
+)
+def to_title_case(string: str):
     return string.title()
 
 
 @bif(
-    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#reverse',
-    string='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter')
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#reverse",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
+)
 def reverse(string):
     return string[::-1]
 
 
 @bif(
-    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#string_trim',
-    string='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter')
-def string_trim(string):
-    return string.strip()
-
-
-@bif(
-    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#controls_if',
-    boolean_expression='http://users.ugent.be/~bjdmeest/function/grel.ttl#bool_b',
-    value_true='http://users.ugent.be/~bjdmeest/function/grel.ttl#any_true',
-    value_false='http://users.ugent.be/~bjdmeest/function/grel.ttl#any_false')
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#controls_if",
+    boolean_expression="http://users.ugent.be/~bjdmeest/function/grel.ttl#bool_b",
+    value_true="http://users.ugent.be/~bjdmeest/function/grel.ttl#any_true",
+    value_false="http://users.ugent.be/~bjdmeest/function/grel.ttl#any_false",
+)
 def controls_if(boolean_expression, value_true, value_false=None):
     if eval(boolean_expression):
         return value_true
@@ -175,13 +417,14 @@ def controls_if(boolean_expression, value_true, value_false=None):
 
 
 @bif(
-    fun_id='http://users.ugent.be/~bjdmeest/function/grel.ttl#math_round',
-    number='http://users.ugent.be/~bjdmeest/function/grel.ttl#p_dec_n')
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#math_round",
+    number="http://users.ugent.be/~bjdmeest/function/grel.ttl#p_dec_n",
+)
 def number_round(number):
-    if ','  in number and '.' in number:
-        number = number.replace(',', '')    # e.g. 4,894.57
-    elif ',' in number:
-        number = number.replace(',', '.')   # e.g. 10,7
+    if "," in number and "." in number:
+        number = number.replace(",", "")  # e.g. 4,894.57
+    elif "," in number:
+        number = number.replace(",", ".")  # e.g. 10,7
 
     return str(round(float(number)))
 
@@ -192,70 +435,107 @@ def number_round(number):
 
 
 @bif(
-    fun_id='https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#controls_if_cast',
-    string='http://users.ugent.be/~bjdmeest/function/grel.ttl#bool_b',
-    value_true='http://users.ugent.be/~bjdmeest/function/grel.ttl#any_true',
-    value_false='http://users.ugent.be/~bjdmeest/function/grel.ttl#any_false')
+    fun_id="https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#controls_if_cast",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#bool_b",
+    value_true="http://users.ugent.be/~bjdmeest/function/grel.ttl#any_true",
+    value_false="http://users.ugent.be/~bjdmeest/function/grel.ttl#any_false",
+)
 def controls_if_cast(string, value_true, value_false=None):
-    if string.lower() in ['', 'false', 'no', 'off', '0']:
+    if string.lower() in ["", "false", "no", "off", "0"]:
         # this will be filtered when removing nulls
         return value_false
     else:
         return value_true
 
 
-@bif(
-    fun_id='https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#uuid')
+@bif(fun_id="https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#uuid")
 def uuid():
     from uuid import uuid4
 
     return str(uuid4())
 
+
 # Todo: Describe in Function Description
 @bif(
-    fun_id='https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#string_split_explode',
-    string='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter',
-    separator='http://users.ugent.be/~bjdmeest/function/grel.ttl#p_string_sep' )
+    fun_id="https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#string_split_explode",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
+    separator="http://users.ugent.be/~bjdmeest/function/grel.ttl#p_string_sep",
+)
 def string_split_explode(string, separator):
     return string.split(separator)
 
+
 # Todo: Describe in Function Description
 @bif(
-    fun_id='https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#concat',
-    string1='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter1',
-    string2='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter2',
-    separator='http://users.ugent.be/~bjdmeest/function/grel.ttl#p_string_sep' )
-def string_concat(string1, string2, separator=''):
-    return f'{string1}{separator}{string2}'
+    fun_id="https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#concat",
+    string1="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter1",
+    string2="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter2",
+    separator="http://users.ugent.be/~bjdmeest/function/grel.ttl#p_string_sep",
+)
+def string_concat(string1, string2, separator=""):
+    return f"{string1}{separator}{string2}"
 
 
 @bif(
-    fun_id='http://example.com/idlab/function/toUpperCaseURL',
-    url='http://example.com/idlab/function/str')
+    fun_id="http://example.com/idlab/function/toUpperCaseURL",
+    url="http://example.com/idlab/function/str",
+)
 def to_upper_case_url(url):
     from falcon.uri import encode_value
 
     url_lower = url.lower()
 
-    if url_lower.startswith('https://'):
-        return f'https://{encode_value(url[:8].upper())}'
-    elif url_lower.startswith('http://'):
-        return f'http://{encode_value(url[:7].upper())}'
+    if url_lower.startswith("https://"):
+        return f"https://{encode_value(url[:8].upper())}"
+    elif url_lower.startswith("http://"):
+        return f"http://{encode_value(url[:7].upper())}"
 
     # else:
-    return f'http://{encode_value(url.upper())}'
+    return f"http://{encode_value(url.upper())}"
 
 
+# Hashs
 @bif(
-    fun_id='https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#hash',
-    string='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter')
+    fun_id="https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#hash",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
+)
 def hash(string):
     from hashlib import sha256
+
     return sha256(string.encode("UTF-8")).hexdigest()
 
 
 @bif(
-    fun_id='https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#hash_iri',
-    string='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter')
+    fun_id="https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#hash_iri",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
+)
 def hash_iri(string):
     return f'http://example.com/ns#{sha256(string.encode("UTF-8")).hexdigest()}'
+
+
+@bif(
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_md5",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
+)
+def string_md5(string):
+    import hashlib
+
+    return hashlib.md5(string.encode()).hexdigest()
+
+
+@bif(
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_sha1",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
+)
+def string_sha1(string):
+    import hashlib
+
+    return hashlib.sha1(string.encode()).hexdigest()
+
+
+@bif(
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#unicodestring-s",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
+)
+def string_unicode(string):
+    return [ord(e) for e in string]

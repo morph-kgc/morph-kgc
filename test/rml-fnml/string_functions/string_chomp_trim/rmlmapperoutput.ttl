@@ -1,0 +1,20 @@
+<http://example.com#car_1> <http://example.com#string_chomp> "Toyota Corolla" .
+<http://example.com#car_1> <http://example.com#string_trim> "Toyota Corolla" .
+<http://example.com#car_10> <http://example.com#string_chomp> "Hyundai Santa Few " .
+<http://example.com#car_10> <http://example.com#string_trim> "Hyundai Santa Few" .
+<http://example.com#car_2> <http://example.com#string_chomp> "Honda Civic" .
+<http://example.com#car_2> <http://example.com#string_trim> "Honda Civic" .
+<http://example.com#car_3> <http://example.com#string_chomp> "Ford Focus" .
+<http://example.com#car_3> <http://example.com#string_trim> "Ford Focus" .
+<http://example.com#car_4> <http://example.com#string_chomp> "Chevrolet Camar" .
+<http://example.com#car_4> <http://example.com#string_trim> "Chevrolet Camaro" .
+<http://example.com#car_5> <http://example.com#string_chomp> "Tesla Model X" .
+<http://example.com#car_5> <http://example.com#string_trim> "Tesla Model X" .
+<http://example.com#car_6> <http://example.com#string_chomp> " BMW X5" .
+<http://example.com#car_6> <http://example.com#string_trim> "BMW X5" .
+<http://example.com#car_7> <http://example.com#string_chomp> "Volkswagen Beetle" .
+<http://example.com#car_7> <http://example.com#string_trim> "Volkswagen Beetle" .
+<http://example.com#car_8> <http://example.com#string_chomp> "Kia Sorent" .
+<http://example.com#car_8> <http://example.com#string_trim> "Kia Sorento" .
+<http://example.com#car_9> <http://example.com#string_chomp> " Nissan Juke" .
+<http://example.com#car_9> <http://example.com#string_trim> "Nissan Juke" .

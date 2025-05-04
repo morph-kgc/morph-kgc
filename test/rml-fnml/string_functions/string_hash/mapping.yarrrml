@@ -1,0 +1,23 @@
+prefixes:
+    ex: http://example.com#
+    grel: http://users.ugent.be/~bjdmeest/function/grel.ttl#
+    idlab-fn: https://w3id.org/imec/idlab/function#
+mappings:
+    cars:
+        sources:
+            - access: cars.csv
+              referenceFormulation: csv
+        subjects: ex:car_$(ID)
+        predicateobjects:
+            - p: ex:string_md5
+              o:
+                  function: grel:string_md5
+                  parameters:
+                      - parameter: grel:valueParameter
+                        value: $(Model)
+            - p: ex:string_sha1
+              o:
+                  function: grel:string_sha1
+                  parameters:
+                      - parameter: grel:valueParameter
+                        value: $(Model)
