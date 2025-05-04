@@ -8,7 +8,7 @@
 [![Python Version](https://img.shields.io/pypi/pyversions/morph-kgc.svg)](https://pypi.python.org/pypi/morph-kgc)
 [![PyPI status](https://img.shields.io:/pypi/status/morph-kgc?)](https://pypi.python.org/pypi/morph-kgc)
 [![build](https://github.com/morph-kgc/morph-kgc/actions/workflows/ci.yml/badge.svg)](https://github.com/morph-kgc/morph-kgc/actions/workflows/ci.yml)
-[![Documentation Status](https://readthedocs.org/projects/morph-kgc/badge/?version=stable)](https://morph-kgc.readthedocs.io/en/stable/?badge=stable)
+[![Documentation Status](https://readthedocs.org/projects/morph-kgc/badge/?version=stable)](https://morph-kgc.readthedocs.io)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1ByFx_NOEfTZeaJ1Wtw3UwTH3H3-Sye2O?usp=sharing)
 
 **Morph-KGC** is an engine that constructs **[RDF](https://www.w3.org/TR/rdf11-concepts/)** knowledge graphs from heterogeneous data sources with the **[R2RML](https://www.w3.org/TR/r2rml/)** and **[RML](https://w3id.org/rml/core/spec)** mapping languages. Morph-KGC is built on top of [pandas](https://pandas.pydata.org/) and it leverages *mapping partitions* to significantly reduce execution times and memory consumption for large data sources.
