@@ -66,14 +66,13 @@ def _materialize_fnml_template(data, template):
     return data['aux_fnml_template_data']
 
 
-def execute_fnml(data, fnml_df, fnml_execution, config):
+def execute_fnml(data, fnml_df, fnml_execution, config, in_recursion=False):
     execution_rule_df = get_fnml_execution(fnml_df, fnml_execution)
     function_id = execution_rule_df.iloc[0]['function_map_value']
-
     # handle composite functions
     for i, execution_rule in execution_rule_df.iterrows():
         if execution_rule['value_map_type'] == RML_EXECUTION:
-            data = execute_fnml(data, fnml_df, execution_rule['value_map_value'], config)
+            data = execute_fnml(data, fnml_df, execution_rule['value_map_value'], config, True)
 
     parameter_to_value_type_dict = dict(
         zip(execution_rule_df['parameter_map_value'], execution_rule_df['value_map_type']))
@@ -101,7 +100,6 @@ def execute_fnml(data, fnml_df, fnml_execution, config):
             else:
                 # RML_REFERENCE or RML_EXECUTION
                 function_params[k] = list(data[parameter_to_value_value_dict[v]])
-
     exec_res = []
     for i in range(len(data)):
         exec_params = {}
@@ -116,7 +114,9 @@ def execute_fnml(data, fnml_df, fnml_execution, config):
 
     data = remove_null_values_from_dataframe(data, config, fnml_execution, column=fnml_execution)
 
-    # only list values are exploded, strings that encode lists are not exploded
-    data = data.explode(fnml_execution)
+    # Only explode the results of an outer function. Otherwise, if the functions are nested, the inner function should work with the list object.
+    if not in_recursion:
+        # only list values are exploded, strings that encode lists are not exploded
+        data = data.explode(fnml_execution)
 
     return data
