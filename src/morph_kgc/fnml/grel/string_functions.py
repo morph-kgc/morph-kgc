@@ -35,6 +35,14 @@ def string_escape(string, mode):
         # TODO: not valid mode
         pass
 
+@bif(
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_contains",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
+    substring="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_sub",
+)
+def string_contains(string, substring):
+    return str(substring in string).lower()
+
 
 @bif(
     fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_unescape",
@@ -80,6 +88,15 @@ def string_index_of(string, substring):
 )
 def string_lastindex_of(string: str, substring: str):
     return string.rindex(substring) if substring in string else -1
+
+
+@bif(
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_toNumber",
+    any="http://users.ugent.be/~bjdmeest/function/grel.ttl#p_any_e",
+    
+)
+def string_lastindex_of(any: str):
+    return float(any) if any else None
 
 
 @bif(
@@ -171,11 +188,11 @@ def string_split_by_chartype(string):
     fragment="http://users.ugent.be/~bjdmeest/function/grel.ttl#p_fragment",
     omit_fragment="http://users.ugent.be/~bjdmeest/function/grel.ttl#p_bool_opt_b",
 )
-def string_partition(string, fragment, omit_fragment=False):
+def string_partition(string:str, fragment:str, omit_fragment=False):
     if fragment not in string:
         return ["", string]
     if str(omit_fragment).lower() == "false":
-        return string.partition(fragment)
+        return list(string.partition(fragment))
     else:
         parts = string.partition(fragment)
         return [parts[0], parts[2]]
@@ -191,7 +208,7 @@ def string_rpartition(string: str, fragment, omit_fragment=False):
     if fragment not in string:
         return ["", string]
     if str(omit_fragment).lower() == "false":
-        return string.rpartition(fragment)
+        return list(string.rpartition(fragment))
     else:
         parts = string.rpartition(fragment)
         return [parts[0], parts[2]]

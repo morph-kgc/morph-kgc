@@ -8,27 +8,17 @@ __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"
 
 from .grel.string_functions import bif_dict as string_bif
+from .grel.array_functions import bif_dict as array_bif
+from .function_decorator import bif
 
 bif_dict = {}
 bif_dict.update(string_bif)
+bif_dict.update(array_bif)
 
 ##############################################################################
 ########################   BUILT-IN SCALAR FUNCTION DECORATOR   ##############
 ##############################################################################
 
-
-def bif(fun_id, **params):
-    """
-    We borrow the idea of using decorators from pyRML by Andrea Giovanni Nuzzolese.
-    """
-
-    def wrapper(funct):
-        bif_dict[fun_id] = {}
-        bif_dict[fun_id]["function"] = funct
-        bif_dict[fun_id]["parameters"] = params
-        return funct
-
-    return wrapper
 
 
 @bif(
@@ -42,57 +32,6 @@ def date_to_date(string, format_code):
     return str(datetime.strptime(string, format_code).date())
 
 
-@bif(
-    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#array_get",
-    string_list="http://users.ugent.be/~bjdmeest/function/grel.ttl#p_array_a",
-    start="http://users.ugent.be/~bjdmeest/function/grel.ttl#param_int_i_from",
-    end="http://users.ugent.be/~bjdmeest/function/grel.ttl#param_int_i_opt_to",
-)
-def string_array_get(string_list, start, end=None):
-    # it does not explode
-
-    try:
-        string_list = eval(string_list)  # it is a list
-    except:
-        pass  # it is a string
-
-    start = int(start)
-    if end:
-        end = int(end)
-        return str(string_list[start:end])
-    else:
-        return string_list[start]
-
-
-@bif(
-    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#array_slice",
-    string_list="http://users.ugent.be/~bjdmeest/function/grel.ttl#p_array_a",
-    start="http://users.ugent.be/~bjdmeest/function/grel.ttl#param_int_i_from",
-    end="http://users.ugent.be/~bjdmeest/function/grel.ttl#param_int_i_opt_to",
-)
-def string_array_slice(string_list, start, end=None):
-    # it does not explode
-
-    try:
-        string_list = eval(string_list)  # it is a list
-    except:
-        pass  # it is a string
-
-    start = int(start)
-    if end:
-        end = int(end)
-        return str(string_list[start:end])
-    else:
-        return str(string_list[start:])
-
-
-@bif(
-    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_contains",
-    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
-    substring="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_sub",
-)
-def string_contains(string, substring):
-    return str(substring in string).lower()
 
 
 @bif(
