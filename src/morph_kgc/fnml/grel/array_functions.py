@@ -89,3 +89,28 @@ def array_join(array:list|str, p_string_sep):
     for e in array:
         response += str(e) + p_string_sep
     return response[:-len(p_string_sep)]  # remove last separator
+@bif(
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#array_reverse",
+    array="http://users.ugent.be/~bjdmeest/function/grel.ttl#p_array_a",   
+)
+def array_reverse(array:list):
+    # it does not explode
+    if type(array) != list:
+        return array
+    return array[::-1]
+@bif(
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#array_uniques",
+    array="http://users.ugent.be/~bjdmeest/function/grel.ttl#p_array_a",   
+)
+def array_uniques(array:list):
+    return [x for i, x in enumerate(array) if x not in array[:i]]
+
+@bif(
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#array_sort",
+    array="http://users.ugent.be/~bjdmeest/function/grel.ttl#p_array_a",   
+)
+def array_sort(array:list):
+    if type(array) != list:
+        return None
+    array.sort()
+    return array

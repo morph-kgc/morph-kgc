@@ -34,13 +34,13 @@
     rml:function grel:array_get ;
     rml:input
         [
-            rml:parameter grel:param_a ;
+            rml:parameter grel:p_array_a ;
             rml:inputValueMap [
                 rml:reference "authors"
             ]
         ] ,
         [
-            rml:parameter grel:p_int_i_from ;
+            rml:parameter grel:param_int_i_from ;
             rml:inputValue "0"
         ] .
 
@@ -48,12 +48,12 @@
     rml:function grel:array_slice ;
     rml:input
         [
-            rml:parameter grel:param_a ;
+            rml:parameter grel:p_array_a ;
             rml:inputValueMap [
                 rml:reference "authors"
             ]
         ] ,
         [
-            rml:parameter grel:p_int_i_from ;
+            rml:parameter grel:param_int_i_from ;
             rml:inputValue "1"
         ] .
