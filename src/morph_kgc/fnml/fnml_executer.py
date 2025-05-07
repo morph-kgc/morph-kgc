@@ -131,15 +131,10 @@ def execute_fnml(data:pd.DataFrame, fnml_df: pd.DataFrame, fnml_execution:dict, 
         function = user_defined_functions[function_id]['function']
         function_decorator_parameters = user_defined_functions[function_id]['parameters']
     function_param_array = []
-    print("parameter_to_value_value_dict")
-    print(parameter_to_value_value_dict)
     for function_parameter_name, function_parameter_value in function_decorator_parameters.items():       
         if function_parameter_value in parameter_to_value_type_dict:
             for i in range(len(parameter_to_value_value_dict[function_parameter_value])):
                 tmp_functionparameter_dict = {}
-                print(parameter_to_value_type_dict[function_parameter_value][i])
-                print(parameter_to_value_value_dict[function_parameter_value])
-                print(function_parameter_name+ ", "+  function_parameter_value)
                 if parameter_to_value_type_dict[function_parameter_value][i] == RML_CONSTANT:
                     tmp_functionparameter_dict.update({function_parameter_name : [parameter_to_value_value_dict[function_parameter_value][i]] * len(data)})
                 elif parameter_to_value_type_dict[function_parameter_value][i] == RML_TEMPLATE:
@@ -154,19 +149,14 @@ def execute_fnml(data:pd.DataFrame, fnml_df: pd.DataFrame, fnml_execution:dict, 
                     function_param_array.append(tmp_functionparameter_dict)
 
                 
-                print(function_param_array)
     # Previously, we worked with arrays to enable an input of various heterogenous array values in the input.
     # Now, we restructure it to the previous array structure to enable the use of the function in the same way as before.
     function_params = {}
-    print("function_param_array")
-    print(function_param_array)
     for key in function_param_array[0]:
         restructured_innerarray = []
         for j in range(len(function_param_array[0][key])):
             restructured_inner2array = []
             for i in range(len(function_param_array)):
-                print(f"function_param_array[{i}][{key}][{j}]")
-                print(function_param_array)
                 restructured_inner2array.append(function_param_array[i][key][j])
             restructured_innerarray.append(restructured_inner2array if len(restructured_inner2array) > 1 else restructured_inner2array[0])
         function_params[key] = restructured_innerarray
