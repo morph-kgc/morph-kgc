@@ -40,7 +40,7 @@ Learn quickly with the tutorial in **[Google Colaboratory](https://colab.researc
 
 ## Getting Started :rocket:
 
-**[PyPi](https://pypi.org/project/morph-kgc/)** is the fastest way to install Morph-KGC:
+**[PyPI](https://pypi.org/project/morph-kgc/)** is the fastest way to install Morph-KGC:
 ```bash
 pip install morph-kgc
 ```
