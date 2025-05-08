@@ -15,4 +15,3 @@ def test_dateinc():
     config = f'[DataSource]\nmappings:{mapping_path}\nfile_path:{csv_path}'
     rml_morph = morph_kgc.materialize(config)
     assert len([s for s,v,o in rml_morph]) > 9
-test_dateinc()
