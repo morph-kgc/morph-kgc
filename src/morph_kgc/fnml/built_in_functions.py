@@ -9,27 +9,18 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 from .grel.string_functions import bif_dict as string_bif
 from .grel.array_functions import bif_dict as array_bif
+from .grel.date_functions import bif_dict as date_bif
 from .function_decorator import bif
 
 bif_dict = {}
 bif_dict.update(string_bif)
 bif_dict.update(array_bif)
+bif_dict.update(date_bif)
 
 ##############################################################################
 ########################   BUILT-IN SCALAR FUNCTION DECORATOR   ##############
 ##############################################################################
 
-
-
-@bif(
-    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#date_toDate",
-    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
-    format_code="http://users.ugent.be/~bjdmeest/function/grel.ttl#p_string_pattern",
-)
-def date_to_date(string, format_code):
-    from datetime import datetime
-
-    return str(datetime.strptime(string, format_code).date())
 
 
 

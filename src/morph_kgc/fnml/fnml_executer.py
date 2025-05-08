@@ -152,14 +152,15 @@ def execute_fnml(data:pd.DataFrame, fnml_df: pd.DataFrame, fnml_execution:dict, 
     # Previously, we worked with arrays to enable an input of various heterogenous array values in the input.
     # Now, we restructure it to the previous array structure to enable the use of the function in the same way as before.
     function_params = {}
-    for key in function_param_array[0]:
-        restructured_innerarray = []
-        for j in range(len(function_param_array[0][key])):
-            restructured_inner2array = []
-            for i in range(len(function_param_array)):
-                restructured_inner2array.append(function_param_array[i][key][j])
-            restructured_innerarray.append(restructured_inner2array if len(restructured_inner2array) > 1 else restructured_inner2array[0])
-        function_params[key] = restructured_innerarray
+    if len(function_param_array)> 0:
+        for key in function_param_array[0]:
+            restructured_innerarray = []
+            for j in range(len(function_param_array[0][key])):
+                restructured_inner2array = []
+                for i in range(len(function_param_array)):
+                    restructured_inner2array.append(function_param_array[i][key][j])
+                restructured_innerarray.append(restructured_inner2array if len(restructured_inner2array) > 1 else restructured_inner2array[0])
+            function_params[key] = restructured_innerarray
     exec_res = []
     for i in range(len(data)):
         exec_params = {}

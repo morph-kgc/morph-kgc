@@ -10,11 +10,6 @@ mappings:
               referenceFormulation: csv
         subjects: ex:car_$(ID)
         predicateobjects:
-            - p: ex:date_toDate
+            - p: ex:date_now
               o:
-                  function: grel:date_toDate
-                  parameters:
-                      - parameter: grel:valueParameter
-                        value: 2024-01
-                      - parameter: grel:p_string_pattern
-                        value: 'yyyy-MM'
+                  function: grel:date_now
