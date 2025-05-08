@@ -235,6 +235,15 @@ def string_contains(string: str, separator: str):
         else string
     )
 
+@bif(
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#reverse",
+    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
+)
+def reverse(string):
+    return string[::-1]
+
+
+
 
 @bif(
     fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_replace",
@@ -263,6 +272,17 @@ def string_match(string, regex):
         if regex[0] == "/" and regex[-1] == "/"
         else re.findall(regex, string)
     )
+
+
+# Todo: Describe in Function Description
+@bif(
+    fun_id="https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#concat",
+    string1="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter1",
+    string2="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter2",
+    separator="http://users.ugent.be/~bjdmeest/function/grel.ttl#p_string_sep",
+)
+def string_concat(string1, string2, separator=""):
+    return f"{string1}{separator}{string2}"
 
 
 @bif(

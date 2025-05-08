@@ -10,12 +10,15 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 from .grel.string_functions import bif_dict as string_bif
 from .grel.array_functions import bif_dict as array_bif
 from .grel.date_functions import bif_dict as date_bif
+from .grel.control_functions import bif_dict as control_bif
 from .function_decorator import bif
 
 bif_dict = {}
 bif_dict.update(string_bif)
 bif_dict.update(array_bif)
 bif_dict.update(date_bif)
+bif_dict.update(control_bif)
+
 
 ##############################################################################
 ########################   BUILT-IN SCALAR FUNCTION DECORATOR   ##############
@@ -25,25 +28,6 @@ bif_dict.update(date_bif)
 
 
 
-@bif(
-    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#reverse",
-    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
-)
-def reverse(string):
-    return string[::-1]
-
-
-@bif(
-    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#controls_if",
-    boolean_expression="http://users.ugent.be/~bjdmeest/function/grel.ttl#bool_b",
-    value_true="http://users.ugent.be/~bjdmeest/function/grel.ttl#any_true",
-    value_false="http://users.ugent.be/~bjdmeest/function/grel.ttl#any_false",
-)
-def controls_if(boolean_expression, value_true, value_false=None):
-    if eval(boolean_expression):
-        return value_true
-    else:
-        return value_false
 
 
 @bif(
@@ -64,20 +48,6 @@ def number_round(number):
 ##############################################################################
 
 
-@bif(
-    fun_id="https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#controls_if_cast",
-    string="http://users.ugent.be/~bjdmeest/function/grel.ttl#bool_b",
-    value_true="http://users.ugent.be/~bjdmeest/function/grel.ttl#any_true",
-    value_false="http://users.ugent.be/~bjdmeest/function/grel.ttl#any_false",
-)
-def controls_if_cast(string, value_true, value_false=None):
-    if string.lower() in ["", "false", "no", "off", "0"]:
-        # this will be filtered when removing nulls
-        return value_false
-    else:
-        return value_true
-
-
 @bif(fun_id="https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#uuid")
 def uuid():
     from uuid import uuid4
@@ -93,17 +63,6 @@ def uuid():
 )
 def string_split_explode(string, separator):
     return string.split(separator)
-
-
-# Todo: Describe in Function Description
-@bif(
-    fun_id="https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#concat",
-    string1="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter1",
-    string2="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter2",
-    separator="http://users.ugent.be/~bjdmeest/function/grel.ttl#p_string_sep",
-)
-def string_concat(string1, string2, separator=""):
-    return f"{string1}{separator}{string2}"
 
 
 @bif(
