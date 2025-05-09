@@ -1,0 +1,30 @@
+<http://example.com#car_1> <http://example.com#lower> "a red car with 4 seats" .
+<http://example.com#car_1> <http://example.com#title> "A Red Car With 4 Seats" .
+<http://example.com#car_1> <http://example.com#upper> "TOYOTA COROLLA" .
+<http://example.com#car_10> <http://example.com#lower> "a brown car with 5 seats" .
+<http://example.com#car_10> <http://example.com#title> "A Brown Car With 5 Seats" .
+<http://example.com#car_10> <http://example.com#upper> "HYUNDAI SANTA FEW " .
+<http://example.com#car_2> <http://example.com#lower> "a blue car with 5 seats" .
+<http://example.com#car_2> <http://example.com#title> "A Blue Car With 5 Seats" .
+<http://example.com#car_2> <http://example.com#upper> "HONDA CIVIC" .
+<http://example.com#car_3> <http://example.com#lower> "a green car with 4 seats" .
+<http://example.com#car_3> <http://example.com#title> "A Green Car With 4 Seats" .
+<http://example.com#car_3> <http://example.com#upper> "FORD FOCUS" .
+<http://example.com#car_4> <http://example.com#lower> "a black car with 2 seats" .
+<http://example.com#car_4> <http://example.com#title> "A Black Car With 2 Seats" .
+<http://example.com#car_4> <http://example.com#upper> "CHEVROLET CAMARO" .
+<http://example.com#car_5> <http://example.com#lower> "a white car with 7 seats" .
+<http://example.com#car_5> <http://example.com#title> "A White Car With 7 Seats" .
+<http://example.com#car_5> <http://example.com#upper> "TESLA MODEL X" .
+<http://example.com#car_6> <http://example.com#lower> "a silver car with 5 seats" .
+<http://example.com#car_6> <http://example.com#title> "A Silver Car With 5 Seats" .
+<http://example.com#car_6> <http://example.com#upper> " BMW X5" .
+<http://example.com#car_7> <http://example.com#lower> "a yellow car with 4 seats" .
+<http://example.com#car_7> <http://example.com#title> "A Yellow Car With 4 Seats" .
+<http://example.com#car_7> <http://example.com#upper> "VOLKSWAGEN BEETLE" .
+<http://example.com#car_8> <http://example.com#lower> "a gray car with 6 seats" .
+<http://example.com#car_8> <http://example.com#title> "A Gray Car With 6 Seats" .
+<http://example.com#car_8> <http://example.com#upper> "KIA SORENTO" .
+<http://example.com#car_9> <http://example.com#lower> "a purple car with 3 seats" .
+<http://example.com#car_9> <http://example.com#title> "A Purple Car With 3 Seats" .
+<http://example.com#car_9> <http://example.com#upper> " NISSAN JUKE" .

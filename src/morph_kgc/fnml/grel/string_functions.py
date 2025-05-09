@@ -336,7 +336,7 @@ def to_upper_case(string):
 
 
 @bif(
-    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#toTitleCase",
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#string_toTitlecase",
     string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
 )
 def to_title_case(string: str):

@@ -1,4 +1,6 @@
 from ..function_decorator import *
+from functools import reduce
+from operator import xor
 
 @bif(
     fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#controls_if",
@@ -7,7 +9,7 @@ from ..function_decorator import *
     value_false="http://users.ugent.be/~bjdmeest/function/grel.ttl#any_false",
 )
 def controls_if(boolean_expression, value_true, value_false=None):
-    if eval(boolean_expression):
+    if str(boolean_expression).lower() in ["true", 1]:
         return value_true
     else:
         return value_false
@@ -45,3 +47,20 @@ def boolean_and(bool_input:list|str):
     if type(bool_input) == str:
         bool_input = [bool_input]
     return str(any([True if i.lower() in ["true", 1] else False for i in bool_input])).lower()
+@bif(
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#boolean_xor",
+    bool_input="http://users.ugent.be/~bjdmeest/function/grel.ttl#param_rep_b",
+    
+)
+def boolean_xor(bool_input:list|str):
+    if type(bool_input) == str:
+        bool_input = [bool_input]
+    return str(reduce(xor, [True if i.lower() in ["true", 1] else False for i in bool_input])).lower()
+
+@bif(
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#boolean_not",
+    bool_input="http://users.ugent.be/~bjdmeest/function/grel.ttl#bool_b",
+    
+)
+def boolean_not(bool_input):
+    return str(not (True if bool_input.lower() in ["true", 1] else False)).lower()
