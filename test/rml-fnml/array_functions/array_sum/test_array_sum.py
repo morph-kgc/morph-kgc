@@ -19,4 +19,3 @@ def test_array_sum():
     rmlmapper_goldstandard = rdflib.Graph()
     rmlmapper_goldstandard.parse(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'rmlmapperoutput.ttl'))
     assert rdflib.compare.isomorphic(rml_morph, rmlmapper_goldstandard)
-test_array_sum()

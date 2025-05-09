@@ -18,7 +18,8 @@ def test_controls_if():
     g.parse(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'output.nq'))
 
     mapping_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mapping.ttl')
-    config = f'[DataSource]\nmappings={mapping_path}'
+    csv_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'calendar.csv')
+    config = f'[DataSource]\nmappings:{mapping_path}\nfile_path:{csv_path}'
     g_morph = morph_kgc.materialize(config)
 
     assert compare.isomorphic(g, g_morph)

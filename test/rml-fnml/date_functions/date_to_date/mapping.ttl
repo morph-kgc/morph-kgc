@@ -30,12 +30,12 @@
     rml:function grel:date_toDate ;
     rml:input
         [
-            rml:parameter grel:valueParam ;
+            rml:parameter grel:valueParameter ;
             rml:inputValueMap [
                 rml:reference "start_date"
             ]
         ] ,
         [
-            rml:parameter grel:param_string_pattern ;
+            rml:parameter grel:p_string_pattern  ;
             rml:inputValue "%Y-%m-%d %H:%M:%S"
         ] .

@@ -11,7 +11,7 @@ import rdflib
 import rdflib.compare
 import morph_kgc
 
-def test_array_get():    
+def test_controls_and():    
     mapping_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mapping.yarrrml')
     csv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'cars.csv')
     config = f'[DataSource]\nmappings:{mapping_path}\nfile_path:{csv_path}'

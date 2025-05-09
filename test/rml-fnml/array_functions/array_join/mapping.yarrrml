@@ -10,11 +10,18 @@ mappings:
               referenceFormulation: csv
         subjects: ex:car_$(ID)
         predicateobjects:
-            - p: ex:date_toDate
+            - p: ex:array_join
               o:
-                  function: grel:date_toDate
+                  function: grel:array_join
                   parameters:
-                      - parameter: grel:valueParameter
-                        value: 2024-01
-                      - parameter: grel:p_string_pattern
-                        value: 'yyyy-MM'
+                    - parameter: grel:p_array_a
+                      value: 
+                           function: grel:string_split
+                           parameters:
+                             - parameter: grel:valueParameter
+                               value: $(Model)
+                             - parameter: grel:p_string_sep
+                               value: " "
+                    - parameter: grel:p_string_sep
+                      value: " - "
+                  

@@ -25,3 +25,23 @@ def controls_if_cast(string, value_true, value_false=None):
     else:
         return value_true
 
+
+@bif(
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#boolean_and",
+    bool_input="http://users.ugent.be/~bjdmeest/function/grel.ttl#param_rep_b",
+    
+)
+def boolean_and(bool_input:list|str):
+    if type(bool_input) == str:
+        bool_input = [bool_input]
+    return str(all([True if i.lower() in ["true", 1] else False for i in bool_input])).lower()
+
+@bif(
+    fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#boolean_or",
+    bool_input="http://users.ugent.be/~bjdmeest/function/grel.ttl#param_rep_b",
+    
+)
+def boolean_and(bool_input:list|str):
+    if type(bool_input) == str:
+        bool_input = [bool_input]
+    return str(any([True if i.lower() in ["true", 1] else False for i in bool_input])).lower()
