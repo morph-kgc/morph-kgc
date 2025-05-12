@@ -29,7 +29,7 @@
     rml:function grel:math_round ;
     rml:input
         [
-            rml:parameter grel:param_dec_n ;
+            rml:parameter grel:p_dec_n ;
             rml:inputValueMap [
                 rml:reference "distance_km"
             ]

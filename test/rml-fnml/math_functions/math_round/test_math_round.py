@@ -18,7 +18,8 @@ def test_math_round():
     g.parse(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'output.nq'))
 
     mapping_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mapping.ttl')
-    config = f'[DataSource]\nmappings={mapping_path}'
+    tsv_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'distances.tsv')
+    config = f'[DataSource]\nmappings:{mapping_path}\nfile_path:{tsv_path}'
     g_morph = morph_kgc.materialize(config)
 
     assert compare.isomorphic(g, g_morph)

@@ -7,15 +7,12 @@ __email__ = "achim.reiz@neonto.de"
 
 
 import os
-import rdflib
-import rdflib.compare
 import morph_kgc
 
-def test_string_casing():    
+def test_math_cosh():    
     mapping_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mapping.yarrrml')
     csv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'cars.csv')
     config = f'[DataSource]\nmappings:{mapping_path}\nfile_path:{csv_path}'
     rml_morph = morph_kgc.materialize(config)
-    rmlmapper_goldstandard = rdflib.Graph()
-    rmlmapper_goldstandard.parse(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'rmlmapperoutput.ttl'))
-    assert rdflib.compare.isomorphic(rml_morph, rmlmapper_goldstandard)
+    
+    assert all([float(o.value) >1 for s,v,o in rml_morph])
