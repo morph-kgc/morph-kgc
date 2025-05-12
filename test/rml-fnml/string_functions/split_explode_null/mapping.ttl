@@ -11,7 +11,7 @@
 
 <TriplesMap1>
     rml:logicalSource [
-        rml:source "test/rml-fnml/split_explode/mixed_content_list.csv";
+        rml:source "test/rml-fnml/split_explode_null/mixed_content_list.csv";
         rml:referenceFormulation rml:CSV
     ];
     rml:subjectMap [
@@ -28,12 +28,12 @@
     rml:function morph-kgc:string_split_explode ;
     rml:input
         [
-            rml:parameter grel:valueParam ;
+            rml:parameter grel:valueParameter ;
             rml:inputValueMap [
                 rml:reference "COL"
             ]
         ] ,
         [
-            rml:parameter grel:param_string_sep ;
+            rml:parameter grel:p_string_sep ;
             rml:inputValue ";"
         ] .

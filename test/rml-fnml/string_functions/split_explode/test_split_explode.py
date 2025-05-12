@@ -13,12 +13,13 @@ from rdflib.graph import Graph
 from rdflib import compare
 
 
-def test_RMLFNOTC0002_CSV():
+def test_split_explode():
     g = Graph()
     g.parse(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'output.nq'))
 
     mapping_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mapping.ttl')
-    config = f'[CONFIGURATION]\noutput_format=N-QUADS\n[DataSource]\nmappings={mapping_path}'
+    csv_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mixed_content_list.csv')
+    config = f'[DataSource]\nmappings={mapping_path}\nfile_path={csv_path}'
     g_morph = morph_kgc.materialize(config)
 
     assert compare.isomorphic(g, g_morph)

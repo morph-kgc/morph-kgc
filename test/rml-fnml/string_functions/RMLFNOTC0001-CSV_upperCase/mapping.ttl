@@ -11,7 +11,7 @@
 
 <TriplesMap1>
     rml:logicalSource [
-        rml:source "test/rml-fnml/RMLFNOTC0002-CSV/student.csv";
+        rml:source "test/rml-fnml/RMLFNOTC0001-CSV/student.csv";
         rml:referenceFormulation rml:CSV
     ];
     rml:subjectMap [
@@ -28,8 +28,8 @@
     rml:function grel:toUpperCase ;
     rml:input
         [
-            rml:parameter grel:valueParam ;
+            rml:parameter grel:valueParameter ;
             rml:inputValueMap [
-                rml:constant "name" ;
+                rml:reference "Name" ;
             ]
         ] .

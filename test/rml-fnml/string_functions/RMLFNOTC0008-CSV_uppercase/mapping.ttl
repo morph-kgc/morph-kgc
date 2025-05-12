@@ -11,7 +11,7 @@
 
 <TriplesMap1>
     rml:logicalSource [
-        rml:source "test/rml-fnml/RMLFNOTC0003-CSV/student.csv";
+        rml:source "test/rml-fnml/RMLFNOTC0008-CSV/student.csv";
         rml:referenceFormulation rml:CSV
     ];
     rml:subjectMap [
@@ -19,21 +19,15 @@
     ];
     rml:predicateObjectMap [
         rml:predicate foaf:name;
-        rml:objectMap [
-            rml:functionExecution <#Execution> ;
-        ]
+        rml:objectMap [ rml:functionExecution <#Execution> ] ;
     ] .
 
 <#Execution>
-    rml:function grel:escape ;
+    rml:function grel:toUpperCase ;
     rml:input
         [
-            rml:parameter grel:valueParam ;
+            rml:parameter grel:valueParameter ;
             rml:inputValueMap [
-                rml:reference "Comment"
-            ]
-        ] ,
-        [
-            rml:parameter grel:modeParam ;
-            rml:inputValue "html"
+                rml:template "Name: {Name}"
+            ];
         ] .

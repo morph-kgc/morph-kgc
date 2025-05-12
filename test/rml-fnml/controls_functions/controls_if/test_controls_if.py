@@ -23,3 +23,4 @@ def test_controls_if():
     g_morph = morph_kgc.materialize(config)
 
     assert compare.isomorphic(g, g_morph)
+test_controls_if()

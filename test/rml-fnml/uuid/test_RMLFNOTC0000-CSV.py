@@ -18,7 +18,8 @@ def test_RMLFNOTC0000_CSV():
     g = [triple[:-2] for triple in triples]
 
     mapping_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mapping.ttl')
-    config = f'[CONFIGURATION]\noutput_format=N-QUADS\n[DataSource]\nmappings={mapping_path}'
+    csv_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'student.csv')
+    config = f'[CONFIGURATION]\noutput_format=N-QUADS\n[DataSource]\nmappings={mapping_path}\nfile_path={csv_path}'
 
     g_morph = morph_kgc.materialize_set(config)
 

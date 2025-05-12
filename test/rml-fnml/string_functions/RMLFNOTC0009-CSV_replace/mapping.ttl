@@ -30,7 +30,7 @@
     rml:input
         [
             a rml:Input ;
-            rml:parameter grel:valueParam ;
+            rml:parameter grel:valueParameter ;
             rml:inputValueMap [
                 rml:functionExecution <#Execution2> ;
                 rml:return grel:stringOut
@@ -42,18 +42,18 @@
     rml:input
         [
             a rml:Input ;
-            rml:parameter grel:valueParam ;
+            rml:parameter grel:valueParameter ;
             rml:inputValueMap [
                 rml:reference "Name"
             ]
         ] ,
         [
             a rml:Input ;
-            rml:parameter grel:param_find ;
+            rml:parameter grel:p_string_find ;
             rml:inputValue " "
         ] ,
         [
             a rml:Input ;
-            rml:parameter grel:param_replace  ;
+            rml:parameter grel:p_string_replace  ;
             rml:inputValue "-"
         ] .

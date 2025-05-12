@@ -11,23 +11,29 @@
 
 <TriplesMap1>
     rml:logicalSource [
-        rml:source "test/rml-fnml/RMLFNOTC0008-CSV/student.csv";
+        rml:source "test/rml-fnml/split_explode/mixed_content_list.csv";
         rml:referenceFormulation rml:CSV
     ];
     rml:subjectMap [
-        rml:template "http://example.com/{Name}"
+        rml:template "http://example.com/{ID}"
     ];
     rml:predicateObjectMap [
-        rml:predicate foaf:name;
-        rml:objectMap [ rml:functionExecution <#Execution> ] ;
+        rml:predicate ex:col;
+        rml:objectMap [
+            rml:functionExecution <#Execution> ;
+        ]
     ] .
 
 <#Execution>
-    rml:function grel:toUpperCase ;
+    rml:function morph-kgc:string_split_explode ;
     rml:input
         [
-            rml:parameter grel:valueParam ;
+            rml:parameter grel:valueParameter ;
             rml:inputValueMap [
-                rml:template "Name: {Name}"
-            ];
+                rml:reference "COL"
+            ]
+        ] ,
+        [
+            rml:parameter grel:p_string_sep ;
+            rml:inputValue ";"
         ] .
