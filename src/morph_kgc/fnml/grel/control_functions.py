@@ -11,8 +11,13 @@ from operator import xor
 def controls_if(boolean_expression, value_true, value_false=None):
     if str(boolean_expression).lower() in ["true", 1]:
         return value_true
-    else:
+    elif str(boolean_expression).lower() in ["false", 0]:
         return value_false
+    else:
+        if eval(boolean_expression):
+            return value_true
+        else:
+            return value_false
 
 @bif(
     fun_id="https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#controls_if_cast",
@@ -24,8 +29,13 @@ def controls_if_cast(string, value_true, value_false=None):
     if string.lower() in ["", "false", "no", "off", "0"]:
         # this will be filtered when removing nulls
         return value_false
-    else:
+    elif string.lower() in ["true", "yes", "on", "1"]:
         return value_true
+    else:
+        if eval(string):
+            return value_true
+        else:
+            return value_false
 
 
 @bif(
