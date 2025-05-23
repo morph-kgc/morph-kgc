@@ -24,9 +24,9 @@ mappings:
     s:
       - function: morph-kgc:concat
         parameters:
-          - parameter: grel:valueParam1
+          - parameter: grel:valueParameter1
             value: "nutriment:"
-          - parameter: grel:valueParam2
+          - parameter: grel:valueParameter2
             value: "awesome"
     po:
       - p: rdf:type

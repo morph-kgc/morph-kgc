@@ -6,10 +6,12 @@ __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"
 
 
+import pandas as pd
+
 from .built_in_functions import bif_dict
 from ..utils import get_fnml_execution, remove_null_values_from_dataframe, get_references_in_template
 from ..constants import RML_EXECUTION, RML_TEMPLATE, RML_CONSTANT
-import pandas as pd
+
 
 UDF_DICT_DECORATOR_CODE = """
 udf_dict = {}

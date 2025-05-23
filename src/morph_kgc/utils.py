@@ -10,7 +10,6 @@ import re
 import os
 import logging
 import sys
-
 import rdflib
 import time
 import pandas as pd

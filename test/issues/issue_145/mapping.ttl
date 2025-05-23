@@ -31,20 +31,20 @@
     fnml:function morph-kgc:concat ;
     fnml:input
         [
-            fnml:parameter grel:valueParam1 ;
+            fnml:parameter grel:valueParameter1 ;
             fnml:valueMap [
                 rml:reference "service_id"
             ]
         ] ,
         [
-            fnml:parameter grel:valueParam2 ;
+            fnml:parameter grel:valueParameter2 ;
             fnml:valueMap [
                 rml:reference "monday"
             ]
         ],
         [
 
-            fnml:parameter grel:param_string_sep ;
+            fnml:parameter grel:p_string_sep ;
             fnml:valueMap [
                 rml:template "-"
             ]
