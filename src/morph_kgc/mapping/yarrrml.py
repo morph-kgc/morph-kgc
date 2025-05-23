@@ -62,6 +62,7 @@ def _add_source(mapping_graph, source, source_bnode):
 
 
 def _add_template(mapping_graph, term_map_bnode, yarrrml_template):
+    yarrrml_template = str(yarrrml_template)
     if yarrrml_template.startswith('$(') and yarrrml_template.count('$(') == 1:
         # a YARRRML template may be composed of simply one reference
         # in that case the YARRRML template corresponds to an RML reference

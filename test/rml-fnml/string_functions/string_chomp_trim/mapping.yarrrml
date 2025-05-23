@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=https://rdmr.eu/yarrrml-json-schema/yarrrml-json-schema.json
+prefixes:
+    ex: http://example.com#
+    grel: http://users.ugent.be/~bjdmeest/function/grel.ttl#
+    idlab-fn: https://w3id.org/imec/idlab/function#
+mappings:
+    cars:
+        sources:
+            - access: cars.csv
+              referenceFormulation: csv
+        subjects: ex:car_$(ID)
+        predicateobjects:
+            - p: ex:string_chomp
+              o:
+                  function: grel:string_chomp
+                  parameters:
+                      - parameter: grel:valueParameter
+                        value: $(Model)
+                      - parameter: grel:p_string_sep
+                        value: o
+            - p: ex:string_trim
+              o:
+                  function: grel:string_trim
+                  parameters:
+                      - parameter: grel:valueParameter
+                        value: $(Model)

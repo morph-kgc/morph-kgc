@@ -1,0 +1,50 @@
+<http://example.com#car_1> <http://example.com#string_splitByCharType> " " .
+<http://example.com#car_1> <http://example.com#string_splitByCharType> "C" .
+<http://example.com#car_1> <http://example.com#string_splitByCharType> "T" .
+<http://example.com#car_1> <http://example.com#string_splitByCharType> "orolla" .
+<http://example.com#car_1> <http://example.com#string_splitByCharType> "oyota" .
+<http://example.com#car_10> <http://example.com#string_splitByCharType> " " .
+<http://example.com#car_10> <http://example.com#string_splitByCharType> "F" .
+<http://example.com#car_10> <http://example.com#string_splitByCharType> "H" .
+<http://example.com#car_10> <http://example.com#string_splitByCharType> "S" .
+<http://example.com#car_10> <http://example.com#string_splitByCharType> "anta" .
+<http://example.com#car_10> <http://example.com#string_splitByCharType> "ew" .
+<http://example.com#car_10> <http://example.com#string_splitByCharType> "yundai" .
+<http://example.com#car_2> <http://example.com#string_splitByCharType> " " .
+<http://example.com#car_2> <http://example.com#string_splitByCharType> "C" .
+<http://example.com#car_2> <http://example.com#string_splitByCharType> "H" .
+<http://example.com#car_2> <http://example.com#string_splitByCharType> "ivic" .
+<http://example.com#car_2> <http://example.com#string_splitByCharType> "onda" .
+<http://example.com#car_3> <http://example.com#string_splitByCharType> " " .
+<http://example.com#car_3> <http://example.com#string_splitByCharType> "F" .
+<http://example.com#car_3> <http://example.com#string_splitByCharType> "ocus" .
+<http://example.com#car_3> <http://example.com#string_splitByCharType> "ord" .
+<http://example.com#car_4> <http://example.com#string_splitByCharType> " " .
+<http://example.com#car_4> <http://example.com#string_splitByCharType> "C" .
+<http://example.com#car_4> <http://example.com#string_splitByCharType> "amaro" .
+<http://example.com#car_4> <http://example.com#string_splitByCharType> "hevrolet" .
+<http://example.com#car_5> <http://example.com#string_splitByCharType> " " .
+<http://example.com#car_5> <http://example.com#string_splitByCharType> "M" .
+<http://example.com#car_5> <http://example.com#string_splitByCharType> "T" .
+<http://example.com#car_5> <http://example.com#string_splitByCharType> "X" .
+<http://example.com#car_5> <http://example.com#string_splitByCharType> "esla" .
+<http://example.com#car_5> <http://example.com#string_splitByCharType> "odel" .
+<http://example.com#car_6> <http://example.com#string_splitByCharType> " " .
+<http://example.com#car_6> <http://example.com#string_splitByCharType> "5" .
+<http://example.com#car_6> <http://example.com#string_splitByCharType> "BMW" .
+<http://example.com#car_6> <http://example.com#string_splitByCharType> "X" .
+<http://example.com#car_7> <http://example.com#string_splitByCharType> " " .
+<http://example.com#car_7> <http://example.com#string_splitByCharType> "B" .
+<http://example.com#car_7> <http://example.com#string_splitByCharType> "V" .
+<http://example.com#car_7> <http://example.com#string_splitByCharType> "eetle" .
+<http://example.com#car_7> <http://example.com#string_splitByCharType> "olkswagen" .
+<http://example.com#car_8> <http://example.com#string_splitByCharType> " " .
+<http://example.com#car_8> <http://example.com#string_splitByCharType> "K" .
+<http://example.com#car_8> <http://example.com#string_splitByCharType> "S" .
+<http://example.com#car_8> <http://example.com#string_splitByCharType> "ia" .
+<http://example.com#car_8> <http://example.com#string_splitByCharType> "orento" .
+<http://example.com#car_9> <http://example.com#string_splitByCharType> " " .
+<http://example.com#car_9> <http://example.com#string_splitByCharType> "J" .
+<http://example.com#car_9> <http://example.com#string_splitByCharType> "N" .
+<http://example.com#car_9> <http://example.com#string_splitByCharType> "issan" .
+<http://example.com#car_9> <http://example.com#string_splitByCharType> "uke" .
