@@ -6,7 +6,7 @@ prefixes:
 mappings:
     cars:
         sources:
-            - access: cars.csv
+            - access: test/rml-fnml/other_functions/type/cars.csv
               referenceFormulation: csv
         subjects: ex:car_$(ID)
         predicateobjects:

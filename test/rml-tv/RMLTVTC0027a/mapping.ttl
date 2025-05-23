@@ -5,7 +5,7 @@
     a rml:TriplesMap;
  	rml:logicalSource [
                      rml:query """
-                       SELECT ID, json_extract_string(COL, '$.field1') AS FIELD1, UNNEST(json_extract_string(COL, '$.field2')::VARCHAR[])[2:-2] AS FIELD2
+                       SELECT ID, json_extract_string(COL, '$.field1') AS FIELD1, UNNEST(json_extract_string(COL, '$.field2')::VARCHAR[]) AS FIELD2
                        FROM read_csv('test/rml-tv/RMLTVTC0027a/mixed_content_json.csv', delim='|')
                        """
                        ];
