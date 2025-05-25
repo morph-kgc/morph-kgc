@@ -26,6 +26,7 @@ CONFIGURATION_SECTION = 'CONFIGURATION'
 ##############################################################################
 
 NA_VALUES = 'na_values'
+LITERAL_ESCAPING_CHARS = 'literal_escaping_chars'
 
 OUTPUT_DIR = 'output_dir'
 OUTPUT_FILE = 'output_file'
@@ -76,6 +77,7 @@ DEFAULT_LOGGING_LEVEL = 'INFO'
 DEFAULT_INFER_SQL_DATATYPES = 'no'
 DEFAULT_NUMBER_OF_PROCESSES = 2 * mp.cpu_count()
 DEFAULT_NA_VALUES = ',nan' # ',#N/A,N/A,#N/A N/A,n/a,NA,<NA>,#NA,NULL,null,NaN,nan,None'
+DEFAULT_LITERAL_ESCAPING_CHARS = '",\n,\r' # \n,\t,\b,\f,\r,",'
 DEFAULT_ONLY_PRINTABLE_CHARS = 'no'
 DEFAULT_UDFS = ''
 DEFAULT_OUTPUT_KAFKA_SERVER = ''
@@ -94,6 +96,7 @@ DEFAULT_WRITE_PARSED_MAPPINGS_PATH = ''
 CONFIGURATION_OPTIONS_EMPTY_VALID = {
             OUTPUT_FILE: DEFAULT_OUTPUT_FILE,
             NA_VALUES: DEFAULT_NA_VALUES,
+            LITERAL_ESCAPING_CHARS: DEFAULT_LITERAL_ESCAPING_CHARS,
             SAFE_PERCENT_ENCODING: DEFAULT_SAFE_PERCENT_ENCODING,
             READ_PARSED_MAPPINGS_PATH: DEFAULT_READ_PARSED_MAPPINGS_PATH,
             WRITE_PARSED_MAPPINGS_PATH: DEFAULT_WRITE_PARSED_MAPPINGS_PATH,
@@ -252,6 +255,10 @@ class Config(ConfigParser):
 
     def get_na_values(self):
         return list(set(self.get(self.configuration_section, NA_VALUES).split(',')))
+
+    def get_literal_escaping_chars(self):
+        # see #321
+        return self.get(self.configuration_section, LITERAL_ESCAPING_CHARS).split(',')
 
     def get_safe_percent_encoding(self):
         return self.get(self.configuration_section, SAFE_PERCENT_ENCODING)

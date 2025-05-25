@@ -121,12 +121,19 @@ def _materialize_template(results_df, template, expression_type, config, positio
                 results_df['reference_results'] = results_df['reference_results'].str.lower()
             elif datatype == XSD_DATETIME:
                 results_df['reference_results'] = results_df['reference_results'].str.replace(' ', 'T', regex=False)
-                # Make integers not end with .0
             elif datatype == XSD_INTEGER:
+                # Make integers not end with .0
                 results_df['reference_results'] = results_df['reference_results'].astype(float).astype(int).astype(str)
 
-            # TODO: this can be avoided for most cases (if '\\' in data_value)
-            results_df['reference_results'] = results_df['reference_results'].str.replace('\\', '\\\\', regex=False).str.replace('\n', '\\n', regex=False).str.replace('\t', '\\t', regex=False).str.replace('\b', '\\b', regex=False).str.replace('\f', '\\f', regex=False).str.replace('\r', '\\r', regex=False).str.replace('"', '\\"', regex=False).str.replace("'", "\\'", regex=False)
+            # TODO: this can be avoided for most cases (if '\\' in data_value) | contains pandas method
+            # see #321, ",\,\n,\r are always escaped
+            results_df['reference_results'] = results_df['reference_results'].str.replace('"', '\\"', regex=False).str.replace('\\', '\\\\', regex=False).str.replace('\n', '\\n', regex=False).str.replace('\r', '\\r', regex=False)
+            for char in config.get_literal_escaping_chars():
+                if char not in ['"', '\n', '\\', '\r']:
+                    if char in ['\n', '\r', '\t', '\b', '\f']:
+                        results_df['reference_results'] = results_df['reference_results'].str.replace(char, f'\\{char}', regex=False)
+                    else:
+                        results_df['reference_results'] = results_df['reference_results'].str.replace(char, f'\\\\{char}', regex=False)
 
         splitted_template = template.split('{' + reference + '}')
         results_df[position] = results_df[position] + splitted_template[0] + results_df['reference_results']
@@ -166,7 +173,14 @@ def _materialize_fnml_execution(results_df, fnml_execution, fnml_df, config, pos
         elif datatype == XSD_INTEGER:
             results_df[fnml_execution] = results_df[fnml_execution].astype(float).astype(int).astype(str)
 
-        results_df[fnml_execution] = results_df[fnml_execution].str.replace('\\', '\\\\', regex=False).str.replace('\n', '\\n', regex=False).str.replace('\t', '\\t', regex=False).str.replace('\b', '\\b', regex=False).str.replace('\f', '\\f', regex=False).str.replace('\r', '\\r', regex=False).str.replace('"', '\\"', regex=False).str.replace("'", "\\'", regex=False)
+        results_df['reference_results'] = results_df['reference_results'].str.replace('"', '\\"', regex=False).str.replace('\\', '\\\\', regex=False).str.replace('\n', '\\n', regex=False).str.replace('\r', '\\r', regex=False)
+        for char in config.get_literal_escaping_chars():
+            if char not in ['"', '\n', '\\', '\r']:
+                if char in ['\n', '\r', '\t', '\b', '\f']:
+                    results_df['reference_results'] = results_df['reference_results'].str.replace(char, f'\\{char}', regex=False)
+                else:
+                    results_df['reference_results'] = results_df['reference_results'].str.replace(char, f'\\\\{char}', regex=False)
+
         results_df[position] = '"' + results_df[fnml_execution] + '"'
     elif termtype.strip() == RML_IRI:
         # it is assumed that the IRI values will be correct, and they are not percent encoded
