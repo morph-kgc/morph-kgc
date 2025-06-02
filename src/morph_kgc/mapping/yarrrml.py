@@ -7,8 +7,7 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 
 import rdflib
-import json
-import os
+
 from ruamel.yaml import YAML
 from copy import deepcopy
 from random import randint
@@ -127,11 +126,52 @@ def _add_default_prefixes(mappings):
         'rml': RML_NAMESPACE,
         'fno': FNO_NAMESPACE,
         'xsd': XSD_NAMESPACE,
-        'rdfs': RDFS_NAMESPACE
+        'rdfs': RDFS_NAMESPACE,
+        'as': 'https://www.w3.org/ns/activitystreams#',
+        'csvw': 'http://www.w3.org/ns/csvw#',
+        'dcat': 'http://www.w3.org/ns/dcat#',
+        'dqv': 'http://www.w3.org/ns/dqv#',
+        'duv': 'https://www.w3.org/ns/duv#',
+        'grddl': 'http://www.w3.org/2003/g/data-view#',
+        'jsonld': 'http://www.w3.org/ns/json-ld#',
+        'ldp': 'http://www.w3.org/ns/ldp#',
+        'ma': 'http://www.w3.org/ns/ma-ont#',
+        'oa': 'http://www.w3.org/ns/oa#',
+        'odrl': 'http://www.w3.org/ns/odrl/2/',
+        'org': 'http://www.w3.org/ns/org#',
+        'owl': 'http://www.w3.org/2002/07/owl#',
+        'prov': 'http://www.w3.org/ns/prov#',
+        'qb': 'http://purl.org/linked-data/cube#',
+        'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+        'rdfa': 'http://www.w3.org/ns/rdfa#',
+        'rif': 'http://www.w3.org/2007/rif#',
+        'rr': 'http://www.w3.org/ns/r2rml#',
+        'sd': 'http://www.w3.org/ns/sparql-service-description#',
+        'skos': 'http://www.w3.org/2004/02/skos/core#',
+        'skosxl': 'http://www.w3.org/2008/05/skos-xl#',
+        'ssn': 'http://www.w3.org/ns/ssn/',
+        'sosa': 'http://www.w3.org/ns/sosa/',
+        'time': 'http://www.w3.org/2006/time#',
+        'void': 'http://rdfs.org/ns/void#',
+        'wdr': 'http://www.w3.org/2007/05/powder#',
+        'wdrs': 'http://www.w3.org/2007/05/powder-s#',
+        'xhv': 'http://www.w3.org/1999/xhtml/vocab#',
+        'xml': 'http://www.w3.org/XML/1998/namespace',
+        'cc': 'http://creativecommons.org/ns#',
+        'ctag': 'http://commontag.org/ns#',
+        'dc': 'http://purl.org/dc/terms/',
+        'dcterms': 'http://purl.org/dc/terms/',
+        'dc11': 'http://purl.org/dc/elements/1.1/',
+        'foaf': 'http://xmlns.com/foaf/0.1/',
+        'gr': 'http://purl.org/goodrelations/v1#',
+        'ical': 'http://www.w3.org/2002/12/cal/icaltzd#',
+        'og': 'http://ogp.me/ns#',
+        'rev': 'http://purl.org/stuff/rev#',
+        'sioc': 'http://rdfs.org/sioc/ns#',
+        'v': 'http://rdf.data-vocabulary.org/#',
+        'vcard': 'http://www.w3.org/2006/vcard/ns#',
+        'schema': 'http://schema.org/'
     }
-    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "rdfa_mappings.json"), "r") as json_file:
-        rdfa_prefixes = json.load(json_file)
-    default_prefixes.update(rdfa_prefixes)
     if 'prefixes' in mappings:
         mappings['prefixes'].update(default_prefixes)
     else:
