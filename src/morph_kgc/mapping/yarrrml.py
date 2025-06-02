@@ -7,7 +7,8 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 
 import rdflib
-
+import json
+import os
 from ruamel.yaml import YAML
 from copy import deepcopy
 from random import randint
@@ -128,7 +129,9 @@ def _add_default_prefixes(mappings):
         'xsd': XSD_NAMESPACE,
         'rdfs': RDFS_NAMESPACE
     }
-
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "rdfa_mappings.json"), "r") as json_file:
+        rdfa_prefixes = json.load(json_file)
+    default_prefixes.update(rdfa_prefixes)
     if 'prefixes' in mappings:
         mappings['prefixes'].update(default_prefixes)
     else:

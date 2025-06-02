@@ -1,0 +1,13 @@
+prefixes:
+    ex: http://example.com#
+mappings:
+    cars:
+        sources:
+            - access: cars.csv
+              referenceFormulation: csv
+        subjects: ex:car_$(ID)
+        predicateobjects:
+            - p: rdf:type
+              o: ex:Car
+            - p: schema:material
+              o: "Metal and Plastic"
