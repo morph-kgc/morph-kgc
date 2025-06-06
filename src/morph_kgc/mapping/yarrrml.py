@@ -255,7 +255,7 @@ def _normalize_property_in_predicateobjects(mappings, property):
     return mappings
 
 
-def _normalize_function_parameters(term_map):
+def _normalize_function_parameters(term_map, prefixes):
     if type(term_map) is dict and 'parameters' in term_map:
         if type(term_map['parameters']) is list:
             for i, parameter in enumerate(term_map['parameters']):
@@ -266,7 +266,7 @@ def _normalize_function_parameters(term_map):
 
                 if type(term_map['parameters'][i]['value']) is dict and 'function' in term_map['parameters'][i]['value']:
                     #term_map['parameters'][i]['parameter'] = term_map['parameters'][i]['parameter']
-                    term_map['parameters'][i]['value'] = _normalize_function_parameters(term_map['parameters'][i]['value'])
+                    term_map['parameters'][i]['value'] = _normalize_function_parameters(term_map['parameters'][i]['value'], prefixes)
     elif type(term_map) is dict and 'function' in term_map and term_map['function'].endswith(')'):
         # inline function examples 99 & 101 YARRRML spec
         inline_function = term_map['function']
@@ -280,7 +280,11 @@ def _normalize_function_parameters(term_map):
             input_parameter, input_value = input.split('=')
             if not input_parameter.startswith('http') and ':' not in input_parameter:
                 # the prefix of the parameter is the same as the prefix of the function
-                input_parameter = f"{function_id.split(':')[0]}:{input_parameter}"
+                included_prefixes = list(prefixes.values())
+                for included_prefix in included_prefixes:
+                    if function_id.startswith(included_prefix):
+                        input_parameter = included_prefix + input_parameter
+                        break              
             inline_parameters_dict[input_parameter] = input_value
 
         # final normalized term map
@@ -293,7 +297,7 @@ def _normalize_function_parameters(term_map):
     return term_map
 
 
-def _normalize_yarrrml_mapping(mappings):
+def _normalize_yarrrml_mapping(mappings, prefixes):
 
     #############################################################################
     ############################ NORMALIZE SOURCES ##############################
@@ -409,11 +413,11 @@ def _normalize_yarrrml_mapping(mappings):
 
     for mapping_key, mapping_value in mappings['mappings'].items():
         if 'subjects' in mapping_value and type(mapping_value['subjects']) is dict and 'function' in mapping_value['subjects']:
-            mapping_value['subjects'] = _normalize_function_parameters(mapping_value['subjects'])
+            mapping_value['subjects'] = _normalize_function_parameters(mapping_value['subjects'], prefixes)
         if type(mapping_value) is dict and 'predicateobjects' in mapping_value:
             for position in ['predicates', 'objects', 'graphs']:
                 if position in mapping_value['predicateobjects'] and 'function' in mapping_value['predicateobjects'][position]:
-                    mapping_value['predicateobjects'][position] = _normalize_function_parameters(mapping_value['predicateobjects'][position])
+                    mapping_value['predicateobjects'][position] = _normalize_function_parameters(mapping_value['predicateobjects'][position], prefixes)
 
     #############################################################################
     ############################ INVERSE PREDICATES #############################
@@ -646,9 +650,9 @@ def load_yarrrml(yarrrml_file):
         yarrrml_mapping = _replace_yarrrml_external_references(yarrrml_mapping, yarrrml_mapping['external'])
         yarrrml_mapping.pop('external')
     yarrrml_mapping = _expand_prefixes_in_yarrrml_templates(yarrrml_mapping, yarrrml_mapping['prefixes'])
-    yarrrml_mapping.pop('prefixes')
+    prefixes = yarrrml_mapping.pop('prefixes')
 
-    yarrrml_mapping = _normalize_yarrrml_mapping(yarrrml_mapping)
+    yarrrml_mapping = _normalize_yarrrml_mapping(yarrrml_mapping, prefixes)
     rml_mapping = _translate_yarrrml_to_rml(yarrrml_mapping)
 
     return rml_mapping
