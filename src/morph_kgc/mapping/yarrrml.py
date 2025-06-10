@@ -417,7 +417,7 @@ def _normalize_yarrrml_mapping(mappings, prefixes):
         if type(mapping_value) is dict and 'predicateobjects' in mapping_value:
             for position in ['predicates', 'objects', 'graphs']:
                 if position in mapping_value['predicateobjects'] and 'function' in mapping_value['predicateobjects'][position]:
-                    mapping_value['predicateobjects'][position] = _normalize_function_parameters(mapping_value['predicateobjects'][position], prefixes)
+                    mapping_value['predicateobjects'][position].update(_normalize_function_parameters(mapping_value['predicateobjects'][position], prefixes))
 
     #############################################################################
     ############################ INVERSE PREDICATES #############################
