@@ -255,6 +255,44 @@ def _normalize_property_in_predicateobjects(mappings, property):
     return mappings
 
 
+def _normalize_conditional_mappings(mappings: dict):
+    keys_to_iterate = [yaml_key for yaml_key in mappings]
+    for yaml_key in keys_to_iterate:
+        if yaml_key != "condition" and type(mappings[yaml_key]) == dict:
+            mappings[yaml_key] = _normalize_conditional_mappings(mappings[yaml_key])
+        if "condition" in mappings:
+            if (
+                "function" in mappings["condition"]
+                and mappings["condition"]["function"] != "equal"
+            ):
+                condition_function = {
+                    "objects": {
+                        "type": (
+                            mappings["objects"]["type"]
+                            if "type" in mappings["objects"]
+                            else "literal"
+                        ),
+                        
+                            "function": "https://w3id.org/imec/idlab/function#trueCondition",
+                            "parameters": [
+                                {
+                                    "parameter": "https://w3id.org/imec/idlab/function#str",
+                                    "value": mappings["objects"]["value"],
+                                },
+                                {
+                                    "parameter": "https://w3id.org/imec/idlab/function#strBoolean",
+                                    "value": mappings["condition"],
+                                },
+                            ],
+                        
+                    }
+                }
+                mappings.update(condition_function)
+                mappings.pop("condition")
+
+    return mappings
+
+
 def _normalize_function_parameters(term_map, prefixes):
     if type(term_map) is dict and 'parameters' in term_map:
         if type(term_map['parameters']) is list:
@@ -410,7 +448,7 @@ def _normalize_yarrrml_mapping(mappings, prefixes):
     #############################################################################
     ############################ FUNCTIONS ######################################
     #############################################################################
-
+    mappings = _normalize_conditional_mappings(mappings)
     for mapping_key, mapping_value in mappings['mappings'].items():
         if 'subjects' in mapping_value and type(mapping_value['subjects']) is dict and 'function' in mapping_value['subjects']:
             mapping_value['subjects'] = _normalize_function_parameters(mapping_value['subjects'], prefixes)
