@@ -251,6 +251,17 @@ def boolean_xor(bool_input: list | str):
 def boolean_not(bool_input):
     return str(not (True if bool_input.lower() in ["true", 1] else False)).lower()
 
+@bif(
+    fun_id="https://w3id.org/imec/idlab/function#trueCondition",
+    bool_input="https://w3id.org/imec/idlab/function#str",
+    bool_check = "https://w3id.org/imec/idlab/function#strBoolean"
+    
+)
+def boolean_true(bool_input:list|str, bool_check:list|str=None):
+    if type(bool_check) == str and eval(bool_check.title()):
+        return bool_input
+    return None
+        
 
 ##############################################################################
 ########################   DATE   ############################################
