@@ -256,6 +256,19 @@ def _normalize_property_in_predicateobjects(mappings, property):
 
 
 def _normalize_conditional_mappings(mappings: dict):
+    """
+    Recursively normalizes conditional mappings in a nested dictionary structure.
+    This function processes a dictionary of mappings and modifies it in-place to handle
+    conditional creates. If a mapping contains a "condition" key with a "function" that
+    is not "equal" (not a join), it transforms the mapping by replacing the condition with a new
+    structure that includes a "trueCondition" function and its associated parameters.
+    That ensures that the mappings are only created if the conditions are met.
+    The function also ensures that nested dictionaries are processed recursively.
+    Args:
+        mappings (dict): A dictionary containing the mappings to be normalized.
+    Returns:
+        dict: The normalized dictionary with updated conditional mappings.
+    """
     keys_to_iterate = [yaml_key for yaml_key in mappings]
     for yaml_key in keys_to_iterate:
         if yaml_key != "condition" and type(mappings[yaml_key]) == dict:
