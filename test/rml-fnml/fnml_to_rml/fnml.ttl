@@ -1,0 +1,216 @@
+@prefix ex: <http://example.com#>.
+@prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix rml: <http://semweb.mmlab.be/ns/rml#>.
+@prefix rr: <http://www.w3.org/ns/r2rml#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+<http://mapping.example.com/fn_000>
+  rml:logicalSource <http://mapping.example.com/source_000>;
+  rr:predicateObjectMap
+    <http://mapping.example.com/pom_004>,
+    <http://mapping.example.com/pomexec_000>.
+
+<http://mapping.example.com/fn_001>
+  rml:logicalSource <http://mapping.example.com/source_000>;
+  rr:predicateObjectMap
+    <http://mapping.example.com/pom_006>,
+    <http://mapping.example.com/pom_009>,
+    <http://mapping.example.com/pom_010>,
+    <http://mapping.example.com/pomexec_001>.
+
+<http://mapping.example.com/fn_002>
+  rml:logicalSource <http://mapping.example.com/source_000>;
+  rr:predicateObjectMap
+    <http://mapping.example.com/pom_007>,
+    <http://mapping.example.com/pom_008>,
+    <http://mapping.example.com/pomexec_002>.
+
+<http://mapping.example.com/map_cars_000> a rr:TriplesMap;
+  rml:logicalSource <http://mapping.example.com/source_000>;
+  rdfs:label "cars";
+  rr:predicateObjectMap
+    <http://mapping.example.com/pom_000>,
+    <http://mapping.example.com/pom_001>,
+    <http://mapping.example.com/pom_002>,
+    <http://mapping.example.com/pom_003>,
+    <http://mapping.example.com/pom_005>,
+    <http://mapping.example.com/pom_011>;
+  rr:subjectMap <http://mapping.example.com/s_000>.
+
+<http://mapping.example.com/om_000> a rr:ObjectMap;
+  rml:reference "Model";
+  rr:termType rr:Literal.
+
+<http://mapping.example.com/om_001> a rr:ObjectMap;
+  rml:reference "Seats";
+  rr:datatype xsd:integer;
+  rr:termType rr:Literal.
+
+<http://mapping.example.com/om_002> a rr:ObjectMap;
+  rml:reference "Year";
+  rr:datatype xsd:gYear;
+  rr:termType rr:Literal.
+
+<http://mapping.example.com/om_003> a <http://semweb.mmlab.be/ns/fnml#FunctionTermMap>;
+  <http://semweb.mmlab.be/ns/fnml#functionValue> <http://mapping.example.com/fn_000>;
+  rr:termType rr:IRI.
+
+<http://mapping.example.com/om_004> a rr:ObjectMap;
+  rr:template "http://example.com#color_{Color}";
+  rr:termType rr:Literal.
+
+<http://mapping.example.com/om_005> a <http://semweb.mmlab.be/ns/fnml#FunctionTermMap>;
+  <http://semweb.mmlab.be/ns/fnml#functionValue> <http://mapping.example.com/fn_001>;
+  rr:termType rr:Literal.
+
+<http://mapping.example.com/om_006> a <http://semweb.mmlab.be/ns/fnml#FunctionTermMap>, rr:ObjectMap;
+  <http://semweb.mmlab.be/ns/fnml#functionValue> <http://mapping.example.com/fn_002>.
+
+<http://mapping.example.com/om_007> a rr:ObjectMap;
+  rml:reference "Model";
+  rr:termType rr:Literal.
+
+<http://mapping.example.com/om_008> a rr:ObjectMap;
+  rr:constant " ";
+  rr:termType rr:Literal.
+
+<http://mapping.example.com/om_009> a rr:ObjectMap;
+  rr:constant "0";
+  rr:termType rr:Literal.
+
+<http://mapping.example.com/om_010> a rr:ObjectMap;
+  rr:constant "1";
+  rr:termType rr:Literal.
+
+<http://mapping.example.com/om_011> a rr:ObjectMap;
+  rr:constant ex:Car;
+  rr:termType rr:IRI.
+
+<http://mapping.example.com/omexec_000>
+  rr:constant "http://users.ugent.be/~bjdmeest/function/grel.ttl#toLowerCase";
+  rr:termType rr:IRI.
+
+<http://mapping.example.com/omexec_001>
+  rr:constant "http://users.ugent.be/~bjdmeest/function/grel.ttl#array_get";
+  rr:termType rr:IRI.
+
+<http://mapping.example.com/omexec_002>
+  rr:constant "http://users.ugent.be/~bjdmeest/function/grel.ttl#string_split";
+  rr:termType rr:IRI.
+
+<http://mapping.example.com/pm_000> a rr:PredicateMap;
+  rr:constant ex:model.
+
+<http://mapping.example.com/pm_001> a rr:PredicateMap;
+  rr:constant ex:seats.
+
+<http://mapping.example.com/pm_002> a rr:PredicateMap;
+  rr:constant ex:registrationYear.
+
+<http://mapping.example.com/pm_003> a rr:PredicateMap;
+  rr:constant ex:color.
+
+<http://mapping.example.com/pm_004> a rr:PredicateMap;
+  rr:constant grel:valueParameter.
+
+<http://mapping.example.com/pm_005> a rr:PredicateMap;
+  rr:constant ex:brand.
+
+<http://mapping.example.com/pm_006> a rr:PredicateMap;
+  rr:constant grel:p_array_a.
+
+<http://mapping.example.com/pm_007> a rr:PredicateMap;
+  rr:constant grel:valueParameter.
+
+<http://mapping.example.com/pm_008> a rr:PredicateMap;
+  rr:constant grel:p_string_sep.
+
+<http://mapping.example.com/pm_009> a rr:PredicateMap;
+  rr:constant grel:param_int_i_from.
+
+<http://mapping.example.com/pm_010> a rr:PredicateMap;
+  rr:constant grel:param_int_i_opt_to.
+
+<http://mapping.example.com/pm_011> a rr:PredicateMap;
+  rr:constant rdf:type.
+
+<http://mapping.example.com/pmexec_000>
+  rr:constant <https://w3id.org/function/ontology#executes>.
+
+<http://mapping.example.com/pmexec_001>
+  rr:constant <https://w3id.org/function/ontology#executes>.
+
+<http://mapping.example.com/pmexec_002>
+  rr:constant <https://w3id.org/function/ontology#executes>.
+
+<http://mapping.example.com/pom_000> a rr:PredicateObjectMap;
+  rr:objectMap <http://mapping.example.com/om_000>;
+  rr:predicateMap <http://mapping.example.com/pm_000>.
+
+<http://mapping.example.com/pom_001> a rr:PredicateObjectMap;
+  rr:objectMap <http://mapping.example.com/om_001>;
+  rr:predicateMap <http://mapping.example.com/pm_001>.
+
+<http://mapping.example.com/pom_002> a rr:PredicateObjectMap;
+  rr:objectMap <http://mapping.example.com/om_002>;
+  rr:predicateMap <http://mapping.example.com/pm_002>.
+
+<http://mapping.example.com/pom_003> a rr:PredicateObjectMap;
+  rr:objectMap <http://mapping.example.com/om_003>;
+  rr:predicateMap <http://mapping.example.com/pm_003>.
+
+<http://mapping.example.com/pom_004> a rr:PredicateObjectMap;
+  rr:objectMap <http://mapping.example.com/om_004>;
+  rr:predicateMap <http://mapping.example.com/pm_004>.
+
+<http://mapping.example.com/pom_005> a rr:PredicateObjectMap;
+  rr:objectMap <http://mapping.example.com/om_005>;
+  rr:predicateMap <http://mapping.example.com/pm_005>.
+
+<http://mapping.example.com/pom_006> a rr:PredicateObjectMap;
+  rr:objectMap <http://mapping.example.com/om_006>;
+  rr:predicateMap <http://mapping.example.com/pm_006>.
+
+<http://mapping.example.com/pom_007> a rr:PredicateObjectMap;
+  rr:objectMap <http://mapping.example.com/om_007>;
+  rr:predicateMap <http://mapping.example.com/pm_007>.
+
+<http://mapping.example.com/pom_008> a rr:PredicateObjectMap;
+  rr:objectMap <http://mapping.example.com/om_008>;
+  rr:predicateMap <http://mapping.example.com/pm_008>.
+
+<http://mapping.example.com/pom_009> a rr:PredicateObjectMap;
+  rr:objectMap <http://mapping.example.com/om_009>;
+  rr:predicateMap <http://mapping.example.com/pm_009>.
+
+<http://mapping.example.com/pom_010> a rr:PredicateObjectMap;
+  rr:objectMap <http://mapping.example.com/om_010>;
+  rr:predicateMap <http://mapping.example.com/pm_010>.
+
+<http://mapping.example.com/pom_011> a rr:PredicateObjectMap;
+  rr:objectMap <http://mapping.example.com/om_011>;
+  rr:predicateMap <http://mapping.example.com/pm_011>.
+
+<http://mapping.example.com/pomexec_000>
+  rr:objectMap <http://mapping.example.com/omexec_000>;
+  rr:predicateMap <http://mapping.example.com/pmexec_000>.
+
+<http://mapping.example.com/pomexec_001>
+  rr:objectMap <http://mapping.example.com/omexec_001>;
+  rr:predicateMap <http://mapping.example.com/pmexec_001>.
+
+<http://mapping.example.com/pomexec_002>
+  rr:objectMap <http://mapping.example.com/omexec_002>;
+  rr:predicateMap <http://mapping.example.com/pmexec_002>.
+
+<http://mapping.example.com/rules_000> a <http://rdfs.org/ns/void#Dataset>;
+  <http://rdfs.org/ns/void#exampleResource> <http://mapping.example.com/map_cars_000>.
+
+<http://mapping.example.com/s_000> a rr:SubjectMap;
+  rr:template "http://example.com#car_{ID}".
+
+<http://mapping.example.com/source_000> a rml:LogicalSource;
+  rml:referenceFormulation <http://semweb.mmlab.be/ns/ql#CSV>;
+  rml:source "cars.csv".
