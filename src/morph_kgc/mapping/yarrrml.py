@@ -274,6 +274,8 @@ def _normalize_conditional_mappings(mappings: dict):
         if yaml_key != "condition" and type(mappings[yaml_key]) == dict:
             mappings[yaml_key] = _normalize_conditional_mappings(mappings[yaml_key])
         if "condition" in mappings:
+            if (type(mappings["condition"]) == list):
+                mappings["condition"] = mappings["condition"][0]
             if (
                 "function" in mappings["condition"]
                 and mappings["condition"]["function"] != "equal"
