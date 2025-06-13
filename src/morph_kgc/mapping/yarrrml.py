@@ -490,7 +490,7 @@ def _normalize_yarrrml_mapping(mappings, prefixes):
                     inverse_mapping_value = mapping_value.copy()
                     inverse_mapping_value['subjects'] = mapping_value['predicateobjects']['objects']
                     inverse_mapping_value['predicateobjects'] = {}
-                    inverse_mapping_value['predicates'] = inverse_predicate
+                    inverse_mapping_value['predicateobjects']['predicates'] = inverse_predicate
                     inverse_mapping_value['predicateobjects']['objects'] = mapping_value['subjects']
                     mappings['mappings'][f'{mapping_key}_inverse{randint(0,1000000)}'] = inverse_mapping_value
 
