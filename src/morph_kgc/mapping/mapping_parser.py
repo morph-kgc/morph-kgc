@@ -19,10 +19,10 @@ def retrieve_mappings(config):
     mappings_parser = MappingParser(config)
 
     start_time = time.time()
-    rml_df, fnml_df = mappings_parser.parse_mappings()
+    rml_df, fnml_df, http_api_df = mappings_parser.parse_mappings()
     LOGGER.info(f'Mappings processed in {get_delta_time(start_time)} seconds.')
 
-    return rml_df, fnml_df
+    return rml_df, fnml_df, http_api_df
 
 
 def _r2rml_to_rml(mapping_graph):
@@ -392,7 +392,29 @@ def _transform_mappings_into_dataframe(mapping_graph, section_name):
     fnml_df.columns = fnml_df.columns.map(str)
     fnml_df = fnml_df.map(str)
 
-    return rml_df, fnml_df
+    # ----------------------------------------------------------------------------------------------
+    # TEMPORAL FOR HTTP API SUPPORT
+    q = """
+        prefix rml: <http://w3id.org/rml/>
+        prefix htv: <http://www.w3.org/2011/http#>
+
+        SELECT DISTINCT ?source ?absolute_path ?field_name ?field_value
+        WHERE {
+        ?source htv:absolutePath ?absolute_path .
+        OPTIONAL {
+        ?source htv:headers ?headers .
+        ?hearders htv:fieldName ?field_name .
+        ?hearders htv:fieldValue ?field_value .
+        } .
+        }
+        """
+
+    http_api_df = pd.DataFrame(mapping_graph.query(q).bindings)
+    http_api_df.columns = http_api_df.columns.map(str)
+    http_api_df = http_api_df.map(str)
+    # ----------------------------------------------------------------------------------------------
+
+    return rml_df, fnml_df, http_api_df
 
 
 def _is_delimited_identifier(identifier):
@@ -464,6 +486,7 @@ class MappingParser:
     def __init__(self, config):
         self.rml_df = pd.DataFrame(columns=RML_DATAFRAME_COLUMNS)
         self.fnml_df = pd.DataFrame(columns=FNML_DATAFRAME_COLUMNS)
+        self.http_api_df = pd.DataFrame(columns=['bn_id', 'absolutePath', 'headers'])
         self.config = config
 
     def __str__(self):
@@ -491,7 +514,7 @@ class MappingParser:
         mapping_partitioner = MappingPartitioner(self.rml_df, self.config)
         self.rml_df = mapping_partitioner.partition_mappings()
 
-        return self.rml_df, self.fnml_df
+        return self.rml_df, self.fnml_df, self.http_api_df
 
     def _get_from_r2_rml(self):
         """
@@ -507,12 +530,14 @@ class MappingParser:
         #    self.rml_df = pd.concat([self.rml_df, pd.concat(rml_dfs)])
         #else:
         for section_name in self.config.get_data_sources_sections():
-            data_source_rml_df, data_source_fnml_df = self._parse_data_source_mapping_files(section_name)
+            data_source_rml_df, data_source_fnml_df, data_source_http_api_df = self._parse_data_source_mapping_files(section_name)
             self.rml_df = pd.concat([self.rml_df, data_source_rml_df])
             self.fnml_df = pd.concat([self.fnml_df, data_source_fnml_df])
+            self.http_api_df = pd.concat([self.http_api_df, data_source_http_api_df])
 
         self.rml_df = self.rml_df.reset_index(drop=True)
         self.fnml_df = self.fnml_df.reset_index(drop=True)
+        self.http_api_df = self.http_api_df.reset_index(drop=True)
 
     def _parse_data_source_mapping_files(self, section_name):
         """
