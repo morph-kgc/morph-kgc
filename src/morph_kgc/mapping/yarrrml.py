@@ -11,6 +11,7 @@ import rdflib
 from ruamel.yaml import YAML
 from copy import deepcopy
 from random import randint
+import re
 
 from ..constants import *
 
@@ -318,19 +319,23 @@ def _normalize_function_parameters(term_map, prefixes):
                     term_map['parameters'][i] = parameter
 
                 if type(term_map['parameters'][i]['value']) is dict and 'function' in term_map['parameters'][i]['value']:
-                    #term_map['parameters'][i]['parameter'] = term_map['parameters'][i]['parameter']
-                    term_map['parameters'][i]['value'] = _normalize_function_parameters(term_map['parameters'][i]['value'], prefixes)
+                    term_map['parameters'][i]['parameter'] = term_map['parameters'][i]['parameter']
+                    # term_map['parameters'][i]['value'] = _normalize_function_parameters(term_map['parameters'][i]['value'], prefixes)
     elif type(term_map) is dict and 'function' in term_map and term_map['function'].endswith(')'):
         # inline function examples 99 & 101 YARRRML spec
         inline_function = term_map['function']
         function_id = inline_function.split('(')[0]
         # get the parameters by removing the function id, the parenthesis, and whitespaces
         inline_inputs = inline_function.replace(function_id, '')[1:-1]
-        inline_inputs = inline_inputs.replace(' ', '')
+        inline_inputs = re.sub(r"((\s))|((' ')|(\" \"))", r"\3", inline_inputs)
 
         inline_parameters_dict = {}
         for input in inline_inputs.split(','):
             input_parameter, input_value = input.split('=')
+            if input_value.startswith("\"") and input_value.endswith("\"") or \
+                input_value.startswith("'") and input_value.endswith("'"):
+                # remove the quotes from the value
+                input_value = input_value[1:-1]
             if not input_parameter.startswith('http') and ':' not in input_parameter:
                 # the prefix of the parameter is the same as the prefix of the function
                 included_prefixes = list(prefixes.values())
