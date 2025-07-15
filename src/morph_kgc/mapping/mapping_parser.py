@@ -486,7 +486,7 @@ class MappingParser:
     def __init__(self, config):
         self.rml_df = pd.DataFrame(columns=RML_DATAFRAME_COLUMNS)
         self.fnml_df = pd.DataFrame(columns=FNML_DATAFRAME_COLUMNS)
-        self.http_api_df = pd.DataFrame(columns=['bn_id', 'absolutePath', 'headers'])
+        self.http_api_df = pd.DataFrame()
         self.config = config
 
     def __str__(self):
