@@ -22,10 +22,14 @@ def get_http_api_data(config, rml_rule, references):
     df = http_api_df[http_api_df['source'] == rml_rule['logical_source_value']]
     absolute_path = list(df['absolute_path'])[0]
     payload = {}
+    headers = {}
     if 'field_name' in df.columns:
         for i, row in df.iterrows():
-            payload[row['field_name']] = row['field_value']
-    json_data = requests.get(absolute_path, params=payload).json()
+            if row['field_name'].lower() in ['authorization', 'accept', 'keyid', 'user-agent']:
+                headers[row['field_name']] = row['field_value']
+            else:
+                payload[row['field_name']] = row['field_value']
+    json_data = requests.get(absolute_path, params=payload, headers=headers).json()
 
     jsonpath_expression = rml_rule['iterator'] + '.('
     # add top level object of the references to reduce intermediate results (THIS IS NOT STRICTLY NECESSARY)
