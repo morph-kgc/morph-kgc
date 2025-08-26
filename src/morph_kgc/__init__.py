@@ -22,7 +22,9 @@ from .materializer import _materialize_mapping_group_to_set
 from .args_parser import load_config_from_argument
 from .constants import RML_TRIPLES_MAP_CLASS, LOGGING_NAMESPACE
 
+
 LOGGER = logging.getLogger(LOGGING_NAMESPACE)
+
 
 def materialize_set(config, python_source=None):
     config = load_config_from_argument(config)
@@ -34,7 +36,7 @@ def materialize_set(config, python_source=None):
             f'If you need to speed up your data integration pipeline, please run through the command line.')
         config.set_number_of_processes('1')
 
-    rml_df, fnml_df = retrieve_mappings(config)
+    rml_df, fnml_df, http_api_df = retrieve_mappings(config)
 
     # keep only asserted mapping rules
     asserted_mapping_df = rml_df.loc[rml_df['triples_map_type'] == RML_TRIPLES_MAP_CLASS]

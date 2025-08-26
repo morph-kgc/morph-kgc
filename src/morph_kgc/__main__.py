@@ -21,13 +21,16 @@ from .mapping.mapping_parser import retrieve_mappings
 from .constants import LOGGING_NAMESPACE, RML_TRIPLES_MAP_CLASS
 from .utils import prepare_output_files
 
+
 LOGGER = logging.getLogger(LOGGING_NAMESPACE)
+
 
 if __name__ == "__main__":
 
     config = load_config_from_command_line()
 
-    rml_df, fnml_df = retrieve_mappings(config)
+    rml_df, fnml_df, http_api_df = retrieve_mappings(config)
+    config.set('CONFIGURATION', 'http_api_df', http_api_df.to_csv())
 
     # keep only asserted mapping rules
     asserted_mapping_df = rml_df.loc[rml_df['triples_map_type'] == RML_TRIPLES_MAP_CLASS]
