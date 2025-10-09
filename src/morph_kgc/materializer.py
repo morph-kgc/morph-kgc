@@ -130,7 +130,7 @@ def _materialize_template(results_df, template, expression_type, config, positio
 
             # TODO: this can be avoided for most cases (if '\\' in data_value) | contains pandas method
             # see #321, ",\,\n,\r are always escaped
-            results_df['reference_results'] = results_df['reference_results'].str.replace('"', '\\"', regex=False).str.replace('\\', '\\\\', regex=False).str.replace('\n', '\\n', regex=False).str.replace('\r', '\\r', regex=False)
+            results_df['reference_results'] = results_df['reference_results'].str.replace('\\', '\\\\', regex=False).str.replace('\n', '\\n', regex=False).str.replace('\r', '\\r', regex=False).str.replace('"', '\\"', regex=False)
             for char in config.get_literal_escaping_chars():
                 if char not in ['"', '\n', '\\', '\r']:
                     if char in ['\n', '\r', '\t', '\b', '\f']:
@@ -176,7 +176,7 @@ def _materialize_fnml_execution(results_df, fnml_execution, fnml_df, config, pos
         elif datatype == XSD_INTEGER:
             results_df[fnml_execution] = results_df[fnml_execution].astype(float).astype(int).astype(str)
 
-        results_df['reference_results'] = results_df['reference_results'].str.replace('"', '\\"', regex=False).str.replace('\\', '\\\\', regex=False).str.replace('\n', '\\n', regex=False).str.replace('\r', '\\r', regex=False)
+        results_df['reference_results'] = results_df['reference_results'].str.replace('\\', '\\\\', regex=False).str.replace('\n', '\\n', regex=False).str.replace('\r', '\\r', regex=False).str.replace('"', '\\"', regex=False)
         for char in config.get_literal_escaping_chars():
             if char not in ['"', '\n', '\\', '\r']:
                 if char in ['\n', '\r', '\t', '\b', '\f']:
