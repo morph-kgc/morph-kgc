@@ -1,0 +1,29 @@
+# yaml-language-server: $schema=https://rdmr.eu/yarrrml-json-schema/yarrrml-json-schema.json
+prefixes:
+  ex: http://example.com#
+  grel: http://users.ugent.be/~bjdmeest/function/grel.ttl#
+mappings:
+  cars:
+    sources:
+      - access: cars.csv
+        referenceFormulation: csv
+    subjects: ex:car_$(ID)
+    po:
+      - p: ex:model
+        o:
+          function: grel:string_split(valueParameter = $(Model), p_string_sep = ' ')
+          language: en
+      - p: ex:seats
+        o:
+          value: $(Seats)
+          datatype: xsd:integer
+      - p: ex:registrationYear
+        o:
+          value: $(Year)
+          datatype: xsd:gYear
+      - predicates: ex:color
+        objects:
+          type: iri
+          function: grel:toLowerCase(grel:valueParameter = ex:color_$(Color))
+      - predicates: rdf:type
+        objects: ex:Car
