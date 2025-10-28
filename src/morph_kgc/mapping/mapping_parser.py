@@ -400,7 +400,7 @@ def _transform_mappings_into_dataframe(mapping_graph, section_name):
 
         SELECT DISTINCT ?source ?absolute_path ?field_name ?field_value
         WHERE {
-        ?source htv:absolutePath ?absolute_path .
+        ?source htv:absoluteURI ?absolute_path .
         OPTIONAL {
         ?source htv:headers ?headers .
         ?hearders htv:fieldName ?field_name .
