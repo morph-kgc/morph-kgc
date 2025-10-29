@@ -606,7 +606,6 @@ class MappingParser:
         # 4️⃣ transform mapping graph into DataFrame
         return _transform_mappings_into_dataframe(mapping_graph_validated, section_name)
 
-
     def _preprocess_mappings(self):
         # start by removing duplicated triples
         self.rml_df = self.rml_df.drop_duplicates()
