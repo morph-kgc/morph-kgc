@@ -12,6 +12,9 @@ from ..utils import *
 from ..mapping.mapping_constants import *
 from ..mapping.mapping_partitioner import MappingPartitioner
 from ..data_source.relational_db import get_rdb_reference_datatype
+import configparser
+import os
+import rdflib
 
 LOGGER = logging.getLogger(LOGGING_NAMESPACE)
 
@@ -539,52 +542,70 @@ class MappingParser:
         self.fnml_df = self.fnml_df.reset_index(drop=True)
         self.http_api_df = self.http_api_df.reset_index(drop=True)
 
-    def _parse_data_source_mapping_files(self, section_name):
+    def _load_mapping_graph(self, section_name):
         """
-        Creates a Pandas DataFrame with the mapping rules of a data source. It loads the mapping files in an rdflib
-        graph and recognizes the mapping language used. Mappings are translated to RML.
-        It performs queries MAPPING_PARSING_QUERY and JOIN_CONDITION_PARSING_QUERY and process the results to build a
-        DataFrame with the mapping rules. Also verifies that there are not repeated triples maps in the mappings.
+        Carga los archivos de mapping definidos en la sección del config y devuelve un grafo RDF combinado.
         """
 
-        # create an empty graph
+
         mapping_graph = rdflib.Graph()
-
         mapping_file_paths = self.config.get_mappings_files(section_name)
-        # load mapping rules to the graph
+
         for f in mapping_file_paths:
-            if f.endswith('.yarrrml') or f.endswith('.yml') or f.endswith('.yaml'):
+            if f.endswith(('.yarrrml', '.yml', '.yaml')):
                 mapping_graph += load_yarrrml(f)
             else:
-                # mapping is in an RDF serialization
                 try:
-                    # provide file extension when parsing
                     mapping_graph.parse(f, format=os.path.splitext(f)[1][1:].strip())
-                except:
-                    # if a file extension such as .rml or .r2rml is used, assume it is turtle (issue #80)
+                except Exception:
+                    # Si la extensión es desconocida (.rml, .r2rml, etc.), asumir Turtle
                     mapping_graph.parse(f)
+        return mapping_graph
 
-        # convert R2RML to RML
+
+    def _normalize_mapping_graph(self, mapping_graph):
+        """
+        Aplica las transformaciones de normalización sobre el grafo RDF:
+        R2RML→RML, expansión de atajos, normalización de termtypes, etc.
+        """
+
         mapping_graph = _r2rml_to_rml(mapping_graph)
-        # convert legacy RML to RML
         mapping_graph = _rml_legacy_to_rml(mapping_graph)
-        # convert rr:class to new POMs
         mapping_graph = _rdf_class_to_pom(mapping_graph)
-        # expand constant shortcut properties rr:subject, rr:predicate, rr:object and rr:graph
         mapping_graph = _expand_constant_shortcut_properties(mapping_graph)
-        # move graph maps in subject maps to the predicate object maps of subject maps
         mapping_graph = _subject_graph_maps_to_pom(mapping_graph)
-        # complete predicate object maps without graph maps with rr:defaultGraph
         mapping_graph = _complete_pom_with_default_graph(mapping_graph)
-        # if a term as no associated rr:termType, complete it according to R2RML specification
         mapping_graph = _complete_termtypes(mapping_graph)
-        # add rr:TriplesMap typing
-        mapping_graph = _complete_triples_map_class(mapping_graph)
-        # check termtypes are correct
-        _validate_termtypes(mapping_graph)
+        return mapping_graph
 
-        # create RML and FNML dataframes
-        return _transform_mappings_into_dataframe(mapping_graph, section_name)
+
+    def _complete_and_validate_mapping(self, mapping_graph):
+        """
+        Completa las clases rr:TriplesMap y valida los termtypes.
+        """
+        mapping_graph = _complete_triples_map_class(mapping_graph)
+        _validate_termtypes(mapping_graph)
+        return mapping_graph
+
+
+    def _parse_data_source_mapping_files(self, section_name):
+        """
+        Crea un DataFrame con las reglas de mapeo de una fuente de datos.
+        Orquesta la carga, normalización y validación del grafo RDF de mapeo.
+        """
+
+        # 1️⃣ charge mapping graph
+        mapping_graph = self._load_mapping_graph(section_name)
+
+        # 2️⃣ normalize mapping graph
+        mapping_graph_normalized = self._normalize_mapping_graph(mapping_graph)
+
+        # 3️⃣ complete and validate mapping graph
+        mapping_graph_validated = self._complete_and_validate_mapping(mapping_graph_normalized)
+
+        # 4️⃣ transform mapping graph into DataFrame
+        return _transform_mappings_into_dataframe(mapping_graph_validated, section_name)
+
 
     def _preprocess_mappings(self):
         # start by removing duplicated triples
