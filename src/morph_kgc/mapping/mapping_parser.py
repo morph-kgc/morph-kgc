@@ -555,10 +555,12 @@ class MappingParser:
             if f.endswith(('.yarrrml', '.yml', '.yaml')):
                 mapping_graph += load_yarrrml(f)
             else:
+                # mapping is in an RDF serialization
                 try:
+                    # provide file extension when parsing
                     mapping_graph.parse(f, format=os.path.splitext(f)[1][1:].strip())
                 except Exception:
-                    # Si la extensión es desconocida (.rml, .r2rml, etc.), asumir Turtle
+                    # if a file extension such as .rml or .r2rml is used, assume it is turtle (issue #80)
                     mapping_graph.parse(f)
         return mapping_graph
 
@@ -569,12 +571,19 @@ class MappingParser:
         R2RML→RML, expansión de atajos, normalización de termtypes, etc.
         """
 
+        # convert R2RML to RML
         mapping_graph = _r2rml_to_rml(mapping_graph)
+        # convert legacy RML to RML
         mapping_graph = _rml_legacy_to_rml(mapping_graph)
+        # convert rr:class to new POMs
         mapping_graph = _rdf_class_to_pom(mapping_graph)
+        # expand constant shortcut properties rr:subject, rr:predicate, rr:object and rr:graph
         mapping_graph = _expand_constant_shortcut_properties(mapping_graph)
+        # move graph maps in subject maps to the predicate object maps of subject maps
         mapping_graph = _subject_graph_maps_to_pom(mapping_graph)
+        # complete predicate object maps without graph maps with rr:defaultGraph
         mapping_graph = _complete_pom_with_default_graph(mapping_graph)
+        # if a term as no associated rr:termType, complete it according to R2RML specification
         mapping_graph = _complete_termtypes(mapping_graph)
         return mapping_graph
 
