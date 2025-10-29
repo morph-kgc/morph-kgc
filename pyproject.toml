@@ -68,6 +68,7 @@ kuzu = ['kuzu>=0.4.2, <2.0.0']
 neo4j = ['neo4j>=5.20.0, <6.0.0']
 snowflake =['snowflake-sqlalchemy>=1.7.3, <2.0.0']
 databricks =['databricks-sqlalchemy>=2.0.4, <3.0.0']
+http =['requests>=2.0.0, <3.0.0']
 all = [
   'morph_kgc[kafka]',
   'morph_kgc[mysql]',
@@ -81,4 +82,5 @@ all = [
   'morph_kgc[neo4j]',
   'morph_kgc[snowflake]',
   'morph_kgc[databricks]',
+  'morph_kgc[http]',
 ]
