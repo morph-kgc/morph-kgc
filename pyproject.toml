@@ -82,4 +82,5 @@ all = [
   'morph_kgc[neo4j]',
   'morph_kgc[snowflake]',
   'morph_kgc[databricks]',
+  'morph_kgc[http]',
 ]
