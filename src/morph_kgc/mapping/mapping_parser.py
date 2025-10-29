@@ -544,7 +544,7 @@ class MappingParser:
 
     def _load_mapping_graph(self, section_name):
         """
-        Carga los archivos de mapping definidos en la sección del config y devuelve un grafo RDF combinado.
+        Load the mapping files defined in the config section and return a combined RDF graph.
         """
 
 
@@ -567,8 +567,8 @@ class MappingParser:
 
     def _normalize_mapping_graph(self, mapping_graph):
         """
-        Aplica las transformaciones de normalización sobre el grafo RDF:
-        R2RML→RML, expansión de atajos, normalización de termtypes, etc.
+        Applies normalization transformations to the RDF graph:
+        R2RML→RML, shortcut expansion, termtype normalization, etc.
         """
 
         # convert R2RML to RML
@@ -590,7 +590,7 @@ class MappingParser:
 
     def _complete_and_validate_mapping(self, mapping_graph):
         """
-        Completa las clases rr:TriplesMap y valida los termtypes.
+        Completes the rr:TriplesMap classes and validates the termtypes.
         """
         mapping_graph = _complete_triples_map_class(mapping_graph)
         _validate_termtypes(mapping_graph)
@@ -599,20 +599,20 @@ class MappingParser:
 
     def _parse_data_source_mapping_files(self, section_name):
         """
-        Crea un DataFrame con las reglas de mapeo de una fuente de datos.
-        Orquesta la carga, normalización y validación del grafo RDF de mapeo.
+        Creates a DataFrame with the mapping rules of a data source.
+        Orchestrates the loading, normalization, and validation of the mapping RDF graph.
         """
 
-        # 1️⃣ charge mapping graph
+        # charge mapping graph
         mapping_graph = self._load_mapping_graph(section_name)
 
-        # 2️⃣ normalize mapping graph
+        # normalize mapping graph
         mapping_graph_normalized = self._normalize_mapping_graph(mapping_graph)
 
-        # 3️⃣ complete and validate mapping graph
+        # complete and validate mapping graph
         mapping_graph_validated = self._complete_and_validate_mapping(mapping_graph_normalized)
 
-        # 4️⃣ transform mapping graph into DataFrame
+        # transform mapping graph into DataFrame
         return _transform_mappings_into_dataframe(mapping_graph_validated, section_name)
 
     def _preprocess_mappings(self):
