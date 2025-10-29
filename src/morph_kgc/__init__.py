@@ -37,6 +37,7 @@ def materialize_set(config, python_source=None):
         config.set_number_of_processes('1')
 
     rml_df, fnml_df, http_api_df = retrieve_mappings(config)
+    config.set('CONFIGURATION', 'http_api_df', http_api_df.to_csv())
 
     # keep only asserted mapping rules
     asserted_mapping_df = rml_df.loc[rml_df['triples_map_type'] == RML_TRIPLES_MAP_CLASS]
