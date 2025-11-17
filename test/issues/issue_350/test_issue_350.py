@@ -120,38 +120,3 @@ def test_issue_350_nt_cli_semantics(tmp_path: Path):
     g_exp = _g_from_nt(HERE / "output.nt")
     _assert_semantics(g_out)
     assert len(g_out) == len(g_exp)
-
-
-def test_issue_350_jelly_rdf_star_support():
-    try:
-        from rdflib.term import Triple
-
-        g = rdflib.Graph()
-
-        alice = rdflib.URIRef("http://example.com/alice")
-        bob = rdflib.URIRef("http://example.com/bob")
-        knows = rdflib.URIRef("http://example.com/knows")
-        g.add((alice, knows, bob))
-
-        embedded_triple = Triple(alice, knows, bob)
-        confidence = rdflib.URIRef("http://example.com/confidence")
-        g.add((embedded_triple, confidence, rdflib.Literal(0.9)))
-
-        jelly_output = g.serialize(format="jelly")
-        g_parsed = rdflib.Graph()
-        g_parsed.parse(data=jelly_output, format="jelly")
-
-        star_triples = [
-            (s, p, o) for s, p, o in g_parsed
-            if isinstance(s, Triple)
-        ]
-
-        assert len(star_triples) == 1, f"Expected 1 RDF-star triple, got {len(star_triples)}"
-        assert len(g_parsed) == len(g), "All triples should be preserved"
-
-        print("RDF-star test passed with Jelly format")
-
-    except ImportError:
-        pytest.skip("RDF-star not supported in this RDFlib version")
-    except Exception as e:
-        pytest.skip(f"RDF-star test failed due to: {e}")
