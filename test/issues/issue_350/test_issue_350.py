@@ -123,19 +123,14 @@ def test_issue_350_nt_cli_semantics(tmp_path: Path):
 
 
 def test_issue_350_jelly_rdf_star_support(tmp_path: Path):
-    """Test that Jelly works with RDF-star mappings"""
     for name in ("data.csv", "data_rdf_star.csv", "mapping_rdf_star.ttl", "config_rdf_star.ini"):
         (tmp_path / name).write_text((HERE / name).read_text(encoding="utf-8"), encoding="utf-8")
 
-    # Запускаем материализацию
     subprocess.check_call([sys.executable, "-m", "morph_kgc", "config_rdf_star.ini"], cwd=tmp_path)
 
     jelly_file = tmp_path / "kg_rdf_star.jelly"
     assert jelly_file.exists()
-
-    # Проверяем что файл парсится без ошибок
     g_out = _g_from_jelly(jelly_file)
     assert len(g_out) > 0
 
     print(f"Successfully generated and parsed {len(g_out)} triples with RDF-star mapping")
-    # Если дошли сюда без ошибок - значит RDF-star работает!
