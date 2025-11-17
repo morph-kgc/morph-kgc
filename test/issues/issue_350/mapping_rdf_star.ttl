@@ -1,0 +1,37 @@
+@prefix rml: <http://w3id.org/rml/> .
+@prefix rr:  <http://www.w3.org/ns/r2rml#> .
+@prefix ql:  <http://semweb.mmlab.be/ns/ql#> .
+@prefix ex:  <http://example.com/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+<#StatementMapping>
+  rml:logicalSource [
+    rml:source "data_rdf_star.csv" ;
+    rml:referenceFormulation ql:CSV
+  ] ;
+  rr:subjectMap [
+    rr:template "http://example.com/statement/{id}"
+  ] ;
+  rr:predicateObjectMap [
+    rr:predicate ex:hasQuote ;
+    rr:objectMap [
+      rr:parentTriplesMap <#PersonMapping> ;
+      rr:joinCondition [
+        rr:child "person_id" ;
+        rr:parent "id"
+      ]
+    ]
+  ] .
+
+<#PersonMapping>
+  rml:logicalSource [
+    rml:source "data.csv" ;
+    rml:referenceFormulation ql:CSV
+  ] ;
+  rr:subjectMap [
+    rr:template "http://example.com/person/{id}"
+  ] ;
+  rr:predicateObjectMap [
+    rr:predicate ex:name ;
+    rr:objectMap [ rml:reference "name" ]
+  ] .

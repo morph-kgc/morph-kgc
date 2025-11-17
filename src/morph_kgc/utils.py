@@ -269,6 +269,12 @@ def triples_to_file(triples, config, mapping_group=None):
     Writes triples to file.
     """
 
+    from .constants import JELLY
+    if config.get_output_format() == JELLY:
+        raise RuntimeError(
+            "triples_to_file() must not be used with output_format=JELLY. Use RDFLib/pyjelly serializer instead."
+        )
+
     lock = mp.Lock()    # necessary for issue #65
     with lock:
         f = open(config.get_output_file_path(mapping_group), 'a', encoding='utf-8')

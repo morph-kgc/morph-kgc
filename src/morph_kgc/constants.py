@@ -60,13 +60,14 @@ IN_MEMORY_TYPES = [PYTHON_SOURCE, DATAFRAME, DICTIONARY, JSON_STRING]
 # RDF serializations
 NTRIPLES = 'N-TRIPLES'
 NQUADS = 'N-QUADS'
+JELLY = 'JELLY'
 
 
 ##############################################################################
 #########################   VALID ARGUMENTS VALUES   #########################
 ##############################################################################
 
-VALID_OUTPUT_FORMATS = [NTRIPLES, NQUADS]
+VALID_OUTPUT_FORMATS = [NTRIPLES, NQUADS, JELLY]
 VALID_LOGGING_LEVEL = ['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 
 
@@ -76,7 +77,8 @@ VALID_LOGGING_LEVEL = ['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'
 
 OUTPUT_FORMAT_FILE_EXTENSION = {
     NTRIPLES: '.nt',
-    NQUADS: '.nq'
+    NQUADS: '.nq',
+    JELLY: '.jelly'
 }
 
 
