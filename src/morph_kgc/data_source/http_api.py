@@ -6,9 +6,8 @@ __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"
 
 
-import json
-import urllib.request
 import pandas as pd
+import os
 
 from jsonpath import JSONPath
 from io import StringIO
@@ -25,10 +24,11 @@ def get_http_api_data(config, rml_rule, references):
     headers = {}
     if 'field_name' in df.columns:
         for i, row in df.iterrows():
+            # use env variables for parameterizing HTTP headers
             if row['field_name'].lower() in ['authorization', 'accept', 'keyid', 'user-agent']:
-                headers[row['field_name']] = row['field_value']
+                headers[row['field_name']] = row['field_value'].format(**os.environ)
             else:
-                payload[row['field_name']] = row['field_value']
+                payload[row['field_name']] = row['field_value'].format(**os.environ)
     json_data = requests.get(absolute_path, params=payload, headers=headers).json()
 
     jsonpath_expression = rml_rule['iterator'] + '.('
