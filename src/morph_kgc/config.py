@@ -342,7 +342,7 @@ class Config(ConfigParser):
         return mapping_file_paths
 
     def get_db_url(self, source_section):
-        return self.get(source_section, DB_URL)
+        return self.get(source_section, DB_URL).format(**os.environ)
 
     def has_db_url(self, source_section):
         return self.has_option(source_section, DB_URL)
