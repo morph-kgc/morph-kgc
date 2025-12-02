@@ -63,6 +63,7 @@ oracle = ['oracledb>=2.5.0, <9.0.0', 'SQLAlchemy>=2.0.0, <3.0.0', 'sql-metadata>
 mssql = ['pymssql>=2.2.7, <3.0.0', 'SQLAlchemy>=2.0.0, <3.0.0', 'sql-metadata>=2.6.0, <3.0.0']
 excel = ['openpyxl>=3.0.0, <4.0.0', 'odfpy>=1.4.1, <2.0.0']
 tabular = ['pyarrow>=14.0.0, <16.0.0']
+geoparquet = ['geopandas>=0.13.0, <1.0.0', 'pyarrow>=14.0.0, <20.0.0']
 spss = ['pyreadstat>=1.2.0, <2.0.0']
 kuzu = ['kuzu>=0.4.2, <2.0.0']
 neo4j = ['neo4j>=5.20.0, <6.0.0']

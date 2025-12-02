@@ -35,6 +35,8 @@ def get_file_data(rml_rule, references):
         return _read_ods(rml_rule, references)
     elif file_source_type == PARQUET:
         return _read_parquet(rml_rule, references)
+    elif file_source_type == GEOPARQUET:
+        return _read_geoparquet(rml_rule, references)
     elif file_source_type in FEATHER:
         return _read_feather(rml_rule, references)
     elif file_source_type == ORC:
@@ -87,6 +89,23 @@ def _read_csv(rml_rule, references, file_source_type):
 
 def _read_parquet(rml_rule, references):
     return pd.read_parquet(rml_rule['logical_source_value'], engine='pyarrow', columns=references)
+
+
+def _read_geoparquet(rml_rule, references):
+    import geopandas as gpd
+
+    try:
+        gdf = gpd.read_parquet(rml_rule['logical_source_value'], columns=references)
+    except ValueError as e:
+        if "No geometry columns are included" in str(e):
+            return pd.read_parquet(rml_rule['logical_source_value'], engine='pyarrow', columns=references)
+        raise e
+    
+    # if the geometry column is not in the references, we don't need to convert it
+    if 'geometry' in gdf.columns:
+        gdf['geometry'] = gdf['geometry'].to_wkt()
+        
+    return pd.DataFrame(gdf)
 
 
 def _read_feather(rml_rule, references):
