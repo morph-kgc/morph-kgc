@@ -320,6 +320,10 @@ def _normalize_yarrrml_mapping(mappings):
                 for i, source in enumerate(mapping_value['sources']):
                     if type(source) is str:
                         mappings['mappings'][mapping_key]['sources'][i] = mappings['sources'][source]
+                    elif type(source) is dict and 'access' in source and source['access'] in mappings['sources']:
+                        # Handle expanded shortcuts like {'access': 'source_name'}
+                        # Replace with the actual source definition
+                        mappings['mappings'][mapping_key]['sources'][i] = mappings['sources'][source['access']]
         mappings.pop('sources')
 
 
