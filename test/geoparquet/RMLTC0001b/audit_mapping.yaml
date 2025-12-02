@@ -1,0 +1,54 @@
+prefixes:
+  geo: http://www.opengis.net/ont/geosparql#
+  vic_unearthed: http://example.org/ontology/vic-unearthed#
+  vic_unearthed_functions: http://example.org/functions/vic-unearthed/
+  vic_unearthed_data: http://example.org/data/vic-unearthed/
+  rr: http://www.w3.org/ns/r2rml#
+  grel: http://users.ugent.be/~bjdmeest/function/grel.ttl#
+  ex: http://example.org/
+
+sources:
+  parquet_source:
+    rml:sourceType: "GEOPARQUET"
+    rml:queryFormulation: ex:GEOPARQUET
+
+mappings:
+  AuditMapping:
+    sources: 
+      - [parquet_source]
+    s: vic_unearthed_data:audit/$(REFERENCE_)
+    po:
+      - [rdf:type, vic_unearthed:EnvironmentalAudit]
+      - p: vic_unearthed:assessmentDate
+        o: 
+          value: $(DATE_COMPL)
+          datatype: xsd:date
+      - p: vic_unearthed:hasAssessmentRegion
+        o: vic_unearthed_data:audit_geom/$(REFERENCE_)
+      - p: vic_unearthed:hasAssessmentReport
+        o: vic_unearthed_data:audit_report/$(REFERENCE_)
+  
+  GeometryMapping:
+    sources:
+      - [parquet_source]
+    s: vic_unearthed_data:audit_geom/$(REFERENCE_)
+    po:
+      - [rdf:type, geo:Geometry]
+      - p: geo:asWKT
+        o: 
+          value: $(geometry)
+          datatype: geo:wktLiteral     
+
+  ReportMapping:
+    sources:
+      - [parquet_source]
+    s: vic_unearthed_data:audit_report/$(REFERENCE_)
+    po:
+      - [rdf:type, vic_unearthed:AssessmentReport]
+      - p: vic_unearthed:hasLink
+        o: 
+          function: vic_unearthed_functions:extractURL
+          parameters:
+            - [grel:valueParam, $(REPORT_LIN)]
+          datatype: xsd:anyURI
+      

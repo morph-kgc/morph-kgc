@@ -21,7 +21,8 @@ REFERENCE_FORMULATION_DICT = {
     'jsonpath': RML_JSONPATH,
     'xpath': RML_XPATH,
     'cypher': RML_CYPHER,
-    'sql2008': RML_SQL2008
+    'sql2008': RML_SQL2008,
+    'geoparquet': RML_GEOPARQUET
 }
 
 

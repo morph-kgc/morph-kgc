@@ -102,8 +102,8 @@ def _read_geoparquet(rml_rule, references):
         raise e
     
     # if the geometry column is not in the references, we don't need to convert it
-    if 'geometry' in gdf.columns:
-        gdf['geometry'] = gdf['geometry'].to_wkt()
+    if isinstance(gdf, gpd.GeoDataFrame):
+        gdf[gdf.geometry.name] = gdf.geometry.to_wkt()
         
     return pd.DataFrame(gdf)
 
