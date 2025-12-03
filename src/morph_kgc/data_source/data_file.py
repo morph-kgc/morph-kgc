@@ -37,6 +37,8 @@ def get_file_data(rml_rule, references):
         return _read_parquet(rml_rule, references)
     elif file_source_type == GEOPARQUET:
         return _read_geoparquet(rml_rule, references)
+    elif file_source_type == SHP:
+        return _read_shapefile(rml_rule, references)
     elif file_source_type in FEATHER:
         return _read_feather(rml_rule, references)
     elif file_source_type == ORC:
@@ -105,6 +107,18 @@ def _read_geoparquet(rml_rule, references):
     if isinstance(gdf, gpd.GeoDataFrame):
         gdf[gdf.geometry.name] = gdf.geometry.to_wkt()
         
+    return pd.DataFrame(gdf)
+
+
+def _read_shapefile(rml_rule, references):
+    import geopandas as gpd
+
+    gdf = gpd.read_file(rml_rule['logical_source_value'], ignore_geometry=False)
+
+    # if the geometry column is not in the references, we don't need to convert it
+    if isinstance(gdf, gpd.GeoDataFrame):
+        gdf[gdf.geometry.name] = gdf.geometry.to_wkt()
+
     return pd.DataFrame(gdf)
 
 

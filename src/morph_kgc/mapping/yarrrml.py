@@ -22,7 +22,8 @@ REFERENCE_FORMULATION_DICT = {
     'xpath': RML_XPATH,
     'cypher': RML_CYPHER,
     'sql2008': RML_SQL2008,
-    'geoparquet': RML_GEOPARQUET
+    'geoparquet': RML_GEOPARQUET,
+    'shapefile': RML_SHP
 }
 
 
