@@ -6,14 +6,26 @@ __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"
 
 
-import json
-import urllib.request
 import pandas as pd
 import os
+import importlib.util
+import sys
 
+from pathlib import Path
 from jsonpath import JSONPath
 from io import StringIO
 from ..utils import normalize_hierarchical_data
+
+
+def load_module_from_path(module_name, file_path):
+    file_path = str(Path(file_path).resolve())
+    spec = importlib.util.spec_from_file_location(module_name, file_path)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"Cannot load spec for {module_name} from {file_path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    sys.modules[module_name] = module  # optional: register for reuse
+    return module
 
 
 def get_http_api_data(config, rml_rule, references):
@@ -26,11 +38,16 @@ def get_http_api_data(config, rml_rule, references):
     headers = {}
     if 'field_name' in df.columns:
         for i, row in df.iterrows():
-            # use env variables for parameterizing HTTP headers
-            if row['field_name'].lower() in ['authorization', 'accept', 'keyid', 'user-agent']:
-                headers[row['field_name']] = row['field_value'].format(**os.environ)
+            if row['field_name'] in os.environ:
+                field_value = row['field_value'].format(**os.environ)
             else:
-                payload[row['field_name']] = row['field_value'].format(**os.environ)
+                mod = load_module_from_path("dynamic_api_token", config.get_api_token())
+                field_value = mod.get_api_token(arg1=row['field_value'])
+
+            if row['field_name'].lower() in ['authorization', 'accept', 'keyid', 'user-agent']:
+                headers[row['field_name']] = field_value
+            else:
+                payload[row['field_name']] = field_value
     json_data = requests.get(absolute_path, params=payload, headers=headers).json()
 
     # Check if any of the references have a JSONPath filter; it's treated differently.
