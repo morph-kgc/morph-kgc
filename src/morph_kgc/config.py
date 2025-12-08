@@ -41,6 +41,7 @@ ENFORCE_SQL_QUERY_FILTER_NULL = 'enforce_sql_filter_null'
 NUMBER_OF_PROCESSES = 'number_of_processes'
 
 UDFS = 'udfs'
+API_TOKEN = 'api_token'
 
 LOGGING_LEVEL = 'logging_level'
 LOGGING_FILE = 'logging_file'
@@ -80,6 +81,7 @@ DEFAULT_NA_VALUES = ',nan' # ',#N/A,N/A,#N/A N/A,n/a,NA,<NA>,#NA,NULL,null,NaN,n
 DEFAULT_LITERAL_ESCAPING_CHARS = '",\n,\r' # \n,\t,\b,\f,\r,",'
 DEFAULT_ONLY_PRINTABLE_CHARS = 'no'
 DEFAULT_UDFS = ''
+DEFAULT_API_TOKEN = ''
 DEFAULT_OUTPUT_KAFKA_SERVER = ''
 DEFAULT_OUTPUT_KAFKA_TOPIC = ''
 
@@ -103,6 +105,7 @@ CONFIGURATION_OPTIONS_EMPTY_VALID = {
             MAPPING_PARTITIONING: PARTIAL_AGGREGATIONS_PARTITIONING,
             LOGGING_FILE: DEFAULT_LOGGING_FILE,
             UDFS: DEFAULT_UDFS,
+            API_TOKEN: DEFAULT_API_TOKEN,
             OUTPUT_KAFKA_SERVER: DEFAULT_OUTPUT_KAFKA_SERVER,
             OUTPUT_KAFKA_TOPIC: DEFAULT_OUTPUT_KAFKA_TOPIC,
         }
@@ -265,6 +268,9 @@ class Config(ConfigParser):
 
     def get_udfs(self):
         return self.get(self.configuration_section, UDFS)
+
+    def get_api_token(self):
+        return self.get(self.configuration_section, API_TOKEN)
 
     def get_output_file_path(self, mapping_group=None):
         file_extension = OUTPUT_FORMAT_FILE_EXTENSION[self.get_output_format()]
