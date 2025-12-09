@@ -1,10 +1,6 @@
 import json, os, tempfile
 from datetime import datetime
 
-def is_api_token_applicable(token):
-    # Checks whether the token is within a predefined list of valid tokens
-    return token in ["AUTH_TOKEN"]
-
 def atomic_write_json(path, data):
     if not os.path.exists(path):
         with open(path, "a"):
@@ -29,6 +25,10 @@ def safe_read_json(path):
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
 
+def is_api_token_applicable(token):
+    # Checks whether the token is within a predefined list of valid tokens
+    return token in ["AUTH_TOKEN"]
+
 def refreshToken(username, password, token_name):
     # Implementation-specific logic to retrieve a new token
     return 'SOME_VALUE', 10 # value, exp_time
@@ -47,8 +47,7 @@ def get_api_token(token_name):
         # Refresh cache
         credentials = os.getenv("SECRET_MANAGER_CREDENTIALS")
 
-        #token_value, token_expires_in = refreshToken(credentials.username, credentials.password, token_name)
-        token_value, token_expires_in = refreshToken(None, None, token_name)
+        token_value, token_expires_in = refreshToken(credentials.username, credentials.password, token_name)
 
         # token_expires_in should be in seconds
         cache[f"{token_name}_EXPIRES_AT"] = datetime.now().timestamp() + token_expires_in
