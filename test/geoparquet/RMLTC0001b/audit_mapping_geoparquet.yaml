@@ -1,0 +1,34 @@
+prefixes:
+  geo: http://www.opengis.net/ont/geosparql#
+  vic_unearthed: http://example.org/ontology/vic-unearthed#
+  vic_unearthed_data: http://example.org/data/vic-unearthed/
+  rr: http://www.w3.org/ns/r2rml#
+
+sources:
+  parquet_source:
+    referenceFormulation: geoparquet
+
+mappings:
+  AuditMapping:
+    sources: 
+      - [parquet_source]
+    s: vic_unearthed_data:audit/$(REFERENCE_)
+    po:
+      - [rdf:type, vic_unearthed:EnvironmentalAudit]
+      - p: vic_unearthed:assessmentDate
+        o: 
+          value: $(DATE_COMPL)
+          datatype: xsd:date
+      - p: vic_unearthed:hasAssessmentRegion
+        o: vic_unearthed_data:audit_geom/$(REFERENCE_)
+  
+  GeometryMapping:
+    sources:
+      - [parquet_source]
+    s: vic_unearthed_data:audit_geom/$(REFERENCE_)
+    po:
+      - [rdf:type, geo:Geometry]
+      - p: geo:asWKT
+        o: 
+          value: $(geometry)
+          datatype: geo:wktLiteral     

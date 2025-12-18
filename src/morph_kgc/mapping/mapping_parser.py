@@ -660,7 +660,10 @@ class MappingParser:
             elif rml_rule['logical_source_type'] == RML_SOURCE:
                 # it is a file, infer source type from file extension
                 file_extension = os.path.splitext(str(rml_rule['logical_source_value']))[1][1:].strip()
-                if file_extension.upper() in FILE_SOURCE_TYPES:
+
+                if pd.notna(rml_rule['reference_formulation']) and GEOPARQUET in rml_rule['reference_formulation'].upper():
+                    self.rml_df.at[i, 'source_type'] = GEOPARQUET
+                elif file_extension.upper() in FILE_SOURCE_TYPES:
                     self.rml_df.at[i, 'source_type'] = file_extension.upper()
                 elif pd.notna(rml_rule['reference_formulation']):
                     # if file extension is not recognized, use reference formulation
