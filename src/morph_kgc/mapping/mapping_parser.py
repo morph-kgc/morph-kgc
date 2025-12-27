@@ -641,13 +641,14 @@ class MappingParser:
         """
 
         for i, rml_rule in self.rml_df.iterrows():
-            if pd.notna(rml_rule['reference_formulation']) and 'SQL' in rml_rule['reference_formulation'].upper():
-                self.rml_df.at[i, 'source_type'] = RDB
-            elif pd.notna(rml_rule['reference_formulation']) and 'CYPHER' in rml_rule['reference_formulation'].upper():
-                self.rml_df.at[i, 'source_type'] = PGDB
-            elif self.config.has_db_url(rml_rule['source_name']):
-                # if db_url but no reference formulation, assume it is a relational database
-                self.rml_df.at[i, 'source_type'] = RDB
+            if self.config.has_db_url(rml_rule['source_name']):
+                if pd.notna(rml_rule['reference_formulation']) and 'SQL' in rml_rule['reference_formulation'].upper():
+                    self.rml_df.at[i, 'source_type'] = RDB
+                elif pd.notna(rml_rule['reference_formulation']) and 'CYPHER' in rml_rule['reference_formulation'].upper():
+                    self.rml_df.at[i, 'source_type'] = PGDB
+                else:
+                    # if db_url but no reference formulation, assume it is a relational database
+                    self.rml_df.at[i, 'source_type'] = RDB
             elif rml_rule['logical_source_type'] == RML_QUERY:
                 # it is a query, but it is not a DB (because no db_url), hence it is a tabular view
                 # assign CSV (it can also be Apache Parquet but format is automatically inferred)
