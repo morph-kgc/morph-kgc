@@ -1,0 +1,8 @@
+{
+    "sensors": [
+        { "id": "sens1", "type": "co2", "value": 800, "status": "active" },
+        { "id": "sens2", "type": "co2", "value": 1200, "status": "maintenance" },
+        { "id": "sens3", "type": "temp", "value": 25, "status": "active" },
+        { "id": "sens4", "type": "co2", "value": 1500, "status": "active" }
+    ]
+}
