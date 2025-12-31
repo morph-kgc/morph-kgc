@@ -1,0 +1,4 @@
+<http://example.com/sensor/sens1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/ActiveCO2Sensor> .
+<http://example.com/sensor/sens1> <http://example.com/hasValue> "800"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://example.com/sensor/sens4> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/ActiveCO2Sensor> .
+<http://example.com/sensor/sens4> <http://example.com/hasValue> "1500"^^<http://www.w3.org/2001/XMLSchema#integer> .
