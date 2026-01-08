@@ -519,6 +519,26 @@ class MappingParser:
 
         return self.rml_df, self.fnml_df, self.http_api_df
 
+    def parse_and_normalize_to_rml_graph(self, section_name):
+        """
+        Loads mappings (YARRRML / R2RML / RML),
+        normalizes them to standard RML,
+        validates them, and returns an RDFLib Graph.
+
+        This method does NOT materialize data.
+        """
+
+        # Load original mapping graph
+        mapping_graph = self._load_mapping_graph(section_name)
+
+        # Normalize (R2RML → RML, legacy RML → RML, shortcuts, etc.)
+        mapping_graph = self._normalize_mapping_graph(mapping_graph)
+
+        # Complete triples map classes and validate term types
+        mapping_graph = self._complete_and_validate_mapping(mapping_graph)
+
+        return mapping_graph
+
     def _get_from_r2_rml(self):
         """
         Parses the mapping files of all data sources in the config file and adds the parsed mappings rules to a
@@ -641,14 +661,13 @@ class MappingParser:
         """
 
         for i, rml_rule in self.rml_df.iterrows():
-            if self.config.has_db_url(rml_rule['source_name']):
-                if pd.notna(rml_rule['reference_formulation']) and 'SQL' in rml_rule['reference_formulation'].upper():
-                    self.rml_df.at[i, 'source_type'] = RDB
-                elif pd.notna(rml_rule['reference_formulation']) and 'CYPHER' in rml_rule['reference_formulation'].upper():
-                    self.rml_df.at[i, 'source_type'] = PGDB
-                else:
-                    # if db_url but no reference formulation, assume it is a relational database
-                    self.rml_df.at[i, 'source_type'] = RDB
+            if pd.notna(rml_rule['reference_formulation']) and 'SQL' in rml_rule['reference_formulation'].upper():
+                self.rml_df.at[i, 'source_type'] = RDB
+            elif pd.notna(rml_rule['reference_formulation']) and 'CYPHER' in rml_rule['reference_formulation'].upper():
+                self.rml_df.at[i, 'source_type'] = PGDB
+            elif self.config.has_db_url(rml_rule['source_name']):
+                # if db_url but no reference formulation, assume it is a relational database
+                self.rml_df.at[i, 'source_type'] = RDB
             elif rml_rule['logical_source_type'] == RML_QUERY:
                 # it is a query, but it is not a DB (because no db_url), hence it is a tabular view
                 # assign CSV (it can also be Apache Parquet but format is automatically inferred)
@@ -661,10 +680,7 @@ class MappingParser:
             elif rml_rule['logical_source_type'] == RML_SOURCE:
                 # it is a file, infer source type from file extension
                 file_extension = os.path.splitext(str(rml_rule['logical_source_value']))[1][1:].strip()
-
-                if pd.notna(rml_rule['reference_formulation']) and GEOPARQUET in rml_rule['reference_formulation'].upper():
-                    self.rml_df.at[i, 'source_type'] = GEOPARQUET
-                elif file_extension.upper() in FILE_SOURCE_TYPES:
+                if file_extension.upper() in FILE_SOURCE_TYPES:
                     self.rml_df.at[i, 'source_type'] = file_extension.upper()
                 elif pd.notna(rml_rule['reference_formulation']):
                     # if file extension is not recognized, use reference formulation
@@ -888,3 +904,31 @@ class MappingParser:
                         self.rml_df.at[i, 'object_termtype'] = parent_triples_map_rule.at['subject_termtype']
                         self.rml_df.at[i, 'object_join_conditions'] = None
                         LOGGER.debug(f"Removed self-join from mapping rule `{rml_rule['triples_map_id']}`.")
+
+def translate_mappings_to_rml(config, source_name=None):
+    """
+    Translates YARRRML / R2RML mappings into normalized RML.
+
+    Parameters
+    ----------
+    config : Config | str
+        Morph-KGC configuration object or path to config file.
+    source_name : str, optional
+        If provided, only translates mappings of that data source.
+
+    Returns
+    -------
+    dict
+        Dictionary mapping source_name -> rdflib.Graph (RML)
+    """
+
+    parser = MappingParser(config)
+    rml_graphs = {}
+
+    for section in config.get_data_sources_sections():
+        if source_name and section != source_name:
+            continue
+
+        rml_graphs[section] = parser.parse_and_normalize_to_rml_graph(section)
+
+    return rml_graphs
