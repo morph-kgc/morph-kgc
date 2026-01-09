@@ -483,6 +483,34 @@ def _validate_termtypes(mapping_graph):
         raise ValueError(f'Found an invalid object termtype. Found values {object_termtypes}. Object maps must be '
                          f'{RML_IRI}, {RML_BLANK_NODE}, {RML_LITERAL} or {RML_RDF_STAR_TRIPLE}.')
 
+def translate_mappings_to_rml(config, source_name=None):
+    """
+    Translates YARRRML / R2RML mappings into normalized RML.
+
+    Parameters
+    ----------
+    config : Config | str
+        Morph-KGC configuration object or path to config file.
+    source_name : str, optional
+        If provided, only translates mappings of that data source.
+
+    Returns
+    -------
+    dict
+        Dictionary mapping source_name -> rdflib.Graph (RML)
+    """
+
+    parser = MappingParser(config)
+    rml_graphs = {}
+
+    for section in config.get_data_sources_sections():
+        if source_name and section != source_name:
+            continue
+
+        rml_graphs[section] = parser.parse_and_normalize_to_rml_graph(section)
+
+    return rml_graphs
+
 
 class MappingParser:
 
@@ -904,30 +932,3 @@ class MappingParser:
                         self.rml_df.at[i, 'object_join_conditions'] = None
                         LOGGER.debug(f"Removed self-join from mapping rule `{rml_rule['triples_map_id']}`.")
 
-def translate_mappings_to_rml(config, source_name=None):
-    """
-    Translates YARRRML / R2RML mappings into normalized RML.
-
-    Parameters
-    ----------
-    config : Config | str
-        Morph-KGC configuration object or path to config file.
-    source_name : str, optional
-        If provided, only translates mappings of that data source.
-
-    Returns
-    -------
-    dict
-        Dictionary mapping source_name -> rdflib.Graph (RML)
-    """
-
-    parser = MappingParser(config)
-    rml_graphs = {}
-
-    for section in config.get_data_sources_sections():
-        if source_name and section != source_name:
-            continue
-
-        rml_graphs[section] = parser.parse_and_normalize_to_rml_graph(section)
-
-    return rml_graphs
