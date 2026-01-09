@@ -527,7 +527,6 @@ class MappingParser:
 
         This method does NOT materialize data.
         """
-
         # Load original mapping graph
         mapping_graph = self._load_mapping_graph(section_name)
 

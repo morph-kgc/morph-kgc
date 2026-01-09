@@ -23,7 +23,6 @@ from .args_parser import load_config_from_argument
 from .constants import RML_TRIPLES_MAP_CLASS, LOGGING_NAMESPACE
 from .mapping.mapping_parser import translate_mappings_to_rml
 
-
 LOGGER = logging.getLogger(LOGGING_NAMESPACE)
 
 
