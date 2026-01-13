@@ -502,7 +502,7 @@ class MappingParser:
         return len(self.rml_df)
 
     def parse_mappings(self):
-        self._get_from_r2_rml()
+        self._load_all_mappings()
         self._preprocess_mappings()
 
         self._infer_datatypes()
@@ -519,7 +519,7 @@ class MappingParser:
 
         return self.rml_df, self.fnml_df, self.http_api_df
 
-    def _get_from_r2_rml(self):
+    def _load_all_mappings(self):
         """
         Parses the mapping files of all data sources in the config file and adds the parsed mappings rules to a
         common DataFrame for all data sources. If parallelization is enabled and multiple data sources are provided,
@@ -900,9 +900,10 @@ class MappingParser:
 
         return mapping_graph
 
-def r2rml_to_rml(config, source_name=None):
+def convert_to_rml(config, source_name=None):
     """
-    Returns normalized RML mappings (converted from R2RML if needed).
+    Load mappings in any supported format (RML, R2RML, YARRRML)
+    and return normalized RML graphs.
 
     Parameters
     ----------
@@ -914,9 +915,8 @@ def r2rml_to_rml(config, source_name=None):
     Returns
     -------
     dict
-        source_name -> rdflib.Graph
+        source_name -> rdflib.Graph (RML)
     """
-
     parser = MappingParser(config)
     graphs = {}
 

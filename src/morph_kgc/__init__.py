@@ -16,12 +16,11 @@ from pyoxigraph import Store
 from io import BytesIO
 from itertools import repeat
 
-from .args_parser import load_config_from_command_line
 from .mapping.mapping_parser import retrieve_mappings
 from .materializer import _materialize_mapping_group_to_set
-from .args_parser import load_config_from_argument
+from .args_parser import load_config_from_argument, load_config_from_command_line
 from .constants import RML_TRIPLES_MAP_CLASS, LOGGING_NAMESPACE
-from .mapping.mapping_parser import r2rml_to_rml
+from .mapping.mapping_parser import convert_to_rml
 
 
 LOGGER = logging.getLogger(LOGGING_NAMESPACE)
