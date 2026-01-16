@@ -1,0 +1,11 @@
+prefixes:
+  foaf: "http://xmlns.com/foaf/0.1/"
+  ex: "http://example.org/"
+
+mappings:
+  Article:
+    sources:
+      - ["articles.json~jsonpath"]
+    s: "http://example.org/article/$(id)"
+    po:
+      - [foaf:title, $(title)]

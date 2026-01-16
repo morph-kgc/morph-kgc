@@ -16,11 +16,11 @@ from pyoxigraph import Store
 from io import BytesIO
 from itertools import repeat
 
-from .args_parser import load_config_from_command_line
 from .mapping.mapping_parser import retrieve_mappings
 from .materializer import _materialize_mapping_group_to_set
-from .args_parser import load_config_from_argument
+from .args_parser import load_config_from_argument, load_config_from_command_line
 from .constants import RML_TRIPLES_MAP_CLASS, LOGGING_NAMESPACE
+from .mapping.mapping_parser import MappingParser
 
 
 LOGGER = logging.getLogger(LOGGING_NAMESPACE)
@@ -113,3 +113,43 @@ def materialize_kafka(config, python_source=None):
         # close the Kafka producer
         if kafka_producer:
             kafka_producer.close()
+
+def get_rml_mapping_graph(self, section_name):
+        """
+        Returns the normalized RML mapping graph for a given data source.
+        This includes R2RML → RML conversion if needed.
+        """
+
+        mapping_graph = self._load_mapping_graph(section_name)
+        mapping_graph = self._normalize_mapping_graph(mapping_graph)
+        mapping_graph = self._complete_and_validate_mapping(mapping_graph)
+
+        return mapping_graph
+
+def convert_to_rml(config, source_name=None):
+    """
+    Load mappings in any supported format (RML, R2RML, YARRRML)
+    and return normalized RML graphs.
+
+    Parameters
+    ----------
+    config : Config | str
+        Morph-KGC config object or path to config file
+    source_name : str, optional
+        If provided, only process this data source
+
+    Returns
+    -------
+    dict
+        source_name -> rdflib.Graph (RML)
+    """
+    parser = MappingParser(config)
+    graphs = {}
+
+    for section in config.get_data_sources_sections():
+        if source_name and section != source_name:
+            continue
+
+        graphs[section] = parser.get_rml_mapping_graph(section)
+
+    return graphs
