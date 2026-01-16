@@ -1,0 +1,12 @@
+prefixes:
+  ex: "http://example.org/"
+  rdf: "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+
+mappings:
+  PersonMapping:
+    sources:
+      - ["data.csv~csv"]
+    s: "http://example.org/person/$(id)"
+    po:
+      - [rdf:type, ex:Person]
+      - [ex:name, $(name)]
