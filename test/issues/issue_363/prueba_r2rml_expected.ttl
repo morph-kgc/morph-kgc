@@ -1,7 +1,7 @@
 @prefix rml: <http://w3id.org/rml/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<file:///home/jorge/proyectos/git/morph-kgc/test/issues/issue_363/prueba_r2rml.ttl#TriplesMap1> a rml:TriplesMap ;
+<file:///Users/runner/work/morph-kgc/morph-kgc/test/issues/issue_363/prueba_r2rml.ttl#TriplesMap1> a rml:TriplesMap ;
     rml:logicalSource [ rml:sqlVersion rml:SQL2008 ;
             rml:tableName "data" ] ;
     rml:predicateObjectMap [ rml:graphMap [ rml:constant rml:defaultGraph ;
