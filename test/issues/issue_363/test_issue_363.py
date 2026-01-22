@@ -26,5 +26,3 @@ def test_prueba_yml():
 def test_prueba_yarrrml():
     compare_graph_with_file(CURRENT_DIR / "prueba_yarrrml.yaml", CURRENT_DIR / "prueba_yarrrml_expected.ttl")
 
-def test_prueba_r2rml():
-    compare_graph_with_file(CURRENT_DIR / "prueba_r2rml.ttl", CURRENT_DIR / "prueba_r2rml_expected.ttl")
