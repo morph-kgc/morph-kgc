@@ -1,0 +1,16 @@
+@prefix rml: <http://w3id.org/rml/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<file://home/runner/work/morph-kgc/morph-kgc/test/issues/issue_363/prueba_r2rml.ttl#TriplesMap1> a rml:TriplesMap ;
+    rml:logicalSource [ rml:sqlVersion rml:SQL2008 ;
+            rml:tableName "data" ] ;
+    rml:predicateObjectMap [ rml:graphMap [ rml:constant rml:defaultGraph ;
+                    rml:termType rml:IRI ] ;
+            rml:objectMap [ rml:constant "John Doe" ;
+                    rml:datatypeMap [ rml:constant xsd:string ] ;
+                    rml:termType rml:Literal ] ;
+            rml:predicateMap [ rml:constant <http://example.com/name> ;
+                    rml:termType rml:IRI ] ] ;
+    rml:subjectMap [ rml:constant <http://example.com/fixed_id> ;
+            rml:termType rml:IRI ] .
+

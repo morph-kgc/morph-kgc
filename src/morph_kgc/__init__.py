@@ -15,12 +15,15 @@ from rdflib import Graph
 from pyoxigraph import Store
 from io import BytesIO
 from itertools import repeat
+import os
 
 from .args_parser import load_config_from_command_line
-from .mapping.mapping_parser import retrieve_mappings
+from .mapping.mapping_parser import retrieve_mappings, MappingParser
 from .materializer import _materialize_mapping_group_to_set
 from .args_parser import load_config_from_argument
 from .constants import RML_TRIPLES_MAP_CLASS, LOGGING_NAMESPACE
+from .mapping.yarrrml import load_yarrrml
+from pathlib import Path
 
 
 LOGGER = logging.getLogger(LOGGING_NAMESPACE)
@@ -113,3 +116,22 @@ def materialize_kafka(config, python_source=None):
         # close the Kafka producer
         if kafka_producer:
             kafka_producer.close()
+
+def convert_to_rml(mapping_path):
+
+    parser = MappingParser(config=None)
+    graph = Graph()
+    mapping_path = Path(mapping_path)
+
+    if mapping_path.suffix in ['.ttl', '.rdf', '.nt']:
+        # Carga directa de RDF/Turtle
+        graph.parse(mapping_path, format='ttl')
+    elif mapping_path.suffix in ['.yml', '.yaml', '.yarrrml']:
+        # Cargar YARRRML/YAML → convertir a RML → Graph
+        graph = load_yarrrml(mapping_path)
+
+    # Normalizar y validar
+    graph = parser._normalize_mapping_graph(graph)
+    graph = parser._complete_and_validate_mapping(graph)
+
+    return graph

@@ -1,0 +1,14 @@
+@prefix rml: <http://w3id.org/rml/> .
+
+<TriplesMap1_-_-_sources0_-_-_predicateobjects0> a rml:TriplesMap ;
+    rml:logicalSource [ rml:iterator "CSV" ;
+            rml:source "data.csv" ] ;
+    rml:predicateObjectMap [ rml:graphMap [ rml:constant rml:defaultGraph ;
+                    rml:termType rml:IRI ] ;
+            rml:objectMap [ rml:constant "John Doe" ;
+                    rml:termType rml:Literal ] ;
+            rml:predicateMap [ rml:constant <http://example.com/name> ;
+                    rml:termType rml:IRI ] ] ;
+    rml:subjectMap [ rml:template "http://example.com/{id}" ;
+            rml:termType rml:IRI ] .
+

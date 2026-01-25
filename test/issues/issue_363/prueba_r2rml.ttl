@@ -1,0 +1,21 @@
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<#TriplesMap1>
+    a rr:TriplesMap ;
+
+    rr:logicalTable [
+        rr:tableName "data"
+    ] ;
+
+    rr:subjectMap [
+        rr:constant <http://example.com/fixed_id>
+    ] ;
+
+    rr:predicateObjectMap [
+        rr:predicate <http://example.com/name> ;
+        rr:objectMap [
+            rr:constant "John Doe" ;
+            rr:datatype xsd:string
+        ]
+    ] .
