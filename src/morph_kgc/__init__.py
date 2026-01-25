@@ -15,7 +15,6 @@ from rdflib import Graph
 from pyoxigraph import Store
 from io import BytesIO
 from itertools import repeat
-import os
 
 from .args_parser import load_config_from_command_line
 from .mapping.mapping_parser import retrieve_mappings, MappingParser
@@ -117,21 +116,18 @@ def materialize_kafka(config, python_source=None):
         if kafka_producer:
             kafka_producer.close()
 
-def convert_to_rml(mapping_path):
 
+def translate_to_rml(mapping_path):
     parser = MappingParser(config=None)
-    graph = Graph()
+    mapping_graph = Graph()
     mapping_path = Path(mapping_path)
 
     if mapping_path.suffix in ['.ttl', '.rdf', '.nt']:
-        # Carga directa de RDF/Turtle
-        graph.parse(mapping_path, format='ttl')
+        mapping_graph.parse(mapping_path, format='ttl')
     elif mapping_path.suffix in ['.yml', '.yaml', '.yarrrml']:
-        # Cargar YARRRML/YAML → convertir a RML → Graph
-        graph = load_yarrrml(mapping_path)
+        mapping_graph = load_yarrrml(mapping_path)
 
-    # Normalizar y validar
-    graph = parser._normalize_mapping_graph(graph)
-    graph = parser._complete_and_validate_mapping(graph)
+    mapping_graph = parser._normalize_mapping_graph(mapping_graph)
+    mapping_graph = parser._complete_and_validate_mapping(mapping_graph)
 
     return graph
