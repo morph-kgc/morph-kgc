@@ -130,4 +130,4 @@ def translate_to_rml(mapping_path):
     mapping_graph = parser._normalize_mapping_graph(mapping_graph)
     mapping_graph = parser._complete_and_validate_mapping(mapping_graph)
 
-    return graph
+    return mapping_graph
