@@ -82,8 +82,16 @@ def _r2rml_to_rml(mapping_graph):
 
     # replace R2RML objects with RML objects
     r2rml_to_rml_dict = {
+        R2RML_GRAPH_MAP_CLASS: RML_GRAPH_MAP_CLASS,
+        R2RML_JOIN_CLASS: RML_JOIN_CLASS,
+        R2RML_LOGICAL_TABLE_CLASS: RML_ABSTRACT_LOGICAL_SOURCE_CLASS,
+        R2RML_OBJECT_MAP_CLASS: RML_OBJECT_MAP_CLASS,
+        R2RML_PREDICATE_MAP_CLASS: RML_PREDICATE_MAP_CLASS,
+        R2RML_PREDICATE_OBJECT_MAP_CLASS: RML_PREDICATE_OBJECT_MAP_CLASS,
+        R2RML_REF_OBJECT_MAP_CLASS: RML_REF_OBJECT_MAP_CLASS,
+        R2RML_SUBJECT_MAP_CLASS: RML_SUBJECT_MAP_CLASS,
+        R2RML_TERM_MAP_CLASS: RML_TERM_MAP_CLASS,
         R2RML_TRIPLES_MAP_CLASS: RML_TRIPLES_MAP_CLASS,
-        R2RML_LOGICAL_TABLE_CLASS: RML_LOGICAL_TABLE,
         R2RML_DEFAULT_GRAPH: RML_DEFAULT_GRAPH,
         R2RML_IRI: RML_IRI,
         R2RML_LITERAL: RML_LITERAL,
@@ -586,7 +594,7 @@ class MappingParser:
         """
         Completes the rr:TriplesMap classes and validates the termtypes.
         """
-        
+
         mapping_graph = _complete_triples_map_class(mapping_graph)
         _validate_termtypes(mapping_graph)
         return mapping_graph
