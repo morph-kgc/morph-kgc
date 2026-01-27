@@ -547,7 +547,6 @@ class MappingParser:
         Load the mapping files defined in the config section and return a combined RDF graph.
         """
 
-
         mapping_graph = rdflib.Graph()
         mapping_file_paths = self.config.get_mappings_files(section_name)
 
@@ -566,11 +565,6 @@ class MappingParser:
 
 
     def _normalize_mapping_graph(self, mapping_graph):
-        """
-        Applies normalization transformations to the RDF graph:
-        R2RML→RML, shortcut expansion, termtype normalization, etc.
-        """
-
         # convert R2RML to RML
         mapping_graph = _r2rml_to_rml(mapping_graph)
         # convert legacy RML to RML
@@ -592,6 +586,7 @@ class MappingParser:
         """
         Completes the rr:TriplesMap classes and validates the termtypes.
         """
+        
         mapping_graph = _complete_triples_map_class(mapping_graph)
         _validate_termtypes(mapping_graph)
         return mapping_graph
