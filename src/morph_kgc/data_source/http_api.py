@@ -60,7 +60,7 @@ def get_http_api_data(config, rml_rule, references):
 
     jsonpath_expression = rml_rule['iterator'] + '.('
     # add top level object of the references to reduce intermediate results (THIS IS NOT STRICTLY NECESSARY)
-    for i, reference in enumerate(simple_refs):
+    for reference in simple_refs:
         jsonpath_expression += reference.split('.')[0] + ','
         #jsonpath_expression += reference + ','
     jsonpath_expression = jsonpath_expression[:-1] + ')'
@@ -71,27 +71,27 @@ def get_http_api_data(config, rml_rule, references):
     json_df = pd.json_normalize([json_object for json_object in normalize_hierarchical_data(jsonpath_result) if
                                  None not in json_object.values()])
     if filter_refs:
-            join_key = simple_refs[0] 
-            entries = JSONPath("$.*").parse(json_data)
-            lookup_data = {item.get(join_key): item for item in entries if item.get(join_key)}
+        join_key = simple_refs[0] 
+        entries = JSONPath("$.*").parse(json_data)
+        lookup_data = {item.get(join_key): item for item in entries if item.get(join_key)}
 
-            for filter_ref in filter_refs:
-                column_value = []
-                for key_value in json_df[join_key]:
-                    match = lookup_data.get(key_value)
-                    if match:
-                        res = JSONPath(f"$..{filter_ref}").parse(match)
-                        column_value.append(res[0] if res else None)
-                    else:
-                        column_value.append(None)
-                json_df[filter_ref] = column_value
+        for filter_ref in filter_refs:
+            column_value = []
+            for key_value in json_df[join_key]:
+                match = lookup_data.get(key_value)
+                if match:
+                    res = JSONPath(f"$..{filter_ref}").parse(match)
+                    column_value.append(res[0] if res else None)
+                else:
+                    column_value.append(None)
+            json_df[filter_ref] = column_value
 
     # add columns with null values for those references in the mapping rule that are not present in the data file
     missing_references_in_df = list(set(references).difference(set(json_df.columns)))
     json_df[missing_references_in_df] = None
-    #json_df.dropna(axis=1, how='any', inplace=True) #This removes everything if threres a null; it should only keep the columns that are in the reference and remove the rest.
+    #json_df.dropna(axis=1, how='any', inplace=True) # This removes everything if threres a null; it should only keep the columns that are in the reference and remove the rest.
     # Drop rows with None values in some columns
     json_df = json_df.dropna(axis=0, how='any', subset=[c for c in references if c in json_df.columns])
-    json_df = json_df[[c for c in references if c in json_df.columns]] #Take only the columns that are in the references.
+    json_df = json_df[[c for c in references if c in json_df.columns]] # Take only the columns that are in the references.
 
     return json_df
