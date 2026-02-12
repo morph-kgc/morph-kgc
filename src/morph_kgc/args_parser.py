@@ -32,7 +32,7 @@ def _parse_arguments():
         description='Generate Knowledge Graphs from Heterogeneous Data Sources.',
         epilog="Copyright © 2020 Julián Arenas-Guerrero",
         allow_abbrev=False,
-        prog='python3 -m morph_kgc',
+        prog='morph-kgc',
         argument_default=argparse.SUPPRESS
     )
 
