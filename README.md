@@ -49,7 +49,7 @@ We recommend to use [virtual environments](https://docs.python.org/3/library/ven
 
 To run the engine via **command line** you just need to execute the following:
 ```bash
-python3 -m morph_kgc config.ini
+morph_kgc config.ini
 ```
 
 Check the **[documentation](https://morph-kgc.readthedocs.io/en/stable/documentation/#configuration)** to see how to generate the configuration **INI file**. **[Here](https://github.com/morph-kgc/morph-kgc/blob/main/examples/configuration-file/default_config.ini)** you can also see an example INI file.
