@@ -25,7 +25,7 @@ from .utils import prepare_output_files
 LOGGER = logging.getLogger(LOGGING_NAMESPACE)
 
 
-if __name__ == "__main__":
+def main():
 
     config = load_config_from_command_line()
 
@@ -92,3 +92,7 @@ if __name__ == "__main__":
 
     LOGGER.info(f'Number of triples generated in total: {num_triples}.')
     LOGGER.info(f'Materialization finished in {get_delta_time(start_time)} seconds.')
+
+
+if __name__ == "__main__":
+    main()
