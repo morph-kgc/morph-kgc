@@ -50,9 +50,6 @@ dependencies = [
   'falcon>=3.0.0, <5.0.0'
 ]
 
-[project.scripts]
-morph-kgc = 'morph_kgc.__main__:main'
-
 [tool.hatch.version]
 path = 'src/morph_kgc/_version.py'
 
