@@ -1,3 +1,5 @@
+category: "Q&A"
+
 body:
   - type: textarea
     attributes:
