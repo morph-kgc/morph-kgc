@@ -1,0 +1,31 @@
+title: General
+description: Create a report to help us improve.
+
+body:
+  - type: textarea
+    attributes:
+      label: Report
+      description: A short, clear and concise description of your report.
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: "## Identity Disclosure:"
+  - type: input
+    attributes:
+      label: "Full name:"
+      placeholder: e.g., Alan Turing
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: "Affiliation:"
+      placeholder: e.g., Universidad Politécnica de Madrid
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        If the above is not given and is not obvious from your GitHub profile page, we might close your issue without further review. Please refer to the [reasoning behind this rule](https://berthub.eu/articles/posts/anonymous-help/) if you have questions.
