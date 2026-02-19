@@ -68,10 +68,14 @@ def get_http_api_data(config, rml_rule, references):
     jsonpath_result = JSONPath(jsonpath_expression).parse(json_data)
 
     # normalize and remove nulls
-    json_df = pd.json_normalize([json_object for json_object in normalize_hierarchical_data(jsonpath_result) if
-                                 None not in json_object.values()])
+    json_df = pd.json_normalize([
+        json_object
+        for json_object in normalize_hierarchical_data(jsonpath_result)
+        if None not in json_object.values()
+        and all(reference.split('.')[0] in json_object for reference in simple_refs)
+    ])
     if filter_refs:
-        join_key = simple_refs[0] 
+        join_key = simple_refs[0]
         entries = JSONPath("$.*").parse(json_data)
         lookup_data = {item.get(join_key): item for item in entries if item.get(join_key)}
 
