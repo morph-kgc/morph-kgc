@@ -93,7 +93,7 @@ def _read_parquet(rml_rule, references):
     return pd.read_parquet(rml_rule['logical_source_value'], engine='pyarrow', columns=references)
 
 
-def _read_geoparquet(rml_rule, references):
+def _read_geoparquet(rml_rule, references) -> pd.DataFrame:
     import geopandas as gpd
 
     try:
@@ -103,21 +103,25 @@ def _read_geoparquet(rml_rule, references):
             return pd.read_parquet(rml_rule['logical_source_value'], engine='pyarrow', columns=references)
         raise e
 
-    # if the geometry column is not in the references, we don't need to convert it
-    if isinstance(gdf, gpd.GeoDataFrame):
-        gdf[gdf.geometry.name] = gdf.geometry.to_wkt()
+    if isinstance(gdf, gpd.GeoDataFrame) and gdf.geometry.name in references:
+        geometry = gdf.geometry
+        df = gdf.drop(columns=geometry.name).pipe(pd.DataFrame)
+        df[geometry.name] = geometry.to_wkt()
+        return df
 
     return pd.DataFrame(gdf)
 
 
-def _read_shapefile(rml_rule, references):
+def _read_shapefile(rml_rule, references) -> pd.DataFrame:
     import geopandas as gpd
 
     gdf = gpd.read_file(rml_rule['logical_source_value'], ignore_geometry=False)
 
-    # if the geometry column is not in the references, we don't need to convert it
-    if isinstance(gdf, gpd.GeoDataFrame):
-        gdf[gdf.geometry.name] = gdf.geometry.to_wkt()
+    if isinstance(gdf, gpd.GeoDataFrame) and gdf.geometry.name in references:
+        geometry = gdf.geometry
+        df = gdf.drop(columns=geometry.name).pipe(pd.DataFrame)
+        df[geometry.name] = geometry.to_wkt()
+        return df
 
     return pd.DataFrame(gdf)
 
@@ -203,7 +207,7 @@ def _read_xml(rml_rule, references):
     if rml_rule['logical_source_value'].startswith('http'):
         with urllib.request.urlopen(rml_rule['logical_source_value']) as xml_url:
             xml_string = xml_url.read()
-            # Turn into file object for compatibility with iterparse
+        # Turn into file object for compatibility with iterparse
             xml_file = BytesIO(xml_string)
     else:
         xml_file = open(rml_rule['logical_source_value'], encoding='utf-8')
