@@ -52,11 +52,17 @@ RML_PARSING_QUERY = """
                         a ?triples_map_type .
         OPTIONAL {
             # logical_source is optional because it can be specified with file_path in config (see #119)
-            ?_source ?logical_source_type ?logical_source_value .
+            ?_source ?logical_source_type ?logical_source_value_raw .
             OPTIONAL {
-                ?logical_source_value sd:name ?logical_source_in_memory_value.
-                BIND(CONCAT("{",?logical_source_in_memory_value,"}") AS ?logical_source_value)
+                ?logical_source_value_raw sd:name ?logical_source_in_memory_value.
             }
+            BIND(
+                IF(
+                    BOUND(?logical_source_in_memory_value),
+                    CONCAT("{", STR(?logical_source_in_memory_value), "}"),
+                    STR(?logical_source_value_raw)
+                ) AS ?logical_source_value
+            )
             FILTER ( ?logical_source_type IN ( rml:source, rml:tableName, rml:query ) ) .
         }
         OPTIONAL { ?_source rml:iterator ?iterator . }
