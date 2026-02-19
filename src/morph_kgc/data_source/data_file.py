@@ -7,18 +7,25 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 
 import json
-import duckdb
-import pandas as pd
-import elementpath
-import xml.etree.ElementTree as et
 import urllib.request
-
-from jsonpath import JSONPath
-from elementpath.xpath3 import XPath3Parser
+import xml.etree.ElementTree as et
 from io import BytesIO
+from pathlib import Path
+from urllib.parse import urlparse
+
+import duckdb
+import elementpath
+import pandas as pd
+from elementpath.xpath3 import XPath3Parser
+from jsonpath import JSONPath
 
 from ..constants import *
 from ..utils import normalize_hierarchical_data
+
+
+def _is_http_uri(path_or_uri):
+    parsed = urlparse(str(path_or_uri).strip())
+    return parsed.scheme.lower() in {'http', 'https'} and bool(parsed.netloc)
 
 
 def get_file_data(rml_rule, references):
@@ -173,12 +180,13 @@ def _read_ods(rml_rule, references):
 
 
 def _read_json(rml_rule, references):
-    if rml_rule['logical_source_value'].startswith('http'):
-        with urllib.request.urlopen(rml_rule['logical_source_value']) as json_url:
+    logical_source_value = rml_rule['logical_source_value'].strip()
+
+    if _is_http_uri(logical_source_value):
+        with urllib.request.urlopen(logical_source_value) as json_url:
             json_data = json.loads(json_url.read().decode())
     else:
-        with open(rml_rule['logical_source_value'], encoding='utf-8') as json_file:
-            json_data = json.load(json_file)
+        json_data = json.loads(Path(logical_source_value).read_bytes())
 
     jsonpath_expression = rml_rule['iterator'] + '.('
     # add top level object of the references to reduce intermediate results (THIS IS NOT STRICTLY NECESSARY)
@@ -204,13 +212,20 @@ def _read_json(rml_rule, references):
 
 
 def _read_xml(rml_rule, references):
-    if rml_rule['logical_source_value'].startswith('http'):
-        with urllib.request.urlopen(rml_rule['logical_source_value']) as xml_url:
+    logical_source_value = rml_rule['logical_source_value'].strip()
+
+    if _is_http_uri(logical_source_value):
+        with urllib.request.urlopen(logical_source_value) as xml_url:
             xml_string = xml_url.read()
         # Turn into file object for compatibility with iterparse
-            xml_file = BytesIO(xml_string)
+        with BytesIO(xml_string) as xml_file:
+            return _parse_xml_file(xml_file, rml_rule, references)
     else:
-        xml_file = open(rml_rule['logical_source_value'], encoding='utf-8')
+        with Path(logical_source_value).open(encoding='utf-8') as xml_file:
+            return _parse_xml_file(xml_file, rml_rule, references)
+
+
+def _parse_xml_file(xml_file, rml_rule, references):
 
     # Collect namespaces from XML document
     namespaces = {}
