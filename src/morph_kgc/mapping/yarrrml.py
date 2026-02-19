@@ -22,7 +22,9 @@ REFERENCE_FORMULATION_DICT = {
     'jsonpath': RML_JSONPATH,
     'xpath': RML_XPATH,
     'cypher': RML_CYPHER,
-    'sql2008': RML_SQL2008
+    'sql2008': RML_SQL2008,
+    'geoparquet': RML_GEOPARQUET,
+    'shapefile': RML_SHP
 }
 
 
@@ -381,6 +383,10 @@ def _normalize_yarrrml_mapping(mappings, prefixes):
                 for i, source in enumerate(mapping_value['sources']):
                     if type(source) is str:
                         mappings['mappings'][mapping_key]['sources'][i] = mappings['sources'][source]
+                    elif type(source) is dict and 'access' in source and source['access'] in mappings['sources']:
+                        # Handle expanded shortcuts like {'access': 'source_name'}
+                        # Replace with the actual source definition
+                        mappings['mappings'][mapping_key]['sources'][i] = mappings['sources'][source['access']]
         mappings.pop('sources')
 
 

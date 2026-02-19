@@ -17,12 +17,16 @@ from io import BytesIO
 from itertools import repeat
 
 from .args_parser import load_config_from_command_line
-from .mapping.mapping_parser import retrieve_mappings
+from .mapping.mapping_parser import retrieve_mappings, MappingParser
 from .materializer import _materialize_mapping_group_to_set
 from .args_parser import load_config_from_argument
 from .constants import RML_TRIPLES_MAP_CLASS, LOGGING_NAMESPACE
+from .mapping.yarrrml import load_yarrrml
+from pathlib import Path
+
 
 LOGGER = logging.getLogger(LOGGING_NAMESPACE)
+
 
 def materialize_set(config, python_source=None):
     config = load_config_from_argument(config)
@@ -34,7 +38,8 @@ def materialize_set(config, python_source=None):
             f'If you need to speed up your data integration pipeline, please run through the command line.')
         config.set_number_of_processes('1')
 
-    rml_df, fnml_df = retrieve_mappings(config)
+    rml_df, fnml_df, http_api_df = retrieve_mappings(config)
+    config.set('CONFIGURATION', 'http_api_df', http_api_df.to_csv())
 
     # keep only asserted mapping rules
     asserted_mapping_df = rml_df.loc[rml_df['triples_map_type'] == RML_TRIPLES_MAP_CLASS]
@@ -110,3 +115,19 @@ def materialize_kafka(config, python_source=None):
         # close the Kafka producer
         if kafka_producer:
             kafka_producer.close()
+
+
+def translate_to_rml(mapping_path):
+    parser = MappingParser(config=None)
+    mapping_graph = Graph()
+    mapping_path = Path(mapping_path)
+
+    if mapping_path.suffix in ['.ttl', '.rdf', '.nt']:
+        mapping_graph.parse(mapping_path, format='ttl')
+    elif mapping_path.suffix in ['.yml', '.yaml', '.yarrrml']:
+        mapping_graph = load_yarrrml(mapping_path)
+
+    mapping_graph = parser._normalize_mapping_graph(mapping_graph)
+    mapping_graph = parser._complete_and_validate_mapping(mapping_graph)
+
+    return mapping_graph

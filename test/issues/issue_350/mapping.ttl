@@ -1,0 +1,22 @@
+@prefix rml: <http://w3id.org/rml/> .
+@prefix rr:  <http://www.w3.org/ns/r2rml#> .
+@prefix ql:  <http://semweb.mmlab.be/ns/ql#> .
+@prefix ex:  <http://example.com/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+<#PersonMapping>
+  rml:logicalSource [
+    rml:source "data.csv" ;
+    rml:referenceFormulation ql:CSV
+  ] ;
+  rr:subjectMap [
+    rr:template "http://example.com/person/{id}"
+  ] ;
+  rr:predicateObjectMap [
+    rr:predicate ex:name ;
+    rr:objectMap [ rml:reference "name" ]
+  ] ;
+  rr:predicateObjectMap [
+    rr:predicate rdf:type ;
+    rr:objectMap [ rr:constant ex:Person ]
+  ] .

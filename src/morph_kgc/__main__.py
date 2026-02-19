@@ -5,7 +5,7 @@ __license__ = "Apache-2.0"
 __maintainer__ = "Julián Arenas-Guerrero"
 __email__ = "arenas.guerrero.julian@outlook.com"
 
-
+import sys
 import time
 import logging
 
@@ -21,13 +21,47 @@ from .mapping.mapping_parser import retrieve_mappings
 from .constants import LOGGING_NAMESPACE, RML_TRIPLES_MAP_CLASS
 from .utils import prepare_output_files
 
+
 LOGGER = logging.getLogger(LOGGING_NAMESPACE)
 
-if __name__ == "__main__":
+
+def main():
 
     config = load_config_from_command_line()
 
-    rml_df, fnml_df = retrieve_mappings(config)
+    from .constants import JELLY
+
+    if config.get_output_format() == JELLY:
+        try:
+            import pyjelly
+        except ImportError as e:
+            raise RuntimeError(
+                "JELLY output requested, but pyjelly[rdflib] is not installed. "
+                "Install: pip install 'morph-kgc[jelly]'"
+            ) from e
+
+        from . import materialize
+        from .utils import create_dirs_in_path
+
+        import sys
+
+        config_path = sys.argv[1] if len(sys.argv) > 1 else None
+
+        if not config_path:
+            LOGGER.error("Config path is missing. Usage: python -m morph_kgc <config.ini>")
+            sys.exit(2)
+
+        graph = materialize(config_path)
+        output_path = config.get_output_file_path(None)
+        create_dirs_in_path(output_path)
+        graph.serialize(destination=output_path, format="jelly")
+
+        LOGGER.info(f'Jelly file generated: {output_path}')
+        LOGGER.info(f'Materialization finished.')
+        sys.exit(0)
+
+    rml_df, fnml_df, http_api_df = retrieve_mappings(config)
+    config.set('CONFIGURATION', 'http_api_df', http_api_df.to_csv())
 
     # keep only asserted mapping rules
     asserted_mapping_df = rml_df.loc[rml_df['triples_map_type'] == RML_TRIPLES_MAP_CLASS]
@@ -58,3 +92,7 @@ if __name__ == "__main__":
 
     LOGGER.info(f'Number of triples generated in total: {num_triples}.')
     LOGGER.info(f'Materialization finished in {get_delta_time(start_time)} seconds.')
+
+
+if __name__ == "__main__":
+    main()

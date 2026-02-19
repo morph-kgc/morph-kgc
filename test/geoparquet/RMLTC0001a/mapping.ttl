@@ -1,0 +1,32 @@
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@prefix ex: <http://example.com/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<#TriplesMap> a rr:TriplesMap;
+  rml:logicalSource [
+    rml:source "test/geoparquet/RMLTC0001a/data.parquet";
+    rml:referenceFormulation <http://example.com/GEOPARQUET>;
+    rml:sourceType "GEOPARQUET"
+  ];
+
+  rr:subjectMap [
+    rr:template "http://example.com/{id}";
+    rr:class ex:Feature
+  ];
+
+  rr:predicateObjectMap [
+    rr:predicate ex:geometry;
+    rr:objectMap [
+      rml:reference "geometry";
+      rr:datatype xsd:string
+    ]
+  ];
+
+  rr:predicateObjectMap [
+    rr:predicate ex:name;
+    rr:objectMap [
+      rml:reference "name"
+    ]
+  ].

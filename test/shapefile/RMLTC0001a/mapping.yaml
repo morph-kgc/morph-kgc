@@ -1,0 +1,12 @@
+prefixes:
+  ex: http://example.com/
+
+mappings:
+  shapefile_map:
+    sources:
+      - [test/shapefile/RMLTC0001a/data.shp~shapefile]
+    s: ex:$(id)
+    po:
+      - [a, ex:Point]
+      - [ex:name, $(name)]
+      - [ex:geometry, $(geometry)]

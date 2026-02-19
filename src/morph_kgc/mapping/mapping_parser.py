@@ -12,6 +12,9 @@ from ..utils import *
 from ..mapping.mapping_constants import *
 from ..mapping.mapping_partitioner import MappingPartitioner
 from ..data_source.relational_db import get_rdb_reference_datatype
+import configparser
+import os
+import rdflib
 
 LOGGER = logging.getLogger(LOGGING_NAMESPACE)
 
@@ -19,10 +22,10 @@ def retrieve_mappings(config):
     mappings_parser = MappingParser(config)
 
     start_time = time.time()
-    rml_df, fnml_df = mappings_parser.parse_mappings()
+    rml_df, fnml_df, http_api_df = mappings_parser.parse_mappings()
     LOGGER.info(f'Mappings processed in {get_delta_time(start_time)} seconds.')
 
-    return rml_df, fnml_df
+    return rml_df, fnml_df, http_api_df
 
 
 def _r2rml_to_rml(mapping_graph):
@@ -79,8 +82,16 @@ def _r2rml_to_rml(mapping_graph):
 
     # replace R2RML objects with RML objects
     r2rml_to_rml_dict = {
+        R2RML_GRAPH_MAP_CLASS: RML_GRAPH_MAP_CLASS,
+        R2RML_JOIN_CLASS: RML_JOIN_CLASS,
+        R2RML_LOGICAL_TABLE_CLASS: RML_ABSTRACT_LOGICAL_SOURCE_CLASS,
+        R2RML_OBJECT_MAP_CLASS: RML_OBJECT_MAP_CLASS,
+        R2RML_PREDICATE_MAP_CLASS: RML_PREDICATE_MAP_CLASS,
+        R2RML_PREDICATE_OBJECT_MAP_CLASS: RML_PREDICATE_OBJECT_MAP_CLASS,
+        R2RML_REF_OBJECT_MAP_CLASS: RML_REF_OBJECT_MAP_CLASS,
+        R2RML_SUBJECT_MAP_CLASS: RML_SUBJECT_MAP_CLASS,
+        R2RML_TERM_MAP_CLASS: RML_TERM_MAP_CLASS,
         R2RML_TRIPLES_MAP_CLASS: RML_TRIPLES_MAP_CLASS,
-        R2RML_LOGICAL_TABLE_CLASS: RML_LOGICAL_TABLE,
         R2RML_DEFAULT_GRAPH: RML_DEFAULT_GRAPH,
         R2RML_IRI: RML_IRI,
         R2RML_LITERAL: RML_LITERAL,
@@ -486,7 +497,29 @@ def _transform_mappings_into_dataframe(mapping_graph, section_name):
     fnml_df.columns = fnml_df.columns.map(str)
     fnml_df = fnml_df.map(str)
 
-    return rml_df, fnml_df
+    # ----------------------------------------------------------------------------------------------
+    # TEMPORAL FOR HTTP API SUPPORT
+    q = """
+        prefix rml: <http://w3id.org/rml/>
+        prefix htv: <http://www.w3.org/2011/http#>
+
+        SELECT DISTINCT ?source ?absolute_path ?field_name ?field_value
+        WHERE {
+        ?source htv:absoluteURI ?absolute_path .
+        OPTIONAL {
+        ?source htv:headers ?headers .
+        ?hearders htv:fieldName ?field_name .
+        ?hearders htv:fieldValue ?field_value .
+        } .
+        }
+        """
+
+    http_api_df = pd.DataFrame(mapping_graph.query(q).bindings)
+    http_api_df.columns = http_api_df.columns.map(str)
+    http_api_df = http_api_df.map(str)
+    # ----------------------------------------------------------------------------------------------
+
+    return rml_df, fnml_df, http_api_df
 
 
 def _is_delimited_identifier(identifier):
@@ -558,6 +591,7 @@ class MappingParser:
     def __init__(self, config):
         self.rml_df = pd.DataFrame(columns=RML_DATAFRAME_COLUMNS)
         self.fnml_df = pd.DataFrame(columns=FNML_DATAFRAME_COLUMNS)
+        self.http_api_df = pd.DataFrame()
         self.config = config
 
     def __str__(self):
@@ -585,7 +619,7 @@ class MappingParser:
         mapping_partitioner = MappingPartitioner(self.rml_df, self.config)
         self.rml_df = mapping_partitioner.partition_mappings()
 
-        return self.rml_df, self.fnml_df
+        return self.rml_df, self.fnml_df, self.http_api_df
 
     def _get_from_r2_rml(self):
         """
@@ -601,38 +635,38 @@ class MappingParser:
         #    self.rml_df = pd.concat([self.rml_df, pd.concat(rml_dfs)])
         #else:
         for section_name in self.config.get_data_sources_sections():
-            data_source_rml_df, data_source_fnml_df = self._parse_data_source_mapping_files(section_name)
+            data_source_rml_df, data_source_fnml_df, data_source_http_api_df = self._parse_data_source_mapping_files(section_name)
             self.rml_df = pd.concat([self.rml_df, data_source_rml_df])
             self.fnml_df = pd.concat([self.fnml_df, data_source_fnml_df])
+            self.http_api_df = pd.concat([self.http_api_df, data_source_http_api_df])
 
         self.rml_df = self.rml_df.reset_index(drop=True)
         self.fnml_df = self.fnml_df.reset_index(drop=True)
+        self.http_api_df = self.http_api_df.reset_index(drop=True)
 
-    def _parse_data_source_mapping_files(self, section_name):
+    def _load_mapping_graph(self, section_name):
         """
-        Creates a Pandas DataFrame with the mapping rules of a data source. It loads the mapping files in an rdflib
-        graph and recognizes the mapping language used. Mappings are translated to RML.
-        It performs queries MAPPING_PARSING_QUERY and JOIN_CONDITION_PARSING_QUERY and process the results to build a
-        DataFrame with the mapping rules. Also verifies that there are not repeated triples maps in the mappings.
+        Load the mapping files defined in the config section and return a combined RDF graph.
         """
 
-        # create an empty graph
         mapping_graph = rdflib.Graph()
-
         mapping_file_paths = self.config.get_mappings_files(section_name)
-        # load mapping rules to the graph
+
         for f in mapping_file_paths:
-            if f.endswith('.yarrrml') or f.endswith('.yml') or f.endswith('.yaml'):
+            if f.endswith(('.yarrrml', '.yml', '.yaml')):
                 mapping_graph += load_yarrrml(f)
             else:
                 # mapping is in an RDF serialization
                 try:
                     # provide file extension when parsing
                     mapping_graph.parse(f, format=os.path.splitext(f)[1][1:].strip())
-                except:
+                except Exception:
                     # if a file extension such as .rml or .r2rml is used, assume it is turtle (issue #80)
                     mapping_graph.parse(f)
+        return mapping_graph
 
+
+    def _normalize_mapping_graph(self, mapping_graph):
         # convert R2RML to RML
         mapping_graph = _r2rml_to_rml(mapping_graph)
         # convert legacy RML to RML
@@ -647,16 +681,40 @@ class MappingParser:
         mapping_graph = _complete_pom_with_default_graph(mapping_graph)
         # if a term as no associated rr:termType, complete it according to R2RML specification
         mapping_graph = _complete_termtypes(mapping_graph)
-        # add rr:TriplesMap typing
+        return mapping_graph
+
+
+    def _complete_and_validate_mapping(self, mapping_graph):
+        """
+        Completes the rr:TriplesMap classes and validates the termtypes.
+        """
+
         mapping_graph = _complete_triples_map_class(mapping_graph)
         
         mapping_graph = _translate_fnml_to_rml_functionmapping(mapping_graph)
         
         # check termtypes are correct
         _validate_termtypes(mapping_graph)
+        return mapping_graph
 
-        # create RML and FNML dataframes
-        return _transform_mappings_into_dataframe(mapping_graph, section_name)
+
+    def _parse_data_source_mapping_files(self, section_name):
+        """
+        Creates a DataFrame with the mapping rules of a data source.
+        Orchestrates the loading, normalization, and validation of the mapping RDF graph.
+        """
+
+        # charge mapping graph
+        mapping_graph = self._load_mapping_graph(section_name)
+
+        # normalize mapping graph
+        mapping_graph_normalized = self._normalize_mapping_graph(mapping_graph)
+
+        # complete and validate mapping graph
+        mapping_graph_validated = self._complete_and_validate_mapping(mapping_graph_normalized)
+
+        # transform mapping graph into DataFrame
+        return _transform_mappings_into_dataframe(mapping_graph_validated, section_name)
 
     def _preprocess_mappings(self):
         # start by removing duplicated triples
@@ -684,13 +742,14 @@ class MappingParser:
         """
 
         for i, rml_rule in self.rml_df.iterrows():
-            if pd.notna(rml_rule['reference_formulation']) and 'SQL' in rml_rule['reference_formulation'].upper():
-                self.rml_df.at[i, 'source_type'] = RDB
-            elif pd.notna(rml_rule['reference_formulation']) and 'CYPHER' in rml_rule['reference_formulation'].upper():
-                self.rml_df.at[i, 'source_type'] = PGDB
-            elif self.config.has_db_url(rml_rule['source_name']):
-                # if db_url but no reference formulation, assume it is a relational database
-                self.rml_df.at[i, 'source_type'] = RDB
+            if self.config.has_db_url(rml_rule['source_name']):
+                if pd.notna(rml_rule['reference_formulation']) and 'SQL' in rml_rule['reference_formulation'].upper():
+                    self.rml_df.at[i, 'source_type'] = RDB
+                elif pd.notna(rml_rule['reference_formulation']) and 'CYPHER' in rml_rule['reference_formulation'].upper():
+                    self.rml_df.at[i, 'source_type'] = PGDB
+                else:
+                    # if db_url but no reference formulation, assume it is a relational database
+                    self.rml_df.at[i, 'source_type'] = RDB
             elif rml_rule['logical_source_type'] == RML_QUERY:
                 # it is a query, but it is not a DB (because no db_url), hence it is a tabular view
                 # assign CSV (it can also be Apache Parquet but format is automatically inferred)
@@ -703,7 +762,10 @@ class MappingParser:
             elif rml_rule['logical_source_type'] == RML_SOURCE:
                 # it is a file, infer source type from file extension
                 file_extension = os.path.splitext(str(rml_rule['logical_source_value']))[1][1:].strip()
-                if file_extension.upper() in FILE_SOURCE_TYPES:
+
+                if pd.notna(rml_rule['reference_formulation']) and GEOPARQUET in rml_rule['reference_formulation'].upper():
+                    self.rml_df.at[i, 'source_type'] = GEOPARQUET
+                elif file_extension.upper() in FILE_SOURCE_TYPES:
                     self.rml_df.at[i, 'source_type'] = file_extension.upper()
                 elif pd.notna(rml_rule['reference_formulation']):
                     # if file extension is not recognized, use reference formulation

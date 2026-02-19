@@ -28,7 +28,7 @@
     - **Hierarchical files**: [JSON](https://www.json.org), [XML](https://www.w3.org/TR/xml/).
     - **In-memory data structures**: [Python Dictionaries](https://docs.python.org/3/tutorial/datastructures.html#dictionaries), [DataFrames](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html).
     - **Cloud data lake solutions**: [Databricks](https://www.databricks.com/), [Snowflake](https://www.snowflake.com/).
-    - **Property graph databases**: [Neo4j](https://neo4j.com/), [Kùzu](https://kuzudb.com).
+    - **Property graph databases**: [Neo4j](https://neo4j.com/), [Kùzu](https://github.com/kuzudb/kuzu).
 
 ## Documentation :bookmark_tabs:
 
@@ -49,10 +49,10 @@ We recommend to use [virtual environments](https://docs.python.org/3/library/ven
 
 To run the engine via **command line** you just need to execute the following:
 ```bash
-python3 -m morph_kgc config.ini
+morph_kgc config.ini
 ```
 
-Check the **[documentation](https://morph-kgc.readthedocs.io/endocumentation/#configuration)** to see how to generate the configuration **INI file**. **[Here](https://github.com/morph-kgc/morph-kgc/blob/main/examples/configuration-file/default_config.ini)** you can also see an example INI file.
+Check the **[documentation](https://morph-kgc.readthedocs.io/en/stable/documentation/#configuration)** to see how to generate the configuration **INI file**. **[Here](https://github.com/morph-kgc/morph-kgc/blob/main/examples/configuration-file/default_config.ini)** you can also see an example INI file.
 
 It is also possible to run Morph-KGC as a **library** with **[RDFLib](https://rdflib.readthedocs.io)** and **[Oxigraph](https://pyoxigraph.readthedocs.io/en)**:
 ```python

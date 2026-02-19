@@ -180,7 +180,7 @@ class MappingPartitioner:
 
         LOGGER.info(f"Mapping partition with {len(set(self.rml_df['mapping_partition']))} groups generated.")
         LOGGER.info('Maximum number of rules within mapping group: '
-                     f"{self.rml_df['mapping_partition'].value_counts().iloc[0]}.")
+                     f"{self.rml_df['mapping_partition'].value_counts().iat[0]}.")
 
         return self.rml_df
 
