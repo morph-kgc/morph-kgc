@@ -56,8 +56,12 @@ def _read_inmemory_json(source_value, rml_rule, references):
 
     jsonpath_result = JSONPath(jsonpath_expression).parse(json_data)
     # normalize and remove nulls
-    json_df = pd.json_normalize([json_object for json_object in normalize_hierarchical_data(jsonpath_result) if
-                                 None not in json_object.values()])
+    json_df = pd.json_normalize([
+        json_object
+        for json_object in normalize_hierarchical_data(jsonpath_result)
+        if None not in json_object.values()
+        and all(reference.split('.')[0] in json_object for reference in references)
+    ])
 
     # add columns with null values for those references in the mapping rule that are not present in the data file
     missing_references_in_df = list(set(references).difference(set(json_df.columns)))
