@@ -22,7 +22,7 @@ def get_ram_data(rml_rule, references, python_source=None):
     if isinstance(source_value, pd.DataFrame):
         for col in source_value.select_dtypes(include=['object']).columns:
             source_value[col] = source_value[col].apply(lambda x:
-                                                        x.replace('"', '') if isinstance(x, str)
+                                                        x[1:-1] if isinstance(x, str) and x.startswith('"') and x.endswith('"')
                                                         else x)
         return source_value[references]
     elif isinstance(source_value, list):
