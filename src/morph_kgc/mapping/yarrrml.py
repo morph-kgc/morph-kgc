@@ -11,6 +11,7 @@ import rdflib
 from ruamel.yaml import YAML
 from copy import deepcopy
 from random import randint
+import re
 
 from ..constants import *
 
@@ -257,7 +258,60 @@ def _normalize_property_in_predicateobjects(mappings, property):
     return mappings
 
 
-def _normalize_function_parameters(term_map):
+def _normalize_conditional_mappings(mappings: dict):
+    """
+    Recursively normalizes conditional mappings in a nested dictionary structure.
+    This function processes a dictionary of mappings and modifies it in-place to handle
+    conditional creates. If a mapping contains a "condition" key with a "function" that
+    is not "equal" (not a join), it transforms the mapping by replacing the condition with a new
+    structure that includes a "trueCondition" function and its associated parameters.
+    That ensures that the mappings are only created if the conditions are met.
+    The function also ensures that nested dictionaries are processed recursively.
+    Args:
+        mappings (dict): A dictionary containing the mappings to be normalized.
+    Returns:
+        dict: The normalized dictionary with updated conditional mappings.
+    """
+    keys_to_iterate = [yaml_key for yaml_key in mappings]
+    for yaml_key in keys_to_iterate:
+        if yaml_key != "condition" and type(mappings[yaml_key]) == dict:
+            mappings[yaml_key] = _normalize_conditional_mappings(mappings[yaml_key])
+        if "condition" in mappings:
+            if (type(mappings["condition"]) == list):
+                mappings["condition"] = mappings["condition"][0]
+            if (
+                "function" in mappings["condition"]
+                and mappings["condition"]["function"] != "equal"
+            ):
+                condition_function = {
+                    "objects": {
+                        "type": (
+                            mappings["objects"]["type"]
+                            if "type" in mappings["objects"]
+                            else "literal"
+                        ),
+                        
+                            "function": "https://w3id.org/imec/idlab/function#trueCondition",
+                            "parameters": [
+                                {
+                                    "parameter": "https://w3id.org/imec/idlab/function#str",
+                                    "value": mappings["objects"]["value"],
+                                },
+                                {
+                                    "parameter": "https://w3id.org/imec/idlab/function#strBoolean",
+                                    "value": mappings["condition"],
+                                },
+                            ],
+                        
+                    }
+                }
+                mappings.update(condition_function)
+                mappings.pop("condition")
+
+    return mappings
+
+
+def _normalize_function_parameters(term_map, prefixes):
     if type(term_map) is dict and 'parameters' in term_map:
         if type(term_map['parameters']) is list:
             for i, parameter in enumerate(term_map['parameters']):
@@ -267,22 +321,30 @@ def _normalize_function_parameters(term_map):
                     term_map['parameters'][i] = parameter
 
                 if type(term_map['parameters'][i]['value']) is dict and 'function' in term_map['parameters'][i]['value']:
-                    #term_map['parameters'][i]['parameter'] = term_map['parameters'][i]['parameter']
-                    term_map['parameters'][i]['value'] = _normalize_function_parameters(term_map['parameters'][i]['value'])
-    elif type(term_map) is str and term_map['function'].endswith(')'):
+                    term_map['parameters'][i]['parameter'] = term_map['parameters'][i]['parameter']
+                    # term_map['parameters'][i]['value'] = _normalize_function_parameters(term_map['parameters'][i]['value'], prefixes)
+    elif type(term_map) is dict and 'function' in term_map and term_map['function'].endswith(')'):
         # inline function examples 99 & 101 YARRRML spec
         inline_function = term_map['function']
         function_id = inline_function.split('(')[0]
         # get the parameters by removing the function id, the parenthesis, and whitespaces
         inline_inputs = inline_function.replace(function_id, '')[1:-1]
-        inline_inputs = inline_inputs.replace(' ', '')
+        inline_inputs = re.sub(r"((\s))|((' ')|(\" \"))", r"\3", inline_inputs)
 
         inline_parameters_dict = {}
         for input in inline_inputs.split(','):
             input_parameter, input_value = input.split('=')
+            if input_value.startswith("\"") and input_value.endswith("\"") or \
+                input_value.startswith("'") and input_value.endswith("'"):
+                # remove the quotes from the value
+                input_value = input_value[1:-1]
             if not input_parameter.startswith('http') and ':' not in input_parameter:
                 # the prefix of the parameter is the same as the prefix of the function
-                input_parameter = f"{function_id.split(':')[0]}:{input_parameter}"
+                included_prefixes = list(prefixes.values())
+                for included_prefix in included_prefixes:
+                    if function_id.startswith(included_prefix):
+                        input_parameter = included_prefix + input_parameter
+                        break              
             inline_parameters_dict[input_parameter] = input_value
 
         # final normalized term map
@@ -295,7 +357,7 @@ def _normalize_function_parameters(term_map):
     return term_map
 
 
-def _normalize_yarrrml_mapping(mappings):
+def _normalize_yarrrml_mapping(mappings, prefixes):
 
     #############################################################################
     ############################ NORMALIZE SOURCES ##############################
@@ -412,14 +474,14 @@ def _normalize_yarrrml_mapping(mappings):
     #############################################################################
     ############################ FUNCTIONS ######################################
     #############################################################################
-
+    mappings = _normalize_conditional_mappings(mappings)
     for mapping_key, mapping_value in mappings['mappings'].items():
         if 'subjects' in mapping_value and type(mapping_value['subjects']) is dict and 'function' in mapping_value['subjects']:
-            mapping_value['subjects'] = _normalize_function_parameters(mapping_value['subjects'])
+            mapping_value['subjects'] = _normalize_function_parameters(mapping_value['subjects'], prefixes)
         if type(mapping_value) is dict and 'predicateobjects' in mapping_value:
             for position in ['predicates', 'objects', 'graphs']:
                 if position in mapping_value['predicateobjects'] and 'function' in mapping_value['predicateobjects'][position]:
-                    mapping_value['predicateobjects'][position] = _normalize_function_parameters(mapping_value['predicateobjects'][position])
+                    mapping_value['predicateobjects'][position].update(_normalize_function_parameters(mapping_value['predicateobjects'][position], prefixes))
 
     #############################################################################
     ############################ INVERSE PREDICATES #############################
@@ -439,7 +501,7 @@ def _normalize_yarrrml_mapping(mappings):
                     inverse_mapping_value = mapping_value.copy()
                     inverse_mapping_value['subjects'] = mapping_value['predicateobjects']['objects']
                     inverse_mapping_value['predicateobjects'] = {}
-                    inverse_mapping_value['predicates'] = inverse_predicate
+                    inverse_mapping_value['predicateobjects']['predicates'] = inverse_predicate
                     inverse_mapping_value['predicateobjects']['objects'] = mapping_value['subjects']
                     mappings['mappings'][f'{mapping_key}_inverse{randint(0,1000000)}'] = inverse_mapping_value
 
@@ -652,9 +714,9 @@ def load_yarrrml(yarrrml_file):
         yarrrml_mapping = _replace_yarrrml_external_references(yarrrml_mapping, yarrrml_mapping['external'])
         yarrrml_mapping.pop('external')
     yarrrml_mapping = _expand_prefixes_in_yarrrml_templates(yarrrml_mapping, yarrrml_mapping['prefixes'])
-    yarrrml_mapping.pop('prefixes')
+    prefixes = yarrrml_mapping.pop('prefixes')
 
-    yarrrml_mapping = _normalize_yarrrml_mapping(yarrrml_mapping)
+    yarrrml_mapping = _normalize_yarrrml_mapping(yarrrml_mapping, prefixes)
     rml_mapping = _translate_yarrrml_to_rml(yarrrml_mapping)
 
     return rml_mapping

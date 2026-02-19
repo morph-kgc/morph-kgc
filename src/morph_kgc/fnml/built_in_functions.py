@@ -126,7 +126,6 @@ def array_slice(string_list, start, end=None):
     fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#array_join",
     array="http://users.ugent.be/~bjdmeest/function/grel.ttl#p_array_a",
     p_string_sep="http://users.ugent.be/~bjdmeest/function/grel.ttl#p_string_sep",
-
 )
 def array_join(array: list | str, p_string_sep):
     # it does not explode
@@ -213,7 +212,6 @@ def controls_if_cast(string, value_true, value_false=None):
 @bif(
     fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#boolean_and",
     bool_input="http://users.ugent.be/~bjdmeest/function/grel.ttl#param_rep_b",
-
 )
 def boolean_and(bool_input: list | str):
     if type(bool_input) == str:
@@ -224,7 +222,6 @@ def boolean_and(bool_input: list | str):
 @bif(
     fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#boolean_or",
     bool_input="http://users.ugent.be/~bjdmeest/function/grel.ttl#param_rep_b",
-
 )
 def boolean_and(bool_input: list | str):
     if type(bool_input) == str:
@@ -235,7 +232,6 @@ def boolean_and(bool_input: list | str):
 @bif(
     fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#boolean_xor",
     bool_input="http://users.ugent.be/~bjdmeest/function/grel.ttl#param_rep_b",
-
 )
 def boolean_xor(bool_input: list | str):
     if type(bool_input) == str:
@@ -246,11 +242,21 @@ def boolean_xor(bool_input: list | str):
 @bif(
     fun_id="http://users.ugent.be/~bjdmeest/function/grel.ttl#boolean_not",
     bool_input="http://users.ugent.be/~bjdmeest/function/grel.ttl#bool_b",
-
 )
 def boolean_not(bool_input):
     return str(not (True if bool_input.lower() in ["true", 1] else False)).lower()
 
+
+@bif(
+    fun_id="https://w3id.org/imec/idlab/function#trueCondition",
+    bool_input="https://w3id.org/imec/idlab/function#str",
+    bool_check = "https://w3id.org/imec/idlab/function#strBoolean"
+)
+def boolean_true(bool_input:list|str, bool_check:list|str=None):
+    if type(bool_check) == str and eval(bool_check.title()):
+        return bool_input
+    return None
+        
 
 ##############################################################################
 ########################   DATE   ############################################
@@ -1317,7 +1323,9 @@ def to_upper_case_url(url):
     return f"http://{encode_value(url.upper())}"
 
 
-@bif(fun_id="https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#uuid")
+@bif(
+    fun_id="https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#uuid"
+)
 def uuid():
     return str(uuid4())
 

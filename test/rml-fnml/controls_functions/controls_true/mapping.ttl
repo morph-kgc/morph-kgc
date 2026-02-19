@@ -1,0 +1,112 @@
+@prefix ex: <http://example.com#>.
+@prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix rml: <http://semweb.mmlab.be/ns/rml#>.
+@prefix rr: <http://www.w3.org/ns/r2rml#>.
+
+<http://mapping.example.com/fn_000>
+  rml:logicalSource <http://mapping.example.com/source_000>;
+  rr:predicateObjectMap
+    <http://mapping.example.com/pom_001>,
+    <http://mapping.example.com/pom_004>,
+    <http://mapping.example.com/pomexec_000>.
+
+<http://mapping.example.com/fn_001>
+  rml:logicalSource <http://mapping.example.com/source_000>;
+  rr:predicateObjectMap
+    <http://mapping.example.com/pom_002>,
+    <http://mapping.example.com/pom_003>,
+    <http://mapping.example.com/pomexec_001>.
+
+<http://mapping.example.com/map_cars_000> a rr:TriplesMap;
+  rml:logicalSource <http://mapping.example.com/source_000>;
+  rdfs:label "cars";
+  rr:predicateObjectMap <http://mapping.example.com/pom_000>;
+  rr:subjectMap <http://mapping.example.com/s_000>.
+
+<http://mapping.example.com/om_000> a <http://semweb.mmlab.be/ns/fnml#FunctionTermMap>;
+  <http://semweb.mmlab.be/ns/fnml#functionValue> <http://mapping.example.com/fn_000>;
+  rr:termType rr:Literal.
+
+<http://mapping.example.com/om_001> a <http://semweb.mmlab.be/ns/fnml#FunctionTermMap>, rr:ObjectMap;
+  <http://semweb.mmlab.be/ns/fnml#functionValue> <http://mapping.example.com/fn_001>.
+
+<http://mapping.example.com/om_002> a rr:ObjectMap;
+  rml:reference "Model";
+  rr:termType rr:Literal.
+
+<http://mapping.example.com/om_003> a rr:ObjectMap;
+  rr:constant "Toyota";
+  rr:termType rr:Literal.
+
+<http://mapping.example.com/om_004> a rr:ObjectMap;
+  rr:constant "http://example.com#LargeCar";
+  rr:termType rr:Literal.
+
+<http://mapping.example.com/omexec_000>
+  rr:constant "https://w3id.org/imec/idlab/function#trueCondition";
+  rr:termType rr:IRI.
+
+<http://mapping.example.com/omexec_001>
+  rr:constant "http://users.ugent.be/~bjdmeest/function/grel.ttl#string_startsWith";
+  rr:termType rr:IRI.
+
+<http://mapping.example.com/pm_000> a rr:PredicateMap;
+  rr:constant rdf:type.
+
+<http://mapping.example.com/pm_001> a rr:PredicateMap;
+  rr:constant <https://w3id.org/imec/idlab/function#strBoolean>.
+
+<http://mapping.example.com/pm_002> a rr:PredicateMap;
+  rr:constant grel:valueParameter.
+
+<http://mapping.example.com/pm_003> a rr:PredicateMap;
+  rr:constant grel:string_sub.
+
+<http://mapping.example.com/pm_004> a rr:PredicateMap;
+  rr:constant <https://w3id.org/imec/idlab/function#str>.
+
+<http://mapping.example.com/pmexec_000>
+  rr:constant <https://w3id.org/function/ontology#executes>.
+
+<http://mapping.example.com/pmexec_001>
+  rr:constant <https://w3id.org/function/ontology#executes>.
+
+<http://mapping.example.com/pom_000> a rr:PredicateObjectMap;
+  rr:objectMap <http://mapping.example.com/om_000>;
+  rr:predicateMap <http://mapping.example.com/pm_000>.
+
+<http://mapping.example.com/pom_001> a rr:PredicateObjectMap;
+  rr:objectMap <http://mapping.example.com/om_001>;
+  rr:predicateMap <http://mapping.example.com/pm_001>.
+
+<http://mapping.example.com/pom_002> a rr:PredicateObjectMap;
+  rr:objectMap <http://mapping.example.com/om_002>;
+  rr:predicateMap <http://mapping.example.com/pm_002>.
+
+<http://mapping.example.com/pom_003> a rr:PredicateObjectMap;
+  rr:objectMap <http://mapping.example.com/om_003>;
+  rr:predicateMap <http://mapping.example.com/pm_003>.
+
+<http://mapping.example.com/pom_004> a rr:PredicateObjectMap;
+  rr:objectMap <http://mapping.example.com/om_004>;
+  rr:predicateMap <http://mapping.example.com/pm_004>.
+
+<http://mapping.example.com/pomexec_000>
+  rr:objectMap <http://mapping.example.com/omexec_000>;
+  rr:predicateMap <http://mapping.example.com/pmexec_000>.
+
+<http://mapping.example.com/pomexec_001>
+  rr:objectMap <http://mapping.example.com/omexec_001>;
+  rr:predicateMap <http://mapping.example.com/pmexec_001>.
+
+<http://mapping.example.com/rules_000> a <http://rdfs.org/ns/void#Dataset>;
+  <http://rdfs.org/ns/void#exampleResource> <http://mapping.example.com/map_cars_000>.
+
+<http://mapping.example.com/s_000> a rr:SubjectMap;
+  rr:template "http://example.com#car_{ID}".
+
+<http://mapping.example.com/source_000> a rml:LogicalSource;
+  rml:referenceFormulation <http://semweb.mmlab.be/ns/ql#CSV>;
+  rml:source "cars.csv".

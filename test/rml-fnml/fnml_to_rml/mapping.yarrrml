@@ -1,0 +1,48 @@
+prefixes:
+    ex: http://example.com#
+    grel: http://users.ugent.be/~bjdmeest/function/grel.ttl#
+mappings:
+    cars:
+        sources:
+            - access: cars.csv
+              referenceFormulation: csv
+        subjects: ex:car_$(ID)
+        po:
+            - p: ex:model
+              o:
+                  value: $(Model)
+            - p: ex:seats
+              o:
+                  value: $(Seats)
+                  datatype: xsd:integer
+            - p: ex:registrationYear
+              o:
+                  value: $(Year)
+                  datatype: xsd:gYear
+            - predicates: ex:color
+              objects:
+                  type: iri
+                  function: grel:toLowerCase
+                  parameters:
+                      - parameter: grel:valueParameter
+                        value: ex:color_$(Color)
+            - predicates: ex:brand
+              objects:
+                  function: grel:array_get
+                  parameters:
+                      - parameter: grel:p_array_a
+                        value:
+                            function: grel:string_split
+                            parameters:
+                                - parameter: grel:valueParameter
+                                  value: $(Model)
+                                - parameter: grel:p_string_sep
+                                  value: ' '
+                      - parameter: grel:param_int_i_from
+                        value: 0
+                      - parameter: grel:param_int_i_opt_to
+                        value: 1
+            - predicates: rdf:type
+              objects:
+                value: ex:Car
+                type: iri

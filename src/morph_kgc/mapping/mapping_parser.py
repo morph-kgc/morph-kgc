@@ -355,7 +355,101 @@ def _get_join_conditions_dict(join_query_results):
 
     return join_conditions_dict
 
+def _translate_fnml_to_rml_functionmapping(mapping_graph):
+    """
+    Translates an FNML (Function Mapping Language) mapping to an RML (RDF Mapping Language) function mapping.
+    This function processes a given RDF graph containing FNML mappings and converts them into RML-compatible
+    function mappings. It queries the graph for function mappings, creates corresponding blank nodes for
+    function executions, function maps, and input mappings, and adds these to the graph.
+    Args:
+        mapping_graph (rdflib.Graph): The RDF graph containing the FNML mappings to be translated.
+    Returns:
+        rdflib.Graph: The updated RDF graph with the translated RML function mappings.
+    Notes:
+        - The function uses a SPARQL query to extract FNML function mappings from the input graph.
+        - It ensures that mappings are grouped by function caller and function ID, creating new blank nodes
+          for each unique combination.
+        - The Yarrrml-converter uses the R2RML namespace for certain mappings, which is accounted for in the
+          SPARQL query filters.
+    """
+    FNML_FUNCTION_QUERY = """
+PREFIX fnml: <http://semweb.mmlab.be/ns/fnml#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rml: <http://w3id.org/rml/>
+PREFIX rr: <http://www.w3.org/ns/r2rml#>
 
+SELECT *
+WHERE {
+  ?functionCaller fnml:functionValue [ rml:predicateObjectMap [ rml:predicateMap/rml:constant <https://w3id.org/function/ontology#executes> ;
+       rml:objectMap/rml:constant ?functionID ], [ rml:predicateMap [ rml:constant ?parameter ] ;
+       rml:objectMap [ ?_objectConnector ?_objectValue ] ] ] .
+    OPTIONAL {    ?_callingOM fnml:functionValue ?_objectValue}
+   
+  # The Yarrrml-converter uses the R2RML namespace here, so I do not want to specify it.
+  
+  FILTER (!STRSTARTS(str(?parameter), str(rr:)))
+ # FILTER (!STRSTARTS(str(?objectValue), str(rr:)))
+  FILTER(?parameter != <https://w3id.org/function/ontology#executes>)
+  FILTER(?_objectConnector != <http://w3id.org/rml/termType>)
+  FILTER(?_objectConnector != rdf:type)
+  BIND(IF(?_objectConnector = fnml:functionValue, rml:functionExecution, ?_objectConnector) AS ?objectConnector)
+  BIND(IF(?_objectConnector = fnml:functionValue, ?_callingOM, ?_objectValue) AS ?objectValue)
+  
+}
+ORDER BY ?functionCaller ?parameter
+# """
+    
+    qres = mapping_graph.query(FNML_FUNCTION_QUERY)
+    previous_functionCaller = None
+    blank_functionexecution = None
+    previous_functionID = None
+    
+    innerFunctionsToConnect = {}
+    for row in qres:
+        if previous_functionID != row.functionID:
+            previous_functionID = row.functionID
+            blanknode_functionmap = rdflib.BNode()
+        if previous_functionCaller != row.functionCaller:
+            previous_functionCaller = row.functionCaller
+            blank_functionexecution = rdflib.BNode()
+            mapping_graph.add((rdflib.URIRef(row.functionCaller), rdflib.term.URIRef("functionExecution", RML_NAMESPACE),blank_functionexecution))
+            mapping_graph.add((blank_functionexecution, rdflib.URIRef("functionMap", RML_NAMESPACE), blanknode_functionmap))
+            mapping_graph.add((blanknode_functionmap, rdflib.URIRef("constant", RML_NAMESPACE), row.functionID)) 
+        
+        blank_functioninput = rdflib.BNode()
+        mapping_graph.add((blank_functionexecution, rdflib.term.URIRef("input", RML_NAMESPACE), blank_functioninput))
+        blank_input_value_map = rdflib.BNode()
+        mapping_graph.add((blank_functioninput, rdflib.term.URIRef("inputValueMap", RML_NAMESPACE), blank_input_value_map))
+        if "functionExecution" in row.objectConnector :
+            innerFunctionsToConnect[row.objectValue] = blank_input_value_map
+        else:
+            mapping_graph.add((blank_input_value_map, rdflib.term.URIRef(row.objectConnector), row.objectValue))
+        blank_input_parameter_map = rdflib.BNode()
+        mapping_graph.add((blank_functioninput, rdflib.URIRef("parameterMap", RML_NAMESPACE), blank_input_parameter_map))
+        mapping_graph.add((blank_input_parameter_map, rdflib.term.URIRef("constant", RML_NAMESPACE), row.parameter))
+        for inner_function_om,outer_blanknode in innerFunctionsToConnect.items():
+            inner_function_blank = [e for e in mapping_graph.objects(rdflib.URIRef(inner_function_om), rdflib.term.URIRef("functionExecution", RML_NAMESPACE))]
+            if(len(inner_function_blank) > 0):
+                mapping_graph.add((outer_blanknode, rdflib.term.URIRef("functionExecution", RML_NAMESPACE), inner_function_blank[0]))
+                
+    mapping_graph.update("""
+PREFIX fnml: <http://semweb.mmlab.be/ns/fnml#>
+PREFIX rml: <http://w3id.org/rml/>
+PREFIX rr: <http://www.w3.org/ns/r2rml#>
+
+DELETE {
+  ?functionCaller fnml:functionValue ?functionValue .
+  ?functionValue ?functionMap ?POMMaps .
+  ?POMMaps ?DeeperMaps ?PredicateAndObjectMaps .
+}
+WHERE {
+  ?functionCaller fnml:functionValue ?functionValue .
+  ?functionValue ?functionMap ?POMMaps .
+  ?POMMaps ?DeeperMaps ?PredicateAndObjectMaps .
+  FILTER(?functionMap != rml:logicalSource)
+} """)
+    return mapping_graph   
+    
 def _transform_mappings_into_dataframe(mapping_graph, section_name):
     """
     Builds a Pandas DataFrame from the results obtained from MAPPING_PARSING_QUERY and
@@ -596,6 +690,10 @@ class MappingParser:
         """
 
         mapping_graph = _complete_triples_map_class(mapping_graph)
+        
+        mapping_graph = _translate_fnml_to_rml_functionmapping(mapping_graph)
+        
+        # check termtypes are correct
         _validate_termtypes(mapping_graph)
         return mapping_graph
 

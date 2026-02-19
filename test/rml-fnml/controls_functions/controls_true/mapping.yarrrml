@@ -1,0 +1,21 @@
+# yaml-language-server: $schema=https://rdmr.eu/yarrrml-json-schema/yarrrml-json-schema.json
+prefixes:
+  ex: http://example.com#
+  grel: http://users.ugent.be/~bjdmeest/function/grel.ttl#
+mappings:
+  cars:
+    sources:
+      - access: cars.csv
+        referenceFormulation: csv
+    subjects: ex:car_$(ID)
+    po:
+      - p: rdf:type
+        o: ex:LargeCar
+        type: iri
+        condition:
+            function: grel:string_startsWith
+            parameters:
+            - parameter: grel:valueParameter
+              value: $(Model)
+            - parameter: grel:string_sub
+              value: Toyota
