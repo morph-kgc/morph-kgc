@@ -123,7 +123,7 @@ def _materialize_template(results_df, template, expression_type, config, positio
                 results_df['reference_results'] = results_df['reference_results'].str.lower()
             elif datatype == XSD_DATETIME:
                 results_df['reference_results'] = results_df['reference_results'].str.replace(' ', 'T', regex=False)
-            elif datatype == XSD_INTEGER:
+            elif datatype == XSD_INTEGER or datatype == XSD_NONNEGATIVEINTEGER:
                 # Make integers not end with .0
                 results_df['reference_results'] = results_df['reference_results'].astype(float).astype(int).astype(str)
 
@@ -172,7 +172,7 @@ def _materialize_fnml_execution(results_df, fnml_execution, fnml_df, config, pos
         elif datatype == XSD_DATETIME:
             results_df[fnml_execution] = results_df[fnml_execution].str.replace(' ', 'T', regex=False)
         # Make integers not end with .0
-        elif datatype == XSD_INTEGER:
+        elif datatype == XSD_INTEGER or datatype == XSD_NONNEGATIVEINTEGER:
             results_df[fnml_execution] = results_df[fnml_execution].astype(float).astype(int).astype(str)
 
         results_df['reference_results'] = results_df['reference_results'].str.replace('\\', '\\\\', regex=False).str.replace('\n', '\\n', regex=False).str.replace('\r', '\\r', regex=False).str.replace('"', '\\"', regex=False)
