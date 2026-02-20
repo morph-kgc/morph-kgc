@@ -119,7 +119,6 @@ def _materialize_template(results_df, template, expression_type, config, positio
             else:
                 results_df['reference_results'] = results_df['reference_results'].apply(lambda x: encode_value(x))
         elif termtype.strip() == RML_LITERAL:
-            # Natural Mapping of SQL Values (https://www.w3.org/TR/r2rml/#natural-mapping)
             if datatype == XSD_BOOLEAN:
                 results_df['reference_results'] = results_df['reference_results'].str.lower()
             elif datatype == XSD_DATETIME:
