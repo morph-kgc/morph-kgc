@@ -7,7 +7,10 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 
 
 import logging
+
 import pandas as pd
+import sql_metadata
+from sqlalchemy.exc import SQLAlchemyError
 
 from ..constants import *
 
@@ -144,7 +147,8 @@ def get_rdb_reference_datatype(config, rml_rule, reference):
                 if inferred_data_type:
                     # already found it, end looping
                     break
-            except:
+            except (SQLAlchemyError, KeyError, ValueError, TypeError):
+                # Column not found in this table or query failed - try next table
                 pass
 
     return inferred_data_type
@@ -173,15 +177,118 @@ def _build_sql_query(rml_rule, references):
     return query
 
 
+def _get_table_schema(connection_database, dialect: str, name_table: str) -> dict[str: str]:
+
+    """
+    Get schema information for a table to ensure `DataFrame` columns have proper types.
+    Returns a dict mapping column names to their SQL data types.
+    """
+    schema_dict = {}
+
+    try:
+        if dialect == SQLITE:
+            # Use PRAGMA to get declared column types
+            schema_query = f"PRAGMA table_info('{name_table}')"
+            schema_df = pd.read_sql_query(schema_query, con=connection_database)
+            for _, row in schema_df.iterrows():
+                schema_dict[row['name']] = row['type'].upper() if row['type'] else 'TEXT'
+        elif dialect == ORACLE:
+            schema_query = f"SELECT COLUMN_NAME, DATA_TYPE FROM all_tab_columns WHERE TABLE_NAME = '{name_table}'"
+            schema_df = pd.read_sql_query(schema_query, con=connection_database)
+            for _, row in schema_df.iterrows():
+                schema_dict[row['COLUMN_NAME']] = row['DATA_TYPE'].upper()
+        else:
+            # Use `information_schema` for other RDBMS products.
+            schema_query = f"SELECT `column_name`, `data_type` FROM `information_schema`.`columns` WHERE `table_name`='{name_table}'"
+            schema_query = _replace_query_enclosing_characters(schema_query, dialect)
+            schema_df = pd.read_sql_query(schema_query, con=connection_database)
+            for _, row in schema_df.iterrows():
+                col_name_key = 'column_name' if 'column_name' in schema_df.columns else 'COLUMN_NAME'
+                data_type_key = 'data_type' if 'data_type' in schema_df.columns else 'DATA_TYPE'
+                schema_dict[row[col_name_key]] = row[data_type_key].upper()
+    except (KeyError, ValueError) as exception:
+        # Schema query returned unexpected format
+        LOGGER.exception(f"Could not parse schema information for table {name_table}.")
+        raise
+    except (SQLAlchemyError, TypeError) as exception:
+        # Schema lookup not available or failed - continue without schema typing
+        LOGGER.warning(f"Schema information not available for table {name_table}, using Pandas type inference")
+        LOGGER.debug(f"Schema retrieval error details: {exception}")
+
+    return schema_dict
+
+
+def _apply_schema_types_to_columns(dataframe: pd.DataFrame, schema_dict: dict[str: str]) -> pd.DataFrame:
+    """
+    Apply proper dtypes based on schema information when pandas type inference is insufficient.
+    This handles columns with `object` dtype (where Pandas couldn't infer a specific type) and
+    columns containing only `NULL` values (where type inference is impossible).
+    """
+    for column in dataframe.columns:
+        if column not in schema_dict:
+            continue
+
+        dtype_current = str(dataframe[column].dtype)
+
+        # Apply schema-based type when dtype is 'object' (Pandas couldn't determine a specific type)
+        if dtype_current == 'object' or dataframe[column].isna().all():
+            type_actual = schema_dict[column]
+
+            try:
+                # Map SQL types to Pandas nullable dtypes.
+                # Natural Mapping of SQL Values (https://www.w3.org/TR/r2rml/#natural-mapping)
+                if any(type_integer in type_actual for type_integer in ['INT', 'SERIAL', 'TINYINT', 'SMALLINT', 'BIGINT']):
+                    dataframe[column] = dataframe[column].astype('Int64')
+                elif any(type_float in type_actual for type_float in ['FLOAT', 'REAL', 'DOUBLE', 'DECIMAL', 'DOUBLE PRECISION', 'NUMERIC', 'NUMBER']):
+                    dataframe[column] = dataframe[column].astype('Float64')
+                elif any(type_boolean in type_actual for type_boolean in ['BOOL']):
+                    dataframe[column] = dataframe[column].astype('boolean')
+                elif any(type_text in type_actual for type_text in ['CHAR', 'TEXT', 'VARCHAR', 'CLOB']):
+                    dataframe[column] = dataframe[column].astype('string')
+                # TODO: Map time expressions and BLOBs too.
+            except (ValueError, TypeError) as exception:
+                # Type conversion failed - keep Pandas-inferred dtype.
+                LOGGER.warning(f"Could not apply schema type {type_actual} to column {column}: {exception}")
+
+    return dataframe
+
+
 def get_sql_data(config, rml_rule, references):
     sql_query = _build_sql_query(rml_rule, references)
     if sql_query is None:
         # in case all term maps are constants e.g. R2RML test case R2RMLTC0006a
         return pd.DataFrame(columns=list(references))
 
-    db_connection, db_dialect = _relational_db_connection(config, rml_rule['source_name'])
-    sql_query = _replace_query_enclosing_characters(sql_query, db_dialect)
+    connection_database, dialect = _relational_db_connection(config, rml_rule['source_name'])
+    sql_query = _replace_query_enclosing_characters(sql_query, dialect)
 
     LOGGER.debug(f"SQL query for mapping rule `{rml_rule['triples_map_id']}`: [{sql_query}]")
 
-    return pd.read_sql_query(sql_query, con=db_connection, coerce_float=False)
+    dataframe = pd.read_sql_query(sql_query, con=connection_database, coerce_float=False)
+
+    # Apply schema-based types when Pandas’ type inference is ambiguous.
+    if len(dataframe.columns) > 0:
+        schema_dict = {}
+
+        if rml_rule['logical_source_type'] == RML_TABLE_NAME:
+            name_table = rml_rule['logical_source_value']
+            # Handle schema-qualified table names.
+            if '.' in name_table:
+                name_table = name_table.split('.')[-1]
+            schema_dict = _get_table_schema(connection_database, dialect, name_table)
+        elif rml_rule['logical_source_type'] == RML_QUERY:
+            # For queries, try to extract table names and merge their schemas.
+            try:
+                names_table = sql_metadata.Parser(rml_rule['logical_source_value']).tables
+                for name_table in names_table:
+                    table_schema = _get_table_schema(connection_database, dialect, name_table)
+                    schema_dict.update(table_schema)
+            except (ValueError, AttributeError) as exception:
+                # SQL parsing failed or unexpected parser structure
+                LOGGER.exception(f"Could not extract table names from query.")
+                raise
+
+        if schema_dict:
+            dataframe = _apply_schema_types_to_columns(dataframe, schema_dict)
+
+    return dataframe
