@@ -80,6 +80,7 @@ all = [
   'morph_kgc[postgresql]',
   'morph_kgc[oracle]',
   'morph_kgc[mssql]',
+  'morph_kgc[sqlite]',
   'morph_kgc[excel]',
   'morph_kgc[tabular]',
   'morph_kgc[spss]',
