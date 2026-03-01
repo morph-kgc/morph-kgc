@@ -242,7 +242,7 @@ def remove_null_values_from_dataframe(data, config, references, column=None):
             data[column] = data[column].replace(config.get_na_values(), None)
         else:
             data = data.replace(config.get_na_values(), None)
-        data = data.dropna(axis=0, how='any', subset=references)
+        data = data.dropna(axis=0, how='any', subset=references if isinstance(references, str) else list(references))
 
     return data
 
