@@ -3,6 +3,8 @@ log/
 
 testing/
 venv/
+.venv/
+
 build/
 dist/
 src/morph_kgc.egg-info/
