@@ -4,6 +4,7 @@ log/
 testing/
 venv/
 .venv/
+output/
 
 build/
 dist/

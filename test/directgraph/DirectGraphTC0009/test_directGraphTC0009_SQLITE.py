@@ -22,7 +22,7 @@ def test_DirectGraphTC0009():
         mapping_path = os.path.join(tmp,'direct_mapping.yaml')
         save_yarrrml(yarrrml_mapping, mapping_path)
 
-        config = f'[CONFIGURATION]\ninfer_sql_datatypes=yes\noutput_format=n-triples\nna_values=,nan,None\n[DataSource]\nmappings={mapping_path}\ndb_url={db_url}'
+        config = f'[CONFIGURATION]\ninfer_sql_datatypes=yes\noutput_format=n-triples\nna_values=,nan,None,NULL\n[DataSource]\nmappings={mapping_path}\ndb_url={db_url}'
         g_morph = morph_kgc.materialize(config)
 
     assert compare.isomorphic(g, g_morph)
