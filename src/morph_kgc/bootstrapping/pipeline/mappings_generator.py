@@ -64,7 +64,7 @@ def build_table_mappings(table, db_type):
         predicate = build_reference_property_iri(table_name, fk_cols)
         
         conditions = [
-            {"function": "equal", "parameters": [["str1", f"$({lc})"], ["str2", f"$({rc})"]]}
+            {"function": "equal", "parameters": [["str1", f"$({lc})", "s"], ["str2", f"$({rc})", "o"]]}
             for lc, rc in zip(fk_cols, ref_cols)
         ]
         condition = conditions[0] if len(conditions) == 1 else conditions
@@ -82,13 +82,17 @@ def build_table_mappings(table, db_type):
 def save_yarrrml(yarrrml_dict, output_path):
 
     class AuxDumper(yaml.SafeDumper):
-        pass
+        def choose_scalar_style(self):
+            if self.event.style == "" and self.event.value:
+                return ""
+            return super().choose_scalar_style()
+
+        def represent_mapping(self, tag, mapping, flow_style=None):
+            return super().represent_mapping(tag, mapping, flow_style=False)
 
     AuxDumper.add_representer(
-        dict,
-        lambda dumper, data: dumper.represent_mapping(
-            "tag:yaml.org,2002:map", data, flow_style=False
-        ),
+        str,
+        lambda dumper, data: dumper.represent_scalar("tag:yaml.org,2002:str", data, style=""),
     )
 
     yaml_str = yaml.dump(

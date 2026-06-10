@@ -72,7 +72,7 @@ def build_subject_template(table_name, primary_keys, rowid_col=None):
 
 
 def build_table_iri(table_name):
-    return f"base:{percent_encode(table_name)}"
+    return f"base:{percent_encode(table_name)}~iri"
 
 def build_literal_property_iri(table_name, column_name):
     return f"base:{percent_encode(table_name)}#{percent_encode(column_name)}"
