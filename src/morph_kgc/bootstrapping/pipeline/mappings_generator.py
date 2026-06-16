@@ -32,18 +32,13 @@ def build_table_mappings(table, db_type):
     pks = table["primary_keys"]
     fks = table["foreign_keys"]
 
+    quote = quote_string2 if db_type == "mysql" else quote_string
     if pks:
         subject = build_subject_template(table_name, pks)
-        if db_type == "mysql":
-            base_query = f"SELECT * FROM {quote_string2(table_name)}"
-        else:
-            base_query = f"SELECT * FROM {quote_string(table_name)}"
+        base_query = f"SELECT * FROM {quote(table_name)}"
     else:
         subject = build_subject_template(table_name, pks, rowid_col="rowid")
-        if db_type == "mysql":
-            base_query = rowid_select(quote_string2(table_name), db_type)
-        else:
-            base_query = rowid_select(quote_string(table_name), db_type)
+        base_query = rowid_select(quote(table_name), db_type)
 
     po = [["a", build_table_iri(table_name)]]
 
