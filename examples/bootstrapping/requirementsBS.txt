@@ -1,0 +1,10 @@
+SQLAlchemy
+PyYAML
+morph-kgc
+mariadb
+pymysql
+pytest
+sql-metadata
+
+
+
