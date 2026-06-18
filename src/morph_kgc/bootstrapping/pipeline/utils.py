@@ -24,6 +24,11 @@ SQL_TO_RDF = {
     "DATE":     "xsd:date",
     "TIME":     "xsd:time",
     "TIMESTAMP": "xsd:dateTime", 
+
+    "CHAR":     "xsd:string",
+    "VARCHAR":  "xsd:string",
+    "TEXT":     "xsd:string",
+    "CLOB":     "xsd:string",
 }
 def quote_string(value):
     if isinstance(value, str):
