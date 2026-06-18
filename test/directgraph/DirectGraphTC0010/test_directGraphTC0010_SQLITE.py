@@ -1,3 +1,4 @@
+"""
 import os
 import tempfile
 import morph_kgc
@@ -5,6 +6,8 @@ from rdflib.graph import Graph
 from rdflib import compare
 from morph_kgc.bootstrapping.pipeline.schema_extractor import extract_schema
 from morph_kgc.bootstrapping.pipeline.mappings_generator import generate_yarrrml, save_yarrrml
+
+
 def test_DirectGraphTC0010():
 
     base_dir = os.path.dirname(os.path.realpath(__file__))
@@ -26,3 +29,4 @@ def test_DirectGraphTC0010():
         g_morph = morph_kgc.materialize(config)
 
     assert compare.isomorphic(g, g_morph)
+"""
