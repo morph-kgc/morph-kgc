@@ -1,0 +1,19 @@
+@prefix rml: <http://w3id.org/rml/> .
+@prefix ex: <http://example.org/> .
+
+<#TriplesMap> a rml:TriplesMap ;
+  rml:logicalSource [
+    rml:source "test/issues/issue_393/data.json" ;
+    rml:referenceFormulation rml:JSONPath ;
+    rml:iterator '$.items[*]' ;
+  ] ;
+
+  rml:subjectMap [
+    rml:template "http://example.org/{id}" ;
+  ] ;
+
+  rml:predicateObjectMap [
+    rml:predicateMap [ rml:constant ex:code ] ;
+    rml:objectMap [ rml:reference "code.coding.code" ] ;
+  ] ;
+.
