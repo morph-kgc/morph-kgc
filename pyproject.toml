@@ -58,8 +58,10 @@ dependencies = [
 ]
 
 [tool.uv]
-environments = [
-  "platform_system == 'Darwin' and platform_machine == 'arm64'"
+required-environments = [
+  "platform_system == 'Darwin' and platform_machine == 'arm64'",
+  "platform_system == 'Linux' and (platform_machine == 'x86_64' or platform_machine == 'aarch64')",
+  "platform_system == 'Windows'",
 ]
 
 [project.scripts]
