@@ -9,12 +9,12 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 import os
 import morph_kgc
 
-from pyoxigraph import Store
+from pyoxigraph import Store, RdfFormat
 
 
 def test_issue_243():
     g = Store()
-    g.bulk_load(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'output.nq'), 'application/n-quads')
+    g.bulk_load(path=os.path.join(os.path.dirname(os.path.realpath(__file__)), 'output.nq'), format=RdfFormat.N_QUADS)
 
     mapping_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mapping.yml')
     config = f'[CONFIGURATION]\noutput_format=N-QUADS\n[DataSource]\nmappings={mapping_path}'

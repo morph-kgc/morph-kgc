@@ -12,7 +12,7 @@ import logging
 import multiprocessing as mp
 
 from rdflib import Graph
-from pyoxigraph import Store
+from pyoxigraph import Store, RdfFormat
 from io import BytesIO
 from itertools import repeat
 
@@ -81,7 +81,7 @@ def materialize_oxigraph(config, python_source=None):
     graph = Store()
     if triples:
         rdf_ntriples = '.\n'.join(triples) + '.'
-        graph.bulk_load(BytesIO(rdf_ntriples.encode()), 'application/n-quads')
+        graph.bulk_load(BytesIO(rdf_ntriples.encode()), RdfFormat.TRIG)
 
     return graph
 
