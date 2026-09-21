@@ -9,50 +9,62 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 import os
 import morph_kgc
 
-from rdflib.graph import Graph
-from rdflib import compare
+from rdflib import Dataset
+from morph_kgc.testing import assert_isomorphic
 
 
 def test_complex():
-    g = Graph()
-    g.parse(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'output.nq'))
+    g = Dataset()
+    g.parse(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "output.nq"),
+        format="nquads",
+    )
 
     mapping_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mapping.ttl')
     config = f'[CONFIGURATION]\noutput_format=N-QUADS\n[DataSource]\nmappings={mapping_path}'
     g_morph = morph_kgc.materialize(config)
 
-    assert compare.isomorphic(g, g_morph)
+    assert_isomorphic(g, g_morph)
 
 
 
 def test_complex_partial_aggregations():
-    g = Graph()
-    g.parse(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'output.nq'))
+    g = Dataset()
+    g.parse(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "output.nq"),
+        format="nquads",
+    )
 
     mapping_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mapping.ttl')
     config = f'[CONFIGURATION]\nmapping_partition=PARTIAL-AGGREGATIONS\noutput_format=N-QUADS\n[DataSource]\nmappings={mapping_path}'
     g_morph = morph_kgc.materialize(config)
 
-    assert compare.isomorphic(g, g_morph)
+    assert_isomorphic(g, g_morph)
 
 
 def test_complex_maximal_partitioning():
-    g = Graph()
-    g.parse(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'output.nq'))
+    g = Dataset()
+    g.parse(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "output.nq"),
+        format="nquads",
+    )
 
     mapping_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mapping.ttl')
     config = f'[CONFIGURATION]\nmapping_partition=MAXIMAL\noutput_format=N-QUADS\n[DataSource]\nmappings={mapping_path}'
     g_morph = morph_kgc.materialize(config)
 
-    assert compare.isomorphic(g, g_morph)
+    assert_isomorphic(g, g_morph)
 
 
 def test_complex_no_partitioning():
-    g = Graph()
-    g.parse(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'output.nq'))
+    g = Dataset()
+    g.parse(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "output.nq"),
+        format="nquads",
+    )
 
     mapping_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mapping.ttl')
     config = f'[CONFIGURATION]\nmapping_partition=no\noutput_format=N-QUADS\n[DataSource]\nmappings={mapping_path}'
     g_morph = morph_kgc.materialize(config)
 
-    assert compare.isomorphic(g, g_morph)
+    assert_isomorphic(g, g_morph)

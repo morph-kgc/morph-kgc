@@ -9,12 +9,15 @@ __email__ = "mahmoud.abounassif@gmail.com"
 import os
 import morph_kgc
 
-from rdflib.graph import Graph
+from rdflib import Dataset
 
 
 def test_issue_254_a():
-    g = Graph()
-    g.parse(os.path.join(os.path.dirname(os.path.realpath(__file__)), "output.nq"))
+    g = Dataset()
+    g.parse(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "output.nq"),
+        format="nquads",
+    )
 
     mapping_path = os.path.join(
         os.path.dirname(os.path.realpath(__file__)), "mapping.yml"
