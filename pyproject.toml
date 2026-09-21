@@ -1,11 +1,11 @@
 [build-system]
-requires = ['hatchling>=1.11.0', 'setuptools==80.10.2', "wheel", "pip"]
+requires = ['hatchling>=1.11.0', 'setuptools>=80.10.2', "wheel", "pip"]
 build-backend = 'hatchling.build'
 
 [tool.uv.extra-build-dependencies]
-pyarrow = ["setuptools==80.10.2"]
-pandas = ["setuptools==80.10.2"]
-morph-kgc = ["hatchling", "setuptools==80.10.2", "pip==25.2", "wheel", "hatchling"]
+pyarrow = ["setuptools>=80.10.2"]
+pandas = ["setuptools>=80.10.2"]
+morph-kgc = ["hatchling", "setuptools>=80.10.2", "pip>=25.2", "wheel", "hatchling"]
 
 [project.urls]
 Documentation = 'https://morph-kgc.readthedocs.io'
@@ -45,8 +45,8 @@ classifiers = [
 requires-python = '>=3.11,<3.14'
 dynamic = ['version']
 dependencies = [
-  'setuptools==80.10.2',
-  'pip==25.2',
+  'setuptools>=80.10.2',
+  'pip>=25.2',
   'pandas>=2.4.0',
   'rdflib>=7.3.0, <8.0.0',
   'pyoxigraph>=0.3.0',
