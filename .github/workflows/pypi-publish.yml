@@ -1,5 +1,5 @@
-# This workflows will upload a Python Package using Twine when a release is created
-# For more information see: https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
+# This workflow builds the package and uploads it to PyPI with uv when a release is created
+# For more information see: https://docs.astral.sh/uv/guides/package/
 
 name: Publish to PyPi
 
@@ -14,18 +14,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.x'
-    - name: Install dependencies
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v7
+    - name: Build
       run: |
-        python -m pip install --upgrade pip
-        pip install setuptools wheel twine build
-    - name: Build and publish
+        uv build --sdist --wheel
+    - name: Publish
       env:
-        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        UV_PUBLISH_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        UV_PUBLISH_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
-        python -m build --sdist --wheel
-        twine upload dist/*
+        uv publish
