@@ -1,0 +1,27 @@
+{
+  "items": [
+    {
+      "id": "a",
+      "code": {
+        "coding": [
+          {
+            "system": "http://loinc.org",
+            "code": "c1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "b",
+      "code": {
+        "coding": [
+          {
+            "system": "http://loinc.org",
+            "code": "c2"
+          }
+        ],
+        "text": "Extra optional key only this record carries"
+      }
+    }
+  ]
+}
