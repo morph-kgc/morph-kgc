@@ -77,7 +77,8 @@ def materialize_set(config: Any, python_source: dict | None = None) -> set[str]:
 def materialize(config: Any, python_source: dict | None = None):
     """
     Materialize and return an ``rdflib.Graph`` populated with all generated
-    triples.
+    triples, or an ``rdflib.Dataset`` when ``output_format`` is N-QUADS so that
+    the statements in named graphs are kept.
     """
     cfg = _apply_library_process_guard(load_config(config))
     return materialize_pipeline(cfg, python_source=python_source, output="graph")

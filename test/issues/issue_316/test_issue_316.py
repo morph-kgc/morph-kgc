@@ -9,11 +9,12 @@ __email__ = "stephanebranly.pro@gmail.com"
 import os
 import morph_kgc
 import json
-from rdflib.graph import Graph
+from rdflib import Dataset
+from morph_kgc.testing import assert_isomorphic
 
 
 def test_issue_316_a():
-    g = Graph()
+    g = Dataset()
     g.parse(os.path.join(os.path.dirname(os.path.realpath(__file__)), "output.nq"))
 
     udfs_path = os.path.join(
@@ -31,10 +32,10 @@ def test_issue_316_a():
     config = f"[CONFIGURATION]\nudfs={udfs_path}\n[DataSource]\nmappings={mapping_path}"
     g_morph = morph_kgc.materialize(config, {'data': json_data})
 
-    assert set(g) == set(g_morph)
+    assert_isomorphic(g, g_morph)
 
 def test_issue_316_b():
-    g = Graph()
+    g = Dataset()
     g.parse(os.path.join(os.path.dirname(os.path.realpath(__file__)), "output.nq"))
 
     udfs_path = os.path.join(
@@ -52,4 +53,4 @@ def test_issue_316_b():
     config = f"[CONFIGURATION]\nudfs={udfs_path}\n[DataSource]\nmappings={mapping_path}"
     g_morph = morph_kgc.materialize(config, {'data': json_data})
 
-    assert set(g) == set(g_morph)
+    assert_isomorphic(g, g_morph)

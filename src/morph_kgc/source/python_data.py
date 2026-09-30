@@ -81,7 +81,7 @@ class PythonDataAdapter:
         if isinstance(source_val, pd.DataFrame):
             # Sanitize string columns: strip stray quotes from string values
             df = source_val.copy()
-            for col in df.select_dtypes(include=["object"]).columns:
+            for col in df.select_dtypes(include=["object", "string"]).columns:
                 df[col] = df[col].apply(
                     lambda x: x.replace('"', "") if isinstance(x, str) else x
                 )

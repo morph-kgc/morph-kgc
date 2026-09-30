@@ -12,8 +12,8 @@ import sys
 import morph_kgc
 import pytest
 
-from rdflib.graph import Graph
-from rdflib import compare
+from rdflib import Dataset
+from morph_kgc.testing import assert_isomorphic
 
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
 from server import PASSWORD, USERNAME, VocabularyServer   # noqa: E402
@@ -36,7 +36,7 @@ def config(resource_options, mapping=MAPPING, processes=1):
 
 
 def expected_graph():
-    g = Graph()
+    g = Dataset()
     g.parse(os.path.join(TEST_DIR, 'output.nq'))
     return g
 
@@ -50,7 +50,7 @@ def test_reconcile_vocabulary_from_file():
         f'url={VOCABULARY}'
     ))
 
-    assert compare.isomorphic(expected_graph(), g_morph)
+    assert_isomorphic(expected_graph(), g_morph)
 
 
 def test_reconcile_vocabulary_over_http_with_basic_authentication():
@@ -68,7 +68,7 @@ def test_reconcile_vocabulary_over_http_with_basic_authentication():
         # mapping reconciles in four mapping groups.
         assert [path for path, _ in server.requests] == ['/vocabulary']
 
-    assert compare.isomorphic(expected_graph(), g_morph)
+    assert_isomorphic(expected_graph(), g_morph)
 
 
 def test_reconcile_vocabulary_over_http_without_credentials():
@@ -89,7 +89,7 @@ def test_reconcile_vocabulary_with_multiple_processes():
         processes=4,
     ))
 
-    assert compare.isomorphic(expected_graph(), g_morph)
+    assert_isomorphic(expected_graph(), g_morph)
 
 
 def test_reconcile_vocabulary_referenced_by_its_iri():
@@ -104,7 +104,7 @@ def test_reconcile_vocabulary_referenced_by_its_iri():
         mapping=os.path.join(TEST_DIR, 'mapping_vocabulary_iri.ttl'),
     ))
 
-    assert compare.isomorphic(expected_graph(), g_morph)
+    assert_isomorphic(expected_graph(), g_morph)
 
 
 def test_reconcile_case_insensitive_matching():
@@ -116,10 +116,10 @@ def test_reconcile_case_insensitive_matching():
         mapping=os.path.join(TEST_DIR, 'mapping_uppercase.ttl'),
     ))
 
-    g = Graph()
+    g = Dataset()
     g.parse(os.path.join(TEST_DIR, 'output_reconciled.nq'))
 
-    assert compare.isomorphic(g, g_morph)
+    assert_isomorphic(g, g_morph)
 
 
 def test_reconcile_from_yarrrml():
@@ -130,10 +130,10 @@ def test_reconcile_from_yarrrml():
         mapping=os.path.join(TEST_DIR, 'mapping.yarrrml'),
     ))
 
-    g = Graph()
+    g = Dataset()
     g.parse(os.path.join(TEST_DIR, 'output_reconciled.nq'))
 
-    assert compare.isomorphic(g, g_morph)
+    assert_isomorphic(g, g_morph)
 
 
 def test_exact_matching_by_default():
@@ -198,7 +198,7 @@ def test_reconcile_sparql_endpoint(method):
         # No 'query' option is declared, so the default SKOS query is sent.
         assert 'skos/core#prefLabel' in server.requests[0][1]
 
-    assert compare.isomorphic(expected_graph(), g_morph)
+    assert_isomorphic(expected_graph(), g_morph)
 
 
 def test_reconcile_sparql_endpoint_with_declared_query():
@@ -219,4 +219,4 @@ def test_reconcile_sparql_endpoint_with_declared_query():
 
         assert server.requests[0][1] == query
 
-    assert compare.isomorphic(expected_graph(), g_morph)
+    assert_isomorphic(expected_graph(), g_morph)

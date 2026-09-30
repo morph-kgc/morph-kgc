@@ -9,12 +9,13 @@ __email__ = "ioannis.dasoulas@kuleuven.be"
 import os
 import morph_kgc
 
-from rdflib.graph import Graph
+from rdflib import Dataset
+from morph_kgc.testing import assert_isomorphic
 import pandas as pd
 
 
 def test_RMLTC0012a():
-    g = Graph()
+    g = Dataset()
     g.parse(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'output.nq'))
 
     df = pd.DataFrame({"fname":["Bob","Sue","Bob"],
@@ -25,4 +26,4 @@ def test_RMLTC0012a():
     config = f'[CONFIGURATION]\noutput_format=N-QUADS\n[DataSource]\nmappings={mapping_path}'
     g_morph = morph_kgc.materialize(config, data_dict)
 
-    assert g.isomorphic(g_morph)
+    assert_isomorphic(g, g_morph)

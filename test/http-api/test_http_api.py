@@ -13,8 +13,8 @@ import sys
 import morph_kgc
 import pytest
 
-from rdflib.graph import Graph
-from rdflib import compare
+from rdflib import Dataset
+from morph_kgc.testing import assert_isomorphic
 
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
 from api_server import ApiServer, TOKEN   # noqa: E402
@@ -73,7 +73,7 @@ def config(mapping_path, configuration_options=''):
 
 
 def expected_graph():
-    g = Graph()
+    g = Dataset()
     g.parse(os.path.join(TEST_DIR, 'output.nq'))
     return g
 
@@ -93,7 +93,7 @@ def test_http_api_source(tmp_path):
         assert headers['Authorization'] == TOKEN
         assert parameters == {}
 
-    assert compare.isomorphic(expected_graph(), g_morph)
+    assert_isomorphic(expected_graph(), g_morph)
 
 
 def test_http_api_header_value_from_environment_placeholder(tmp_path, monkeypatch):
@@ -109,7 +109,7 @@ def test_http_api_header_value_from_environment_placeholder(tmp_path, monkeypatc
         _, headers, _ = server.requests[0]
         assert headers['Authorization'] == TOKEN
 
-    assert compare.isomorphic(expected_graph(), g_morph)
+    assert_isomorphic(expected_graph(), g_morph)
 
 
 def test_http_api_header_value_naming_an_environment_variable(tmp_path, monkeypatch):
@@ -125,7 +125,7 @@ def test_http_api_header_value_naming_an_environment_variable(tmp_path, monkeypa
         _, headers, _ = server.requests[0]
         assert headers['Authorization'] == TOKEN
 
-    assert compare.isomorphic(expected_graph(), g_morph)
+    assert_isomorphic(expected_graph(), g_morph)
 
 
 def test_http_api_token_from_api_token_module(tmp_path, monkeypatch):
@@ -146,7 +146,7 @@ def test_http_api_token_from_api_token_module(tmp_path, monkeypatch):
         # A value the module hands out no token for is sent as it is written.
         assert headers['Accept'] == 'application/json'
 
-    assert compare.isomorphic(expected_graph(), g_morph)
+    assert_isomorphic(expected_graph(), g_morph)
 
 
 def test_http_api_header_value_with_unset_environment_variable(tmp_path, monkeypatch):
@@ -178,7 +178,7 @@ def test_http_api_field_that_is_not_a_header_is_a_query_parameter(tmp_path):
         assert parameters == {'format': 'json'}
         assert 'format' not in headers
 
-    assert compare.isomorphic(expected_graph(), g_morph)
+    assert_isomorphic(expected_graph(), g_morph)
 
 
 def test_http_api_rejected_request_is_reported(tmp_path):

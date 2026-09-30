@@ -17,7 +17,7 @@ Section B — Top-level pipeline orchestration
     _parse_mappings()               parse + normalize RML mapping
     _asserted_groups()              filter non-asserted triples maps
     _collect()                      flatten list[set] -> set
-    _triples_to_graph()             set -> rdflib.Graph
+    _triples_to_graph()             set -> rdflib.Graph | rdflib.Dataset
     _triples_to_oxigraph()          set -> pyoxigraph.Store
     materialize_pipeline()                  full pipeline, returns Graph | Store | set
 """
@@ -25,10 +25,12 @@ Section B — Top-level pipeline orchestration
 import logging
 from io import BytesIO
 
-from rdflib import Graph
+import pandas as pd
+from rdflib import Dataset, Graph
 
 from ..constants import (
     LOGGING_NAMESPACE,
+    NQUADS,
     RML_TRIPLES_MAP_CLASS,
     RML_TRIPLE_TERM_MAP,
 )
@@ -185,10 +187,17 @@ def _materialize(
 ) -> set[str]:
     """Materialize *rule*, building one specific triple term when given a chain."""
     references = collect_references(rule, rml_mapping)
-    data = load_data(config, rule, references, python_source, rml_mapping)
 
-    if data.empty:
-        return set()
+    if references:
+        data = load_data(config, rule, references, python_source, rml_mapping)
+        if data.empty:
+            return set()
+    else:
+        # All term maps are constant-valued, so every iteration of the logical
+        # source yields the same statements: a single row stands in for all of
+        # them. The source is not read: its rows with no columns selected would
+        # make a frame that pandas reports as empty, which generates nothing.
+        data = pd.DataFrame(index=[0])
 
     om = rule.object_
 
@@ -302,8 +311,13 @@ def _collect(results: list) -> set[str]:
     return out
 
 
-def _triples_to_graph(triples: set[str]) -> Graph:
-    graph = Graph()
+def _triples_to_graph(triples: set[str], config) -> Graph | Dataset:
+    """
+    Load the statements into an rdflib Graph, or into a Dataset for N-Quads
+    output. N-Quads describe an RDF dataset, and parsing them into a plain
+    Graph silently drops every statement that is not in the default graph.
+    """
+    graph = Dataset() if config.output_format == NQUADS else Graph()
     if triples:
         graph.parse(data=".\n".join(triples) + ".", format="nquads")
     return graph
@@ -343,7 +357,7 @@ def materialize_pipeline(
 
     Returns
     -------
-    Graph     when output="graph" (default)
+    Graph     when output="graph" (default), Dataset for N-QUADS output
     Store     when output="oxigraph"
     set[str]  when output="set"
     int       when output="file"  (total triple count)
@@ -395,4 +409,4 @@ def materialize_pipeline(
         return triples
     if output == "oxigraph":
         return _triples_to_oxigraph(triples)
-    return _triples_to_graph(triples)
+    return _triples_to_graph(triples, config)

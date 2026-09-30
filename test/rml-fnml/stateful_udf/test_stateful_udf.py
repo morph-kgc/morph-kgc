@@ -11,8 +11,8 @@ import os
 import morph_kgc
 import pytest
 
-from rdflib.graph import Graph
-from rdflib import compare
+from rdflib import Dataset
+from morph_kgc.testing import assert_isomorphic
 
 
 TEST_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -37,7 +37,7 @@ def config(state_dir=''):
 
 
 def expected_graph():
-    g = Graph()
+    g = Dataset()
     g.parse(os.path.join(TEST_DIR, 'output.nq'))
     return g
 
@@ -46,7 +46,7 @@ def test_stateful_udf():
     """The shared context is built once and used by every function invocation."""
     g_morph = morph_kgc.materialize(config())
 
-    assert compare.isomorphic(expected_graph(), g_morph)
+    assert_isomorphic(expected_graph(), g_morph)
 
 
 def test_stateful_udf_temporary_state_is_removed():
@@ -102,7 +102,7 @@ def test_stateful_udf_persists_the_context_to_disk(tmp_path):
     state_dir = str(tmp_path / 'state')
     g_morph = morph_kgc.materialize(config(state_dir=state_dir))
 
-    assert compare.isomorphic(expected_graph(), g_morph)
+    assert_isomorphic(expected_graph(), g_morph)
     assert os.path.isdir(state_dir)
     assert [f for f in os.listdir(state_dir) if f.endswith('.pickle')]
 
@@ -137,7 +137,7 @@ def test_stateful_udf_initializer_runs_once():
         state._LOADED_CONTEXTS.clear()
 
     assert calls == ['http://example.com/countryName']
-    assert compare.isomorphic(expected_graph(), g_morph)
+    assert_isomorphic(expected_graph(), g_morph)
 
 
 def test_no_state_directory_without_stateful_functions():
