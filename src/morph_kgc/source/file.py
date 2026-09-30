@@ -150,7 +150,7 @@ def _read_json(rml_rule, references: list[str]) -> pd.DataFrame:
     # add columns with null values for those references in the mapping rule that are not present in the data file
     missing_references_in_df = list(set(references).difference(set(json_df.columns)))
     json_df[missing_references_in_df] = None
-    json_df.dropna(axis=0, how='any', inplace=True)
+    json_df.dropna(axis=0, how='any', subset=[r for r in references if r in json_df.columns], inplace=True)
 
     return json_df
 
