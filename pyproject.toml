@@ -39,14 +39,14 @@ classifiers = [
 requires-python = '>=3.10'
 dynamic = ['version']
 dependencies = [
-  'pandas>=2.1.0, <3.0.0',
-  'rdflib>=7.3.0, <8.0.0',
-  'pyoxigraph>=0.5.11, <0.6.0',
-  'ruamel.yaml>=0.18.0, <0.19.0',
+  'pandas>=2.1.0',
+  'rdflib>=7.3.0',
+  'pyoxigraph>=0.5.11',
+  'ruamel.yaml>=0.18.0',
   'jsonpath-python>=1.1.1',
-  'elementpath>=4.0.0, <5.0.0',
-  'duckdb>=1.0.0, <2.0.0',
-  'falcon>=3.0.0, <5.0.0'
+  'elementpath>=4.0.0',
+  'duckdb>=1.0.0',
+  'falcon>=3.0.0'
 ]
 
 [project.scripts]
@@ -56,19 +56,19 @@ morph-kgc = 'morph_kgc.__main__:main'
 path = 'src/morph_kgc/_version.py'
 
 [project.optional-dependencies]
-test = ['pytest>=8.0.0, <9.0.0', 'SQLAlchemy>=2.0.0, <3.0.0', 'openpyxl>=3.0.0, <4.0.0', 'odfpy>=1.4.1, <2.0.0', 'pyarrow>=14.0.0, <20.0.0', 'geopandas>=1.0.0, <2.0.0']
-sqlite = ['SQLAlchemy>=2.0.0, <3.0.0']
-mysql = ['pymysql>=1.1.0, <2.0.0', 'cryptography>=42.0.0, <43.0.0', 'SQLAlchemy>=2.0.0, <3.0.0']
-postgresql = ['psycopg[binary]>=3.0.0, <4.0.0', 'SQLAlchemy>=2.0.0, <3.0.0']
-oracle = ['oracledb>=2.5.0, <9.0.0', 'SQLAlchemy>=2.0.0, <3.0.0']
-mssql = ['pymssql>=2.2.7, <3.0.0', 'SQLAlchemy>=2.0.0, <3.0.0']
-excel = ['openpyxl>=3.0.0, <4.0.0', 'odfpy>=1.4.1, <2.0.0']
-tabular = ['pyarrow>=14.0.0, <16.0.0']
-geoparquet = ['geopandas>=1.0.0, <2.0.0']
-spss = ['pyreadstat>=1.2.0, <2.0.0']
-neo4j = ['neo4j>=5.20.0, <6.0.0']
-snowflake =['snowflake-sqlalchemy>=1.7.3, <2.0.0']
-databricks =['databricks-sqlalchemy>=2.0.4, <3.0.0']
+test = ['pytest>=8.0.0', 'SQLAlchemy>=2.0.0', 'openpyxl>=3.0.0', 'odfpy>=1.4.1', 'pyarrow>=14.0.0', 'geopandas>=1.0.0']
+sqlite = ['SQLAlchemy>=2.0.0']
+mysql = ['pymysql>=1.1.0', 'cryptography>=42.0.0', 'SQLAlchemy>=2.0.0']
+postgresql = ['psycopg[binary]>=3.0.0', 'SQLAlchemy>=2.0.0']
+oracle = ['oracledb>=2.5.0', 'SQLAlchemy>=2.0.0']
+mssql = ['pymssql>=2.2.7', 'SQLAlchemy>=2.0.0']
+excel = ['openpyxl>=3.0.0', 'odfpy>=1.4.1']
+tabular = ['pyarrow>=14.0.0']
+geoparquet = ['geopandas>=1.0.0']
+spss = ['pyreadstat>=1.2.0']
+neo4j = ['neo4j>=5.20.0']
+snowflake =['snowflake-sqlalchemy>=1.7.3']
+databricks =['databricks-sqlalchemy>=2.0.4']
 jelly = ["pyjelly>=0.6.2"]
 all = [
   'morph_kgc[mysql]',
