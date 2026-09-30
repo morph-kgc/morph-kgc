@@ -11,7 +11,7 @@
 
 <#Person_Mapping>
     rml:logicalSource [
-        rml:source "test/rml-fnml/RMLFNOTC0009-CSV/student.csv";
+        rml:source "student.csv";
         rml:referenceFormulation rml:CSV
     ];
     rml:subjectMap [

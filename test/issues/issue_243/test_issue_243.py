@@ -9,7 +9,7 @@ __email__ = "arenas.guerrero.julian@outlook.com"
 import os
 import morph_kgc
 
-from pyoxigraph import Store, RdfFormat
+from pyoxigraph import RdfFormat, Store
 
 
 def test_issue_243():

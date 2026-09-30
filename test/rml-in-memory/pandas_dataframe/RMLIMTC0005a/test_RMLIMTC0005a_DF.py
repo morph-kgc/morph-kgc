@@ -16,10 +16,7 @@ import pandas as pd
 
 def test_RMLTC0005a():
     g = Dataset()
-    g.parse(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "output.nq"),
-        format="nquads",
-    )
+    g.parse(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'output.nq'))
 
     df = pd.DataFrame({"fname":["Bob", "Sue", "Bob"],
                      "lname":["Smith", "Jones", "Smith"], "amount":["30.0E0", "20.0E0", "30.0E0"]})

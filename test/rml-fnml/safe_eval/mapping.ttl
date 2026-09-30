@@ -1,0 +1,40 @@
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rml: <http://w3id.org/rml/> .
+@prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
+@prefix gtfs: <http://vocab.gtfs.org/terms#> .
+
+@base <http://example.com/base/> .
+
+<TriplesMap1>
+    rml:logicalSource [
+        rml:source "test/rml-fnml/safe_eval/calendar.csv" ;
+        rml:referenceFormulation rml:CSV ;
+    ];
+    rml:subjectMap [
+        rml:template "http://transport.linkeddata.es/madrid/metro/calendar_rules/{service_id}"
+    ];
+    rml:predicateObjectMap [
+        rml:predicate gtfs:monday;
+        rml:objectMap [
+            rml:functionExecution <#Execution1> ;
+            rml:datatype xsd:boolean
+        ]
+    ].
+
+<#Execution1>
+    rml:function grel:controls_if ;
+    rml:input
+        [
+            rml:parameter grel:bool_b ;
+            rml:inputValueMap [
+                rml:template "'1' == '{monday}'"
+            ]
+        ] ,
+        [
+            rml:parameter grel:any_true ;
+            rml:inputValue "true"
+        ] ,
+        [
+            rml:parameter grel:any_false ;
+            rml:inputValue "false"
+        ] .

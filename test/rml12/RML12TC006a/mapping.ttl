@@ -1,0 +1,14 @@
+@prefix rml: <http://w3id.org/rml/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix ex:  <http://data.example.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+@base <http://example.com/base/> .
+
+<TMReview> a rml:TriplesMap ;
+  rml:logicalSource [ rml:source "test/rml12/RML12TC006a/data.csv" ; rml:referenceFormulation rml:CSV ] ;
+  rml:subjectMap [ rml:template "http://data.example.org/review/{id}" ] ;
+  rml:predicateObjectMap [
+    rml:predicate ex:label ;
+    rml:objectMap [ rml:reference "text" ; rml:language "en" ; rml:direction "sideways" ]
+  ] .

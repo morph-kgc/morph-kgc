@@ -2,8 +2,17 @@ from sqlalchemy import create_engine, inspect
 
 def extract_schema(engine_uri):
     engine = create_engine(engine_uri)
+    try:
+        return _inspect_tables(engine)
+    finally:
+        # the inspector checks connections out of the engine's pool; without
+        # disposing of it they stay open for the lifetime of the process
+        engine.dispose()
+
+
+def _inspect_tables(engine):
     inspector = inspect(engine)
-    tables = []  
+    tables = []
 
     for table_name in inspector.get_table_names():
         # primary keys

@@ -1,0 +1,2 @@
+<http://data.example.org/review/rev1> <http://data.example.org/about> <<( <http://data.example.org/wrap/2> <http://data.example.org/wraps> <<( <http://data.example.org/film/2> <http://data.example.org/label> "Fine" )>> )>> .
+<http://data.example.org/review/rev2> <http://data.example.org/about> <<( <http://data.example.org/wrap/1> <http://data.example.org/wraps> <<( <http://data.example.org/film/1> <http://data.example.org/label> "Great" )>> )>> .

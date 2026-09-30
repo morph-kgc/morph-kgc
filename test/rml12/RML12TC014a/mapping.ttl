@@ -1,0 +1,36 @@
+@prefix rml: <http://w3id.org/rml/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix ex:  <http://data.example.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+@base <http://example.com/base/> .
+
+<TMScore> a rml:TriplesMap ;
+  rml:logicalSource [ rml:source "test/rml12/RML12TC014a/films.csv" ; rml:referenceFormulation rml:CSV ] ;
+  rml:subjectMap [ rml:template "http://data.example.org/film/{film}" ] ;
+  rml:predicateObjectMap [
+    rml:predicate ex:score ;
+    rml:objectMap [ rml:reference "score" ; rml:datatype xsd:decimal ]
+  ] .
+
+<TMReview> a rml:TriplesMap ;
+  rml:logicalSource [ rml:source "test/rml12/RML12TC014a/reviews.csv" ; rml:referenceFormulation rml:CSV ] ;
+  rml:subjectMap [ rml:template "http://data.example.org/review/{review}" ] ;
+  rml:predicateObjectMap [
+    rml:predicate ex:about ;
+    rml:objectMap [
+      rml:tripleTermMap <TMScore> ;
+      rml:joinCondition [ rml:child "film" ; rml:parent "film" ]
+    ]
+  ] .
+
+<TMReif> a rml:TriplesMap ;
+  rml:logicalSource [ rml:source "test/rml12/RML12TC014a/reifications.csv" ; rml:referenceFormulation rml:CSV ] ;
+  rml:subjectMap [ rml:template "http://data.example.org/reification/{reif}" ] ;
+  rml:predicateObjectMap [
+    rml:predicate rdf:reifies ;
+    rml:objectMap [
+      rml:tripleTermMap <TMReview> ;
+      rml:joinCondition [ rml:child "review" ; rml:parent "review" ]
+    ]
+  ] .

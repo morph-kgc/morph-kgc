@@ -16,10 +16,7 @@ import pandas as pd
 
 def test_RMLTC0009a():
     g = Dataset()
-    g.parse(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "output.nq"),
-        format="nquads",
-    )
+    g.parse(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'output.nq'))
 
     df1 = pd.DataFrame({"ID":[10,20], "Sport":["100",""], "Name":["Venus Williams","Demi Moore"]})
     df2 = pd.DataFrame({"ID":[100], "Name":["Tennis"]})

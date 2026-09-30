@@ -1,0 +1,6 @@
+<http://data.example.org/film/1> <http://data.example.org/score> "9.2"^^<http://www.w3.org/2001/XMLSchema#decimal> .
+<http://data.example.org/film/2> <http://data.example.org/score> "7.5"^^<http://www.w3.org/2001/XMLSchema#decimal> .
+<http://data.example.org/review/rev1> <http://data.example.org/about> <<( <http://data.example.org/film/2> <http://data.example.org/score> "7.5"^^<http://www.w3.org/2001/XMLSchema#decimal> )>> .
+<http://data.example.org/review/rev2> <http://data.example.org/about> <<( <http://data.example.org/film/1> <http://data.example.org/score> "9.2"^^<http://www.w3.org/2001/XMLSchema#decimal> )>> .
+<http://data.example.org/reification/x1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#reifies> <<( <http://data.example.org/review/rev2> <http://data.example.org/about> <<( <http://data.example.org/film/1> <http://data.example.org/score> "9.2"^^<http://www.w3.org/2001/XMLSchema#decimal> )>> )>> .
+<http://data.example.org/reification/x2> <http://www.w3.org/1999/02/22-rdf-syntax-ns#reifies> <<( <http://data.example.org/review/rev1> <http://data.example.org/about> <<( <http://data.example.org/film/2> <http://data.example.org/score> "7.5"^^<http://www.w3.org/2001/XMLSchema#decimal> )>> )>> .

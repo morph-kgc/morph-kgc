@@ -1,0 +1,4 @@
+<http://example.com/person/10> <http://xmlns.com/foaf/0.1/name> "Venus" .
+<http://example.com/person/10> <http://example.com/department> "Physics" .
+<http://example.com/person/11> <http://xmlns.com/foaf/0.1/name> "Frank" .
+<http://example.com/person/11> <http://example.com/department> "Chemistry" .

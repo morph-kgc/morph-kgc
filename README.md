@@ -17,9 +17,10 @@
 
 - User-friendly mappings with **[YARRRML](https://rml.io/yarrrml/spec/)**.
 - Transformation functions with **[RML-FNML](https://w3id.org/rml/fnml/spec)**, including **Python UDFs**.
-- [RDF-star](https://w3c.github.io/rdf-star/cg-spec/2021-12-17.html) generation with **[RML-star](https://w3id.org/rml/star/spec)**.
+- **Stateful functions** with a shared context loaded once, such as **reconciliation** against a SKOS vocabulary or a SPARQL endpoint.
+- [RDF 1.2](https://www.w3.org/TR/rdf12-concepts/) generation with **[RML 1.2](https://sferrada.com/publication/2026-dmkg-rml-12/2026-dmkg-rml-12.pdf)**.
 - **[RML views](https://2023.eswc-conferences.org/wp-content/uploads/2023/05/paper_Arenas-Guerrero_2023_Boosting.pdf)** over tabular data sources and [JSON](https://www.json.org) files.
-- Integration with **[RDFLib](https://rdflib.readthedocs.io)**, **[Oxigraph](https://pyoxigraph.readthedocs.io/en)** and [Kafka](https://kafka-python.readthedocs.io).
+- Integration with **[RDFLib](https://rdflib.readthedocs.io)**, **[Oxigraph](https://pyoxigraph.readthedocs.io/en)**.
 - **Optimized** to materialize large knowledge graphs.
 - **Remote** data and mapping files.
 - Input data formats:
@@ -28,7 +29,8 @@
     - **Hierarchical files**: [JSON](https://www.json.org), [XML](https://www.w3.org/TR/xml/).
     - **In-memory data structures**: [Python Dictionaries](https://docs.python.org/3/tutorial/datastructures.html#dictionaries), [DataFrames](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html).
     - **Cloud data lake solutions**: [Databricks](https://www.databricks.com/), [Snowflake](https://www.snowflake.com/).
-    - **Property graph databases**: [Neo4j](https://neo4j.com/), [Kùzu](https://github.com/kuzudb/kuzu).
+    - **Property graph databases**: [Neo4j](https://neo4j.com/).
+    - **HTTP APIs**: JSON over HTTP, with the requests described in the mapping with the [HTTP Vocabulary in RDF](https://www.w3.org/TR/HTTP-in-RDF10/).
 
 ## Documentation :bookmark_tabs:
 

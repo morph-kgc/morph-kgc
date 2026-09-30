@@ -1,0 +1,12 @@
+<https://example.org/kg/patient/pid_00001> <http://semanticscience.org/resource/SIO_000300> "pid_00001" .
+<https://example.org/kg/patient/pid_00001> <http://semanticscience.org/resource/SIO_000255> <https://data.boehringer.com/id/00036/10073037> .
+<https://example.org/kg/patient/pid_00001> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://semanticscience.org/resource/SIO_000393> .
+<https://example.org/kg/patient/pid_00002> <http://semanticscience.org/resource/SIO_000300> "pid_00002" .
+<https://example.org/kg/patient/pid_00002> <http://semanticscience.org/resource/SIO_000255> <https://data.boehringer.com/id/00036/10077339> .
+<https://example.org/kg/patient/pid_00002> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://semanticscience.org/resource/SIO_000393> .
+<https://example.org/kg/patient/pid_00003> <http://semanticscience.org/resource/SIO_000300> "pid_00003" .
+<https://example.org/kg/patient/pid_00003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://semanticscience.org/resource/SIO_000393> .
+<https://data.boehringer.com/id/00036/10073037> <http://www.w3.org/2000/01/rdf-schema#label> "Early-onset spastic ataxia-myoclonic epilepsy-neuropathy syndrome" .
+<https://data.boehringer.com/id/00036/10073037> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://semanticscience.org/resource/SIO_010299> .
+<https://data.boehringer.com/id/00036/10077339> <http://www.w3.org/2000/01/rdf-schema#label> "Autosomal dominant cerebellar ataxia-deafness-narcolepsy syndrome" .
+<https://data.boehringer.com/id/00036/10077339> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://semanticscience.org/resource/SIO_010299> .

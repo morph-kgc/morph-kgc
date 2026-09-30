@@ -1,0 +1,31 @@
+@prefix rml: <http://w3id.org/rml/> .
+@prefix ex:  <http://data.example.org/> .
+
+@base <http://example.com/base/> .
+
+<TMLabel> a rml:NonAssertedTriplesMap ;
+  rml:logicalSource [ rml:source "test/rml12/RML12TC015a/films.csv" ; rml:referenceFormulation rml:CSV ] ;
+  rml:subjectMap [ rml:template "http://data.example.org/film/{film}" ] ;
+  rml:predicateObjectMap [
+    rml:predicate ex:label ;
+    rml:objectMap [ rml:reference "label" ]
+  ] .
+
+<TMWrap> a rml:NonAssertedTriplesMap ;
+  rml:logicalSource [ rml:source "test/rml12/RML12TC015a/films.csv" ; rml:referenceFormulation rml:CSV ] ;
+  rml:subjectMap [ rml:template "http://data.example.org/wrap/{film}" ] ;
+  rml:predicateObjectMap [
+    rml:predicate ex:wraps ;
+    rml:objectMap [ rml:tripleTermMap <TMLabel> ]
+  ] .
+
+<TMReview> a rml:TriplesMap ;
+  rml:logicalSource [ rml:source "test/rml12/RML12TC015a/reviews.csv" ; rml:referenceFormulation rml:CSV ] ;
+  rml:subjectMap [ rml:template "http://data.example.org/review/{review}" ] ;
+  rml:predicateObjectMap [
+    rml:predicate ex:about ;
+    rml:objectMap [
+      rml:tripleTermMap <TMWrap> ;
+      rml:joinCondition [ rml:child "film" ; rml:parent "film" ]
+    ]
+  ] .

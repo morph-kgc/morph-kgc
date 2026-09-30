@@ -16,10 +16,7 @@ import pandas as pd
 
 def test_RMLTC0004a():
     g = Dataset()
-    g.parse(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "output.nq"),
-        format="nquads",
-    )
+    g.parse(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'output.nq'))
 
     df = pd.DataFrame({"Student":["Venus"], "Sport":["Tennis"]})
     data_dict = {"variable1": df}

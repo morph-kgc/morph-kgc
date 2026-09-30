@@ -1,0 +1,75 @@
+@prefix rml:  <http://w3id.org/rml/> .
+@prefix htv:  <http://www.w3.org/2011/http#> .
+@prefix sosa: <http://www.w3.org/ns/sosa/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+@base <http://example.com/base/> .
+
+# The request the observations are read from. 'OBSERVATIONS_API_TOKEN' is the
+# name of the token, not the token itself: api_token.py is what hands it out.
+# Write '{ENV_VAR}' instead to read the value from the environment.
+<#ObservationsAPI>
+    a htv:Request ;
+    htv:absoluteURI "http://127.0.0.1:8891/observations" ;
+    htv:headers (
+        [ htv:fieldName "Authorization" ; htv:fieldValue "OBSERVATIONS_API_TOKEN" ]
+        [ htv:fieldName "Accept" ; htv:fieldValue "application/json" ]
+        [ htv:fieldName "pollutant" ; htv:fieldValue "all" ]
+    ) .
+
+<#ObservationsMapping>
+    a rml:TriplesMap ;
+    rml:logicalSource [
+        rml:source <#ObservationsAPI> ;
+        rml:referenceFormulation rml:JSONPath ;
+        rml:iterator "$.observations[*]"
+    ] ;
+    rml:subjectMap [
+        rml:template "https://example.org/kg/observation/{id}" ;
+        rml:class sosa:Observation
+    ] ;
+    rml:predicateObjectMap [
+        rml:predicate sosa:observedProperty ;
+        rml:objectMap [
+            rml:template "https://example.org/kg/pollutant/{pollutant}" ;
+            rml:termType rml:IRI
+        ]
+    ] ;
+    rml:predicateObjectMap [
+        rml:predicate sosa:hasSimpleResult ;
+        rml:objectMap [
+            rml:reference "value" ;
+            rml:datatype xsd:double
+        ]
+    ] ;
+    rml:predicateObjectMap [
+        rml:predicate sosa:resultTime ;
+        rml:objectMap [
+            rml:reference "timestamp" ;
+            rml:datatype xsd:dateTime
+        ]
+    ] ;
+    rml:predicateObjectMap [
+        rml:predicate sosa:madeBySensor ;
+        rml:objectMap [
+            rml:template "https://example.org/kg/station/{station.id}" ;
+            rml:termType rml:IRI
+        ]
+    ] .
+
+<#StationsMapping>
+    a rml:TriplesMap ;
+    rml:logicalSource [
+        rml:source <#ObservationsAPI> ;
+        rml:referenceFormulation rml:JSONPath ;
+        rml:iterator "$.observations[*]"
+    ] ;
+    rml:subjectMap [
+        rml:template "https://example.org/kg/station/{station.id}" ;
+        rml:class sosa:Sensor
+    ] ;
+    rml:predicateObjectMap [
+        rml:predicate rdfs:label ;
+        rml:objectMap [ rml:reference "station.name" ]
+    ] .

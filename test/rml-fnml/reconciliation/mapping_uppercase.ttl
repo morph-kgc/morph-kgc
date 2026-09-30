@@ -1,0 +1,41 @@
+@prefix rml: <http://w3id.org/rml/> .
+@prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
+@prefix morph-fr: <urn:morph:function:reconciliation:> .
+@prefix morph-fn: <urn:morph:function:> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix sio: <http://semanticscience.org/resource/> .
+
+@base <http://example.com/base/> .
+
+<#PatientsMapping>
+    a rml:TriplesMap ;
+    rml:logicalSource [
+        rml:source "test/rml-fnml/reconciliation/patients_uppercase.csv" ;
+        rml:referenceFormulation rml:CSV
+    ] ;
+    rml:subjectMap [
+        rml:template "https://example.org/kg/patient/{pid}" ;
+        rml:termType rml:IRI
+    ] ;
+    rml:predicateObjectMap [
+        rml:predicate sio:SIO_000255 ;
+        rml:objectMap [
+            rml:functionExecution <#DiseaseReconciliationExecution> ;
+            rml:termType rml:IRI
+        ]
+    ] .
+
+<#DiseaseReconciliationExecution>
+    rml:function morph-fr:reconcileVocabularyConcept ;
+    rml:input [
+        rml:parameter morph-fn:resource ;
+        rml:inputValue "disease_vocabulary"
+    ] ;
+    rml:input [
+        rml:parameter grel:valueParam ;
+        rml:inputValueMap [ rml:reference "disease_label" ]
+    ] ;
+    rml:input [
+        rml:parameter morph-fn:attributeIRI ;
+        rml:inputValue skos:prefLabel , skos:altLabel
+    ] .

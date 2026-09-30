@@ -1,0 +1,71 @@
+@prefix rml: <http://w3id.org/rml/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
+@prefix morph-fr: <urn:morph:function:reconciliation:> .
+@prefix morph-fn: <urn:morph:function:> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix sio: <http://semanticscience.org/resource/> .
+
+@base <http://example.com/base/> .
+
+<#PatientsMapping>
+    a rml:TriplesMap ;
+    rml:logicalSource [
+        rml:source "patients.csv" ;
+        rml:referenceFormulation rml:CSV
+    ] ;
+    rml:subjectMap [
+        rml:template "https://example.org/kg/patient/{pid}" ;
+        rml:class sio:SIO_000393
+    ] ;
+    rml:predicateObjectMap [
+        rml:predicate sio:SIO_000300 ;
+        rml:objectMap [
+            rml:reference "pid" ;
+            rml:datatype xsd:string
+        ]
+    ] ;
+    rml:predicateObjectMap [
+        rml:predicate sio:SIO_000255 ;
+        rml:objectMap [
+            rml:functionExecution <#DiseaseReconciliationExecution> ;
+            rml:termType rml:IRI
+        ]
+    ] .
+
+<#DiseaseResourceMapping>
+    a rml:TriplesMap ;
+    rml:logicalSource [
+        rml:source "patients.csv" ;
+        rml:referenceFormulation rml:CSV
+    ] ;
+    rml:subjectMap [
+        rml:functionExecution <#DiseaseReconciliationExecution> ;
+        rml:termType rml:IRI ;
+        rml:class sio:SIO_010299
+    ] ;
+    rml:predicateObjectMap [
+        rml:predicate rdfs:label ;
+        rml:objectMap [
+            rml:reference "disease_label" ;
+            rml:datatype xsd:string
+        ]
+    ] .
+
+# The mapping names the resource to reconcile against; where that vocabulary
+# lives and how it is accessed is declared in the configuration file.
+<#DiseaseReconciliationExecution>
+    rml:function morph-fr:reconcileVocabularyConcept ;
+    rml:input [
+        rml:parameter morph-fn:resource ;
+        rml:inputValue "disease_vocabulary"
+    ] ;
+    rml:input [
+        rml:parameter grel:valueParam ;
+        rml:inputValueMap [ rml:reference "disease_label" ]
+    ] ;
+    rml:input [
+        rml:parameter morph-fn:attributeIRI ;
+        rml:inputValue skos:prefLabel , skos:altLabel
+    ] .

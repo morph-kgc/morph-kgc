@@ -1,0 +1,31 @@
+# The RDF the SPARQL endpoint of `endpoint.py` answers queries over. A real
+# endpoint holds much more than the vocabulary reconciled against, which is why
+# the query of the resource restricts the index to the disease concept scheme.
+
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+<https://example.org/vocabulary/disease>
+    a skos:ConceptScheme ;
+    skos:prefLabel "Disease vocabulary"@en .
+
+<https://example.org/vocabulary/drug>
+    a skos:ConceptScheme ;
+    skos:prefLabel "Drug vocabulary"@en .
+
+<https://data.boehringer.com/id/00036/10073037>
+    a skos:Concept ;
+    skos:inScheme <https://example.org/vocabulary/disease> ;
+    skos:prefLabel "Spastic ataxia-myoclonic epilepsy-neuropathy syndrome"@en ;
+    skos:altLabel "Early-onset spastic ataxia-myoclonic epilepsy-neuropathy syndrome"@en ;
+    skos:altLabel "Ataxia espástica-epilepsia mioclónica-neuropatía"@es .
+
+<https://data.boehringer.com/id/00036/10077339>
+    a skos:Concept ;
+    skos:inScheme <https://example.org/vocabulary/disease> ;
+    skos:prefLabel "Autosomal dominant cerebellar ataxia-deafness-narcolepsy syndrome"@en ;
+    skos:altLabel "ADCA-DN"@en .
+
+<https://data.boehringer.com/id/00033/10029921>
+    a skos:Concept ;
+    skos:inScheme <https://example.org/vocabulary/drug> ;
+    skos:prefLabel "Riluzole"@en .

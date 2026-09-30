@@ -1,0 +1,35 @@
+@prefix ex: <http://example.com/> .
+@prefix rml: <http://w3id.org/rml/> .
+@prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
+@prefix morph-fn: <urn:morph:function:> .
+
+@base <http://example.com/base/> .
+
+<TriplesMap1>
+    rml:logicalSource [
+        rml:source "test/rml-fnml/stateful_udf/countries.csv";
+        rml:referenceFormulation rml:CSV
+    ];
+    rml:subjectMap [
+        rml:template "http://example.com/{city}"
+    ];
+    rml:predicateObjectMap [
+        rml:predicate ex:country;
+        rml:objectMap [
+            rml:functionExecution <#Execution> ;
+        ]
+    ] .
+
+<#Execution>
+    rml:function ex:countryName ;
+    rml:input
+        [
+            rml:parameter morph-fn:resource ;
+            rml:inputValue "country_names"
+        ] ,
+        [
+            rml:parameter grel:valueParam ;
+            rml:inputValueMap [
+                rml:reference "code" ;
+            ]
+        ] .

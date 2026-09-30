@@ -15,15 +15,12 @@ mappings:
                 function: grel:controls_if
                 parameters:
                   - parameter: grel:bool_b
-                    value: 
+                    value:
                       function: grel:boolean_xor
                       parameters:
                         - parameter: grel:param_rep_b
                           value: True
-                        - parameter: grel:param_rep_b
-                          value: False
                   - parameter: grel:any_true
                     value: "XOR-True"
                   - parameter: grel:any_false
                     value: "XOR-False"
-                

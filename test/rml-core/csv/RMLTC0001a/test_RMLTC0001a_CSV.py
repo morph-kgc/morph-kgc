@@ -15,10 +15,7 @@ from morph_kgc.testing import assert_isomorphic
 
 def test_RMLTC0001a():
     g = Dataset()
-    g.parse(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "output.nq"),
-        format="nquads",
-    )
+    g.parse(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'output.nq'))
 
     mapping_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mapping.ttl')
     config = f'[CONFIGURATION]\noutput_format=N-QUADS\n[DataSource]\nmappings={mapping_path}'

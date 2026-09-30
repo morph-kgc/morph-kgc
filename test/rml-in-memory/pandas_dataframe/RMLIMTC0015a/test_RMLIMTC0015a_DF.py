@@ -16,10 +16,7 @@ import pandas as pd
 
 def test_RMLTC0015a():
     g = Dataset()
-    g.parse(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "output.nq"),
-        format="nquads",
-    )
+    g.parse(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'output.nq'))
 
     df1 = pd.DataFrame({"Code":["BO","IE"],
         "Name":['"Bolivia, Plurinational State of"', "Ireland"]})

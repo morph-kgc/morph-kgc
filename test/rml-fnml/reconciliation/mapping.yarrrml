@@ -1,0 +1,26 @@
+prefixes:
+    grel: http://users.ugent.be/~bjdmeest/function/grel.ttl#
+    morph-fr: "urn:morph:function:reconciliation:"
+    morph-fn: "urn:morph:function:"
+    skos: http://www.w3.org/2004/02/skos/core#
+    sio: http://semanticscience.org/resource/
+mappings:
+    patients:
+        sources:
+            - access: test/rml-fnml/reconciliation/patients.csv
+              referenceFormulation: csv
+        subjects: https://example.org/kg/patient/$(pid)
+        predicateobjects:
+            - p: sio:SIO_000255
+              o:
+                function: morph-fr:reconcileVocabularyConcept
+                type: iri
+                parameters:
+                    - parameter: morph-fn:resource
+                      value: disease_vocabulary
+                    - parameter: grel:valueParam
+                      value: $(disease_label)
+                    - parameter: morph-fn:attributeIRI
+                      value: skos:prefLabel
+                    - parameter: morph-fn:attributeIRI
+                      value: skos:altLabel

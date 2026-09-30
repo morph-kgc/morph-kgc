@@ -1,0 +1,13 @@
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+<https://data.boehringer.com/id/00036/10073037>
+    a skos:Concept ;
+    skos:prefLabel "Spastic ataxia-myoclonic epilepsy-neuropathy syndrome" ;
+    skos:altLabel "Early-onset spastic ataxia-myoclonic epilepsy-neuropathy syndrome" ;
+    skos:notation "ORPHA:352587" .
+
+<https://data.boehringer.com/id/00036/10077339>
+    a skos:Concept ;
+    skos:prefLabel "Autosomal dominant cerebellar ataxia-deafness-narcolepsy syndrome" ;
+    skos:altLabel "ADCA-DN" ;
+    skos:notation "ORPHA:314404" .

@@ -15,10 +15,7 @@ from morph_kgc.testing import assert_isomorphic
 
 def test_RMLFNOTC0009_CSV():
     g = Dataset()
-    g.parse(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "output.nq"),
-        format="nquads",
-    )
+    g.parse(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'output.nq'))
 
     mapping_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mapping.ttl')
     udf_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'udf.py')

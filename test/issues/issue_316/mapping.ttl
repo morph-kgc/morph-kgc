@@ -17,7 +17,7 @@ ex:source a rml:LogicalSource;
 				];
 			];
 		];
-    rml:referenceFormulation rml:CSV .
+    rml:referenceFormulation rml:Dictionary .
 
 <#test>
     rml:logicalSource ex:source;
@@ -29,16 +29,16 @@ ex:source a rml:LogicalSource;
         rr:predicate ex:dateTime ;
         rr:objectMap [
             rml:functionExecution <#executionFn> ;
-            rr:datatype xsd:dateTime  
+            rr:datatype xsd:dateTime
         ]
     ] .
 
-<#executionFn> a rml:FunctionExecution ; 
+<#executionFn> a rml:FunctionExecution ;
     rml:function ex-fn:timestampToXSDDatetime;
-    rml:input 
+    rml:input
         [
             rml:parameter ex-fn:timestamp ;
-            rml:inputValueMap  [ 
+            rml:inputValueMap  [
                 rml:reference "date" ;
             ]
         ] .

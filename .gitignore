@@ -23,3 +23,6 @@ __pycache__/
 .DS_Store
 
 *.pyc
+
+# The token cache written by the HTTP API example.
+examples/http-api/token_cache.json

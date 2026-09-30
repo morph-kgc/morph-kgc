@@ -15,10 +15,7 @@ import pandas as pd
 
 def test_RMLIMTC0000():
     g = Dataset()
-    g.parse(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "output.nq"),
-        format="nquads",
-    )
+    g.parse(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'output.nq'))
 
     df = pd.DataFrame({"Name":[]})
     data_dict = {"variable1": df}

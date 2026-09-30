@@ -12,11 +12,10 @@ import logging
 import sys
 import rdflib
 import time
-import pandas as pd
 import multiprocessing as mp
 
 from itertools import product
-from .constants import AUXILIAR_UNIQUE_REPLACING_STRING, LOGGING_NAMESPACE, RML_EXECUTION, RML_TEMPLATE, RML_REFERENCE
+from .constants import AUXILIAR_UNIQUE_REPLACING_STRING, LOGGING_NAMESPACE
 
 LOGGER = logging.getLogger(LOGGING_NAMESPACE)
 
@@ -88,14 +87,6 @@ def get_rml_rule(rml_df, triples_map_id):
     return rml_rule
 
 
-def get_fnml_execution(fnml_df, execution_id):
-    """
-    Retrieves FNML execution by its id.
-    """
-
-    return fnml_df[fnml_df['function_execution'] == execution_id]
-
-
 def get_references_in_template(template):
     """
     Retrieves all reference identifiers in a template-valued term map. References are returned in order of appearance
@@ -113,42 +104,18 @@ def get_references_in_template(template):
     return references
 
 
-def get_references_in_fnml_execution(fnml_df, execution):
-    execution_rule_df = fnml_df[fnml_df['function_execution'] == execution]
-
-    references = []
-    for i, parameter in execution_rule_df.iterrows():
-        if parameter['value_map_type'] == RML_TEMPLATE:
-            references.extend(get_references_in_template(parameter['value_map_value']))
-        elif parameter['value_map_type'] == RML_REFERENCE:
-            # a list with one value
-            references.extend([parameter['value_map_value']])
-        elif parameter['value_map_type'] == RML_EXECUTION:
-            references.extend(get_references_in_fnml_execution(fnml_df, parameter['value_map_value']))
-
-    return references
-
-
-def remove_non_printable_characters(string):
-    """
-    Eliminates from the input string all the characters that are not printable.
-    """
-
-    return ''.join(char for char in string if char.isprintable())
-
-
-def prepare_output_files(config, rml_df):
+def prepare_output_files(config, rml_mapping):
     """
     Remove the files that will be used to store the final knowledge graph. If a file path contains directories that do
     not exist, they are created.
     """
 
-    output_dir = config.get_output_dir()
+    output_dir = config.output_dir
     if output_dir:
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
-        mapping_groups_names = set(rml_df['mapping_partition'])
+        mapping_groups_names = {rule.mapping_partition for rule in rml_mapping.rules}
         for mapping_group_name in mapping_groups_names:
             mapping_group_file_path = config.get_output_file_path(mapping_group_name)
             if os.path.exists(mapping_group_file_path):
@@ -205,20 +172,6 @@ def get_delta_time(start_time):
     return "{:.3f}".format((time.time() - start_time))
 
 
-def get_references_in_join_condition(rml_rule, join_conditions):
-    references = list()
-    parent_references = list()
-
-    # if join_condition is not null and it is not empty
-    if pd.notna(rml_rule[join_conditions]) and rml_rule[join_conditions]:
-        join_conditions = eval(rml_rule[join_conditions])
-        for join_condition in join_conditions.values():
-            references.append(join_condition['child_value'])
-            parent_references.append(join_condition['parent_value'])
-
-    return references, parent_references
-
-
 def normalize_oracle_identifier_casing(dataframe, references):
     """
     This renames the columns of a DataFrame generated when querying Oracle. This is necessary as Oracle identifier
@@ -236,12 +189,12 @@ def normalize_oracle_identifier_casing(dataframe, references):
 
 
 def remove_null_values_from_dataframe(data, config, references, column=None):
-    if config.get_na_values():  # if there is some NULL values to replace
+    if config.na_values:  # if there is some NULL values to replace
         if column:
             # only replace nulls in the given column
-            data[column] = data[column].replace(config.get_na_values(), None)
+            data[column] = data[column].replace(config.na_values, None)
         else:
-            data = data.replace(config.get_na_values(), None)
+            data = data.replace(config.na_values, None)
         data = data.dropna(axis=0, how='any', subset=references if isinstance(references, str) else list(references))
 
     return data
@@ -270,7 +223,7 @@ def triples_to_file(triples, config, mapping_group=None):
     """
 
     from .constants import JELLY
-    if config.get_output_format() == JELLY:
+    if config.output_format == JELLY:
         raise RuntimeError(
             "triples_to_file() must not be used with output_format=JELLY. Use RDFLib/pyjelly serializer instead."
         )
@@ -283,36 +236,3 @@ def triples_to_file(triples, config, mapping_group=None):
         f.flush()
         os.fsync(f.fileno())
         f.close()
-
-
-def triples_to_kafka(triples, config):
-    """
-    Writes triples to Kafka.
-    """
-    from kafka import KafkaProducer
-
-    kafka_producer = None
-    output_kafka_server = config.get_output_kafka_server()
-    output_kafka_topic = config.get_output_kafka_topic()
-
-    if not output_kafka_server or not output_kafka_topic:
-        LOGGER.error('Output Kafka server or topic is empty.')
-        sys.exit()
-    try:
-        kafka_producer = KafkaProducer(bootstrap_servers=output_kafka_server)
-
-        if triples:
-            rdf_ntriples = '.\n'.join(triples)
-            rdf_ntriples += '.'
-
-            # send the triples to Kafka
-            kafka_producer.send(output_kafka_topic, value=rdf_ntriples.encode('utf-8'))
-
-        return len(triples)
-    except Exception as e:
-            LOGGER.error(f'Error during materialization or Kafka publishing: {e}')
-            return f'Error: {e}'
-    finally:
-        # close the Kafka producer
-        if kafka_producer:
-            kafka_producer.close()

@@ -15,10 +15,7 @@ from morph_kgc.testing import assert_isomorphic
 
 def test_RMLTC0002b():
     g = Dataset()
-    g.parse(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "output.nq"),
-        format="nquads",
-    )
+    g.parse(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'output.nq'))
 
     dict1 = {
     "students": [{

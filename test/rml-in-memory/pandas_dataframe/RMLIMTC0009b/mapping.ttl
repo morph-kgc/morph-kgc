@@ -64,7 +64,7 @@
 				];
 			];
 		];
-    rml:referenceFormulation rml:CSV
+    rml:referenceFormulation rml:DataFrame;
   ];
 
   rml:subjectMap [

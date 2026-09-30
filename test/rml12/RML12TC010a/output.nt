@@ -1,0 +1,4 @@
+<http://data.example.org/film/1> <http://data.example.org/score> "9.2"^^<http://www.w3.org/2001/XMLSchema#decimal> .
+<http://data.example.org/review/1> <http://data.example.org/about> <<( <http://data.example.org/film/1> <http://data.example.org/score> "9.2"^^<http://www.w3.org/2001/XMLSchema#decimal> )>> .
+_:r1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#reifies> <<( <http://data.example.org/review/1> <http://data.example.org/about> <<( <http://data.example.org/film/1> <http://data.example.org/score> "9.2"^^<http://www.w3.org/2001/XMLSchema#decimal> )>> )>> .
+_:r1 <http://data.example.org/source> "Nested test" .

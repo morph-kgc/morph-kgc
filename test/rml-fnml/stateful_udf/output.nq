@@ -1,0 +1,3 @@
+<http://example.com/Madrid> <http://example.com/country> "Spain" .
+<http://example.com/Amsterdam> <http://example.com/country> "Netherlands" .
+<http://example.com/Paris> <http://example.com/country> "France" .

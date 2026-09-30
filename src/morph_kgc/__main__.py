@@ -1,97 +1,85 @@
 __author__ = "Julián Arenas-Guerrero"
-__credits__ = ["Julián Arenas-Guerrero"]
-
 __license__ = "Apache-2.0"
-__maintainer__ = "Julián Arenas-Guerrero"
-__email__ = "arenas.guerrero.julian@outlook.com"
 
-import sys
-import time
+"""
+morph-kgc CLI entry point
+==========================
+Invoked as::
+
+    python -m morph_kgc <config.ini>
+
+Flow
+----
+1. ``config.load_from_cli()`` parses sys.argv (argparse lives in
+   ``config/loaders.py``) and returns a validated ``MorphConfig``.
+2. The materialization pipeline runs via
+   ``materializer.pipeline.materialize_pipeline``, which parses the mappings,
+   wipes the output files and appends the triples it generates to them.
+3. Timing + triple count are logged.
+
+JELLY note
+----------
+pyjelly cannot stream triples to an append-only file in parallel chunks; it
+needs a complete ``rdflib.Graph`` serialized in one shot. The JELLY path
+therefore materializes to a graph and serializes it via
+``graph.serialize(format="jelly")``.
+"""
+
 import logging
+import time
 
-import multiprocessing as mp
-
-from itertools import repeat
-
-from .args_parser import load_config_from_command_line
-from .materializer import _materialize_mapping_group_to_file
-from .materializer import _materialize_mapping_group_to_kafka
-from .utils import get_delta_time
-from .mapping.mapping_parser import retrieve_mappings
-from .constants import LOGGING_NAMESPACE, RML_TRIPLES_MAP_CLASS
-from .utils import prepare_output_files
-
+from .config                import load_from_cli
+from .config.model          import MorphConfig
+from .constants.misc        import LOGGING_NAMESPACE
+from .constants.output      import JELLY
+from .materializer.pipeline import materialize_pipeline
+from .utils                 import create_dirs_in_path, get_delta_time
 
 LOGGER = logging.getLogger(LOGGING_NAMESPACE)
 
 
-def main():
+# ── JELLY-specific helpers ────────────────────────────────────────────────────
 
-    config = load_config_from_command_line()
+def _assert_pyjelly_available() -> None:
+    """Raise a helpful RuntimeError when pyjelly[rdflib] is not installed."""
+    try:
+        import pyjelly  # noqa: F401
+    except ImportError as exc:
+        raise RuntimeError(
+            "JELLY output requested but pyjelly[rdflib] is not installed. "
+            "Install it with:  pip install 'morph-kgc[jelly]'"
+        ) from exc
 
-    from .constants import JELLY
 
-    if config.get_output_format() == JELLY:
-        try:
-            import pyjelly
-        except ImportError as e:
-            raise RuntimeError(
-                "JELLY output requested, but pyjelly[rdflib] is not installed. "
-                "Install: pip install 'morph-kgc[jelly]'"
-            ) from e
+def _run_jelly(config: MorphConfig) -> None:
+    """Materialize into an rdflib Graph and serialize it as Jelly in one shot."""
+    _assert_pyjelly_available()
 
-        from . import materialize
-        from .utils import create_dirs_in_path
+    graph = materialize_pipeline(config, output="graph")
 
-        import sys
+    output_path = config.get_output_file_path()
+    create_dirs_in_path(output_path)
+    graph.serialize(destination=output_path, format="jelly")
 
-        config_path = sys.argv[1] if len(sys.argv) > 1 else None
+    LOGGER.info(f"Jelly file generated: {output_path}.")
 
-        if not config_path:
-            LOGGER.error("Config path is missing. Usage: python -m morph_kgc <config.ini>")
-            sys.exit(2)
 
-        graph = materialize(config_path)
-        output_path = config.get_output_file_path(None)
-        create_dirs_in_path(output_path)
-        graph.serialize(destination=output_path, format="jelly")
+# ── Main ──────────────────────────────────────────────────────────────────────
 
-        LOGGER.info(f'Jelly file generated: {output_path}')
-        LOGGER.info(f'Materialization finished.')
-        sys.exit(0)
+def main() -> None:
+    # load_from_cli() owns argparse: parses sys.argv, reads the INI file,
+    # validates all fields, configures logging.
+    config: MorphConfig = load_from_cli()
 
-    rml_df, fnml_df, http_api_df = retrieve_mappings(config)
-    config.set('CONFIGURATION', 'http_api_df', http_api_df.to_csv())
+    start = time.time()
 
-    # keep only asserted mapping rules
-    asserted_mapping_df = rml_df.loc[rml_df['triples_map_type'] == RML_TRIPLES_MAP_CLASS]
-    mapping_groups = [group for _, group in asserted_mapping_df.groupby(by='mapping_partition')]
-
-    prepare_output_files(config, rml_df)
-
-    start_time = time.time()
-    num_triples = 0
-    if config.is_multiprocessing_enabled():
-        LOGGER.debug(f'Parallelizing with {config.get_number_of_processes()} cores.')
-
-        pool = mp.Pool(config.get_number_of_processes())
-        if not config.get_output_kafka_server():
-            num_triples = sum(pool.starmap(_materialize_mapping_group_to_file,
-                                           zip(mapping_groups, repeat(rml_df), repeat(fnml_df), repeat(config))))
-        else:
-            num_triples = sum(pool.starmap(_materialize_mapping_group_to_kafka,
-                                           zip(mapping_groups, repeat(rml_df), repeat(fnml_df), repeat(config))))
-        pool.close()
-        pool.join()
+    if config.output_format == JELLY:
+        _run_jelly(config)
     else:
-        for mapping_group in mapping_groups:
-            if not config.get_output_kafka_server():
-                num_triples += _materialize_mapping_group_to_file(mapping_group, rml_df, fnml_df, config)
-            else:
-                num_triples += _materialize_mapping_group_to_kafka(mapping_group, rml_df, fnml_df, config)
+        num_triples = materialize_pipeline(config, output="file")
+        LOGGER.info(f"Number of triples generated in total: {num_triples}.")
 
-    LOGGER.info(f'Number of triples generated in total: {num_triples}.')
-    LOGGER.info(f'Materialization finished in {get_delta_time(start_time)} seconds.')
+    LOGGER.info(f"Materialization finished in {get_delta_time(start)} seconds.")
 
 
 if __name__ == "__main__":
