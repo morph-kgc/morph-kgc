@@ -1,0 +1,6 @@
+{
+	"chat.tools.terminal.autoApprove": {
+		"/Users/sanderhan/devel/github/morph-kgc/morph-kgc/.venv/bin/python": true,
+		"uv": true
+	}
+}

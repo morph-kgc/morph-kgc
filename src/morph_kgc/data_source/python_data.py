@@ -20,7 +20,7 @@ def get_ram_data(rml_rule, references, python_source=None):
     source_value = python_source[source_key]
 
     if isinstance(source_value, pd.DataFrame):
-        for col in source_value.select_dtypes(include=['object']).columns:
+        for col in source_value.select_dtypes(include=['object', 'string']).columns:
             source_value[col] = source_value[col].apply(lambda x:
                                                         x[1:-1] if isinstance(x, str) and x.startswith('"') and x.endswith('"')
                                                         else x)

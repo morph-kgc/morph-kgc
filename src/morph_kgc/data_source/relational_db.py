@@ -105,7 +105,17 @@ def _get_column_table_datatype(config, source_name, table_name, column_name):
         sql_query = f"SELECT t.data_type FROM all_tab_columns t " \
                     f"WHERE t.TABLE_NAME = '{table_name}' AND t.COLUMN_NAME='{column_name}'"
     elif db_dialect == SQLITE:
-        sql_query = f"SELECT typeof('{column_name}') as data_type FROM '{table_name}' LIMIT 1"
+        # Use PRAGMA table_info to get the declared column type, which reflects the
+        # R2RML natural mapping better than SQLite's runtime storage class (typeof()).
+        sql_query = f"PRAGMA table_info('{table_name}')"
+        query_results_df = pd.read_sql_query(sql_query, con=db_connection)
+        column_row = query_results_df.loc[query_results_df['name'] == column_name]
+        if len(column_row) == 1:
+            data_type = str(column_row['type'].values[0]).upper()
+            for k, v in SQL_RDF_DATATYPE.items():
+                if k in data_type:
+                    return v
+        return None
     else:
         sql_query = f"SELECT `data_type` FROM `information_schema`.`columns` " \
                     f"WHERE `table_name`='{table_name}' AND `column_name`='{column_name}'"

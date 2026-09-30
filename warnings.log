@@ -1,0 +1,1298 @@
+Script started on Thu Feb 19 20:05:17 2026
+Command: uv run python3 -X tracemalloc -Wall -m pytest -Wall
+[1m============================================================================================================================================ test session starts =============================================================================================================================================[0m
+platform darwin -- Python 3.14.3, pytest-8.4.2, pluggy-1.6.0
+rootdir: /Users/sanderhan/devel/github/morph-kgc/morph-kgc
+configfile: pyproject.toml
+[1mcollecting ... [0m[1mcollecting 1 item                                                                                                                                                                                                                                                                                            [0m[1mcollecting 142 items                                                                                                                                                                                                                                                                                         [0m[1mcollecting 254 items                                                                                                                                                                                                                                                                                         [0m[1mcollected 374 items                                                                                                                                                                                                                                                                                          [0m
+
+test/geoparquet/RMLTC0001a/test_RMLTC0001a_GEOPARQUET.py [32m.[0m[33m                                                                                                                                                                                                                                             [  0%][0m
+test/issues/issue_118/test_issue_118.py [32m.[0m[33m                                                                                                                                                                                                                                                              [  0%][0m
+test/issues/issue_124/test_issue_124.py [32m.[0m[33m                                                                                                                                                                                                                                                              [  0%][0m
+test/issues/issue_145/test_issue_145.py [32m.[0m[33m                                                                                                                                                                                                                                                              [  1%][0m
+test/issues/issue_174/test_issue_174.py [32m.[0m[32m.[0m[32m.[0m[33m                                                                                                                                                                                                                                                            [  1%][0m
+test/issues/issue_243/test_issue_243.py [32m.[0m[33m                                                                                                                                                                                                                                                              [  2%][0m
+test/issues/issue_254/test_issue_254.py [32m.[0m[33m                                                                                                                                                                                                                                                              [  2%][0m
+test/issues/issue_316/test_issue_316.py [32m.[0m[32m.[0m[33m                                                                                                                                                                                                                                                             [  2%][0m
+test/issues/issue_328/test_prefixes_yarrrml.py [32m.[0m[33m                                                                                                                                                                                                                                                       [  3%][0m
+test/issues/issue_350/test_issue_350.py [32m.[0m[32m.[0m[32m.[0m[32m.[0m[33m                                                                                                                                                                                                                                                           [  4%][0m
+test/issues/issue_62/test_issue_62.py [32m.[0m[33m                                                                                                                                                                                                                                                                [  4%][0m
+test/issues/issue_67/test_issue_67.py [32m.[0m[33m                                                                                                                                                                                                                                                                [  4%][0m
+test/issues/issue_80/test_issue_80.py [32m.[0m[33m                                                                                                                                                                                                                                                                [  5%][0m
+test/issues/issue_81/test_issue_81.py [32m.[0m[33m                                                                                                                                                                                                                                                                [  5%][0m
+test/r2rml/R2RMLTC0000/test_R2RMLTC0000_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                    [  5%][0m
+test/r2rml/R2RMLTC0001a/test_R2RMLTC0001a_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [  5%][0m
+test/r2rml/R2RMLTC0001b/test_R2RMLTC0001b_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [  6%][0m
+test/r2rml/R2RMLTC0002a/test_R2RMLTC0002a_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [  6%][0m
+test/r2rml/R2RMLTC0002b/test_R2RMLTC0002b_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [  6%][0m
+test/r2rml/R2RMLTC0002c/test_R2RMLTC0002c_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [  6%][0m
+test/r2rml/R2RMLTC0002d/test_R2RMLTC0002d_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [  7%][0m
+test/r2rml/R2RMLTC0002e/test_R2RMLTC0002e_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [  7%][0m
+test/r2rml/R2RMLTC0002f/test_R2RMLTC0002f_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [  7%][0m
+test/r2rml/R2RMLTC0002g/test_R2RMLTC0002g_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [  8%][0m
+test/r2rml/R2RMLTC0002h/test_R2RMLTC0002h_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [  8%][0m
+test/r2rml/R2RMLTC0002i/test_R2RMLTC0002i_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [  8%][0m
+test/r2rml/R2RMLTC0002j/test_R2RMLTC0002j_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [  8%][0m
+test/r2rml/R2RMLTC0003b/test_R2RMLTC0003b_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [  9%][0m
+test/r2rml/R2RMLTC0003c/test_R2RMLTC0003c_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [  9%][0m
+test/r2rml/R2RMLTC0004a/test_R2RMLTC0004a_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [  9%][0m
+test/r2rml/R2RMLTC0004b/test_R2RMLTC0004b_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [  9%][0m
+test/r2rml/R2RMLTC0005a/test_R2RMLTC0005a_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 10%][0m
+test/r2rml/R2RMLTC0005b/test_R2RMLTC0005b_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 10%][0m
+test/r2rml/R2RMLTC0006a/test_R2RMLTC0006a_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 10%][0m
+test/r2rml/R2RMLTC0007a/test_R2RMLTC0007a_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 10%][0m
+test/r2rml/R2RMLTC0007b/test_R2RMLTC0007b_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 11%][0m
+test/r2rml/R2RMLTC0007c/test_R2RMLTC0007c_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 11%][0m
+test/r2rml/R2RMLTC0007d/test_R2RMLTC0007d_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 11%][0m
+test/r2rml/R2RMLTC0007e/test_R2RMLTC0007e_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 12%][0m
+test/r2rml/R2RMLTC0007f/test_R2RMLTC0007f_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 12%][0m
+test/r2rml/R2RMLTC0007g/test_R2RMLTC0007g_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 12%][0m
+test/r2rml/R2RMLTC0007h/test_R2RMLTC0007h_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 12%][0m
+test/r2rml/R2RMLTC0008a/test_R2RMLTC0008a_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 13%][0m
+test/r2rml/R2RMLTC0008b/test_R2RMLTC0008b_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 13%][0m
+test/r2rml/R2RMLTC0008c/test_R2RMLTC0008c_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 13%][0m
+test/r2rml/R2RMLTC0009a/test_R2RMLTC0009a_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 13%][0m
+test/r2rml/R2RMLTC0009b/test_R2RMLTC0009b_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 14%][0m
+test/r2rml/R2RMLTC0009c/test_R2RMLTC0009c_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 14%][0m
+test/r2rml/R2RMLTC0009d/test_R2RMLTC0009d_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 14%][0m
+test/r2rml/R2RMLTC0010a/test_R2RMLTC0010a_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 14%][0m
+test/r2rml/R2RMLTC0010b/test_R2RMLTC0010b_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 15%][0m
+test/r2rml/R2RMLTC0010c/test_R2RMLTC0010c_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 15%][0m
+test/r2rml/R2RMLTC0011a/test_R2RMLTC0011a_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 15%][0m
+test/r2rml/R2RMLTC0011b/test_R2RMLTC0011b_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 16%][0m
+test/r2rml/R2RMLTC0012a/test_R2RMLTC0012a_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 16%][0m
+test/r2rml/R2RMLTC0012b/test_R2RMLTC0012b_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 16%][0m
+test/r2rml/R2RMLTC0012c/test_R2RMLTC0012c_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 16%][0m
+test/r2rml/R2RMLTC0012d/test_R2RMLTC0012d_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 17%][0m
+test/r2rml/R2RMLTC0012e/test_R2RMLTC0012e_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 17%][0m
+test/r2rml/R2RMLTC0013a/test_R2RMLTC0013a_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 17%][0m
+test/r2rml/R2RMLTC0014d/test_R2RMLTC0014d_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 17%][0m
+test/r2rml/R2RMLTC0015a/test_R2RMLTC0015a_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 18%][0m
+test/r2rml/R2RMLTC0015b/test_R2RMLTC0015b_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 18%][0m
+test/r2rml/R2RMLTC0016a/test_R2RMLTC0016a_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 18%][0m
+test/r2rml/R2RMLTC0018a/test_R2RMLTC0018a_SQLITE.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 18%][0m
+test/rml-core/csv/RMLTC0000/test_RMLTC0000_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                    [ 19%][0m
+test/rml-core/csv/RMLTC0001a/test_RMLTC0001a_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 19%][0m
+test/rml-core/csv/RMLTC0001b/test_RMLTC0001b_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 19%][0m
+test/rml-core/csv/RMLTC0002a/test_RMLTC0002a_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 20%][0m
+test/rml-core/csv/RMLTC0002b/test_RMLTC0002b_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 20%][0m
+test/rml-core/csv/RMLTC0002c/test_RMLTC0002c_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 20%][0m
+test/rml-core/csv/RMLTC0002e/test_RMLTC0002e_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 20%][0m
+test/rml-core/csv/RMLTC0003c/test_RMLTC0003c_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 21%][0m
+test/rml-core/csv/RMLTC0004a/test_RMLTC0004a_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 21%][0m
+test/rml-core/csv/RMLTC0004b/test_RMLTC0004b_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 21%][0m
+test/rml-core/csv/RMLTC0005a/test_RMLTC0005a_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 21%][0m
+test/rml-core/csv/RMLTC0006a/test_RMLTC0006a_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 22%][0m
+test/rml-core/csv/RMLTC0007a/test_RMLTC0007a_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 22%][0m
+test/rml-core/csv/RMLTC0007b/test_RMLTC0007b_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 22%][0m
+test/rml-core/csv/RMLTC0007c/test_RMLTC0007c_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 22%][0m
+test/rml-core/csv/RMLTC0007d/test_RMLTC0007d_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 23%][0m
+test/rml-core/csv/RMLTC0007e/test_RMLTC0007e_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 23%][0m
+test/rml-core/csv/RMLTC0007f/test_RMLTC0007f_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 23%][0m
+test/rml-core/csv/RMLTC0007g/test_RMLTC0007g_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 24%][0m
+test/rml-core/csv/RMLTC0007h/test_RMLTC0007h_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 24%][0m
+test/rml-core/csv/RMLTC0008a/test_RMLTC0008a_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 24%][0m
+test/rml-core/csv/RMLTC0008b/test_RMLTC0008b_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 24%][0m
+test/rml-core/csv/RMLTC0008c/test_RMLTC0008c_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 25%][0m
+test/rml-core/csv/RMLTC0009a/test_RMLTC0009a_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 25%][0m
+test/rml-core/csv/RMLTC0009b/test_RMLTC0009b_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 25%][0m
+test/rml-core/csv/RMLTC0010a/test_RMLTC0010a_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 25%][0m
+test/rml-core/csv/RMLTC0010b/test_RMLTC0010b_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 26%][0m
+test/rml-core/csv/RMLTC0010c/test_RMLTC0010c_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 26%][0m
+test/rml-core/csv/RMLTC0011b/test_RMLTC0011b_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 26%][0m
+test/rml-core/csv/RMLTC0012a/test_RMLTC0012a_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 27%][0m
+test/rml-core/csv/RMLTC0012b/test_RMLTC0012b_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 27%][0m
+test/rml-core/csv/RMLTC0012c/test_RMLTC0012c_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 27%][0m
+test/rml-core/csv/RMLTC0012d/test_RMLTC0012d_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 27%][0m
+test/rml-core/csv/RMLTC0015a/test_RMLTC0015a_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 28%][0m
+test/rml-core/csv/RMLTC0015b/test_RMLTC0015b_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 28%][0m
+test/rml-core/csv/null_filter/test_null_filter_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 28%][0m
+test/rml-core/csv/triples_map_without_pom/test_triples_map_without_pom_CSV.py [32m.[0m[33m                                                                                                                                                                                                                        [ 28%][0m
+test/rml-core/json/RMLTC0000/test_RMLTC0000_JSON.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 29%][0m
+test/rml-core/json/RMLTC0001a/test_RMLTC0001a_JSON.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 29%][0m
+test/rml-core/json/RMLTC0001b/test_RMLTC0001b_JSON.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 29%][0m
+test/rml-core/json/RMLTC0002a/test_RMLTC0002a_JSON.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 29%][0m
+test/rml-core/json/RMLTC0002b/test_RMLTC0002b_JSON.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 30%][0m
+test/rml-core/json/RMLTC0002e/test_RMLTC0002e_JSON.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 30%][0m
+test/rml-core/json/RMLTC0003c/test_RMLTC0003c_JSON.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 30%][0m
+test/rml-core/json/RMLTC0004a/test_RMLTC0004a_JSON.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 31%][0m
+test/rml-core/json/RMLTC0004b/test_RMLTC0004b_JSON.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 31%][0m
+test/rml-core/json/RMLTC0005a/test_RMLTC0005a_JSON.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 31%][0m
+test/rml-core/json/RMLTC0006a/test_RMLTC0006a_JSON.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 31%][0m
+test/rml-core/json/RMLTC0007a/test_RMLTC0007a_JSON.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 32%][0m
+test/rml-core/json/RMLTC0007b/test_RMLTC0007b_JSON.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 32%][0m
+test/rml-core/json/RMLTC0007c/test_RMLTC0007c_JSON.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 32%][0m
+test/rml-core/json/RMLTC0007d/test_RMLTC0007d_JSON.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 32%][0m
+test/rml-core/json/RMLTC0007e/test_RMLTC0007e_JSON.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 33%][0m
+test/rml-core/json/RMLTC0007f/test_RMLTC0007f_JSON.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 33%][0m
+test/rml-core/json/RMLTC0007g/test_RMLTC0007g_JSON.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 33%][0m
+test/rml-core/json/RMLTC0007h/test_RMLTC0007h_JSON.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 33%][0m
+test/rml-core/json/RMLTC0008a/test_RMLTC0008a_JSON.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 34%][0m
+test/rml-core/json/RMLTC0008b/test_RMLTC0008b_JSON.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 34%][0m
+test/rml-core/json/RMLTC0008c/test_RMLTC0008c_JSON.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 34%][0m
+test/rml-core/json/RMLTC0009a/test_RMLTC0009a_JSON.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 35%][0m
+test/rml-core/json/RMLTC0009b/test_RMLTC0009b_JSON.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 35%][0m
+test/rml-core/json/RMLTC0010a/test_RMLTC0010a_JSON.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 35%][0m
+test/rml-core/json/RMLTC0010b/test_RMLTC0010b_JSON.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 35%][0m
+test/rml-core/json/RMLTC0010c/test_RMLTC0010c_JSON.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 36%][0m
+test/rml-core/json/RMLTC0011b/test_RMLTC0011b_JSON.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 36%][0m
+test/rml-core/json/RMLTC0012a/test_RMLTC0012a_JSON.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 36%][0m
+test/rml-core/json/RMLTC0012b/test_RMLTC0012b_JSON.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 36%][0m
+test/rml-core/json/RMLTC0012c/test_RMLTC0012c_JSON.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 37%][0m
+test/rml-core/json/RMLTC0012d/test_RMLTC0012d_JSON.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 37%][0m
+test/rml-core/json/RMLTC0013a/test_RMLTC0013a_JSON.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 37%][0m
+test/rml-core/json/RMLTC0015a/test_RMLTC0015a_JSON.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 37%][0m
+test/rml-core/json/RMLTC0015b/test_RMLTC0015b_JSON.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 38%][0m
+test/rml-core/json/complex/test_complex_JSON.py [32m.[0m[32m.[0m[32m.[0m[32m.[0m[33m                                                                                                                                                                                                                                                   [ 39%][0m
+test/rml-core/tabular/RMLTC0002a_EXCEL/test_RMLTC0002a_EXCEL.py [32m.[0m[33m                                                                                                                                                                                                                                      [ 39%][0m
+test/rml-core/tabular/RMLTC0002a_FEATHER/test_RMLTC0002a_FEATHER.py [32m.[0m[33m                                                                                                                                                                                                                                  [ 39%][0m
+test/rml-core/tabular/RMLTC0002a_ODS/test_RMLTC0002a_ODS.py [32m.[0m[33m                                                                                                                                                                                                                                          [ 40%][0m
+test/rml-core/tabular/RMLTC0002a_PARQUET/test_RMLTC0002a_PARQUET.py [32m.[0m[33m                                                                                                                                                                                                                                  [ 40%][0m
+test/rml-core/tabular/RMLTC0002a_STATA/test_RMLTC0002a_STATA.py [32m.[0m[33m                                                                                                                                                                                                                                      [ 40%][0m
+test/rml-core/tabular/RMLTC0002a_TSV/test_RMLTC0002a_TSV.py [32m.[0m[33m                                                                                                                                                                                                                                          [ 40%][0m
+test/rml-core/xml/RMLTC0000/test_RMLTC0000_XML.py [32m.[0m[33m                                                                                                                                                                                                                                                    [ 41%][0m
+test/rml-core/xml/RMLTC0001a/test_RMLTC0001a_XML.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 41%][0m
+test/rml-core/xml/RMLTC0001b/test_RMLTC0001b_XML.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 41%][0m
+test/rml-core/xml/RMLTC0002a/test_RMLTC0002a_XML.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 41%][0m
+test/rml-core/xml/RMLTC0002b/test_RMLTC0002b_XML.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 42%][0m
+test/rml-core/xml/RMLTC0002c/test_RMLTC0002c_XML.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 42%][0m
+test/rml-core/xml/RMLTC0002e/test_RMLTC0002e_XML.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 42%][0m
+test/rml-core/xml/RMLTC0003c/test_RMLTC0003c_XML.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 43%][0m
+test/rml-core/xml/RMLTC0004a/test_RMLTC0004a_XML.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 43%][0m
+test/rml-core/xml/RMLTC0004b/test_RMLTC0004b_XML.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 43%][0m
+test/rml-core/xml/RMLTC0005a/test_RMLTC0005a_XML.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 43%][0m
+test/rml-core/xml/RMLTC0006a/test_RMLTC0006a_XML.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 44%][0m
+test/rml-core/xml/RMLTC0007a/test_RMLTC0007a_XML.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 44%][0m
+test/rml-core/xml/RMLTC0007b/test_RMLTC0007b_XML.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 44%][0m
+test/rml-core/xml/RMLTC0007c/test_RMLTC0007c_XML.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 44%][0m
+test/rml-core/xml/RMLTC0007d/test_RMLTC0007d_XML.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 45%][0m
+test/rml-core/xml/RMLTC0007e/test_RMLTC0007e_XML.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 45%][0m
+test/rml-core/xml/RMLTC0007f/test_RMLTC0007f_XML.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 45%][0m
+test/rml-core/xml/RMLTC0007g/test_RMLTC0007g_XML.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 45%][0m
+test/rml-core/xml/RMLTC0007h/test_RMLTC0007h_XML.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 46%][0m
+test/rml-core/xml/RMLTC0008a/test_RMLTC0008a_XML.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 46%][0m
+test/rml-core/xml/RMLTC0008b/test_RMLTC0008b_XML.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 46%][0m
+test/rml-core/xml/RMLTC0008c/test_RMLTC0008c_XML.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 47%][0m
+test/rml-core/xml/RMLTC0009a/test_RMLTC0009a_XML.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 47%][0m
+test/rml-core/xml/RMLTC0009b/test_RMLTC0009b_XML.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 47%][0m
+test/rml-core/xml/RMLTC0010b/test_RMLTC0010b_XML.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 47%][0m
+test/rml-core/xml/RMLTC0010c/test_RMLTC0010c_XML.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 48%][0m
+test/rml-core/xml/RMLTC0011b/test_RMLTC0011b_XML.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 48%][0m
+test/rml-core/xml/RMLTC0012a/test_RMLTC0012a_XML.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 48%][0m
+test/rml-core/xml/RMLTC0012b/test_RMLTC0012b_XML.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 48%][0m
+test/rml-core/xml/RMLTC0012c/test_RMLTC0012c_XML.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 49%][0m
+test/rml-core/xml/RMLTC0012d/test_RMLTC0012d_XML.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 49%][0m
+test/rml-core/xml/RMLTC0015a/test_RMLTC0015a_XML.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 49%][0m
+test/rml-core/xml/RMLTC0015b/test_RMLTC0015b_XML.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 50%][0m
+test/rml-core/xml/attributes/test_attributes_XML.py [32m.[0m[33m                                                                                                                                                                                                                                                  [ 50%][0m
+test/rml-core/xml/rml_spec_example_section_3/test_rml_spec_example_section_3_XML.py [32m.[0m[33m                                                                                                                                                                                                                  [ 50%][0m
+test/rml-core/xml/rml_spec_example_section_5/test_rml_spec_example_section_5_XML.py [32m.[0m[33m                                                                                                                                                                                                                  [ 50%][0m
+test/rml-fnml/abbreviated_syntax/test_short_functions.py [32m.[0m[33m                                                                                                                                                                                                                                             [ 51%][0m
+test/rml-fnml/array_functions/array_get/test_array_get.py [32m.[0m[33m                                                                                                                                                                                                                                            [ 51%][0m
+test/rml-fnml/array_functions/array_get_slice/test_array_get_slice.py [32m.[0m[33m                                                                                                                                                                                                                                [ 51%][0m
+test/rml-fnml/array_functions/array_join/test_array_join.py [32m.[0m[33m                                                                                                                                                                                                                                          [ 51%][0m
+test/rml-fnml/array_functions/array_length/test_array_length.py [32m.[0m[33m                                                                                                                                                                                                                                      [ 52%][0m
+test/rml-fnml/array_functions/array_reverse/test_array_reverse.py [32m.[0m[33m                                                                                                                                                                                                                                    [ 52%][0m
+test/rml-fnml/array_functions/array_sort/test_array_sort.py [32m.[0m[33m                                                                                                                                                                                                                                          [ 52%][0m
+test/rml-fnml/array_functions/array_sum/test_array_sum.py [32m.[0m[33m                                                                                                                                                                                                                                            [ 52%][0m
+test/rml-fnml/array_functions/array_unique/test_array_unique.py [32m.[0m[33m                                                                                                                                                                                                                                      [ 53%][0m
+test/rml-fnml/controls_functions/controls_and/test_controls_and.py [32m.[0m[33m                                                                                                                                                                                                                                   [ 53%][0m
+test/rml-fnml/controls_functions/controls_if/test_controls_if.py [32m.[0m[33m                                                                                                                                                                                                                                     [ 53%][0m
+test/rml-fnml/controls_functions/controls_if_cast/test_controls_if_cast.py [32m.[0m[33m                                                                                                                                                                                                                           [ 54%][0m
+test/rml-fnml/controls_functions/controls_not_or/test_controls_not_or.py [32m.[0m[33m                                                                                                                                                                                                                             [ 54%][0m
+test/rml-fnml/controls_functions/controls_true/test_controls_true.py [32m.[0m[33m                                                                                                                                                                                                                                 [ 54%][0m
+test/rml-fnml/controls_functions/controls_xor_if/test_controls_xor_if.py [32m.[0m[33m                                                                                                                                                                                                                             [ 54%][0m
+test/rml-fnml/date_functions/date_datepart/test_datepart.py [32m.[0m[33m                                                                                                                                                                                                                                          [ 55%][0m
+test/rml-fnml/date_functions/date_diff/test_date_diff.py [32m.[0m[33m                                                                                                                                                                                                                                             [ 55%][0m
+test/rml-fnml/date_functions/date_inc/test_dateinc.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 55%][0m
+test/rml-fnml/date_functions/date_to_date/test_date_to_date.py [32m.[0m[33m                                                                                                                                                                                                                                       [ 55%][0m
+test/rml-fnml/fnml_to_rml/test_translate_fnml.py [32m.[0m[33m                                                                                                                                                                                                                                                     [ 56%][0m
+test/rml-fnml/math_functions/math_abs/test_math_abs.py [32m.[0m[33m                                                                                                                                                                                                                                               [ 56%][0m
+test/rml-fnml/math_functions/math_acos/test_math_acos.py [32m.[0m[33m                                                                                                                                                                                                                                             [ 56%][0m
+test/rml-fnml/math_functions/math_asin/test_math_asin.py [32m.[0m[33m                                                                                                                                                                                                                                             [ 56%][0m
+test/rml-fnml/math_functions/math_atan/test_math_atan.py [32m.[0m[33m                                                                                                                                                                                                                                             [ 57%][0m
+test/rml-fnml/math_functions/math_atan2/test_math_atan2.py [32m.[0m[33m                                                                                                                                                                                                                                           [ 57%][0m
+test/rml-fnml/math_functions/math_ceil/test_math_ceil.py [32m.[0m[33m                                                                                                                                                                                                                                             [ 57%][0m
+test/rml-fnml/math_functions/math_combin/test_math_combin.py [32m.[0m[33m                                                                                                                                                                                                                                         [ 58%][0m
+test/rml-fnml/math_functions/math_cos/test_math_cos.py [32m.[0m[33m                                                                                                                                                                                                                                               [ 58%][0m
+test/rml-fnml/math_functions/math_cosh/test_math_cosh.py [32m.[0m[33m                                                                                                                                                                                                                                             [ 58%][0m
+test/rml-fnml/math_functions/math_degrees/test_math_degrees.py [32m.[0m[33m                                                                                                                                                                                                                                       [ 58%][0m
+test/rml-fnml/math_functions/math_even_odd/test_math_even_odd.py [32m.[0m[33m                                                                                                                                                                                                                                     [ 59%][0m
+test/rml-fnml/math_functions/math_exp/test_math_exp.py [32m.[0m[33m                                                                                                                                                                                                                                               [ 59%][0m
+test/rml-fnml/math_functions/math_fact/test_math_fact.py [32m.[0m[33m                                                                                                                                                                                                                                             [ 59%][0m
+test/rml-fnml/math_functions/math_factn/test_math_factn.py [32m.[0m[33m                                                                                                                                                                                                                                           [ 59%][0m
+test/rml-fnml/math_functions/math_floor/test_math_floor.py [32m.[0m[33m                                                                                                                                                                                                                                           [ 60%][0m
+test/rml-fnml/math_functions/math_gcd/test_math_gcd.py [32m.[0m[33m                                                                                                                                                                                                                                               [ 60%][0m
+test/rml-fnml/math_functions/math_lcm/test_math_lcm.py [32m.[0m[33m                                                                                                                                                                                                                                               [ 60%][0m
+test/rml-fnml/math_functions/math_ln/test_math_ln.py [32m.[0m[33m                                                                                                                                                                                                                                                 [ 60%][0m
+test/rml-fnml/math_functions/math_log/test_math_log.py [32m.[0m[33m                                                                                                                                                                                                                                               [ 61%][0m
+test/rml-fnml/math_functions/math_min_max/test_math_minmax.py [32m.[0m[33m                                                                                                                                                                                                                                        [ 61%][0m
+test/rml-fnml/math_functions/math_mod/test_math_mod.py [32m.[0m[33m                                                                                                                                                                                                                                               [ 61%][0m
+test/rml-fnml/math_functions/math_multinominal/test_math_multinomial.py [32m.[0m[33m                                                                                                                                                                                                                              [ 62%][0m
+test/rml-fnml/math_functions/math_pow/test_math_pow.py [32m.[0m[33m                                                                                                                                                                                                                                               [ 62%][0m
+test/rml-fnml/math_functions/math_quotient/test_math_quotient.py [32m.[0m[33m                                                                                                                                                                                                                                     [ 62%][0m
+test/rml-fnml/math_functions/math_radians/test_math_radians.py [32m.[0m[33m                                                                                                                                                                                                                                       [ 62%][0m
+test/rml-fnml/math_functions/math_random/test_math_random.py [32m.[0m[33m                                                                                                                                                                                                                                         [ 63%][0m
+test/rml-fnml/math_functions/math_round/test_math_round.py [32m.[0m[33m                                                                                                                                                                                                                                           [ 63%][0m
+test/rml-fnml/math_functions/math_sin/test_math_sin.py [32m.[0m[33m                                                                                                                                                                                                                                               [ 63%][0m
+test/rml-fnml/math_functions/math_sinh/test_math_sinh.py [32m.[0m[33m                                                                                                                                                                                                                                             [ 63%][0m
+test/rml-fnml/math_functions/math_tan/test_math_tan.py [32m.[0m[33m                                                                                                                                                                                                                                               [ 64%][0m
+test/rml-fnml/math_functions/math_tanh/test_math_tanh.py [32m.[0m[33m                                                                                                                                                                                                                                             [ 64%][0m
+test/rml-fnml/other_functions/RMLFNOTC0003-CSV_escape/test_RMLFNOTC0003-CSV.py [32m.[0m[33m                                                                                                                                                                                                                       [ 64%][0m
+test/rml-fnml/other_functions/RMLFNOTC0004-CSV_uppercase_url/test_RMLFNOTC0004-CSV.py [32m.[0m[33m                                                                                                                                                                                                                [ 64%][0m
+test/rml-fnml/other_functions/RMLFNOTC0005-CSV_uppercase_url/test_RMLFNOTC0005-CSV.py [32m.[0m[33m                                                                                                                                                                                                                [ 65%][0m
+test/rml-fnml/other_functions/RMLFNOTC0006-CSV_uppercase_url/test_RMLFNOTC0006-CSV.py [32m.[0m[33m                                                                                                                                                                                                                [ 65%][0m
+test/rml-fnml/other_functions/type/test_other_type.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 65%][0m
+test/rml-fnml/string_functions/RMLFNOTC0001-CSV_upperCase/test_RMLFNOTC0001-CSV.py [32m.[0m[33m                                                                                                                                                                                                                   [ 66%][0m
+test/rml-fnml/string_functions/RMLFNOTC0002-CSV_touppercase/test_RMLFNOTC0002-CSV.py [32m.[0m[33m                                                                                                                                                                                                                 [ 66%][0m
+test/rml-fnml/string_functions/RMLFNOTC0008-CSV_uppercase/test_RMLFNOTC0008-CSV.py [32m.[0m[33m                                                                                                                                                                                                                   [ 66%][0m
+test/rml-fnml/string_functions/RMLFNOTC0009-CSV_replace/test_RMLFNOTC0009-CSV.py [32m.[0m[33m                                                                                                                                                                                                                     [ 66%][0m
+test/rml-fnml/string_functions/split_explode/test_split_explode.py [32m.[0m[33m                                                                                                                                                                                                                                   [ 67%][0m
+test/rml-fnml/string_functions/split_explode_null/test_split_explode_null.py [32m.[0m[33m                                                                                                                                                                                                                         [ 67%][0m
+test/rml-fnml/string_functions/string_casing/test_string_casing.py [32m.[0m[33m                                                                                                                                                                                                                                   [ 67%][0m
+test/rml-fnml/string_functions/string_chomp_trim/test_string_chomp_trim.py [32m.[0m[33m                                                                                                                                                                                                                           [ 67%][0m
+test/rml-fnml/string_functions/string_contains/test_string_contains.py [32m.[0m[33m                                                                                                                                                                                                                               [ 68%][0m
+test/rml-fnml/string_functions/string_diff/test_string_diff.py [32m.[0m[33m                                                                                                                                                                                                                                       [ 68%][0m
+test/rml-fnml/string_functions/string_hash/test_hash.py [32m.[0m[33m                                                                                                                                                                                                                                              [ 68%][0m
+test/rml-fnml/string_functions/string_indexof/test_string_indexof.py [32m.[0m[33m                                                                                                                                                                                                                                 [ 68%][0m
+test/rml-fnml/string_functions/string_length/test_string_length.py [32m.[0m[33m                                                                                                                                                                                                                                   [ 69%][0m
+test/rml-fnml/string_functions/string_match/test_string_match.py [32m.[0m[33m                                                                                                                                                                                                                                     [ 69%][0m
+test/rml-fnml/string_functions/string_replace/test_string_replace.py [32m.[0m[33m                                                                                                                                                                                                                                 [ 69%][0m
+test/rml-fnml/string_functions/string_splits/by_char_type/test_string_split_by_chartype.py [32m.[0m[33m                                                                                                                                                                                                           [ 70%][0m
+test/rml-fnml/string_functions/string_splits/split/test_string_splits.py [32m.[0m[33m                                                                                                                                                                                                                             [ 70%][0m
+test/rml-fnml/string_functions/string_starts_endswith/test_string_start_end_with.py [32m.[0m[33m                                                                                                                                                                                                                  [ 70%][0m
+test/rml-fnml/string_functions/string_substring/test_string_substring.py [32m.[0m[33m                                                                                                                                                                                                                             [ 70%][0m
+test/rml-fnml/udf/test_udf.py [32m.[0m[33m                                                                                                                                                                                                                                                                        [ 71%][0m
+test/rml-fnml/uuid/test_RMLFNOTC0000-CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                          [ 71%][0m
+test/rml-in-memory/json_dictionary/RMLIMTC0000/test_RMLTC0000_DICT.py [32m.[0m[33m                                                                                                                                                                                                                                [ 71%][0m
+test/rml-in-memory/json_dictionary/RMLIMTC0001a/test_RMLTC0001a_DICT.py [32m.[0m[33m                                                                                                                                                                                                                              [ 71%][0m
+test/rml-in-memory/json_dictionary/RMLIMTC0001b/test_RMLTC0001b_DICT.py [32m.[0m[33m                                                                                                                                                                                                                              [ 72%][0m
+test/rml-in-memory/json_dictionary/RMLIMTC0002a/test_RMLTC0002a_DICT.py [32m.[0m[33m                                                                                                                                                                                                                              [ 72%][0m
+test/rml-in-memory/json_dictionary/RMLIMTC0002b/test_RMLTC0002b_DICT.py [32m.[0m[33m                                                                                                                                                                                                                              [ 72%][0m
+test/rml-in-memory/json_dictionary/RMLIMTC0002c/test_RMLTC0002c_DICT.py [32m.[0m[33m                                                                                                                                                                                                                              [ 72%][0m
+test/rml-in-memory/json_dictionary/RMLIMTC0002e/test_RMLTC0002e_DICT.py [32m.[0m[33m                                                                                                                                                                                                                              [ 73%][0m
+test/rml-in-memory/json_dictionary/RMLIMTC0003c/test_RMLTC0003c_DICT.py [32m.[0m[33m                                                                                                                                                                                                                              [ 73%][0m
+test/rml-in-memory/json_dictionary/RMLIMTC0004a/test_RMLTC0004a_DICT.py [32m.[0m[33m                                                                                                                                                                                                                              [ 73%][0m
+test/rml-in-memory/json_dictionary/RMLIMTC0004b/test_RMLTC0004b_DICT.py [32m.[0m[33m                                                                                                                                                                                                                              [ 74%][0m
+test/rml-in-memory/json_dictionary/RMLIMTC0005a/test_RMLTC0005a_DICT.py [32m.[0m[33m                                                                                                                                                                                                                              [ 74%][0m
+test/rml-in-memory/json_dictionary/RMLIMTC0006a/test_RMLTC0006a_DICT.py [32m.[0m[33m                                                                                                                                                                                                                              [ 74%][0m
+test/rml-in-memory/json_dictionary/RMLIMTC0007a/test_RMLTC0007a_DICT.py [32m.[0m[33m                                                                                                                                                                                                                              [ 74%][0m
+test/rml-in-memory/json_dictionary/RMLIMTC0007b/test_RMLTC0007b_DICT.py [32m.[0m[33m                                                                                                                                                                                                                              [ 75%][0m
+test/rml-in-memory/json_dictionary/RMLIMTC0007c/test_RMLTC0007c_DICT.py [32m.[0m[33m                                                                                                                                                                                                                              [ 75%][0m
+test/rml-in-memory/json_dictionary/RMLIMTC0007d/test_RMLTC0007d_DICT.py [32m.[0m[33m                                                                                                                                                                                                                              [ 75%][0m
+test/rml-in-memory/json_dictionary/RMLIMTC0007e/test_RMLTC0007e_DICT.py [32m.[0m[33m                                                                                                                                                                                                                              [ 75%][0m
+test/rml-in-memory/json_dictionary/RMLIMTC0007f/test_RMLTC0007f_DICT.py [32m.[0m[33m                                                                                                                                                                                                                              [ 76%][0m
+test/rml-in-memory/json_dictionary/RMLIMTC0007g/test_RMLTC0007g_DICT.py [32m.[0m[33m                                                                                                                                                                                                                              [ 76%][0m
+test/rml-in-memory/json_dictionary/RMLIMTC0007h/test_RMLTC0007h_DICT.py [32m.[0m[33m                                                                                                                                                                                                                              [ 76%][0m
+test/rml-in-memory/json_dictionary/RMLIMTC0008a/test_RMLTC0008a_DICT.py [32m.[0m[33m                                                                                                                                                                                                                              [ 77%][0m
+test/rml-in-memory/json_dictionary/RMLIMTC0008b/test_RMLTC0008b_DICT.py [32m.[0m[33m                                                                                                                                                                                                                              [ 77%][0m
+test/rml-in-memory/json_dictionary/RMLIMTC0008c/test_RMLTC0008c_DICT.py [32m.[0m[33m                                                                                                                                                                                                                              [ 77%][0m
+test/rml-in-memory/json_dictionary/RMLIMTC0009a/test_RMLTC0009a_DICT.py [32m.[0m[33m                                                                                                                                                                                                                              [ 77%][0m
+test/rml-in-memory/json_dictionary/RMLIMTC0009b/test_RMLTC0009b_DICT.py [32m.[0m[33m                                                                                                                                                                                                                              [ 78%][0m
+test/rml-in-memory/json_dictionary/RMLIMTC0010a/test_RMLTC0010a_DICT.py [32m.[0m[33m                                                                                                                                                                                                                              [ 78%][0m
+test/rml-in-memory/json_dictionary/RMLIMTC0010b/test_RMLTC0010b_DICT.py [32m.[0m[33m                                                                                                                                                                                                                              [ 78%][0m
+test/rml-in-memory/json_dictionary/RMLIMTC0010c/test_RMLTC0010c_DICT.py [32m.[0m[33m                                                                                                                                                                                                                              [ 78%][0m
+test/rml-in-memory/json_dictionary/RMLIMTC0011b/test_RMLTC0011b_DICT.py [32m.[0m[33m                                                                                                                                                                                                                              [ 79%][0m
+test/rml-in-memory/json_dictionary/RMLIMTC0012a/test_RMLTC0012a_DICT.py [32m.[0m[33m                                                                                                                                                                                                                              [ 79%][0m
+test/rml-in-memory/json_dictionary/RMLIMTC0012b/test_RMLTC0012b_DICT.py [32m.[0m[33m                                                                                                                                                                                                                              [ 79%][0m
+test/rml-in-memory/json_dictionary/RMLIMTC0012c/test_RMLTC0012c_DICT.py [32m.[0m[33m                                                                                                                                                                                                                              [ 79%][0m
+test/rml-in-memory/json_dictionary/RMLIMTC0012d/test_RMLTC0012d_DICT.py [32m.[0m[33m                                                                                                                                                                                                                              [ 80%][0m
+test/rml-in-memory/json_dictionary/RMLIMTC0013a/test_RMLTC0013a_DICT.py [32m.[0m[33m                                                                                                                                                                                                                              [ 80%][0m
+test/rml-in-memory/json_dictionary/RMLIMTC0015a/test_RMLTC0015a_DICT.py [32m.[0m[33m                                                                                                                                                                                                                              [ 80%][0m
+test/rml-in-memory/json_dictionary/RMLIMTC0015b/test_RMLTC0015b_DICT.py [32m.[0m[33m                                                                                                                                                                                                                              [ 81%][0m
+test/rml-in-memory/pandas_dataframe/RMLIMTC0000/test_RMLIMTC0000_DF.py [32m.[0m[33m                                                                                                                                                                                                                               [ 81%][0m
+test/rml-in-memory/pandas_dataframe/RMLIMTC0001a/test_RMLTC0001a_DF.py [32m.[0m[33m                                                                                                                                                                                                                               [ 81%][0m
+test/rml-in-memory/pandas_dataframe/RMLIMTC0001b/test_RMLIMTC0001b_DF.py [32m.[0m[33m                                                                                                                                                                                                                             [ 81%][0m
+test/rml-in-memory/pandas_dataframe/RMLIMTC0002a/test_RMLIMTC0002a_DF.py [32m.[0m[33m                                                                                                                                                                                                                             [ 82%][0m
+test/rml-in-memory/pandas_dataframe/RMLIMTC0002b/test_RMLIMTC0002b_DF.py [32m.[0m[33m                                                                                                                                                                                                                             [ 82%][0m
+test/rml-in-memory/pandas_dataframe/RMLIMTC0002c/test_RMLIMTC0002c_DF.py [32m.[0m[33m                                                                                                                                                                                                                             [ 82%][0m
+test/rml-in-memory/pandas_dataframe/RMLIMTC0002e/test_RMLIMTC0002e_DF.py [32m.[0m[33m                                                                                                                                                                                                                             [ 82%][0m
+test/rml-in-memory/pandas_dataframe/RMLIMTC0003c/test_RMLIMTC0003c_DF.py [32m.[0m[33m                                                                                                                                                                                                                             [ 83%][0m
+test/rml-in-memory/pandas_dataframe/RMLIMTC0004a/test_RMLIMTC0004a_DF.py [32m.[0m[33m                                                                                                                                                                                                                             [ 83%][0m
+test/rml-in-memory/pandas_dataframe/RMLIMTC0004b/test_RMLIMTC0004b_DF.py [32m.[0m[33m                                                                                                                                                                                                                             [ 83%][0m
+test/rml-in-memory/pandas_dataframe/RMLIMTC0005a/test_RMLIMTC0005a_DF.py [32m.[0m[33m                                                                                                                                                                                                                             [ 83%][0m
+test/rml-in-memory/pandas_dataframe/RMLIMTC0006a/test_RMLIMTC0006a_DF.py [32m.[0m[33m                                                                                                                                                                                                                             [ 84%][0m
+test/rml-in-memory/pandas_dataframe/RMLIMTC0007a/test_RMLIMTC0007a_DF.py [32m.[0m[33m                                                                                                                                                                                                                             [ 84%][0m
+test/rml-in-memory/pandas_dataframe/RMLIMTC0007b/test_RMLIMTC0007b_DF.py [32m.[0m[33m                                                                                                                                                                                                                             [ 84%][0m
+test/rml-in-memory/pandas_dataframe/RMLIMTC0007c/test_RMLIMTC0007c_DF.py [32m.[0m[33m                                                                                                                                                                                                                             [ 85%][0m
+test/rml-in-memory/pandas_dataframe/RMLIMTC0007d/test_RMLTC0007d_DF.py [32m.[0m[33m                                                                                                                                                                                                                               [ 85%][0m
+test/rml-in-memory/pandas_dataframe/RMLIMTC0007e/test_RMLIMTC0007e_DF.py [32m.[0m[33m                                                                                                                                                                                                                             [ 85%][0m
+test/rml-in-memory/pandas_dataframe/RMLIMTC0007f/test_RMLIMTC0007f_DF.py [32m.[0m[33m                                                                                                                                                                                                                             [ 85%][0m
+test/rml-in-memory/pandas_dataframe/RMLIMTC0007g/test_RMLIMTC0007g_DF.py [32m.[0m[33m                                                                                                                                                                                                                             [ 86%][0m
+test/rml-in-memory/pandas_dataframe/RMLIMTC0007h/test_RMLIMTC0007h_DF.py [32m.[0m[33m                                                                                                                                                                                                                             [ 86%][0m
+test/rml-in-memory/pandas_dataframe/RMLIMTC0008a/test_RMLIMTC0008a_DF.py [32m.[0m[33m                                                                                                                                                                                                                             [ 86%][0m
+test/rml-in-memory/pandas_dataframe/RMLIMTC0008b/test_RMLIMTC0008b_DF.py [32m.[0m[33m                                                                                                                                                                                                                             [ 86%][0m
+test/rml-in-memory/pandas_dataframe/RMLIMTC0008c/test_RMLIMTC0008c_DF.py [32m.[0m[33m                                                                                                                                                                                                                             [ 87%][0m
+test/rml-in-memory/pandas_dataframe/RMLIMTC0009a/test_RMLIMTC0009a_DF.py [32m.[0m[33m                                                                                                                                                                                                                             [ 87%][0m
+test/rml-in-memory/pandas_dataframe/RMLIMTC0009b/test_RMLIMTC0009b_DF.py [32m.[0m[33m                                                                                                                                                                                                                             [ 87%][0m
+test/rml-in-memory/pandas_dataframe/RMLIMTC0010a/test_RMLIMTC0010a_DF.py [32m.[0m[33m                                                                                                                                                                                                                             [ 87%][0m
+test/rml-in-memory/pandas_dataframe/RMLIMTC0010b/test_RMLIMTC0010b_DF.py [32m.[0m[33m                                                                                                                                                                                                                             [ 88%][0m
+test/rml-in-memory/pandas_dataframe/RMLIMTC0010c/test_RMLIMTC0010c_DF.py [32m.[0m[33m                                                                                                                                                                                                                             [ 88%][0m
+test/rml-in-memory/pandas_dataframe/RMLIMTC0011b/test_RMLIMTC0011b_DF.py [32m.[0m[33m                                                                                                                                                                                                                             [ 88%][0m
+test/rml-in-memory/pandas_dataframe/RMLIMTC0012a/test_RMLIMTC0012a_DF.py [32m.[0m[33m                                                                                                                                                                                                                             [ 89%][0m
+test/rml-in-memory/pandas_dataframe/RMLIMTC0012b/test_RMLIMTC0012b_DF.py [32m.[0m[33m                                                                                                                                                                                                                             [ 89%][0m
+test/rml-in-memory/pandas_dataframe/RMLIMTC0012c/test_RMLIMTC0012c_DF.py [32m.[0m[33m                                                                                                                                                                                                                             [ 89%][0m
+test/rml-in-memory/pandas_dataframe/RMLIMTC0012d/test_RMLIMTC0012d_DF.py [32m.[0m[33m                                                                                                                                                                                                                             [ 89%][0m
+test/rml-in-memory/pandas_dataframe/RMLIMTC0015a/test_RMLIMTC0015a_DF.py [32m.[0m[33m                                                                                                                                                                                                                             [ 90%][0m
+test/rml-in-memory/pandas_dataframe/RMLIMTC0015b/test_RMLIMTC0015b_DF.py [32m.[0m[33m                                                                                                                                                                                                                             [ 90%][0m
+test/rml-in-memory/pandas_dataframe/RMLIMTC0016a/test_RMLIMTC0016a_DF.py [32m.[0m[33m                                                                                                                                                                                                                             [ 90%][0m
+test/rml-in-memory/pandas_dataframe/triples_map_without_pom/test_triples_map_without_pom_DF.py [32m.[0m[33m                                                                                                                                                                                                       [ 90%][0m
+test/rml-star/RMLSTARTC001a/test_RMLSTARTC001a_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 91%][0m
+test/rml-star/RMLSTARTC001b/test_RMLSTARTC001b_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 91%][0m
+test/rml-star/RMLSTARTC002a/test_RMLSTARTC002a_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 91%][0m
+test/rml-star/RMLSTARTC002b/test_RMLSTARTC002b_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 91%][0m
+test/rml-star/RMLSTARTC003a/test_RMLSTARTC003a_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 92%][0m
+test/rml-star/RMLSTARTC003b/test_RMLSTARTC003b_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 92%][0m
+test/rml-star/RMLSTARTC004a/test_RMLSTARTC004a_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 92%][0m
+test/rml-star/RMLSTARTC004b/test_RMLSTARTC004b_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 93%][0m
+test/rml-star/RMLSTARTC005a/test_RMLSTARTC005a_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 93%][0m
+test/rml-star/RMLSTARTC005b/test_RMLSTARTC005b_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 93%][0m
+test/rml-star/RMLSTARTC006a/test_RMLSTARTC006a_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 93%][0m
+test/rml-star/RMLSTARTC006b/test_RMLSTARTC006b_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 94%][0m
+test/rml-star/RMLSTARTC007a/test_RMLSTARTC007a_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 94%][0m
+test/rml-star/RMLSTARTC007b/test_RMLSTARTC007b_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 94%][0m
+test/rml-star/RMLSTARTC008a/test_RMLSTARTC008a_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 94%][0m
+test/rml-star/RMLSTARTC008b/test_RMLSTARTC008b_CSV.py [32m.[0m[33m                                                                                                                                                                                                                                                [ 95%][0m
+test/rml-tv/RMLTVTC0002d/test_RMLTVTC0002d.py [32m.[0m[33m                                                                                                                                                                                                                                                        [ 95%][0m
+test/rml-tv/RMLTVTC0002g/test_RMLTVTC0002g.py [32m.[0m[33m                                                                                                                                                                                                                                                        [ 95%][0m
+test/rml-tv/RMLTVTC0002h/test_RMLTVTC0002h.py [32m.[0m[33m                                                                                                                                                                                                                                                        [ 95%][0m
+test/rml-tv/RMLTVTC0002i/test_RMLTVTC0002i.py [32m.[0m[33m                                                                                                                                                                                                                                                        [ 96%][0m
+test/rml-tv/RMLTVTC0002j/test_RMLTVTC0002j.py [32m.[0m[33m                                                                                                                                                                                                                                                        [ 96%][0m
+test/rml-tv/RMLTVTC0003b/test_RMLTVTC0003b.py [32m.[0m[33m                                                                                                                                                                                                                                                        [ 96%][0m
+test/rml-tv/RMLTVTC0009c/test_RMLTVTC0009c.py [32m.[0m[33m                                                                                                                                                                                                                                                        [ 97%][0m
+test/rml-tv/RMLTVTC0009d/test_RMLTVTC0009d.py [32m.[0m[33m                                                                                                                                                                                                                                                        [ 97%][0m
+test/rml-tv/RMLTVTC0011a/test_RMLTVTC0011a.py [32m.[0m[33m                                                                                                                                                                                                                                                        [ 97%][0m
+test/rml-tv/RMLTVTC0014d/test_RMLTVTC0014d.py [32m.[0m[33m                                                                                                                                                                                                                                                        [ 97%][0m
+test/rml-tv/RMLTVTC0015a/test_RMLTVTC0015a.py [32m.[0m[33m                                                                                                                                                                                                                                                        [ 98%][0m
+test/rml-tv/RMLTVTC0015b/test_RMLTVTC0015b.py [32m.[0m[33m                                                                                                                                                                                                                                                        [ 98%][0m
+test/rml-tv/RMLTVTC0019a/test_RMLTVTC0019a.py [32m.[0m[33m                                                                                                                                                                                                                                                        [ 98%][0m
+test/rml-tv/RMLTVTC0026a/test_RMLTVTC0026a.py [32m.[0m[33m                                                                                                                                                                                                                                                        [ 98%][0m
+test/rml-tv/RMLTVTC0027a/test_RMLTVTC0027a.py [32m.[0m[33m                                                                                                                                                                                                                                                        [ 99%][0m
+test/rml-tv/RMLTVTC0028a/test_RMLTVTC0028a.py [32m.[0m[33m                                                                                                                                                                                                                                                        [ 99%][0m
+test/rml-tv/RMLTVTC0029a/test_RMLTVTC0029a.py [32m.[0m[33m                                                                                                                                                                                                                                                        [ 99%][0m
+test/shapefile/RMLTC0001a/test_RMLTC0001a_SHP.py [32m.[0m[33m                                                                                                                                                                                                                                                     [100%][0m
+
+[33m============================================================================================================================================== warnings summary ==============================================================================================================================================[0m
+.venv/lib/python3.14/site-packages/rdflib/plugins/parsers/nquads.py:80: 1 warning
+test/geoparquet/RMLTC0001a/test_RMLTC0001a_GEOPARQUET.py: 1 warning
+test/issues/issue_118/test_issue_118.py: 2 warnings
+test/issues/issue_145/test_issue_145.py: 2 warnings
+test/issues/issue_254/test_issue_254.py: 2 warnings
+test/issues/issue_316/test_issue_316.py: 4 warnings
+test/issues/issue_328/test_prefixes_yarrrml.py: 1 warning
+test/issues/issue_350/test_issue_350.py: 1 warning
+test/issues/issue_62/test_issue_62.py: 2 warnings
+test/issues/issue_67/test_issue_67.py: 2 warnings
+test/issues/issue_80/test_issue_80.py: 2 warnings
+test/issues/issue_81/test_issue_81.py: 2 warnings
+test/r2rml/R2RMLTC0000/test_R2RMLTC0000_SQLITE.py: 1 warning
+test/r2rml/R2RMLTC0001a/test_R2RMLTC0001a_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0001b/test_R2RMLTC0001b_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0002a/test_R2RMLTC0002a_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0002b/test_R2RMLTC0002b_SQLITE.py: 1 warning
+test/r2rml/R2RMLTC0002d/test_R2RMLTC0002d_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0002f/test_R2RMLTC0002f_SQLITE.py: 1 warning
+test/r2rml/R2RMLTC0002i/test_R2RMLTC0002i_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0002j/test_R2RMLTC0002j_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0003b/test_R2RMLTC0003b_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0003c/test_R2RMLTC0003c_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0004a/test_R2RMLTC0004a_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0005a/test_R2RMLTC0005a_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0005b/test_R2RMLTC0005b_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0006a/test_R2RMLTC0006a_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0007a/test_R2RMLTC0007a_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0007b/test_R2RMLTC0007b_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0007c/test_R2RMLTC0007c_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0007d/test_R2RMLTC0007d_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0007e/test_R2RMLTC0007e_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0007f/test_R2RMLTC0007f_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0007g/test_R2RMLTC0007g_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0008a/test_R2RMLTC0008a_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0008b/test_R2RMLTC0008b_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0008c/test_R2RMLTC0008c_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0009a/test_R2RMLTC0009a_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0009b/test_R2RMLTC0009b_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0009c/test_R2RMLTC0009c_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0009d/test_R2RMLTC0009d_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0010a/test_R2RMLTC0010a_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0010b/test_R2RMLTC0010b_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0010c/test_R2RMLTC0010c_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0011a/test_R2RMLTC0011a_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0011b/test_R2RMLTC0011b_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0012a/test_R2RMLTC0012a_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0012b/test_R2RMLTC0012b_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0012d/test_R2RMLTC0012d_SQLITE.py: 1 warning
+test/r2rml/R2RMLTC0012e/test_R2RMLTC0012e_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0013a/test_R2RMLTC0013a_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0014d/test_R2RMLTC0014d_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0015a/test_R2RMLTC0015a_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0015b/test_R2RMLTC0015b_SQLITE.py: 1 warning
+test/r2rml/R2RMLTC0016a/test_R2RMLTC0016a_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0018a/test_R2RMLTC0018a_SQLITE.py: 2 warnings
+test/rml-core/csv/RMLTC0000/test_RMLTC0000_CSV.py: 1 warning
+test/rml-core/csv/RMLTC0001a/test_RMLTC0001a_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0001b/test_RMLTC0001b_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0002a/test_RMLTC0002a_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0002b/test_RMLTC0002b_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0003c/test_RMLTC0003c_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0004a/test_RMLTC0004a_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0005a/test_RMLTC0005a_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0006a/test_RMLTC0006a_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0007a/test_RMLTC0007a_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0007b/test_RMLTC0007b_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0007c/test_RMLTC0007c_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0007d/test_RMLTC0007d_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0007e/test_RMLTC0007e_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0007f/test_RMLTC0007f_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0007g/test_RMLTC0007g_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0008a/test_RMLTC0008a_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0008b/test_RMLTC0008b_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0008c/test_RMLTC0008c_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0009a/test_RMLTC0009a_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0009b/test_RMLTC0009b_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0010a/test_RMLTC0010a_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0010b/test_RMLTC0010b_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0010c/test_RMLTC0010c_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0011b/test_RMLTC0011b_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0012a/test_RMLTC0012a_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0012b/test_RMLTC0012b_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0012d/test_RMLTC0012d_CSV.py: 1 warning
+test/rml-core/csv/RMLTC0015a/test_RMLTC0015a_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0015b/test_RMLTC0015b_CSV.py: 1 warning
+test/rml-core/csv/null_filter/test_null_filter_CSV.py: 2 warnings
+test/rml-core/csv/triples_map_without_pom/test_triples_map_without_pom_CSV.py: 2 warnings
+test/rml-core/json/RMLTC0000/test_RMLTC0000_JSON.py: 1 warning
+test/rml-core/json/RMLTC0001a/test_RMLTC0001a_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0001b/test_RMLTC0001b_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0002a/test_RMLTC0002a_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0002b/test_RMLTC0002b_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0003c/test_RMLTC0003c_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0004a/test_RMLTC0004a_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0005a/test_RMLTC0005a_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0006a/test_RMLTC0006a_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0007a/test_RMLTC0007a_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0007b/test_RMLTC0007b_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0007c/test_RMLTC0007c_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0007d/test_RMLTC0007d_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0007e/test_RMLTC0007e_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0007f/test_RMLTC0007f_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0007g/test_RMLTC0007g_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0008a/test_RMLTC0008a_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0008b/test_RMLTC0008b_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0008c/test_RMLTC0008c_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0009a/test_RMLTC0009a_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0009b/test_RMLTC0009b_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0010a/test_RMLTC0010a_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0010b/test_RMLTC0010b_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0010c/test_RMLTC0010c_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0011b/test_RMLTC0011b_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0012a/test_RMLTC0012a_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0012b/test_RMLTC0012b_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0012d/test_RMLTC0012d_JSON.py: 1 warning
+test/rml-core/json/RMLTC0013a/test_RMLTC0013a_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0015a/test_RMLTC0015a_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0015b/test_RMLTC0015b_JSON.py: 1 warning
+test/rml-core/json/complex/test_complex_JSON.py: 8 warnings
+test/rml-core/tabular/RMLTC0002a_EXCEL/test_RMLTC0002a_EXCEL.py: 2 warnings
+test/rml-core/tabular/RMLTC0002a_FEATHER/test_RMLTC0002a_FEATHER.py: 2 warnings
+test/rml-core/tabular/RMLTC0002a_ODS/test_RMLTC0002a_ODS.py: 2 warnings
+test/rml-core/tabular/RMLTC0002a_PARQUET/test_RMLTC0002a_PARQUET.py: 2 warnings
+test/rml-core/tabular/RMLTC0002a_STATA/test_RMLTC0002a_STATA.py: 2 warnings
+test/rml-core/tabular/RMLTC0002a_TSV/test_RMLTC0002a_TSV.py: 2 warnings
+test/rml-core/xml/RMLTC0000/test_RMLTC0000_XML.py: 1 warning
+test/rml-core/xml/RMLTC0001a/test_RMLTC0001a_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0001b/test_RMLTC0001b_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0002a/test_RMLTC0002a_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0002b/test_RMLTC0002b_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0003c/test_RMLTC0003c_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0004a/test_RMLTC0004a_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0005a/test_RMLTC0005a_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0006a/test_RMLTC0006a_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0007a/test_RMLTC0007a_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0007b/test_RMLTC0007b_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0007c/test_RMLTC0007c_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0007d/test_RMLTC0007d_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0007e/test_RMLTC0007e_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0007f/test_RMLTC0007f_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0007g/test_RMLTC0007g_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0008a/test_RMLTC0008a_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0008b/test_RMLTC0008b_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0008c/test_RMLTC0008c_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0009a/test_RMLTC0009a_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0009b/test_RMLTC0009b_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0010b/test_RMLTC0010b_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0010c/test_RMLTC0010c_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0011b/test_RMLTC0011b_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0012a/test_RMLTC0012a_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0012b/test_RMLTC0012b_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0012d/test_RMLTC0012d_XML.py: 1 warning
+test/rml-core/xml/RMLTC0015a/test_RMLTC0015a_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0015b/test_RMLTC0015b_XML.py: 1 warning
+test/rml-core/xml/attributes/test_attributes_XML.py: 2 warnings
+test/rml-core/xml/rml_spec_example_section_3/test_rml_spec_example_section_3_XML.py: 2 warnings
+test/rml-core/xml/rml_spec_example_section_5/test_rml_spec_example_section_5_XML.py: 2 warnings
+test/rml-fnml/abbreviated_syntax/test_short_functions.py: 1 warning
+test/rml-fnml/array_functions/array_get/test_array_get.py: 1 warning
+test/rml-fnml/array_functions/array_get_slice/test_array_get_slice.py: 2 warnings
+test/rml-fnml/array_functions/array_join/test_array_join.py: 1 warning
+test/rml-fnml/array_functions/array_length/test_array_length.py: 1 warning
+test/rml-fnml/array_functions/array_reverse/test_array_reverse.py: 1 warning
+test/rml-fnml/array_functions/array_sort/test_array_sort.py: 2 warnings
+test/rml-fnml/array_functions/array_sum/test_array_sum.py: 1 warning
+test/rml-fnml/array_functions/array_unique/test_array_unique.py: 1 warning
+test/rml-fnml/controls_functions/controls_and/test_controls_and.py: 1 warning
+test/rml-fnml/controls_functions/controls_if/test_controls_if.py: 2 warnings
+test/rml-fnml/controls_functions/controls_if_cast/test_controls_if_cast.py: 2 warnings
+test/rml-fnml/controls_functions/controls_not_or/test_controls_not_or.py: 1 warning
+test/rml-fnml/controls_functions/controls_true/test_controls_true.py: 1 warning
+test/rml-fnml/controls_functions/controls_xor_if/test_controls_xor_if.py: 1 warning
+test/rml-fnml/date_functions/date_datepart/test_datepart.py: 1 warning
+test/rml-fnml/date_functions/date_diff/test_date_diff.py: 1 warning
+test/rml-fnml/date_functions/date_inc/test_dateinc.py: 1 warning
+test/rml-fnml/date_functions/date_to_date/test_date_to_date.py: 2 warnings
+test/rml-fnml/fnml_to_rml/test_translate_fnml.py: 2 warnings
+test/rml-fnml/math_functions/math_abs/test_math_abs.py: 1 warning
+test/rml-fnml/math_functions/math_acos/test_math_acos.py: 1 warning
+test/rml-fnml/math_functions/math_asin/test_math_asin.py: 1 warning
+test/rml-fnml/math_functions/math_atan/test_math_atan.py: 1 warning
+test/rml-fnml/math_functions/math_atan2/test_math_atan2.py: 1 warning
+test/rml-fnml/math_functions/math_ceil/test_math_ceil.py: 1 warning
+test/rml-fnml/math_functions/math_combin/test_math_combin.py: 1 warning
+test/rml-fnml/math_functions/math_cos/test_math_cos.py: 1 warning
+test/rml-fnml/math_functions/math_cosh/test_math_cosh.py: 1 warning
+test/rml-fnml/math_functions/math_degrees/test_math_degrees.py: 1 warning
+test/rml-fnml/math_functions/math_even_odd/test_math_even_odd.py: 1 warning
+test/rml-fnml/math_functions/math_exp/test_math_exp.py: 1 warning
+test/rml-fnml/math_functions/math_fact/test_math_fact.py: 1 warning
+test/rml-fnml/math_functions/math_factn/test_math_factn.py: 1 warning
+test/rml-fnml/math_functions/math_floor/test_math_floor.py: 1 warning
+test/rml-fnml/math_functions/math_gcd/test_math_gcd.py: 1 warning
+test/rml-fnml/math_functions/math_lcm/test_math_lcm.py: 1 warning
+test/rml-fnml/math_functions/math_ln/test_math_ln.py: 1 warning
+test/rml-fnml/math_functions/math_log/test_math_log.py: 1 warning
+test/rml-fnml/math_functions/math_min_max/test_math_minmax.py: 1 warning
+test/rml-fnml/math_functions/math_mod/test_math_mod.py: 1 warning
+test/rml-fnml/math_functions/math_multinominal/test_math_multinomial.py: 1 warning
+test/rml-fnml/math_functions/math_pow/test_math_pow.py: 1 warning
+test/rml-fnml/math_functions/math_quotient/test_math_quotient.py: 1 warning
+test/rml-fnml/math_functions/math_radians/test_math_radians.py: 1 warning
+test/rml-fnml/math_functions/math_random/test_math_random.py: 1 warning
+test/rml-fnml/math_functions/math_round/test_math_round.py: 2 warnings
+test/rml-fnml/math_functions/math_sin/test_math_sin.py: 1 warning
+test/rml-fnml/math_functions/math_sinh/test_math_sinh.py: 1 warning
+test/rml-fnml/math_functions/math_tan/test_math_tan.py: 1 warning
+test/rml-fnml/math_functions/math_tanh/test_math_tanh.py: 1 warning
+test/rml-fnml/other_functions/RMLFNOTC0003-CSV_escape/test_RMLFNOTC0003-CSV.py: 2 warnings
+test/rml-fnml/other_functions/RMLFNOTC0004-CSV_uppercase_url/test_RMLFNOTC0004-CSV.py: 2 warnings
+test/rml-fnml/other_functions/RMLFNOTC0005-CSV_uppercase_url/test_RMLFNOTC0005-CSV.py: 2 warnings
+test/rml-fnml/other_functions/RMLFNOTC0006-CSV_uppercase_url/test_RMLFNOTC0006-CSV.py: 2 warnings
+test/rml-fnml/other_functions/type/test_other_type.py: 1 warning
+test/rml-fnml/string_functions/RMLFNOTC0001-CSV_upperCase/test_RMLFNOTC0001-CSV.py: 2 warnings
+test/rml-fnml/string_functions/RMLFNOTC0002-CSV_touppercase/test_RMLFNOTC0002-CSV.py: 2 warnings
+test/rml-fnml/string_functions/RMLFNOTC0008-CSV_uppercase/test_RMLFNOTC0008-CSV.py: 2 warnings
+test/rml-fnml/string_functions/RMLFNOTC0009-CSV_replace/test_RMLFNOTC0009-CSV.py: 2 warnings
+test/rml-fnml/string_functions/split_explode/test_split_explode.py: 2 warnings
+test/rml-fnml/string_functions/split_explode_null/test_split_explode_null.py: 2 warnings
+test/rml-fnml/string_functions/string_casing/test_string_casing.py: 1 warning
+test/rml-fnml/string_functions/string_chomp_trim/test_string_chomp_trim.py: 1 warning
+test/rml-fnml/string_functions/string_contains/test_string_contains.py: 1 warning
+test/rml-fnml/string_functions/string_diff/test_string_diff.py: 1 warning
+test/rml-fnml/string_functions/string_hash/test_hash.py: 1 warning
+test/rml-fnml/string_functions/string_indexof/test_string_indexof.py: 1 warning
+test/rml-fnml/string_functions/string_length/test_string_length.py: 1 warning
+test/rml-fnml/string_functions/string_match/test_string_match.py: 1 warning
+test/rml-fnml/string_functions/string_replace/test_string_replace.py: 1 warning
+test/rml-fnml/string_functions/string_splits/by_char_type/test_string_split_by_chartype.py: 1 warning
+test/rml-fnml/string_functions/string_splits/split/test_string_splits.py: 1 warning
+test/rml-fnml/string_functions/string_starts_endswith/test_string_start_end_with.py: 1 warning
+test/rml-fnml/string_functions/string_substring/test_string_substring.py: 1 warning
+test/rml-fnml/udf/test_udf.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0000/test_RMLTC0000_DICT.py: 1 warning
+test/rml-in-memory/json_dictionary/RMLIMTC0001a/test_RMLTC0001a_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0001b/test_RMLTC0001b_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0002a/test_RMLTC0002a_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0002b/test_RMLTC0002b_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0002e/test_RMLTC0002e_DICT.py: 1 warning
+test/rml-in-memory/json_dictionary/RMLIMTC0003c/test_RMLTC0003c_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0004a/test_RMLTC0004a_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0005a/test_RMLTC0005a_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0006a/test_RMLTC0006a_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0007a/test_RMLTC0007a_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0007b/test_RMLTC0007b_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0007c/test_RMLTC0007c_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0007d/test_RMLTC0007d_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0007e/test_RMLTC0007e_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0007f/test_RMLTC0007f_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0007g/test_RMLTC0007g_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0008a/test_RMLTC0008a_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0008b/test_RMLTC0008b_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0008c/test_RMLTC0008c_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0009a/test_RMLTC0009a_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0009b/test_RMLTC0009b_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0010a/test_RMLTC0010a_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0010b/test_RMLTC0010b_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0010c/test_RMLTC0010c_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0011b/test_RMLTC0011b_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0012a/test_RMLTC0012a_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0012b/test_RMLTC0012b_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0012d/test_RMLTC0012d_DICT.py: 1 warning
+test/rml-in-memory/json_dictionary/RMLIMTC0013a/test_RMLTC0013a_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0015a/test_RMLTC0015a_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0015b/test_RMLTC0015b_DICT.py: 1 warning
+test/rml-in-memory/pandas_dataframe/RMLIMTC0000/test_RMLIMTC0000_DF.py: 1 warning
+test/rml-in-memory/pandas_dataframe/RMLIMTC0001a/test_RMLTC0001a_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0001b/test_RMLIMTC0001b_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0002a/test_RMLIMTC0002a_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0002b/test_RMLIMTC0002b_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0002e/test_RMLIMTC0002e_DF.py: 1 warning
+test/rml-in-memory/pandas_dataframe/RMLIMTC0003c/test_RMLIMTC0003c_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0004a/test_RMLIMTC0004a_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0005a/test_RMLIMTC0005a_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0006a/test_RMLIMTC0006a_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0007a/test_RMLIMTC0007a_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0007b/test_RMLIMTC0007b_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0007c/test_RMLIMTC0007c_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0007d/test_RMLTC0007d_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0007e/test_RMLIMTC0007e_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0007f/test_RMLIMTC0007f_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0007g/test_RMLIMTC0007g_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0008a/test_RMLIMTC0008a_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0008b/test_RMLIMTC0008b_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0008c/test_RMLIMTC0008c_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0009a/test_RMLIMTC0009a_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0009b/test_RMLIMTC0009b_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0010a/test_RMLIMTC0010a_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0010b/test_RMLIMTC0010b_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0010c/test_RMLIMTC0010c_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0011b/test_RMLIMTC0011b_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0012a/test_RMLIMTC0012a_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0012b/test_RMLIMTC0012b_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0012d/test_RMLIMTC0012d_DF.py: 1 warning
+test/rml-in-memory/pandas_dataframe/RMLIMTC0015a/test_RMLIMTC0015a_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0015b/test_RMLIMTC0015b_DF.py: 1 warning
+test/rml-in-memory/pandas_dataframe/RMLIMTC0016a/test_RMLIMTC0016a_DF.py: 1 warning
+test/rml-in-memory/pandas_dataframe/triples_map_without_pom/test_triples_map_without_pom_DF.py: 2 warnings
+test/rml-tv/RMLTVTC0002d/test_RMLTVTC0002d.py: 2 warnings
+test/rml-tv/RMLTVTC0002i/test_RMLTVTC0002i.py: 2 warnings
+test/rml-tv/RMLTVTC0002j/test_RMLTVTC0002j.py: 2 warnings
+test/rml-tv/RMLTVTC0003b/test_RMLTVTC0003b.py: 2 warnings
+test/rml-tv/RMLTVTC0009c/test_RMLTVTC0009c.py: 2 warnings
+test/rml-tv/RMLTVTC0009d/test_RMLTVTC0009d.py: 2 warnings
+test/rml-tv/RMLTVTC0011a/test_RMLTVTC0011a.py: 2 warnings
+test/rml-tv/RMLTVTC0014d/test_RMLTVTC0014d.py: 2 warnings
+test/rml-tv/RMLTVTC0015a/test_RMLTVTC0015a.py: 2 warnings
+test/rml-tv/RMLTVTC0015b/test_RMLTVTC0015b.py: 1 warning
+test/rml-tv/RMLTVTC0019a/test_RMLTVTC0019a.py: 2 warnings
+test/rml-tv/RMLTVTC0026a/test_RMLTVTC0026a.py: 2 warnings
+test/rml-tv/RMLTVTC0027a/test_RMLTVTC0027a.py: 2 warnings
+test/rml-tv/RMLTVTC0028a/test_RMLTVTC0028a.py: 2 warnings
+test/rml-tv/RMLTVTC0029a/test_RMLTVTC0029a.py: 2 warnings
+test/shapefile/RMLTC0001a/test_RMLTC0001a_SHP.py: 1 warning
+  /Users/sanderhan/devel/github/morph-kgc/morph-kgc/.venv/lib/python3.14/site-packages/rdflib/plugins/parsers/nquads.py:80: DeprecationWarning: Dataset.default_context is deprecated, use Dataset.default_graph instead.
+    ds_default = ds.default_context  # the DEFAULT_DATASET_GRAPH_ID
+
+.venv/lib/python3.14/site-packages/rdflib/plugins/parsers/nquads.py:91: 1 warning
+test/geoparquet/RMLTC0001a/test_RMLTC0001a_GEOPARQUET.py: 1 warning
+test/issues/issue_118/test_issue_118.py: 2 warnings
+test/issues/issue_145/test_issue_145.py: 2 warnings
+test/issues/issue_254/test_issue_254.py: 2 warnings
+test/issues/issue_316/test_issue_316.py: 4 warnings
+test/issues/issue_328/test_prefixes_yarrrml.py: 1 warning
+test/issues/issue_350/test_issue_350.py: 1 warning
+test/issues/issue_62/test_issue_62.py: 2 warnings
+test/issues/issue_67/test_issue_67.py: 2 warnings
+test/issues/issue_80/test_issue_80.py: 2 warnings
+test/issues/issue_81/test_issue_81.py: 2 warnings
+test/r2rml/R2RMLTC0000/test_R2RMLTC0000_SQLITE.py: 1 warning
+test/r2rml/R2RMLTC0001a/test_R2RMLTC0001a_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0001b/test_R2RMLTC0001b_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0002a/test_R2RMLTC0002a_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0002b/test_R2RMLTC0002b_SQLITE.py: 1 warning
+test/r2rml/R2RMLTC0002d/test_R2RMLTC0002d_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0002f/test_R2RMLTC0002f_SQLITE.py: 1 warning
+test/r2rml/R2RMLTC0002i/test_R2RMLTC0002i_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0002j/test_R2RMLTC0002j_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0003b/test_R2RMLTC0003b_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0003c/test_R2RMLTC0003c_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0004a/test_R2RMLTC0004a_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0005a/test_R2RMLTC0005a_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0005b/test_R2RMLTC0005b_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0006a/test_R2RMLTC0006a_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0007a/test_R2RMLTC0007a_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0007b/test_R2RMLTC0007b_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0007c/test_R2RMLTC0007c_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0007d/test_R2RMLTC0007d_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0007e/test_R2RMLTC0007e_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0007f/test_R2RMLTC0007f_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0007g/test_R2RMLTC0007g_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0008a/test_R2RMLTC0008a_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0008b/test_R2RMLTC0008b_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0008c/test_R2RMLTC0008c_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0009a/test_R2RMLTC0009a_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0009b/test_R2RMLTC0009b_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0009c/test_R2RMLTC0009c_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0009d/test_R2RMLTC0009d_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0010a/test_R2RMLTC0010a_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0010b/test_R2RMLTC0010b_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0010c/test_R2RMLTC0010c_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0011a/test_R2RMLTC0011a_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0011b/test_R2RMLTC0011b_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0012a/test_R2RMLTC0012a_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0012b/test_R2RMLTC0012b_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0012d/test_R2RMLTC0012d_SQLITE.py: 1 warning
+test/r2rml/R2RMLTC0012e/test_R2RMLTC0012e_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0013a/test_R2RMLTC0013a_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0014d/test_R2RMLTC0014d_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0015a/test_R2RMLTC0015a_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0015b/test_R2RMLTC0015b_SQLITE.py: 1 warning
+test/r2rml/R2RMLTC0016a/test_R2RMLTC0016a_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0018a/test_R2RMLTC0018a_SQLITE.py: 2 warnings
+test/rml-core/csv/RMLTC0000/test_RMLTC0000_CSV.py: 1 warning
+test/rml-core/csv/RMLTC0001a/test_RMLTC0001a_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0001b/test_RMLTC0001b_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0002a/test_RMLTC0002a_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0002b/test_RMLTC0002b_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0003c/test_RMLTC0003c_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0004a/test_RMLTC0004a_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0005a/test_RMLTC0005a_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0006a/test_RMLTC0006a_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0007a/test_RMLTC0007a_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0007b/test_RMLTC0007b_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0007c/test_RMLTC0007c_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0007d/test_RMLTC0007d_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0007e/test_RMLTC0007e_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0007f/test_RMLTC0007f_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0007g/test_RMLTC0007g_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0008a/test_RMLTC0008a_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0008b/test_RMLTC0008b_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0008c/test_RMLTC0008c_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0009a/test_RMLTC0009a_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0009b/test_RMLTC0009b_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0010a/test_RMLTC0010a_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0010b/test_RMLTC0010b_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0010c/test_RMLTC0010c_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0011b/test_RMLTC0011b_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0012a/test_RMLTC0012a_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0012b/test_RMLTC0012b_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0012d/test_RMLTC0012d_CSV.py: 1 warning
+test/rml-core/csv/RMLTC0015a/test_RMLTC0015a_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0015b/test_RMLTC0015b_CSV.py: 1 warning
+test/rml-core/csv/null_filter/test_null_filter_CSV.py: 2 warnings
+test/rml-core/csv/triples_map_without_pom/test_triples_map_without_pom_CSV.py: 2 warnings
+test/rml-core/json/RMLTC0000/test_RMLTC0000_JSON.py: 1 warning
+test/rml-core/json/RMLTC0001a/test_RMLTC0001a_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0001b/test_RMLTC0001b_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0002a/test_RMLTC0002a_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0002b/test_RMLTC0002b_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0003c/test_RMLTC0003c_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0004a/test_RMLTC0004a_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0005a/test_RMLTC0005a_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0006a/test_RMLTC0006a_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0007a/test_RMLTC0007a_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0007b/test_RMLTC0007b_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0007c/test_RMLTC0007c_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0007d/test_RMLTC0007d_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0007e/test_RMLTC0007e_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0007f/test_RMLTC0007f_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0007g/test_RMLTC0007g_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0008a/test_RMLTC0008a_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0008b/test_RMLTC0008b_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0008c/test_RMLTC0008c_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0009a/test_RMLTC0009a_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0009b/test_RMLTC0009b_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0010a/test_RMLTC0010a_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0010b/test_RMLTC0010b_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0010c/test_RMLTC0010c_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0011b/test_RMLTC0011b_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0012a/test_RMLTC0012a_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0012b/test_RMLTC0012b_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0012d/test_RMLTC0012d_JSON.py: 1 warning
+test/rml-core/json/RMLTC0013a/test_RMLTC0013a_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0015a/test_RMLTC0015a_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0015b/test_RMLTC0015b_JSON.py: 1 warning
+test/rml-core/json/complex/test_complex_JSON.py: 8 warnings
+test/rml-core/tabular/RMLTC0002a_EXCEL/test_RMLTC0002a_EXCEL.py: 2 warnings
+test/rml-core/tabular/RMLTC0002a_FEATHER/test_RMLTC0002a_FEATHER.py: 2 warnings
+test/rml-core/tabular/RMLTC0002a_ODS/test_RMLTC0002a_ODS.py: 2 warnings
+test/rml-core/tabular/RMLTC0002a_PARQUET/test_RMLTC0002a_PARQUET.py: 2 warnings
+test/rml-core/tabular/RMLTC0002a_STATA/test_RMLTC0002a_STATA.py: 2 warnings
+test/rml-core/tabular/RMLTC0002a_TSV/test_RMLTC0002a_TSV.py: 2 warnings
+test/rml-core/xml/RMLTC0000/test_RMLTC0000_XML.py: 1 warning
+test/rml-core/xml/RMLTC0001a/test_RMLTC0001a_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0001b/test_RMLTC0001b_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0002a/test_RMLTC0002a_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0002b/test_RMLTC0002b_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0003c/test_RMLTC0003c_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0004a/test_RMLTC0004a_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0005a/test_RMLTC0005a_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0006a/test_RMLTC0006a_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0007a/test_RMLTC0007a_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0007b/test_RMLTC0007b_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0007c/test_RMLTC0007c_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0007d/test_RMLTC0007d_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0007e/test_RMLTC0007e_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0007f/test_RMLTC0007f_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0007g/test_RMLTC0007g_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0008a/test_RMLTC0008a_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0008b/test_RMLTC0008b_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0008c/test_RMLTC0008c_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0009a/test_RMLTC0009a_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0009b/test_RMLTC0009b_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0010b/test_RMLTC0010b_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0010c/test_RMLTC0010c_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0011b/test_RMLTC0011b_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0012a/test_RMLTC0012a_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0012b/test_RMLTC0012b_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0012d/test_RMLTC0012d_XML.py: 1 warning
+test/rml-core/xml/RMLTC0015a/test_RMLTC0015a_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0015b/test_RMLTC0015b_XML.py: 1 warning
+test/rml-core/xml/attributes/test_attributes_XML.py: 2 warnings
+test/rml-core/xml/rml_spec_example_section_3/test_rml_spec_example_section_3_XML.py: 2 warnings
+test/rml-core/xml/rml_spec_example_section_5/test_rml_spec_example_section_5_XML.py: 2 warnings
+test/rml-fnml/abbreviated_syntax/test_short_functions.py: 1 warning
+test/rml-fnml/array_functions/array_get/test_array_get.py: 1 warning
+test/rml-fnml/array_functions/array_get_slice/test_array_get_slice.py: 2 warnings
+test/rml-fnml/array_functions/array_join/test_array_join.py: 1 warning
+test/rml-fnml/array_functions/array_length/test_array_length.py: 1 warning
+test/rml-fnml/array_functions/array_reverse/test_array_reverse.py: 1 warning
+test/rml-fnml/array_functions/array_sort/test_array_sort.py: 2 warnings
+test/rml-fnml/array_functions/array_sum/test_array_sum.py: 1 warning
+test/rml-fnml/array_functions/array_unique/test_array_unique.py: 1 warning
+test/rml-fnml/controls_functions/controls_and/test_controls_and.py: 1 warning
+test/rml-fnml/controls_functions/controls_if/test_controls_if.py: 2 warnings
+test/rml-fnml/controls_functions/controls_if_cast/test_controls_if_cast.py: 2 warnings
+test/rml-fnml/controls_functions/controls_not_or/test_controls_not_or.py: 1 warning
+test/rml-fnml/controls_functions/controls_true/test_controls_true.py: 1 warning
+test/rml-fnml/controls_functions/controls_xor_if/test_controls_xor_if.py: 1 warning
+test/rml-fnml/date_functions/date_datepart/test_datepart.py: 1 warning
+test/rml-fnml/date_functions/date_diff/test_date_diff.py: 1 warning
+test/rml-fnml/date_functions/date_inc/test_dateinc.py: 1 warning
+test/rml-fnml/date_functions/date_to_date/test_date_to_date.py: 2 warnings
+test/rml-fnml/fnml_to_rml/test_translate_fnml.py: 2 warnings
+test/rml-fnml/math_functions/math_abs/test_math_abs.py: 1 warning
+test/rml-fnml/math_functions/math_acos/test_math_acos.py: 1 warning
+test/rml-fnml/math_functions/math_asin/test_math_asin.py: 1 warning
+test/rml-fnml/math_functions/math_atan/test_math_atan.py: 1 warning
+test/rml-fnml/math_functions/math_atan2/test_math_atan2.py: 1 warning
+test/rml-fnml/math_functions/math_ceil/test_math_ceil.py: 1 warning
+test/rml-fnml/math_functions/math_combin/test_math_combin.py: 1 warning
+test/rml-fnml/math_functions/math_cos/test_math_cos.py: 1 warning
+test/rml-fnml/math_functions/math_cosh/test_math_cosh.py: 1 warning
+test/rml-fnml/math_functions/math_degrees/test_math_degrees.py: 1 warning
+test/rml-fnml/math_functions/math_even_odd/test_math_even_odd.py: 1 warning
+test/rml-fnml/math_functions/math_exp/test_math_exp.py: 1 warning
+test/rml-fnml/math_functions/math_fact/test_math_fact.py: 1 warning
+test/rml-fnml/math_functions/math_factn/test_math_factn.py: 1 warning
+test/rml-fnml/math_functions/math_floor/test_math_floor.py: 1 warning
+test/rml-fnml/math_functions/math_gcd/test_math_gcd.py: 1 warning
+test/rml-fnml/math_functions/math_lcm/test_math_lcm.py: 1 warning
+test/rml-fnml/math_functions/math_ln/test_math_ln.py: 1 warning
+test/rml-fnml/math_functions/math_log/test_math_log.py: 1 warning
+test/rml-fnml/math_functions/math_min_max/test_math_minmax.py: 1 warning
+test/rml-fnml/math_functions/math_mod/test_math_mod.py: 1 warning
+test/rml-fnml/math_functions/math_multinominal/test_math_multinomial.py: 1 warning
+test/rml-fnml/math_functions/math_pow/test_math_pow.py: 1 warning
+test/rml-fnml/math_functions/math_quotient/test_math_quotient.py: 1 warning
+test/rml-fnml/math_functions/math_radians/test_math_radians.py: 1 warning
+test/rml-fnml/math_functions/math_random/test_math_random.py: 1 warning
+test/rml-fnml/math_functions/math_round/test_math_round.py: 2 warnings
+test/rml-fnml/math_functions/math_sin/test_math_sin.py: 1 warning
+test/rml-fnml/math_functions/math_sinh/test_math_sinh.py: 1 warning
+test/rml-fnml/math_functions/math_tan/test_math_tan.py: 1 warning
+test/rml-fnml/math_functions/math_tanh/test_math_tanh.py: 1 warning
+test/rml-fnml/other_functions/RMLFNOTC0003-CSV_escape/test_RMLFNOTC0003-CSV.py: 2 warnings
+test/rml-fnml/other_functions/RMLFNOTC0004-CSV_uppercase_url/test_RMLFNOTC0004-CSV.py: 2 warnings
+test/rml-fnml/other_functions/RMLFNOTC0005-CSV_uppercase_url/test_RMLFNOTC0005-CSV.py: 2 warnings
+test/rml-fnml/other_functions/RMLFNOTC0006-CSV_uppercase_url/test_RMLFNOTC0006-CSV.py: 2 warnings
+test/rml-fnml/other_functions/type/test_other_type.py: 1 warning
+test/rml-fnml/string_functions/RMLFNOTC0001-CSV_upperCase/test_RMLFNOTC0001-CSV.py: 2 warnings
+test/rml-fnml/string_functions/RMLFNOTC0002-CSV_touppercase/test_RMLFNOTC0002-CSV.py: 2 warnings
+test/rml-fnml/string_functions/RMLFNOTC0008-CSV_uppercase/test_RMLFNOTC0008-CSV.py: 2 warnings
+test/rml-fnml/string_functions/RMLFNOTC0009-CSV_replace/test_RMLFNOTC0009-CSV.py: 2 warnings
+test/rml-fnml/string_functions/split_explode/test_split_explode.py: 2 warnings
+test/rml-fnml/string_functions/split_explode_null/test_split_explode_null.py: 2 warnings
+test/rml-fnml/string_functions/string_casing/test_string_casing.py: 1 warning
+test/rml-fnml/string_functions/string_chomp_trim/test_string_chomp_trim.py: 1 warning
+test/rml-fnml/string_functions/string_contains/test_string_contains.py: 1 warning
+test/rml-fnml/string_functions/string_diff/test_string_diff.py: 1 warning
+test/rml-fnml/string_functions/string_hash/test_hash.py: 1 warning
+test/rml-fnml/string_functions/string_indexof/test_string_indexof.py: 1 warning
+test/rml-fnml/string_functions/string_length/test_string_length.py: 1 warning
+test/rml-fnml/string_functions/string_match/test_string_match.py: 1 warning
+test/rml-fnml/string_functions/string_replace/test_string_replace.py: 1 warning
+test/rml-fnml/string_functions/string_splits/by_char_type/test_string_split_by_chartype.py: 1 warning
+test/rml-fnml/string_functions/string_splits/split/test_string_splits.py: 1 warning
+test/rml-fnml/string_functions/string_starts_endswith/test_string_start_end_with.py: 1 warning
+test/rml-fnml/string_functions/string_substring/test_string_substring.py: 1 warning
+test/rml-fnml/udf/test_udf.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0000/test_RMLTC0000_DICT.py: 1 warning
+test/rml-in-memory/json_dictionary/RMLIMTC0001a/test_RMLTC0001a_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0001b/test_RMLTC0001b_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0002a/test_RMLTC0002a_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0002b/test_RMLTC0002b_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0002e/test_RMLTC0002e_DICT.py: 1 warning
+test/rml-in-memory/json_dictionary/RMLIMTC0003c/test_RMLTC0003c_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0004a/test_RMLTC0004a_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0005a/test_RMLTC0005a_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0006a/test_RMLTC0006a_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0007a/test_RMLTC0007a_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0007b/test_RMLTC0007b_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0007c/test_RMLTC0007c_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0007d/test_RMLTC0007d_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0007e/test_RMLTC0007e_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0007f/test_RMLTC0007f_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0007g/test_RMLTC0007g_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0008a/test_RMLTC0008a_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0008b/test_RMLTC0008b_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0008c/test_RMLTC0008c_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0009a/test_RMLTC0009a_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0009b/test_RMLTC0009b_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0010a/test_RMLTC0010a_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0010b/test_RMLTC0010b_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0010c/test_RMLTC0010c_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0011b/test_RMLTC0011b_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0012a/test_RMLTC0012a_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0012b/test_RMLTC0012b_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0012d/test_RMLTC0012d_DICT.py: 1 warning
+test/rml-in-memory/json_dictionary/RMLIMTC0013a/test_RMLTC0013a_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0015a/test_RMLTC0015a_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0015b/test_RMLTC0015b_DICT.py: 1 warning
+test/rml-in-memory/pandas_dataframe/RMLIMTC0000/test_RMLIMTC0000_DF.py: 1 warning
+test/rml-in-memory/pandas_dataframe/RMLIMTC0001a/test_RMLTC0001a_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0001b/test_RMLIMTC0001b_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0002a/test_RMLIMTC0002a_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0002b/test_RMLIMTC0002b_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0002e/test_RMLIMTC0002e_DF.py: 1 warning
+test/rml-in-memory/pandas_dataframe/RMLIMTC0003c/test_RMLIMTC0003c_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0004a/test_RMLIMTC0004a_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0005a/test_RMLIMTC0005a_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0006a/test_RMLIMTC0006a_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0007a/test_RMLIMTC0007a_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0007b/test_RMLIMTC0007b_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0007c/test_RMLIMTC0007c_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0007d/test_RMLTC0007d_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0007e/test_RMLIMTC0007e_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0007f/test_RMLIMTC0007f_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0007g/test_RMLIMTC0007g_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0008a/test_RMLIMTC0008a_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0008b/test_RMLIMTC0008b_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0008c/test_RMLIMTC0008c_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0009a/test_RMLIMTC0009a_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0009b/test_RMLIMTC0009b_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0010a/test_RMLIMTC0010a_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0010b/test_RMLIMTC0010b_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0010c/test_RMLIMTC0010c_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0011b/test_RMLIMTC0011b_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0012a/test_RMLIMTC0012a_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0012b/test_RMLIMTC0012b_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0012d/test_RMLIMTC0012d_DF.py: 1 warning
+test/rml-in-memory/pandas_dataframe/RMLIMTC0015a/test_RMLIMTC0015a_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0015b/test_RMLIMTC0015b_DF.py: 1 warning
+test/rml-in-memory/pandas_dataframe/RMLIMTC0016a/test_RMLIMTC0016a_DF.py: 1 warning
+test/rml-in-memory/pandas_dataframe/triples_map_without_pom/test_triples_map_without_pom_DF.py: 2 warnings
+test/rml-tv/RMLTVTC0002d/test_RMLTVTC0002d.py: 2 warnings
+test/rml-tv/RMLTVTC0002i/test_RMLTVTC0002i.py: 2 warnings
+test/rml-tv/RMLTVTC0002j/test_RMLTVTC0002j.py: 2 warnings
+test/rml-tv/RMLTVTC0003b/test_RMLTVTC0003b.py: 2 warnings
+test/rml-tv/RMLTVTC0009c/test_RMLTVTC0009c.py: 2 warnings
+test/rml-tv/RMLTVTC0009d/test_RMLTVTC0009d.py: 2 warnings
+test/rml-tv/RMLTVTC0011a/test_RMLTVTC0011a.py: 2 warnings
+test/rml-tv/RMLTVTC0014d/test_RMLTVTC0014d.py: 2 warnings
+test/rml-tv/RMLTVTC0015a/test_RMLTVTC0015a.py: 2 warnings
+test/rml-tv/RMLTVTC0015b/test_RMLTVTC0015b.py: 1 warning
+test/rml-tv/RMLTVTC0019a/test_RMLTVTC0019a.py: 2 warnings
+test/rml-tv/RMLTVTC0026a/test_RMLTVTC0026a.py: 2 warnings
+test/rml-tv/RMLTVTC0027a/test_RMLTVTC0027a.py: 2 warnings
+test/rml-tv/RMLTVTC0028a/test_RMLTVTC0028a.py: 2 warnings
+test/rml-tv/RMLTVTC0029a/test_RMLTVTC0029a.py: 2 warnings
+test/shapefile/RMLTC0001a/test_RMLTC0001a_SHP.py: 1 warning
+  /Users/sanderhan/devel/github/morph-kgc/morph-kgc/.venv/lib/python3.14/site-packages/rdflib/plugins/parsers/nquads.py:91: DeprecationWarning: Dataset.default_context is deprecated, use Dataset.default_graph instead.
+    ds.default_context = new_default_context
+
+.venv/lib/python3.14/site-packages/rdflib/plugins/parsers/nquads.py:142: 20 warnings
+test/geoparquet/RMLTC0001a/test_RMLTC0001a_GEOPARQUET.py: 6 warnings
+test/issues/issue_118/test_issue_118.py: 2 warnings
+test/issues/issue_145/test_issue_145.py: 4 warnings
+test/issues/issue_254/test_issue_254.py: 4 warnings
+test/issues/issue_316/test_issue_316.py: 4 warnings
+test/issues/issue_328/test_prefixes_yarrrml.py: 4 warnings
+test/issues/issue_350/test_issue_350.py: 4 warnings
+test/issues/issue_62/test_issue_62.py: 12 warnings
+test/issues/issue_67/test_issue_67.py: 6 warnings
+test/issues/issue_80/test_issue_80.py: 2 warnings
+test/issues/issue_81/test_issue_81.py: 6 warnings
+test/r2rml/R2RMLTC0001a/test_R2RMLTC0001a_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0001b/test_R2RMLTC0001b_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0002a/test_R2RMLTC0002a_SQLITE.py: 6 warnings
+test/r2rml/R2RMLTC0002b/test_R2RMLTC0002b_SQLITE.py: 1 warning
+test/r2rml/R2RMLTC0002d/test_R2RMLTC0002d_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0002f/test_R2RMLTC0002f_SQLITE.py: 3 warnings
+test/r2rml/R2RMLTC0002i/test_R2RMLTC0002i_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0002j/test_R2RMLTC0002j_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0003b/test_R2RMLTC0003b_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0003c/test_R2RMLTC0003c_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0004a/test_R2RMLTC0004a_SQLITE.py: 8 warnings
+test/r2rml/R2RMLTC0005a/test_R2RMLTC0005a_SQLITE.py: 8 warnings
+test/r2rml/R2RMLTC0005b/test_R2RMLTC0005b_SQLITE.py: 16 warnings
+test/r2rml/R2RMLTC0007a/test_R2RMLTC0007a_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0007c/test_R2RMLTC0007c_SQLITE.py: 8 warnings
+test/r2rml/R2RMLTC0007d/test_R2RMLTC0007d_SQLITE.py: 8 warnings
+test/r2rml/R2RMLTC0007g/test_R2RMLTC0007g_SQLITE.py: 4 warnings
+test/r2rml/R2RMLTC0008b/test_R2RMLTC0008b_SQLITE.py: 10 warnings
+test/r2rml/R2RMLTC0008c/test_R2RMLTC0008c_SQLITE.py: 4 warnings
+test/r2rml/R2RMLTC0009a/test_R2RMLTC0009a_SQLITE.py: 8 warnings
+test/r2rml/R2RMLTC0009c/test_R2RMLTC0009c_SQLITE.py: 4 warnings
+test/r2rml/R2RMLTC0009d/test_R2RMLTC0009d_SQLITE.py: 8 warnings
+test/r2rml/R2RMLTC0010a/test_R2RMLTC0010a_SQLITE.py: 6 warnings
+test/r2rml/R2RMLTC0010b/test_R2RMLTC0010b_SQLITE.py: 6 warnings
+test/r2rml/R2RMLTC0010c/test_R2RMLTC0010c_SQLITE.py: 6 warnings
+test/r2rml/R2RMLTC0011a/test_R2RMLTC0011a_SQLITE.py: 38 warnings
+test/r2rml/R2RMLTC0011b/test_R2RMLTC0011b_SQLITE.py: 32 warnings
+test/r2rml/R2RMLTC0012a/test_R2RMLTC0012a_SQLITE.py: 8 warnings
+test/r2rml/R2RMLTC0012b/test_R2RMLTC0012b_SQLITE.py: 8 warnings
+test/r2rml/R2RMLTC0012e/test_R2RMLTC0012e_SQLITE.py: 32 warnings
+test/r2rml/R2RMLTC0013a/test_R2RMLTC0013a_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0014d/test_R2RMLTC0014d_SQLITE.py: 2 warnings
+test/r2rml/R2RMLTC0015a/test_R2RMLTC0015a_SQLITE.py: 8 warnings
+test/r2rml/R2RMLTC0015b/test_R2RMLTC0015b_SQLITE.py: 4 warnings
+test/r2rml/R2RMLTC0016a/test_R2RMLTC0016a_SQLITE.py: 30 warnings
+test/r2rml/R2RMLTC0018a/test_R2RMLTC0018a_SQLITE.py: 18 warnings
+test/rml-core/csv/RMLTC0001a/test_RMLTC0001a_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0001b/test_RMLTC0001b_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0002a/test_RMLTC0002a_CSV.py: 6 warnings
+test/rml-core/csv/RMLTC0002b/test_RMLTC0002b_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0003c/test_RMLTC0003c_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0004a/test_RMLTC0004a_CSV.py: 8 warnings
+test/rml-core/csv/RMLTC0005a/test_RMLTC0005a_CSV.py: 8 warnings
+test/rml-core/csv/RMLTC0007a/test_RMLTC0007a_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0007c/test_RMLTC0007c_CSV.py: 8 warnings
+test/rml-core/csv/RMLTC0007d/test_RMLTC0007d_CSV.py: 8 warnings
+test/rml-core/csv/RMLTC0007g/test_RMLTC0007g_CSV.py: 2 warnings
+test/rml-core/csv/RMLTC0008b/test_RMLTC0008b_CSV.py: 10 warnings
+test/rml-core/csv/RMLTC0008c/test_RMLTC0008c_CSV.py: 4 warnings
+test/rml-core/csv/RMLTC0009a/test_RMLTC0009a_CSV.py: 8 warnings
+test/rml-core/csv/RMLTC0010a/test_RMLTC0010a_CSV.py: 6 warnings
+test/rml-core/csv/RMLTC0010b/test_RMLTC0010b_CSV.py: 6 warnings
+test/rml-core/csv/RMLTC0010c/test_RMLTC0010c_CSV.py: 6 warnings
+test/rml-core/csv/RMLTC0011b/test_RMLTC0011b_CSV.py: 32 warnings
+test/rml-core/csv/RMLTC0012a/test_RMLTC0012a_CSV.py: 8 warnings
+test/rml-core/csv/RMLTC0012b/test_RMLTC0012b_CSV.py: 8 warnings
+test/rml-core/csv/RMLTC0012d/test_RMLTC0012d_CSV.py: 8 warnings
+test/rml-core/csv/RMLTC0015a/test_RMLTC0015a_CSV.py: 8 warnings
+test/rml-core/csv/RMLTC0015b/test_RMLTC0015b_CSV.py: 4 warnings
+test/rml-core/csv/null_filter/test_null_filter_CSV.py: 6 warnings
+test/rml-core/csv/triples_map_without_pom/test_triples_map_without_pom_CSV.py: 2 warnings
+test/rml-core/json/RMLTC0001a/test_RMLTC0001a_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0001b/test_RMLTC0001b_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0002a/test_RMLTC0002a_JSON.py: 6 warnings
+test/rml-core/json/RMLTC0002b/test_RMLTC0002b_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0003c/test_RMLTC0003c_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0004a/test_RMLTC0004a_JSON.py: 8 warnings
+test/rml-core/json/RMLTC0005a/test_RMLTC0005a_JSON.py: 8 warnings
+test/rml-core/json/RMLTC0007a/test_RMLTC0007a_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0007c/test_RMLTC0007c_JSON.py: 8 warnings
+test/rml-core/json/RMLTC0007d/test_RMLTC0007d_JSON.py: 8 warnings
+test/rml-core/json/RMLTC0007g/test_RMLTC0007g_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0008b/test_RMLTC0008b_JSON.py: 10 warnings
+test/rml-core/json/RMLTC0008c/test_RMLTC0008c_JSON.py: 4 warnings
+test/rml-core/json/RMLTC0009a/test_RMLTC0009a_JSON.py: 8 warnings
+test/rml-core/json/RMLTC0010a/test_RMLTC0010a_JSON.py: 6 warnings
+test/rml-core/json/RMLTC0010b/test_RMLTC0010b_JSON.py: 6 warnings
+test/rml-core/json/RMLTC0010c/test_RMLTC0010c_JSON.py: 6 warnings
+test/rml-core/json/RMLTC0011b/test_RMLTC0011b_JSON.py: 32 warnings
+test/rml-core/json/RMLTC0012a/test_RMLTC0012a_JSON.py: 8 warnings
+test/rml-core/json/RMLTC0012b/test_RMLTC0012b_JSON.py: 8 warnings
+test/rml-core/json/RMLTC0012d/test_RMLTC0012d_JSON.py: 8 warnings
+test/rml-core/json/RMLTC0013a/test_RMLTC0013a_JSON.py: 2 warnings
+test/rml-core/json/RMLTC0015a/test_RMLTC0015a_JSON.py: 8 warnings
+test/rml-core/json/RMLTC0015b/test_RMLTC0015b_JSON.py: 4 warnings
+test/rml-core/json/complex/test_complex_JSON.py: 216 warnings
+test/rml-core/tabular/RMLTC0002a_EXCEL/test_RMLTC0002a_EXCEL.py: 6 warnings
+test/rml-core/tabular/RMLTC0002a_FEATHER/test_RMLTC0002a_FEATHER.py: 6 warnings
+test/rml-core/tabular/RMLTC0002a_ODS/test_RMLTC0002a_ODS.py: 6 warnings
+test/rml-core/tabular/RMLTC0002a_PARQUET/test_RMLTC0002a_PARQUET.py: 6 warnings
+test/rml-core/tabular/RMLTC0002a_STATA/test_RMLTC0002a_STATA.py: 6 warnings
+test/rml-core/tabular/RMLTC0002a_TSV/test_RMLTC0002a_TSV.py: 6 warnings
+test/rml-core/xml/RMLTC0001a/test_RMLTC0001a_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0001b/test_RMLTC0001b_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0002a/test_RMLTC0002a_XML.py: 6 warnings
+test/rml-core/xml/RMLTC0002b/test_RMLTC0002b_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0003c/test_RMLTC0003c_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0004a/test_RMLTC0004a_XML.py: 8 warnings
+test/rml-core/xml/RMLTC0005a/test_RMLTC0005a_XML.py: 8 warnings
+test/rml-core/xml/RMLTC0007a/test_RMLTC0007a_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0007c/test_RMLTC0007c_XML.py: 8 warnings
+test/rml-core/xml/RMLTC0007d/test_RMLTC0007d_XML.py: 8 warnings
+test/rml-core/xml/RMLTC0007g/test_RMLTC0007g_XML.py: 2 warnings
+test/rml-core/xml/RMLTC0008b/test_RMLTC0008b_XML.py: 10 warnings
+test/rml-core/xml/RMLTC0008c/test_RMLTC0008c_XML.py: 4 warnings
+test/rml-core/xml/RMLTC0009a/test_RMLTC0009a_XML.py: 8 warnings
+test/rml-core/xml/RMLTC0010b/test_RMLTC0010b_XML.py: 6 warnings
+test/rml-core/xml/RMLTC0010c/test_RMLTC0010c_XML.py: 6 warnings
+test/rml-core/xml/RMLTC0011b/test_RMLTC0011b_XML.py: 32 warnings
+test/rml-core/xml/RMLTC0012a/test_RMLTC0012a_XML.py: 8 warnings
+test/rml-core/xml/RMLTC0012b/test_RMLTC0012b_XML.py: 8 warnings
+test/rml-core/xml/RMLTC0015a/test_RMLTC0015a_XML.py: 8 warnings
+test/rml-core/xml/RMLTC0015b/test_RMLTC0015b_XML.py: 4 warnings
+test/rml-core/xml/attributes/test_attributes_XML.py: 40 warnings
+test/rml-core/xml/rml_spec_example_section_3/test_rml_spec_example_section_3_XML.py: 10 warnings
+test/rml-core/xml/rml_spec_example_section_5/test_rml_spec_example_section_5_XML.py: 12 warnings
+test/rml-fnml/abbreviated_syntax/test_short_functions.py: 12 warnings
+test/rml-fnml/array_functions/array_get/test_array_get.py: 10 warnings
+test/rml-fnml/array_functions/array_get_slice/test_array_get_slice.py: 4 warnings
+test/rml-fnml/array_functions/array_join/test_array_join.py: 10 warnings
+test/rml-fnml/array_functions/array_length/test_array_length.py: 10 warnings
+test/rml-fnml/array_functions/array_reverse/test_array_reverse.py: 10 warnings
+test/rml-fnml/array_functions/array_sort/test_array_sort.py: 20 warnings
+test/rml-fnml/array_functions/array_sum/test_array_sum.py: 10 warnings
+test/rml-fnml/array_functions/array_unique/test_array_unique.py: 30 warnings
+test/rml-fnml/controls_functions/controls_and/test_controls_and.py: 10 warnings
+test/rml-fnml/controls_functions/controls_if/test_controls_if.py: 6 warnings
+test/rml-fnml/controls_functions/controls_if_cast/test_controls_if_cast.py: 6 warnings
+test/rml-fnml/controls_functions/controls_not_or/test_controls_not_or.py: 10 warnings
+test/rml-fnml/controls_functions/controls_true/test_controls_true.py: 1 warning
+test/rml-fnml/controls_functions/controls_xor_if/test_controls_xor_if.py: 10 warnings
+test/rml-fnml/date_functions/date_datepart/test_datepart.py: 10 warnings
+test/rml-fnml/date_functions/date_diff/test_date_diff.py: 20 warnings
+test/rml-fnml/date_functions/date_inc/test_dateinc.py: 10 warnings
+test/rml-fnml/date_functions/date_to_date/test_date_to_date.py: 2 warnings
+test/rml-fnml/fnml_to_rml/test_translate_fnml.py: 24 warnings
+test/rml-fnml/math_functions/math_abs/test_math_abs.py: 20 warnings
+test/rml-fnml/math_functions/math_acos/test_math_acos.py: 10 warnings
+test/rml-fnml/math_functions/math_asin/test_math_asin.py: 10 warnings
+test/rml-fnml/math_functions/math_atan/test_math_atan.py: 10 warnings
+test/rml-fnml/math_functions/math_atan2/test_math_atan2.py: 10 warnings
+test/rml-fnml/math_functions/math_ceil/test_math_ceil.py: 10 warnings
+test/rml-fnml/math_functions/math_combin/test_math_combin.py: 10 warnings
+test/rml-fnml/math_functions/math_cos/test_math_cos.py: 10 warnings
+test/rml-fnml/math_functions/math_cosh/test_math_cosh.py: 10 warnings
+test/rml-fnml/math_functions/math_degrees/test_math_degrees.py: 10 warnings
+test/rml-fnml/math_functions/math_even_odd/test_math_even_odd.py: 20 warnings
+test/rml-fnml/math_functions/math_exp/test_math_exp.py: 10 warnings
+test/rml-fnml/math_functions/math_fact/test_math_fact.py: 10 warnings
+test/rml-fnml/math_functions/math_factn/test_math_factn.py: 10 warnings
+test/rml-fnml/math_functions/math_floor/test_math_floor.py: 10 warnings
+test/rml-fnml/math_functions/math_gcd/test_math_gcd.py: 10 warnings
+test/rml-fnml/math_functions/math_lcm/test_math_lcm.py: 10 warnings
+test/rml-fnml/math_functions/math_ln/test_math_ln.py: 10 warnings
+test/rml-fnml/math_functions/math_log/test_math_log.py: 10 warnings
+test/rml-fnml/math_functions/math_min_max/test_math_minmax.py: 20 warnings
+test/rml-fnml/math_functions/math_mod/test_math_mod.py: 10 warnings
+test/rml-fnml/math_functions/math_multinominal/test_math_multinomial.py: 10 warnings
+test/rml-fnml/math_functions/math_pow/test_math_pow.py: 10 warnings
+test/rml-fnml/math_functions/math_quotient/test_math_quotient.py: 10 warnings
+test/rml-fnml/math_functions/math_radians/test_math_radians.py: 10 warnings
+test/rml-fnml/math_functions/math_random/test_math_random.py: 10 warnings
+test/rml-fnml/math_functions/math_round/test_math_round.py: 6 warnings
+test/rml-fnml/math_functions/math_sin/test_math_sin.py: 10 warnings
+test/rml-fnml/math_functions/math_sinh/test_math_sinh.py: 10 warnings
+test/rml-fnml/math_functions/math_tan/test_math_tan.py: 10 warnings
+test/rml-fnml/math_functions/math_tanh/test_math_tanh.py: 10 warnings
+test/rml-fnml/other_functions/RMLFNOTC0003-CSV_escape/test_RMLFNOTC0003-CSV.py: 2 warnings
+test/rml-fnml/other_functions/RMLFNOTC0004-CSV_uppercase_url/test_RMLFNOTC0004-CSV.py: 2 warnings
+test/rml-fnml/other_functions/RMLFNOTC0005-CSV_uppercase_url/test_RMLFNOTC0005-CSV.py: 2 warnings
+test/rml-fnml/other_functions/RMLFNOTC0006-CSV_uppercase_url/test_RMLFNOTC0006-CSV.py: 2 warnings
+test/rml-fnml/other_functions/type/test_other_type.py: 10 warnings
+test/rml-fnml/string_functions/RMLFNOTC0001-CSV_upperCase/test_RMLFNOTC0001-CSV.py: 2 warnings
+test/rml-fnml/string_functions/RMLFNOTC0002-CSV_touppercase/test_RMLFNOTC0002-CSV.py: 2 warnings
+test/rml-fnml/string_functions/RMLFNOTC0008-CSV_uppercase/test_RMLFNOTC0008-CSV.py: 2 warnings
+test/rml-fnml/string_functions/RMLFNOTC0009-CSV_replace/test_RMLFNOTC0009-CSV.py: 2 warnings
+test/rml-fnml/string_functions/split_explode/test_split_explode.py: 14 warnings
+test/rml-fnml/string_functions/split_explode_null/test_split_explode_null.py: 8 warnings
+test/rml-fnml/string_functions/string_casing/test_string_casing.py: 30 warnings
+test/rml-fnml/string_functions/string_chomp_trim/test_string_chomp_trim.py: 20 warnings
+test/rml-fnml/string_functions/string_contains/test_string_contains.py: 10 warnings
+test/rml-fnml/string_functions/string_diff/test_string_diff.py: 10 warnings
+test/rml-fnml/string_functions/string_hash/test_hash.py: 20 warnings
+test/rml-fnml/string_functions/string_indexof/test_string_indexof.py: 20 warnings
+test/rml-fnml/string_functions/string_length/test_string_length.py: 10 warnings
+test/rml-fnml/string_functions/string_match/test_string_match.py: 10 warnings
+test/rml-fnml/string_functions/string_replace/test_string_replace.py: 10 warnings
+test/rml-fnml/string_functions/string_splits/by_char_type/test_string_split_by_chartype.py: 50 warnings
+test/rml-fnml/string_functions/string_splits/split/test_string_splits.py: 24 warnings
+test/rml-fnml/string_functions/string_starts_endswith/test_string_start_end_with.py: 20 warnings
+test/rml-fnml/string_functions/string_substring/test_string_substring.py: 10 warnings
+test/rml-fnml/udf/test_udf.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0001a/test_RMLTC0001a_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0001b/test_RMLTC0001b_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0002a/test_RMLTC0002a_DICT.py: 6 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0002b/test_RMLTC0002b_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0002e/test_RMLTC0002e_DICT.py: 1 warning
+test/rml-in-memory/json_dictionary/RMLIMTC0003c/test_RMLTC0003c_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0004a/test_RMLTC0004a_DICT.py: 8 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0005a/test_RMLTC0005a_DICT.py: 8 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0007a/test_RMLTC0007a_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0007c/test_RMLTC0007c_DICT.py: 8 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0007d/test_RMLTC0007d_DICT.py: 8 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0007g/test_RMLTC0007g_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0008b/test_RMLTC0008b_DICT.py: 10 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0008c/test_RMLTC0008c_DICT.py: 4 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0009a/test_RMLTC0009a_DICT.py: 8 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0010a/test_RMLTC0010a_DICT.py: 6 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0010b/test_RMLTC0010b_DICT.py: 6 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0010c/test_RMLTC0010c_DICT.py: 6 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0011b/test_RMLTC0011b_DICT.py: 32 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0012a/test_RMLTC0012a_DICT.py: 8 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0012b/test_RMLTC0012b_DICT.py: 8 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0012d/test_RMLTC0012d_DICT.py: 8 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0013a/test_RMLTC0013a_DICT.py: 2 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0015a/test_RMLTC0015a_DICT.py: 8 warnings
+test/rml-in-memory/json_dictionary/RMLIMTC0015b/test_RMLTC0015b_DICT.py: 4 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0001a/test_RMLTC0001a_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0001b/test_RMLIMTC0001b_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0002a/test_RMLIMTC0002a_DF.py: 6 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0002b/test_RMLIMTC0002b_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0002e/test_RMLIMTC0002e_DF.py: 1 warning
+test/rml-in-memory/pandas_dataframe/RMLIMTC0003c/test_RMLIMTC0003c_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0004a/test_RMLIMTC0004a_DF.py: 8 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0005a/test_RMLIMTC0005a_DF.py: 8 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0007a/test_RMLIMTC0007a_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0007c/test_RMLIMTC0007c_DF.py: 8 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0007d/test_RMLTC0007d_DF.py: 8 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0007g/test_RMLIMTC0007g_DF.py: 2 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0008b/test_RMLIMTC0008b_DF.py: 10 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0008c/test_RMLIMTC0008c_DF.py: 4 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0009a/test_RMLIMTC0009a_DF.py: 8 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0010a/test_RMLIMTC0010a_DF.py: 6 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0010b/test_RMLIMTC0010b_DF.py: 6 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0010c/test_RMLIMTC0010c_DF.py: 6 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0011b/test_RMLIMTC0011b_DF.py: 32 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0012a/test_RMLIMTC0012a_DF.py: 8 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0012b/test_RMLIMTC0012b_DF.py: 8 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0012d/test_RMLIMTC0012d_DF.py: 8 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0015a/test_RMLIMTC0015a_DF.py: 8 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0015b/test_RMLIMTC0015b_DF.py: 4 warnings
+test/rml-in-memory/pandas_dataframe/RMLIMTC0016a/test_RMLIMTC0016a_DF.py: 1 warning
+test/rml-in-memory/pandas_dataframe/triples_map_without_pom/test_triples_map_without_pom_DF.py: 2 warnings
+test/rml-tv/RMLTVTC0002d/test_RMLTVTC0002d.py: 2 warnings
+test/rml-tv/RMLTVTC0002i/test_RMLTVTC0002i.py: 2 warnings
+test/rml-tv/RMLTVTC0002j/test_RMLTVTC0002j.py: 2 warnings
+test/rml-tv/RMLTVTC0003b/test_RMLTVTC0003b.py: 2 warnings
+test/rml-tv/RMLTVTC0009c/test_RMLTVTC0009c.py: 4 warnings
+test/rml-tv/RMLTVTC0009d/test_RMLTVTC0009d.py: 8 warnings
+test/rml-tv/RMLTVTC0011a/test_RMLTVTC0011a.py: 38 warnings
+test/rml-tv/RMLTVTC0014d/test_RMLTVTC0014d.py: 2 warnings
+test/rml-tv/RMLTVTC0015a/test_RMLTVTC0015a.py: 8 warnings
+test/rml-tv/RMLTVTC0015b/test_RMLTVTC0015b.py: 4 warnings
+test/rml-tv/RMLTVTC0019a/test_RMLTVTC0019a.py: 2 warnings
+test/rml-tv/RMLTVTC0026a/test_RMLTVTC0026a.py: 10 warnings
+test/rml-tv/RMLTVTC0027a/test_RMLTVTC0027a.py: 12 warnings
+test/rml-tv/RMLTVTC0028a/test_RMLTVTC0028a.py: 8 warnings
+test/rml-tv/RMLTVTC0029a/test_RMLTVTC0029a.py: 4 warnings
+test/shapefile/RMLTC0001a/test_RMLTC0001a_SHP.py: 6 warnings
+  /Users/sanderhan/devel/github/morph-kgc/morph-kgc/.venv/lib/python3.14/site-packages/rdflib/plugins/parsers/nquads.py:142: DeprecationWarning: Dataset.default_context is deprecated, use Dataset.default_graph instead.
+    self.sink.default_context.add((subject, predicate, obj))
+
+test/issues/issue_80/test_issue_80.py::test_issue_80
+  /Users/sanderhan/devel/github/morph-kgc/morph-kgc/src/morph_kgc/mapping/mapping_parser.py:665: ResourceWarning: unclosed file <_io.BufferedReader name='/Users/sanderhan/devel/github/morph-kgc/morph-kgc/test/issues/issue_80/mapping.rml'>
+    mapping_graph.parse(f)
+  
+  Object allocated at:
+    File "/Users/sanderhan/devel/github/morph-kgc/morph-kgc/.venv/lib/python3.14/site-packages/rdflib/parser.py", line 792
+      file = open(filename, "rb")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+[33m=============================================================================================================================== [32m374 passed[0m, [33m[1m3565 warnings[0m[33m in 522.22s (0:08:42)[0m[33m ===============================================================================================================================[0m
+
+Command exit status: 0
+Script done on Thu Feb 19 20:14:01 2026

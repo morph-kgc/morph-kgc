@@ -613,7 +613,7 @@ class MappingParser:
         LOGGER.info(f'{len(self.rml_df)} mapping rules retrieved.')
 
         # replace empty strings with NaN
-        self.rml_df = self.rml_df.infer_objects(copy=False).replace(r'^\s*$', None, regex=True)
+        self.rml_df = self.rml_df.infer_objects().replace(r'^\s*$', None, regex=True)
 
         # generate mapping partitions
         mapping_partitioner = MappingPartitioner(self.rml_df, self.config)
