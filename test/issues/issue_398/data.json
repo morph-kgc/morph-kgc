@@ -1,0 +1,6 @@
+{
+  "people": [
+    { "id": 1, "name": "Alice", "address": { "city": "Madrid" } },
+    { "id": 2, "name": "Bob", "address": { "city": "Seoul" } }
+  ]
+}
