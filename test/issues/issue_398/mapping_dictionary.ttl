@@ -1,0 +1,27 @@
+@prefix rml: <http://w3id.org/rml/> .
+@prefix ex: <http://example.com/> .
+@prefix sd: <https://w3id.org/okn/o/sd#> .
+@prefix kg4di: <https://w3id.org/kg4di/definedBy> .
+
+<http://example.com/base/People> a rml:TriplesMap ;
+  rml:logicalSource [
+    rml:source [
+      a sd:DatasetSpecification ;
+      sd:name "variable1" ;
+      sd:hasDataTransformation [ sd:hasSourceCode [ sd:programmingLanguage "Python3.9" ] ]
+    ] ;
+    rml:referenceFormulation rml:Dictionary ;
+    rml:iterator "$.people[*]"
+  ] ;
+  rml:subjectMap [ rml:template "http://example.com/person/{$.id}" ] ;
+  rml:predicateObjectMap [
+    rml:predicate ex:name ;
+    rml:objectMap [ rml:reference "$.name" ]
+  ] ;
+  rml:predicateObjectMap [
+    rml:predicate ex:label ;
+    rml:objectMap [ rml:template "{name} ({$.id})" ; rml:termType rml:Literal ]
+  ] .
+
+rml:Dictionary a rml:ReferenceFormulation ;
+  kg4di:definedBy "Python" .

@@ -121,6 +121,23 @@ def _read_ods(rml_rule, references: list[str]) -> pd.DataFrame:
     )
 
 
+def strip_json_root(reference: str) -> str:
+    """
+    Removes the leading `$.` of a JSONPath reference. References are evaluated relative to the
+    iterator, so `$.name` and `name` select the same field (RML-Core writes references as `$.name`).
+    """
+    return reference[2:] if reference.startswith('$.') else reference
+
+
+def alias_json_root_references(json_df: pd.DataFrame, references: list[str]) -> pd.DataFrame:
+    """Adds a column for every `$.`-prefixed reference, copied from the column of the stripped reference."""
+    for reference in references:
+        stripped_reference = strip_json_root(reference)
+        if stripped_reference != reference and stripped_reference in json_df.columns:
+            json_df[reference] = json_df[stripped_reference]
+    return json_df
+
+
 def _read_json(rml_rule, references: list[str]) -> pd.DataFrame:
     source = _source_uri(rml_rule)
     iterator = rml_rule.logical_source.iterator
@@ -132,9 +149,11 @@ def _read_json(rml_rule, references: list[str]) -> pd.DataFrame:
         with open(source, encoding="utf-8") as f:
             raw = json.load(f)
 
+    stripped_references = [strip_json_root(reference) for reference in references]
+
     jsonpath_expression = iterator + '.('
     # add top level object of the references to reduce intermediate results (THIS IS NOT STRICTLY NECESSARY)
-    for reference in references:
+    for reference in stripped_references:
         jsonpath_expression += reference.split('.')[0] + ','
     jsonpath_expression = jsonpath_expression[:-1] + ')'
 
@@ -144,8 +163,9 @@ def _read_json(rml_rule, references: list[str]) -> pd.DataFrame:
         json_object
         for json_object in normalize_hierarchical_data(jsonpath_result)
         if None not in json_object.values()
-           and all(reference.split('.')[0] in json_object for reference in references)
+           and all(reference.split('.')[0] in json_object for reference in stripped_references)
     ])
+    json_df = alias_json_root_references(json_df, references)
 
     # add columns with null values for those references in the mapping rule that are not present in the data file
     missing_references_in_df = list(set(references).difference(set(json_df.columns)))

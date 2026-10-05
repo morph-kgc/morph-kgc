@@ -1,0 +1,6 @@
+<http://example.com/person/1> <http://example.com/name> "Alice" .
+<http://example.com/person/1> <http://example.com/city> "Madrid" .
+<http://example.com/person/1> <http://example.com/label> "Alice (1)" .
+<http://example.com/person/2> <http://example.com/name> "Bob" .
+<http://example.com/person/2> <http://example.com/city> "Seoul" .
+<http://example.com/person/2> <http://example.com/label> "Bob (2)" .

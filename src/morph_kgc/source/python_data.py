@@ -19,6 +19,7 @@ import pandas as pd
 from jsonpath import JSONPath
 
 from ..utils import normalize_hierarchical_data
+from .file import strip_json_root, alias_json_root_references
 
 
 def _check_if_json(value: Any) -> bool:
@@ -39,9 +40,11 @@ def _read_inmemory_json(
     # TODO: this method repeats code from _read_json() in source/file.py
     json_data = json.loads(source_value)
 
+    stripped_references = [strip_json_root(reference) for reference in references]
+
     jsonpath_expression = rml_rule.logical_source.iterator + '.('
     # add top level object of the references to reduce intermediate results (THIS IS NOT STRICTLY NECESSARY)
-    for reference in references:
+    for reference in stripped_references:
         jsonpath_expression += reference + ','
     jsonpath_expression = jsonpath_expression[:-1] + ')'
 
@@ -51,8 +54,9 @@ def _read_inmemory_json(
         json_object
         for json_object in normalize_hierarchical_data(jsonpath_result)
         if None not in json_object.values()
-           and all(reference.split('.')[0] in json_object for reference in references)
+           and all(reference.split('.')[0] in json_object for reference in stripped_references)
     ])
+    json_df = alias_json_root_references(json_df, references)
 
     # add columns with null values for those references in the mapping rule that are not present in the data file
     missing_references_in_df = list(set(references).difference(set(json_df.columns)))
