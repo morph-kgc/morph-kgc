@@ -1,0 +1,50 @@
+{
+  "@context": "https://w3id.org/codemeta/3.0",
+  "@type": [
+    "SoftwareSourceCode",
+    "SoftwareApplication"
+  ],
+  "name": "Morph-KGC",
+  "description": "Morph-KGC is an engine that constructs RDF knowledge graphs from heterogeneous data sources using R2RML and RML mapping languages.",
+  "codeRepository": "https://github.com/morph-kgc/morph-kgc",
+  "issueTracker": "https://github.com/morph-kgc/morph-kgc/issues",
+  "url": "https://morph-kgc.readthedocs.io/",
+  "readme": "https://raw.githubusercontent.com/morph-kgc/morph-kgc/main/README.md",
+  "downloadUrl": "https://github.com/morph-kgc/morph-kgc/releases",
+  "license": "https://spdx.org/licenses/Apache-2.0",
+  "programmingLanguage": "Python",
+  "softwareVersion": "2.10.0",
+  "releaseNotes": "https://github.com/morph-kgc/morph-kgc/releases",
+  "keywords": [
+    "knowledge graph",
+    "knowledge graph generation",
+    "RDF",
+    "RDF 1.2",
+    "R2RML",
+    "RML",
+    "data integration",
+    "Python"
+  ],
+  "author": [
+    {
+      "@type": "Person",
+      "@id": "https://orcid.org/0000-0002-3029-6469",
+      "givenName": "Julián",
+      "familyName": "Arenas-Guerrero",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "Universidad Politécnica de Madrid"
+      }
+    }
+  ],
+  "referencePublication": [
+    {
+      "@type": "ScholarlyArticle",
+      "name": "Morph-KGC: Scalable knowledge graph materialization with mapping partitions",
+      "identifier": "https://doi.org/10.3233/SW-223135",
+      "url": "https://doi.org/10.3233/SW-223135",
+      "datePublished": "2024"
+    }
+  ],
+  "continuousIntegration": "https://github.com/morph-kgc/morph-kgc/actions"
+}
