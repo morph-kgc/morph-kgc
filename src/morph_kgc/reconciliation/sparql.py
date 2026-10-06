@@ -20,7 +20,9 @@ endpoint declared by a ``[RESOURCE:<name>]`` section::
     attributes=http://www.w3.org/2004/02/skos/core#prefLabel
 
 The endpoint is queried once, during the context initialization phase, and the
-resulting index is reused by every invocation of the function.
+resulting index is reused by every invocation of the function. Unless a 'query'
+is declared, the concepts are read from the default graph and from every named
+graph of the endpoint.
 
 The query must be a SELECT query projecting the concept and the value it is
 reconciled by; an ``?attribute`` variable may be projected as well to say which
@@ -44,12 +46,19 @@ SPARQL_RESULTS_JSON = "application/sparql-results+json"
 DEFAULT_CONCEPT_VARIABLE   = "concept"
 DEFAULT_ATTRIBUTE_VARIABLE = "attribute"
 DEFAULT_VALUE_VARIABLE     = "value"
+DEFAULT_GRAPH_VARIABLE     = "graph"
 
 VALID_METHODS = {"GET", "POST"}
 
-_DEFAULT_QUERY = """SELECT ?{concept} ?{attribute} ?{value} WHERE {{
-    ?{concept} ?{attribute} ?{value} .
+# The concepts are read from the default graph and from every named graph, since
+# stores differ on whether the default graph includes the named ones: a
+# vocabulary loaded into a named graph would otherwise go unnoticed. The same
+# value found in several graphs is indexed once.
+_DEFAULT_QUERY = """SELECT DISTINCT ?{concept} ?{attribute} ?{value} WHERE {{
     VALUES ?{attribute} {{ {attributes} }}
+    {{ ?{concept} ?{attribute} ?{value} . }}
+    UNION
+    {{ GRAPH ?{graph} {{ ?{concept} ?{attribute} ?{value} . }} }}
 }}"""
 
 
@@ -64,10 +73,21 @@ def build_query(resource, attributes) -> str:
 
     attributes = attributes or DEFAULT_RECONCILIATION_ATTRIBUTES
 
+    variables = {
+        "concept":   resource.get("concept_variable", DEFAULT_CONCEPT_VARIABLE),
+        "attribute": resource.get("attribute_variable", DEFAULT_ATTRIBUTE_VARIABLE),
+        "value":     resource.get("value_variable", DEFAULT_VALUE_VARIABLE),
+    }
+
+    # The graph variable must not be one of the projected ones, which would join
+    # the concepts with the graph they are in and silently drop them.
+    graph = DEFAULT_GRAPH_VARIABLE
+    while graph in variables.values():
+        graph += "_"
+
     return _DEFAULT_QUERY.format(
-        concept    = resource.get("concept_variable", DEFAULT_CONCEPT_VARIABLE),
-        attribute  = resource.get("attribute_variable", DEFAULT_ATTRIBUTE_VARIABLE),
-        value      = resource.get("value_variable", DEFAULT_VALUE_VARIABLE),
+        **variables,
+        graph      = graph,
         attributes = " ".join(f"<{attribute}>" for attribute in attributes),
     )
 

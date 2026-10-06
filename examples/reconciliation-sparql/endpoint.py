@@ -28,7 +28,9 @@ URL = f'http://{HOST}:{PORT}{PATH}'
 SPARQL_RESULTS_JSON = 'application/sparql-results+json'
 
 DATASET = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'diseases.ttl')
-GRAPH = rdflib.Graph().parse(DATASET)
+# A dataset rather than a graph, so that queries over named graphs are answered.
+GRAPH = rdflib.Dataset()
+GRAPH.parse(DATASET)
 
 
 class _SPARQLHandler(BaseHTTPRequestHandler):

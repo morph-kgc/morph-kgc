@@ -1,0 +1,8 @@
+<https://data.boehringer.com/id/00036/10073037> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> <https://example.org/graph/disease/ataxia> .
+<https://data.boehringer.com/id/00036/10073037> <http://www.w3.org/2004/02/skos/core#prefLabel> "Spastic ataxia-myoclonic epilepsy-neuropathy syndrome" <https://example.org/graph/disease/ataxia> .
+<https://data.boehringer.com/id/00036/10073037> <http://www.w3.org/2004/02/skos/core#altLabel> "Early-onset spastic ataxia-myoclonic epilepsy-neuropathy syndrome" <https://example.org/graph/disease/ataxia> .
+<https://data.boehringer.com/id/00036/10073037> <http://www.w3.org/2004/02/skos/core#notation> "ORPHA:352587" <https://example.org/graph/disease/ataxia> .
+<https://data.boehringer.com/id/00036/10077339> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> <https://example.org/graph/disease/narcolepsy> .
+<https://data.boehringer.com/id/00036/10077339> <http://www.w3.org/2004/02/skos/core#prefLabel> "Autosomal dominant cerebellar ataxia-deafness-narcolepsy syndrome" <https://example.org/graph/disease/narcolepsy> .
+<https://data.boehringer.com/id/00036/10077339> <http://www.w3.org/2004/02/skos/core#altLabel> "ADCA-DN" <https://example.org/graph/disease/narcolepsy> .
+<https://data.boehringer.com/id/00036/10077339> <http://www.w3.org/2004/02/skos/core#notation> "ORPHA:314404" <https://example.org/graph/disease/narcolepsy> .

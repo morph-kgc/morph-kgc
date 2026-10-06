@@ -19,7 +19,9 @@ vocabulary fetched from the URL declared by a ``[RESOURCE:<name>]`` section::
     attributes=skos:prefLabel,skos:altLabel
     timeout=60
 
-The vocabulary is retrieved once, during the context initialization phase.
+The vocabulary is retrieved once, during the context initialization phase. It
+may be serialized as triples or as quads (N-Quads, TriG): the concepts of every
+graph of a vocabulary split across named graphs are indexed.
 """
 
 import logging
@@ -35,7 +37,8 @@ LOGGER = logging.getLogger(LOGGING_NAMESPACE)
 # Serializations we can ask for, most specific first.
 ACCEPTED_MEDIA_TYPES = (
     "text/turtle, application/rdf+xml;q=0.9, application/n-triples;q=0.9, "
-    "application/ld+json;q=0.8, application/n-quads;q=0.8, text/n3;q=0.7, */*;q=0.1"
+    "application/ld+json;q=0.8, application/n-quads;q=0.8, application/trig;q=0.8, "
+    "text/n3;q=0.7, */*;q=0.1"
 )
 
 CONTENT_TYPE_FORMATS = {
@@ -44,12 +47,19 @@ CONTENT_TYPE_FORMATS = {
     "application/rdf+xml": "xml",
     "text/rdf+xml": "xml",
     "application/n-triples": "nt",
-    "text/plain": "nt",
     "application/n-quads": "nquads",
+    "text/x-nquads": "nquads",
     "application/trig": "trig",
+    "application/x-trig": "trig",
     "application/ld+json": "json-ld",
     "application/json": "json-ld",
     "text/n3": "n3",
+}
+
+# Content types too generic to say which serialization they carry: the extension
+# of the URL is a better hint (a '.nq' file served as text/plain holds quads).
+GENERIC_CONTENT_TYPE_FORMATS = {
+    "text/plain": "nt",
 }
 
 
@@ -84,11 +94,20 @@ def guess_format(resource, url: str, content_type: str) -> str | None:
     if content_type in CONTENT_TYPE_FORMATS:
         return CONTENT_TYPE_FORMATS[content_type]
 
-    return rdflib.util.guess_format(url.split("?")[0])
+    return (
+        rdflib.util.guess_format(url.split("?")[0])
+        or GENERIC_CONTENT_TYPE_FORMATS.get(content_type)
+    )
 
 
-def load_vocabulary_graph(resource) -> rdflib.Graph:
-    """Fetch and parse the SKOS vocabulary declared by *resource*."""
+def load_vocabulary_graph(resource) -> rdflib.Dataset:
+    """
+    Fetch and parse the SKOS vocabulary declared by *resource*.
+
+    The vocabulary is parsed into a dataset whose default graph is the union of
+    all its graphs, so that the triples of a vocabulary serialized as quads are
+    not lost: a plain graph silently drops those in a named graph.
+    """
     url = resource.get_url()
     if not url:
         raise ValueError(
@@ -107,7 +126,7 @@ def load_vocabulary_graph(resource) -> rdflib.Graph:
 
     rdf_format = guess_format(resource, url, response.content_type)
 
-    graph = rdflib.Graph()
+    graph = rdflib.Dataset(default_union=True)
     try:
         graph.parse(data=response.body, format=rdf_format)
     except Exception as exc:
@@ -144,7 +163,8 @@ def build_index(resource, attributes=()) -> ConceptIndex:
             for concept, value in graph.subject_objects(predicate):
                 index.add(attribute, value, str(concept))
     else:
-        for concept, predicate, value in graph:
+        # Iterating a dataset yields quads, its triples() the union of graphs.
+        for concept, predicate, value in graph.triples((None, None, None)):
             if isinstance(value, rdflib.term.Literal):
                 index.add(str(predicate), value, str(concept))
 

@@ -81,6 +81,34 @@ def test_reconcile_vocabulary_over_http_without_credentials():
             ))
 
 
+@pytest.mark.parametrize('file_name', ['disease_vocabulary.nq', 'disease_vocabulary.trig'])
+def test_reconcile_vocabulary_in_named_graphs_from_file(file_name):
+    """A vocabulary serialized as quads is indexed across all its named graphs."""
+    g_morph = morph_kgc.materialize(config(
+        f'resource_type=SKOS_VOCABULARY\n'
+        f'url={os.path.join(TEST_DIR, file_name)}'
+    ))
+
+    assert_isomorphic(expected_graph(), g_morph)
+
+
+@pytest.mark.parametrize('path', ['/vocabulary.nq', '/vocabulary.trig'])
+def test_reconcile_vocabulary_in_named_graphs_over_http(path):
+    """
+    A vocabulary served as quads is indexed across all its named graphs, even
+    when served as text/plain: the extension then says it holds quads.
+    """
+    with VocabularyServer() as server:
+        g_morph = morph_kgc.materialize(config(
+            f'resource_type=SKOS_VOCABULARY\n'
+            f'url={server.url}{path}\n'
+            f'username={USERNAME}\n'
+            f'password={PASSWORD}'
+        ))
+
+    assert_isomorphic(expected_graph(), g_morph)
+
+
 def test_reconcile_vocabulary_with_multiple_processes():
     """Worker processes read the shared context back from the state directory."""
     g_morph = morph_kgc.materialize(config(
@@ -218,5 +246,37 @@ def test_reconcile_sparql_endpoint_with_declared_query():
         ))
 
         assert server.requests[0][1] == query
+
+    assert_isomorphic(expected_graph(), g_morph)
+
+
+def test_reconcile_sparql_endpoint_with_named_graphs():
+    """
+    The default query reads the concepts from the named graphs as well, so a
+    vocabulary loaded into named graphs of a triplestore is reconciled against.
+    """
+    with VocabularyServer() as server:
+        g_morph = morph_kgc.materialize(sparql_config(
+            f'resource_type=SPARQL_ENDPOINT\n'
+            f'url={server.url}/sparql/named-graphs\n'
+            f'username={USERNAME}\n'
+            f'password={PASSWORD}'
+        ))
+
+        assert 'GRAPH' in server.requests[0][1]
+
+    assert_isomorphic(expected_graph(), g_morph)
+
+
+def test_reconcile_sparql_endpoint_with_named_graphs_and_graph_variable():
+    """A projected variable named like the graph one does not hide the named graphs."""
+    with VocabularyServer() as server:
+        g_morph = morph_kgc.materialize(sparql_config(
+            f'resource_type=SPARQL_ENDPOINT\n'
+            f'url={server.url}/sparql/named-graphs\n'
+            f'username={USERNAME}\n'
+            f'password={PASSWORD}\n'
+            f'concept_variable=graph'
+        ))
 
     assert_isomorphic(expected_graph(), g_morph)

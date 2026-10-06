@@ -88,7 +88,10 @@ which the patients are reconciled against.
 
 Without the option, everything the endpoint describes with the SKOS labelling
 properties (`skos:prefLabel`, `skos:altLabel`, `skos:hiddenLabel` and
-`skos:notation`) is indexed. The mapping matches against `skos:prefLabel` and
+`skos:notation`) is indexed, in the default graph and in every named graph, so a
+vocabulary loaded into named graphs is found whether or not the store includes
+them in its default graph. A declared query with no `GRAPH` pattern reads only
+the default graph. The mapping matches against `skos:prefLabel` and
 `skos:altLabel` here, so those are the two properties that are queried for.
 
 A query projecting no `?attribute` builds an index that does not tell attributes
@@ -103,7 +106,7 @@ needs not name any attribute either.
 | `url` | where the endpoint is queried |
 | `iri` | the IRI identifying the endpoint, when it differs from `url`. A mapping may name the resource by it |
 | `username`, `password` | HTTP Basic Authentication credentials |
-| `query` | the SELECT query the index is built from. Defaults to a query over the SKOS labelling properties |
+| `query` | the SELECT query the index is built from. Defaults to a query over the SKOS labelling properties in the default graph and every named graph |
 | `method` | `GET` (default) or `POST` |
 | `concept_variable`, `attribute_variable`, `value_variable` | projected variable names (default `concept`, `attribute`, `value`) |
 | `matching` | `EXACT` (default) or `CASE-INSENSITIVE`, which also collapses whitespace |

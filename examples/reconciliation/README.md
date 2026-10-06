@@ -76,13 +76,13 @@ Only for `SKOS_VOCABULARY`:
 
 | Option | Meaning |
 | --- | --- |
-| `format` | RDF serialization of the vocabulary (`turtle`, `xml`, `nt`, `json-ld`, ...). Guessed from the response and the URL when omitted |
+| `format` | RDF serialization of the vocabulary (`turtle`, `xml`, `nt`, `nquads`, `trig`, `json-ld`, ...). Guessed from the response and the URL when omitted. A vocabulary serialized as quads is indexed across all its named graphs |
 
 Only for `SPARQL_ENDPOINT`:
 
 | Option | Meaning |
 | --- | --- |
-| `query` | the SELECT query the index is built from. Defaults to a query over the SKOS labelling properties |
+| `query` | the SELECT query the index is built from. Defaults to a query over the SKOS labelling properties in the default graph and every named graph |
 | `method` | `GET` (default) or `POST` |
 | `concept_variable`, `attribute_variable`, `value_variable` | projected variable names (default `concept`, `attribute`, `value`) |
 

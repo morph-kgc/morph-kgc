@@ -5,6 +5,9 @@ __license__ = "Apache-2.0"
 A throwaway HTTP server used by the reconciliation tests: it serves the SKOS
 vocabulary and answers SPARQL queries, both behind HTTP Basic Authentication,
 so that the tests exercise the remote code paths without reaching the network.
+
+``/sparql`` answers every query with fixed bindings, while ``/sparql/named-graphs``
+evaluates it over a dataset that keeps the vocabulary in named graphs only.
 """
 
 import json
@@ -13,6 +16,8 @@ import threading
 from base64 import b64encode
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qs, urlsplit
+
+from rdflib import Dataset
 
 USERNAME = 'vocabulary_user'
 PASSWORD = 's3cr3t'
@@ -32,6 +37,21 @@ SPARQL_BINDINGS = [
         'value':     {'type': 'literal', 'value': 'Autosomal dominant cerebellar ataxia-deafness-narcolepsy syndrome'},
     },
 ]
+
+
+# Served as text/plain, as some servers do with files they do not know.
+VOCABULARY_FILES = {
+    '/vocabulary': ('disease_vocabulary.ttl', 'text/turtle'),
+    '/vocabulary.nq': ('disease_vocabulary.nq', 'text/plain'),
+    '/vocabulary.trig': ('disease_vocabulary.trig', 'application/trig'),
+}
+
+
+def _named_graph_dataset():
+    """A dataset whose default graph is empty and is not the union of the others."""
+    dataset = Dataset()
+    dataset.parse(os.path.join(TEST_DIR, 'disease_vocabulary.nq'), format='nquads')
+    return dataset
 
 
 def _expected_authorization():
@@ -64,9 +84,13 @@ class _Handler(BaseHTTPRequestHandler):
 
         type(self).requests.append((path, query))
 
-        if path == '/vocabulary':
-            with open(os.path.join(TEST_DIR, 'disease_vocabulary.ttl'), 'rb') as f:
-                self._respond(200, f.read(), 'text/turtle')
+        if path in VOCABULARY_FILES:
+            file_name, content_type = VOCABULARY_FILES[path]
+            with open(os.path.join(TEST_DIR, file_name), 'rb') as f:
+                self._respond(200, f.read(), content_type)
+        elif path == '/sparql/named-graphs':
+            results = _named_graph_dataset().query(query).serialize(format='json')
+            self._respond(200, results, 'application/sparql-results+json')
         elif path == '/sparql':
             results = {
                 'head': {'vars': ['concept', 'attribute', 'value']},
