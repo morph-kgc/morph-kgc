@@ -39,6 +39,9 @@ from ..mapping.model import RMLRule, RMLMapping
 
 LOGGER = logging.getLogger(LOGGING_NAMESPACE)
 
+# Seconds between two checks that no worker process died while materializing.
+WORKER_CHECK_INTERVAL = 0.5
+
 # ── Protocol ──────────────────────────────────────────────────────────────────
 
 @runtime_checkable
@@ -103,6 +106,11 @@ class MultiprocessExecutor:
     Uses starmap so each worker receives its own copy of rml_mapping and
     config (pickle-safe). Only safe on Linux (fork semantics) — the pipeline
     gates this with a platform check before constructing this class.
+
+    mp.Pool replaces a worker that dies, but waits forever for the result of
+    the groups that worker was materializing, so the workers are watched and a
+    worker killed by the operating system (e.g. when it runs out of memory)
+    fails the run instead of hanging it.
     """
 
     def __init__(self, n_processes: int) -> None:
@@ -127,7 +135,23 @@ class MultiprocessExecutor:
         ]
 
         with mp.Pool(self.n_processes) as pool:
-            results = pool.starmap(materialize_fn, args)
+            # The workers the pool started with (it swaps a dead worker for a
+            # new one in pool._pool): none of them exits while the pool is
+            # open, so one that has an exit code died.
+            workers = list(pool._pool)
+            pending = pool.starmap_async(materialize_fn, args)
+            while not pending.ready():
+                if any(worker.exitcode is not None for worker in workers):
+                    raise RuntimeError(
+                        "A worker process died while materializing the mapping "
+                        "rules, e.g. killed by the operating system because it "
+                        f"ran out of memory. Each of the {self.n_processes} "
+                        "worker processes holds its own data in memory: set a "
+                        "lower 'number_of_processes' in the configuration file, "
+                        "or make more memory available."
+                    )
+                pending.wait(WORKER_CHECK_INTERVAL)
+            results = pending.get()
 
         return results
 

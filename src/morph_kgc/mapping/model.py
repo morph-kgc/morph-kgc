@@ -65,7 +65,7 @@ class TermMap:
         used on the object map), or ``None``.
     lang_datatype_map_type : Optional[str]
         The map type for the language/datatype term map (``rml:constant``,
-        ``rml:template``, ``rml:reference``).
+        ``rml:template``, ``rml:reference``, ``rml:functionExecution``).
     lang_datatype_map_value : Optional[str]
         The value for the language/datatype term map.
     direction_map_type : Optional[str]

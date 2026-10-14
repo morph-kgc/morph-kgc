@@ -1,5 +1,6 @@
 """
-Reconcile the disease labels of patients.csv against a SPARQL endpoint.
+Reconcile the clinical trial identifiers of patients.csv with the clinical
+trials of a knowledge graph, through its SPARQL endpoint.
 
 Run it from this directory:
 

@@ -71,11 +71,26 @@ def execute_fnml(
             execution.function_iri, config
         )
 
-    exec_res = []
-    for i in range(len(data)):
-        row_params = {k: v[i] for k, v in params.items()}
-        row_params.update(fixed_params)
-        exec_res.append(function(**row_params))
+    if registered.vectorized and len(data) == 0:
+        # As a function called per row, it is not called when there is no row.
+        exec_res = []
+    elif registered.vectorized:
+        # Called once for all the rows, with a list of values per argument.
+        exec_res = function(**{k: list(v) for k, v in params.items()}, **fixed_params)
+        if not isinstance(exec_res, (list, tuple)) or len(exec_res) != len(data):
+            raise TypeError(
+                f"The vectorized function '{execution.function_iri}' must return a "
+                f"list of {len(data)} result(s), one per row, but returned "
+                f"{type(exec_res).__name__}"
+                f"{f' of {len(exec_res)}' if isinstance(exec_res, (list, tuple)) else ''}."
+            )
+        exec_res = list(exec_res)
+    else:
+        exec_res = []
+        for i in range(len(data)):
+            row_params = {k: v[i] for k, v in params.items()}
+            row_params.update(fixed_params)
+            exec_res.append(function(**row_params))
 
     data[execution.execution_id] = exec_res
 

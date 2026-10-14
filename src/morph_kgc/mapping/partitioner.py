@@ -90,17 +90,34 @@ def _graph_invariant(rule: RMLRule) -> str:
     return ''
 
 
-def _literal_type(rule: RMLRule) -> str:
+def _dynamic_lang_datatypes(rules: list[RMLRule]) -> set[str]:
+    """
+    Return the properties (``rml:languageMap``, ``rml:datatypeMap``) whose
+    value some rule reads from the data or computes with a function.
+    """
+    return {
+        rule.object_.lang_datatype
+        for rule in rules
+        if rule.object_ is not None
+        and rule.object_.lang_datatype
+        and rule.object_.lang_datatype_map_type in (
+            RML_REFERENCE, RML_TEMPLATE, RML_EXECUTION)
+    }
+
+
+def _literal_type(rule: RMLRule, dynamic_lang_datatypes: set[str]) -> str:
     """
     Return the literal type discriminator used for object partitioning:
-      - if lang_datatype_map_type is REFERENCE or TEMPLATE → use lang_datatype
+      - if some rule's lang_datatype of the same kind is REFERENCE, TEMPLATE or
+        EXECUTION → use lang_datatype, since that rule may generate the
+        language or datatype of any other
       - otherwise → use lang_datatype_map_value
     """
     om = rule.object_
     if om is None:
         return ''
-    if om.lang_datatype_map_type in (RML_REFERENCE, RML_TEMPLATE):
-        return str(om.lang_datatype) if om.lang_datatype else ''
+    if om.lang_datatype in dynamic_lang_datatypes:
+        return str(om.lang_datatype)
     return str(om.lang_datatype_map_value) if om.lang_datatype_map_value else ''
 
 
@@ -128,14 +145,17 @@ class _PartitionRecord:
         'mapping_partition',
     )
 
-    def __init__(self, rule: RMLRule, all_rules: list[RMLRule], index: int):
+    def __init__(
+        self, rule: RMLRule, all_rules: list[RMLRule], index: int,
+        dynamic_lang_datatypes: set[str],
+    ):
         self.rule               = rule
         self.index              = index
         self.subject_invariant  = _subject_invariant(rule)
         self.predicate_invariant= _predicate_invariant(rule)
         self.object_invariant   = _object_invariant(rule, all_rules)
         self.graph_invariant    = _graph_invariant(rule)
-        self.literal_type       = _literal_type(rule)
+        self.literal_type       = _literal_type(rule, dynamic_lang_datatypes)
         self.mapping_partition  = ''
 
 
@@ -290,8 +310,9 @@ class MappingPartitioner:
         self.rml_mapping = rml_mapping
         self.config      = config
         # Build records once; invariants are computed here, not on demand.
+        dynamic_lang_datatypes = _dynamic_lang_datatypes(rml_mapping.rules)
         self._records: list[_PartitionRecord] = [
-            _PartitionRecord(rule, rml_mapping.rules, index)
+            _PartitionRecord(rule, rml_mapping.rules, index, dynamic_lang_datatypes)
             for index, rule in enumerate(rml_mapping.rules)
         ]
 

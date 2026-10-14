@@ -40,6 +40,8 @@ class RegisteredFunction:
     initializer:       Optional[Callable] = None
     # Keyword argument through which the shared context is passed.
     context_parameter: str = DEFAULT_CONTEXT_PARAMETER
+    # Called once with the values of every row, rather than once per row.
+    vectorized:        bool = False
 
     @property
     def is_stateful(self) -> bool:
@@ -81,6 +83,7 @@ class FunctionRegistry:
             parameters        = entry["parameters"],
             initializer       = entry.get("initializer"),
             context_parameter = entry.get("context_parameter", DEFAULT_CONTEXT_PARAMETER),
+            vectorized        = entry.get("vectorized", False),
         )
 
     @classmethod

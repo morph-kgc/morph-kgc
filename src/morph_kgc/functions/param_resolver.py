@@ -22,6 +22,15 @@ from ..utils import get_references_in_template
 from .model import FNMLExecution, InputBinding, ValueBinding
 
 
+class MergedAliases(tuple):
+    """
+    Accepted parameter IRIs whose values are all taken, under whichever of them
+    they are bound, rather than those of the first one bound only. For a
+    parameter meant to be bound several times, such as the attributes a value
+    is matched against.
+    """
+
+
 def _expand_template(data: pd.DataFrame, template: str) -> list:
     """Resolve an rml:template against *data* rows, return list of strings."""
     references = get_references_in_template(template)
@@ -71,10 +80,18 @@ def _bound_values(
     """
     Return the value bindings of the first declared parameter IRI that the
     mapping actually binds. A kwarg may declare several accepted IRIs (aliases),
-    in which case they are tried in declaration order.
+    in which case they are tried in declaration order; when declared as
+    :class:`MergedAliases`, the value bindings of all of them are returned.
     """
     if isinstance(param_iris, str):
         param_iris = (param_iris,)
+
+    if isinstance(param_iris, MergedAliases):
+        return [
+            value
+            for param_iri in param_iris
+            for value in param_lookup.get(param_iri, [])
+        ]
 
     for param_iri in param_iris:
         if param_iri in param_lookup:
@@ -93,7 +110,8 @@ def resolve_params(
     Build the concrete parameter dict expected by the function callable.
 
     decorator_params maps function_kwarg_name -> parameter_IRI, or to a tuple of
-    accepted parameter IRIs (sourced from the @bif / @udf decorator).
+    accepted parameter IRIs (sourced from the @bif / @udf decorator), or to a
+    MergedAliases of them.
 
     For each kwarg the resolver:
       1. Finds the value bindings of the matching parameter IRI.

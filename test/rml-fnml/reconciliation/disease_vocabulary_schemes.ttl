@@ -1,0 +1,23 @@
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+# Concept schemes and collections are labelled as concepts are, but are not
+# concepts. The concepts themselves are not typed, as in vocabularies that leave
+# rdf:type out.
+<https://data.boehringer.com/id/00036>
+    a skos:ConceptScheme ;
+    skos:prefLabel "Rare diseases" .
+
+<https://data.boehringer.com/id/00036/ataxias>
+    a skos:Collection ;
+    skos:prefLabel "Ataxias" ;
+    skos:member <https://data.boehringer.com/id/00036/10073037> .
+
+<https://data.boehringer.com/id/00036/hereditary-ataxias>
+    a skos:OrderedCollection ;
+    skos:prefLabel "Hereditary ataxias" ;
+    skos:memberList ( <https://data.boehringer.com/id/00036/10073037> ) .
+
+<https://data.boehringer.com/id/00036/10073037>
+    skos:prefLabel "Spastic ataxia-myoclonic epilepsy-neuropathy syndrome" ;
+    skos:altLabel "Early-onset spastic ataxia-myoclonic epilepsy-neuropathy syndrome" ;
+    skos:inScheme <https://data.boehringer.com/id/00036> .

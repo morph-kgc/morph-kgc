@@ -1,0 +1,42 @@
+@prefix rml: <http://w3id.org/rml/> .
+@prefix ex: <http://example.com/> .
+@prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
+
+@base <http://example.com/base/> .
+
+<TriplesMap1>
+    rml:logicalSource [
+        rml:source "test/rml-fnml/language_map/data.csv" ;
+        rml:referenceFormulation rml:CSV
+    ] ;
+    rml:subjectMap [
+        rml:template "http://example.com/{Id}"
+    ] ;
+    rml:predicateObjectMap [
+        rml:predicate ex:name ;
+        rml:objectMap [
+            rml:reference "Name" ;
+            rml:languageMap [ rml:functionExecution <#LowerCaseLanguage> ]
+        ]
+    ] ;
+    rml:predicateObjectMap [
+        rml:predicate ex:upperCaseName ;
+        rml:objectMap [
+            rml:functionExecution <#UpperCaseName> ;
+            rml:languageMap [ rml:functionExecution <#LowerCaseLanguage> ]
+        ]
+    ] .
+
+<#LowerCaseLanguage>
+    rml:function grel:toLowerCase ;
+    rml:input [
+        rml:parameter grel:valueParameter ;
+        rml:inputValueMap [ rml:reference "Lang" ]
+    ] .
+
+<#UpperCaseName>
+    rml:function grel:toUpperCase ;
+    rml:input [
+        rml:parameter grel:valueParameter ;
+        rml:inputValueMap [ rml:reference "Name" ]
+    ] .

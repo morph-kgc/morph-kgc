@@ -40,6 +40,28 @@ An initializer takes either no argument or a single
 configuration, the declared resources and the constant parameter values used by
 the mapping. Which of the two is used is decided from its signature.
 
+Vectorized functions
+--------------------
+With ``vectorized=True``, a function is called once for all the rows of a
+mapping rule instead of once per row: every argument the mapping binds arrives
+as a list holding its value for each row, an argument it does not bind keeps its
+default, and the function returns the list of its results, one per row. It is
+not called for a rule with no row. ``vectorized`` is therefore no name for a
+parameter. A function looking its values up in an on-disk table of its context (see
+:mod:`morph_kgc.functions.tables`) is vectorized, so that it runs one query for
+all the rows rather than one per row::
+
+    @stateful_udf(fun_id="http://example.com/lookup",
+                  initializer=load_table,
+                  vectorized=True,
+                  value="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam")
+    def lookup(value, context):
+        found = dict(context.select(
+            "SELECT code, name FROM {table} WHERE code IN (SELECT code FROM codes)",
+            codes=pandas.DataFrame({"code": value}, dtype=object),
+        ))
+        return [found.get(code) for code in value]
+
 A parameter may declare several IRIs (a tuple), in which case the mapping may
 bind the argument through any of them.
 """
@@ -60,8 +82,14 @@ def _register(
     parameters: dict,
     initializer: Callable | None,
     context_parameter: str,
+    vectorized: bool = False,
 ) -> None:
     """Add one function entry to *registry*, validating the declaration."""
+    if not isinstance(vectorized, bool):
+        raise TypeError(
+            f"Function '{fun_id}' gives 'vectorized' the value {vectorized!r}: it "
+            "must be True or False, and no parameter may be named 'vectorized'."
+        )
     if initializer is not None:
         if not callable(initializer):
             raise TypeError(
@@ -83,13 +111,14 @@ def _register(
         "parameters": parameters,
         "initializer": initializer,
         "context_parameter": context_parameter,
+        "vectorized": vectorized,
     }
 
 
 def make_decorator(registry: dict) -> Callable:
     """Build a stateless-function decorator that registers into *registry*."""
 
-    def decorator(fun_id, **params):
+    def decorator(fun_id, vectorized=False, **params):
         def wrapper(funct):
             _register(
                 registry,
@@ -98,6 +127,7 @@ def make_decorator(registry: dict) -> Callable:
                 parameters=params,
                 initializer=None,
                 context_parameter=DEFAULT_CONTEXT_PARAMETER,
+                vectorized=vectorized,
             )
             return funct
         return wrapper
@@ -112,6 +142,7 @@ def make_stateful_decorator(registry: dict) -> Callable:
         fun_id,
         initializer,
         context_parameter=DEFAULT_CONTEXT_PARAMETER,
+        vectorized=False,
         **params,
     ):
         def wrapper(funct):
@@ -122,6 +153,7 @@ def make_stateful_decorator(registry: dict) -> Callable:
                 parameters=params,
                 initializer=initializer,
                 context_parameter=context_parameter,
+                vectorized=vectorized,
             )
             return funct
         return wrapper

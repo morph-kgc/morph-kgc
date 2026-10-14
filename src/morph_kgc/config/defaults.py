@@ -47,6 +47,9 @@ DEFAULT_API_TOKEN: str = ""
 # Directory where the shared context of stateful functions is persisted.
 # Empty means a temporary directory created (and removed) for every run.
 DEFAULT_STATE_DIR: str = ""
+# Memory each process may use to build and read the on-disk tables of shared
+# contexts, past which DuckDB spills to the state directory.
+DEFAULT_STATE_MEMORY_LIMIT: str = "512MB"
 
 # ---------------------------------------------------------------------------
 # Logging

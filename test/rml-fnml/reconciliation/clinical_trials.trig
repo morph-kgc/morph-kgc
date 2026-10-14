@@ -1,0 +1,30 @@
+# The knowledge graph of https://github.com/morph-kgc/morph-kgc/discussions/339:
+# every entity is described in a named graph of its own. A drug, which no
+# clinical trial query returns, is described as well.
+
+@prefix schema: <https://schema.org/> .
+
+<urn:uuid:65136e0f-0d1e-49d7-b287-90b9816daad3> {
+    <https://data.com/id/1> a schema:MedicalStudy ;
+        schema:identifier "NCT07667218" .
+}
+
+<urn:uuid:f123c1f0-0346-46e9-993d-e731645c5eaa> {
+    <https://data.com/id/2> a schema:MedicalStudy ;
+        schema:identifier "NCT07667205" .
+}
+
+<urn:uuid:ddbb8df9-a870-43eb-aff5-74c90927360b> {
+    <https://data.com/id/3> a schema:MedicalStudy ;
+        schema:identifier "NCT07667192" .
+}
+
+<urn:uuid:330910b9-6c0e-4bfe-a2f7-a4b0734ea5ba> {
+    <https://data.com/id/4> a schema:MedicalStudy ;
+        schema:identifier "NCT07667179" .
+}
+
+<urn:uuid:0b7a8f8e-2c1d-4d0e-9b5a-6f3e1c2d4a59> {
+    <https://data.com/id/5> a schema:Drug ;
+        schema:name "Riluzole" .
+}

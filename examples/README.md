@@ -52,17 +52,17 @@ An example reading JSON from an HTTP API can be found in the [`http-api`](https:
 Header values written as `{ENV_VAR}`, or as the name of an environment variable, are read from the environment, so that tokens need not be written in the mapping and the `api_token` module is only needed for tokens that have to be asked for and refreshed.
 
 ### Reconciliation and Stateful Functions
-Reconciliation maps values of the input data to the concepts they identify in a controlled vocabulary. The directory [`reconciliation`](https://github.com/morph-kgc/morph-kgc/tree/main/examples/reconciliation) reconciles against a SKOS vocabulary fetched from a URL, and [`reconciliation-sparql`](https://github.com/morph-kgc/morph-kgc/tree/main/examples/reconciliation-sparql) against the concepts held by a SPARQL endpoint. Both are _stateful_ functions: the vocabulary is fetched (or the endpoint queried) once, before any triple is materialized, and the resulting index is shared by every mapping rule and worker process.
+Reconciliation maps values of the input data to the entities they identify in a controlled vocabulary or a knowledge graph. The directory [`reconciliation`](https://github.com/morph-kgc/morph-kgc/tree/main/examples/reconciliation) reconciles against a SKOS vocabulary fetched from a URL, and [`reconciliation-sparql`](https://github.com/morph-kgc/morph-kgc/tree/main/examples/reconciliation-sparql) against the entities of any knowledge graph behind a SPARQL endpoint, selected by a SPARQL query written in the mapping. Both are _stateful_ functions: the vocabulary is fetched (or the query sent) once, before any triple is materialized, and the resulting index is shared by every mapping rule and worker process.
 
-The accessed resource is declared in the configuration file with a `[RESOURCE:<name>]` section, so that URLs and credentials stay out of the mapping. Each directory contains:
-- The `data` file and the `vocabulary` the values are reconciled against.
+The SKOS vocabulary is declared in the configuration file with a `[RESOURCE:<name>]` section, so that its URL and credentials stay out of the mapping. The SPARQL endpoint is named by the mapping, and the configuration file only declares the credentials of an access-controlled one. Each directory contains:
+- The `data` file and the `vocabulary` or `knowledge graph` the values are reconciled against.
 - The `mapping` file.
-- The `configuration` file, with the resource to reconcile against.
+- The `configuration` file.
 - A `run.py` script and a `README` describing every option.
 
 The SPARQL example also ships a small `endpoint.py` answering the queries, so that it runs without a triplestore of its own.
 
-[`stateful_udfs.py`](https://github.com/morph-kgc/morph-kgc/blob/main/examples/stateful_udfs.py) shows how to give a user-defined function a shared context of its own with the `@stateful_udf` decorator.
+[`stateful_udfs.py`](https://github.com/morph-kgc/morph-kgc/blob/main/examples/stateful_udfs.py) shows how to give a user-defined function a shared context of its own with the `@stateful_udf` decorator, kept in memory or, when large, in an on-disk table queried by a vectorized function.
 
 
 ### Configuration Files

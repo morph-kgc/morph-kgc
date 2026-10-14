@@ -1,0 +1,60 @@
+# The mapping of https://github.com/morph-kgc/morph-kgc/discussions/339, as
+# written there, with the prefixes it leaves out, a logical source, and the
+# 'rr:termType rr:IRI' that makes the reconciled entities IRIs instead of
+# literals.
+
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@prefix fnml: <http://semweb.mmlab.be/ns/fnml#> .
+@prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
+@prefix morph-fn: <urn:morph:function:> .
+@prefix bi: <https://example.org/ontology/> .
+@prefix : <http://example.com/base/> .
+
+:TriplesMap a rr:TriplesMap;
+    rml:logicalSource [
+        rml:source "test/rml-fnml/reconciliation/clinical_trials.csv" ;
+        rml:referenceFormulation ql:CSV
+    ].
+
+:TriplesMap rr:subjectMap [
+    rr:template "urn:id:{patient_id}"
+].
+
+:TriplesMap rr:predicateObjectMap [
+    rr:predicate bi:participatesIn;
+    rr:objectMap [
+        fnml:execution <#clinical_trial_id_reconcile>;
+        rr:termType rr:IRI
+    ];
+].
+
+<#clinical_trial_id_reconcile>
+    fnml:function morph-fn:reconcileEntityOverSPARQL ;
+    fnml:input
+        [
+            fnml:parameter morph-fn:sparqlEndpointUrl ;
+            fnml:valueMap [
+                rr:constant "https://data.com/database/query"
+            ]
+        ],
+        [
+            fnml:parameter morph-fn:sparqlQuery ;
+            fnml:valueMap [
+                rr:constant """
+                    PREFIX schema: <https://schema.org/>
+                    SELECT ?entity_iri ?matching_value_1 {
+                        ?entity_iri a schema:MedicalStudy ;
+                            schema:identifier ?matching_value_1
+                    }
+                """
+            ]
+        ],
+        [
+            fnml:parameter grel:valueParam ;
+            fnml:valueMap [
+                rml:reference "clinical_trial_id"
+            ]
+        ]
+.

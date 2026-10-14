@@ -141,7 +141,12 @@ def _apply_fnml(
     termtype: str = RML_LITERAL,
     datatype: str = "",
 ) -> pd.DataFrame:
-    """Write serialised RDF term into data[position] for FNML execution maps."""
+    """
+    Write serialised RDF term into data[position] for FNML execution maps.
+
+    With no term type, as for a language map, the value is written bare, the
+    way _apply_template writes a reference- or template-valued one.
+    """
     execution = rml_mapping.fnml_executions.get(fnml_execution)
     if execution is None:
         raise KeyError(f'Function execution {fnml_execution!r} not found in the mapping.')
@@ -158,6 +163,8 @@ def _apply_fnml(
         data[position] = "<" + data[fnml_execution] + ">"
     elif t == RML_BLANK_NODE:
         data[position] = "_:" + data[fnml_execution]
+    elif not t:
+        data[position] = data[fnml_execution]
 
     return data
 

@@ -1,0 +1,72 @@
+@prefix rml: <http://w3id.org/rml/> .
+@prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
+@prefix morph-fr: <urn:morph:function:reconciliation:> .
+@prefix morph-fn: <urn:morph:function:> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix ex: <https://example.org/kg/> .
+
+@base <http://example.com/base/> .
+
+# Two executions reconciling against the same vocabulary, one matching values
+# exactly and the other whatever their case: the vocabulary is fetched once.
+<#PatientsMapping>
+    a rml:TriplesMap ;
+    rml:logicalSource [
+        rml:source "test/rml-fnml/reconciliation/patients_mixed_case.csv" ;
+        rml:referenceFormulation rml:CSV
+    ] ;
+    rml:subjectMap [
+        rml:template "https://example.org/kg/patient/{pid}"
+    ] ;
+    rml:predicateObjectMap [
+        rml:predicate ex:diseaseExact ;
+        rml:objectMap [
+            rml:functionExecution <#ExactReconciliationExecution> ;
+            rml:termType rml:IRI
+        ]
+    ] ;
+    rml:predicateObjectMap [
+        rml:predicate ex:diseaseCaseInsensitive ;
+        rml:objectMap [
+            rml:functionExecution <#CaseInsensitiveReconciliationExecution> ;
+            rml:termType rml:IRI
+        ]
+    ] .
+
+<#ExactReconciliationExecution>
+    rml:function morph-fr:reconcileVocabularyConcept ;
+    rml:input [
+        rml:parameter morph-fn:resource ;
+        rml:inputValue "disease_vocabulary"
+    ] ;
+    rml:input [
+        rml:parameter grel:valueParam ;
+        rml:inputValueMap [ rml:reference "disease_label" ]
+    ] ;
+    rml:input [
+        rml:parameter morph-fn:attributeIRI ;
+        rml:inputValue skos:prefLabel , skos:altLabel
+    ] ;
+    rml:input [
+        rml:parameter morph-fn:matching ;
+        rml:inputValue "EXACT"
+    ] .
+
+<#CaseInsensitiveReconciliationExecution>
+    rml:function morph-fr:reconcileVocabularyConcept ;
+    rml:input [
+        rml:parameter morph-fn:resource ;
+        rml:inputValue "disease_vocabulary"
+    ] ;
+    rml:input [
+        rml:parameter grel:valueParam ;
+        rml:inputValueMap [ rml:reference "disease_label" ]
+    ] ;
+    rml:input [
+        rml:parameter morph-fn:attributeIRI ;
+        rml:inputValue skos:prefLabel , skos:altLabel
+    ] ;
+    rml:input [
+        rml:parameter morph-fn:matching ;
+        rml:inputValue "CASE-INSENSITIVE"
+    ] .

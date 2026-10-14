@@ -1,0 +1,55 @@
+# The case-insensitive reconciliation of mapping_uppercase.ttl, written in the
+# legacy FNML vocabulary, whose constants are rr:constant value maps.
+
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@prefix fnml: <http://semweb.mmlab.be/ns/fnml#> .
+@prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
+@prefix morph-fr: <urn:morph:function:reconciliation:> .
+@prefix morph-fn: <urn:morph:function:> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix sio: <http://semanticscience.org/resource/> .
+
+@base <http://example.com/base/> .
+
+<#PatientsMapping>
+    a rr:TriplesMap ;
+    rml:logicalSource [
+        rml:source "test/rml-fnml/reconciliation/patients_uppercase.csv" ;
+        rml:referenceFormulation ql:CSV
+    ] ;
+    rr:subjectMap [
+        rr:template "https://example.org/kg/patient/{pid}"
+    ] ;
+    rr:predicateObjectMap [
+        rr:predicate sio:SIO_000255 ;
+        rr:objectMap [
+            fnml:execution <#DiseaseReconciliationExecution> ;
+            rr:termType rr:IRI
+        ]
+    ] .
+
+<#DiseaseReconciliationExecution>
+    fnml:function morph-fr:reconcileVocabularyConcept ;
+    fnml:input
+        [
+            fnml:parameter morph-fn:resource ;
+            fnml:valueMap [ rr:constant "disease_vocabulary" ]
+        ],
+        [
+            fnml:parameter grel:valueParam ;
+            fnml:valueMap [ rml:reference "disease_label" ]
+        ],
+        [
+            fnml:parameter morph-fn:attributeIRI ;
+            fnml:valueMap [ rr:constant skos:prefLabel ]
+        ],
+        [
+            fnml:parameter morph-fn:attributeIRI ;
+            fnml:valueMap [ rr:constant skos:altLabel ]
+        ],
+        [
+            fnml:parameter morph-fn:matching ;
+            fnml:valueMap [ rr:constant "CASE-INSENSITIVE" ]
+        ] .

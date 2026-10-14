@@ -1,5 +1,4 @@
-pid,disease_label
-pid_00001,early-onset spastic ataxia-myoclonic epilepsy-neuropathy syndrome
-pid_00002,Autosomal dominant cerebellar ataxia-deafness-narcolepsy syndrome
-pid_00003,ADCA-DN
-pid_00004,Common cold
+patient_id,clinical_trial_id
+p1,NCT07667218
+p2,NCT07667205
+p2,NCT07667192

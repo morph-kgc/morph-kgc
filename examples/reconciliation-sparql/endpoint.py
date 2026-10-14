@@ -1,16 +1,18 @@
 """
 A minimal SPARQL endpoint, so that this example runs without a triplestore.
 
-It answers SELECT queries over `diseases.ttl` with SPARQL results in JSON, which
-is what Morph-KGC asks a `SPARQL_ENDPOINT` resource for. `run.py` starts it on
-its own; start it by hand to run the example from the command line instead:
+It answers SELECT queries over `clinical_trials.trig` with SPARQL results in
+JSON, which is what Morph-KGC asks a SPARQL endpoint for. Like Fuseki or
+Oxigraph, its default graph does not include the named graphs. `run.py` starts
+it on its own; start it by hand to run the example from the command line
+instead:
 
     python endpoint.py
     morph-kgc config.ini
 
 Every request it serves is logged, which shows that the endpoint is queried once
 for the whole materialization. Nothing in this file is needed to reconcile
-against a real endpoint: only the `url` of the resource has to point at it.
+against a real endpoint: only the endpoint named by the mapping has to be it.
 """
 
 import os
@@ -27,10 +29,10 @@ URL = f'http://{HOST}:{PORT}{PATH}'
 
 SPARQL_RESULTS_JSON = 'application/sparql-results+json'
 
-DATASET = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'diseases.ttl')
+DATASET = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'clinical_trials.trig')
 # A dataset rather than a graph, so that queries over named graphs are answered.
 GRAPH = rdflib.Dataset()
-GRAPH.parse(DATASET)
+GRAPH.parse(DATASET, format='trig')
 
 
 class _SPARQLHandler(BaseHTTPRequestHandler):
@@ -50,11 +52,13 @@ class _SPARQLHandler(BaseHTTPRequestHandler):
         elif not query:
             self._respond(400, b'no query given', 'text/plain')
         else:
-            self._respond(
-                200,
-                GRAPH.query(query).serialize(format='json'),
-                SPARQL_RESULTS_JSON,
-            )
+            try:
+                results = GRAPH.query(query).serialize(format='json')
+            except Exception as exc:
+                # What is wrong with the query, as a real endpoint would say.
+                self._respond(400, str(exc).encode(), 'text/plain')
+            else:
+                self._respond(200, results, SPARQL_RESULTS_JSON)
 
     def _respond(self, status, body, content_type):
         self.send_response(status)

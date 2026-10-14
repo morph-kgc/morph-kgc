@@ -1,0 +1,42 @@
+@prefix rml: <http://w3id.org/rml/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix ex: <http://example.com/> .
+@prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
+
+@base <http://example.com/base/> .
+
+<NameMap> a rml:NonAssertedTriplesMap ;
+    rml:logicalSource [
+        rml:source "test/rml-fnml/language_map/data.csv" ;
+        rml:referenceFormulation rml:CSV
+    ] ;
+    rml:subjectMap [
+        rml:template "http://example.com/{Id}"
+    ] ;
+    rml:predicateObjectMap [
+        rml:predicate ex:name ;
+        rml:objectMap [
+            rml:reference "Name" ;
+            rml:languageMap [ rml:functionExecution <#LowerCaseLanguage> ]
+        ]
+    ] .
+
+<ReifierMap>
+    rml:logicalSource [
+        rml:source "test/rml-fnml/language_map/data.csv" ;
+        rml:referenceFormulation rml:CSV
+    ] ;
+    rml:subjectMap [
+        rml:template "http://example.com/statement/{Id}"
+    ] ;
+    rml:predicateObjectMap [
+        rml:predicate rdf:reifies ;
+        rml:objectMap [ rml:tripleTermMap <NameMap> ]
+    ] .
+
+<#LowerCaseLanguage>
+    rml:function grel:toLowerCase ;
+    rml:input [
+        rml:parameter grel:valueParameter ;
+        rml:inputValueMap [ rml:reference "Lang" ]
+    ] .

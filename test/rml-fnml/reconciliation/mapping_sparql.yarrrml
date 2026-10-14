@@ -1,0 +1,30 @@
+prefixes:
+    grel: http://users.ugent.be/~bjdmeest/function/grel.ttl#
+    morph-fn: "urn:morph:function:"
+    bi: https://example.org/ontology/
+mappings:
+    patients:
+        sources:
+            - access: test/rml-fnml/reconciliation/clinical_trials.csv
+              referenceFormulation: csv
+        subjects: urn:id:$(patient_id)
+        predicateobjects:
+            - p: bi:participatesIn
+              o:
+                function: morph-fn:reconcileEntityOverSPARQL
+                type: iri
+                parameters:
+                    - parameter: morph-fn:sparqlEndpointUrl
+                      value: https://data.com/database/query
+                    - parameter: morph-fn:sparqlQuery
+                      value: |
+                        PREFIX schema: <https://schema.org/>
+                        # The entities are described in named graphs.
+                        SELECT ?entity_iri ?matching_value_1 WHERE {
+                            GRAPH ?g {
+                                ?entity_iri a schema:MedicalStudy ;
+                                            schema:identifier ?matching_value_1 .
+                            }
+                        }
+                    - parameter: grel:valueParam
+                      value: $(clinical_trial_id)
