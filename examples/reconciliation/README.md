@@ -76,13 +76,13 @@ all.
 
 | Option | Meaning |
 | --- | --- |
-| `resource_type` | `SKOS_VOCABULARY` |
-| `url` | where the vocabulary is downloaded from. A local path is read from disk |
-| `iri` | the IRI identifying the vocabulary, when it differs from `url`. A mapping may name the resource by it |
-| `username`, `password` | HTTP Basic Authentication credentials, which are not accepted in `url` |
-| `format` | RDF serialization of the vocabulary (`turtle`, `xml`, `nt`, `nquads`, `trig`, `json-ld`, ...). Guessed from the response and the URL when omitted. A vocabulary serialized as quads is indexed across all its named graphs |
-| `attributes` | comma-separated attributes the value is matched against when the execution names none, as IRIs or as prefixed names (`skos:prefLabel`) with one of the prefixes `skos`, `rdf`, `rdfs`, `owl`, `xsd`, `dc`, `dcterms`/`dct`, `schema` (`https://schema.org/`) or `foaf`; an attribute in another namespace is written as a full IRI. Without it, every property whose value is a literal |
-| `timeout` | seconds to wait for the vocabulary (default `30`) |
+| `resource_type` | `SKOS_VOCABULARY`. |
+| `url` | where the vocabulary is downloaded from. A local path is read from disk. |
+| `iri` | the IRI identifying the vocabulary, when it differs from `url`. A mapping may name the resource by it. |
+| `username`, `password` | HTTP Basic Authentication credentials. |
+| `format` | RDF serialization of the vocabulary (`turtle`, `xml`, `nt`, `nquads`, `trig`, `json-ld`, ...). Guessed from the response and the URL when omitted. A vocabulary serialized as quads is indexed across all its named graphs. |
+| `attributes` | comma-separated attributes the value is matched against when the execution names none, as IRIs or as prefixed names (`skos:prefLabel`) with one of the prefixes `skos`, `rdf`, `rdfs`, `owl`, `xsd`, `dc`, `dcterms`/`dct`, `schema` (`https://schema.org/`) or `foaf`; an attribute in another namespace is written as a full IRI. Without it, every property whose value is a literal. |
+| `timeout` | seconds to wait for the vocabulary (default `30`). |
 
 ## Function parameters
 
