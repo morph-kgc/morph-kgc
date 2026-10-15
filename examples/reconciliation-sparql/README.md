@@ -158,7 +158,7 @@ they participate in, using the IRIs of the knowledge graph:
 
 ## YARRRML
 
-The same reconciliation in YARRRML, with the query as a block scalar:
+The same reconciliation in YARRRML:
 
 ```yaml
 prefixes:
@@ -194,6 +194,5 @@ mappings:
 
 ## Writing your own stateful function
 
-Any user-defined function can be given a shared context in the same way, kept
-in memory or, when large, in an on-disk table; see
+Any user-defined function can be given a shared context in the same way; see
 [`../stateful_udfs.py`](../stateful_udfs.py).
