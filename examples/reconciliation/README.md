@@ -65,10 +65,8 @@ password={VOCABULARY_PASSWORD}
     ] .
 ```
 
-An object map using the function needs `rml:termType rml:IRI`
-(`rr:termType rr:IRI`, `type: iri` in YARRRML): one whose value is the result of
-a function generates literals by default (RML-FNML, section 5.1), while a
-subject map generates IRIs.
+An object map using the function needs `rml:termType rml:IRI`: one whose value is the result of
+a function generates literals by default.
 
 `{ENV_VAR}` placeholders in `iri`, `url`, `username` and `password` are replaced
 with environment variables, so credentials need not be written to the file at
