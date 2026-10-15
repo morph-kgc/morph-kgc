@@ -88,10 +88,10 @@ all.
 
 | Parameter | Meaning |
 | --- | --- |
-| `grel:valueParam` | the value to reconcile |
-| `morph-fn:resource` | name of the `[RESOURCE:<name>]` section to reconcile against. May be omitted when a single vocabulary is declared. `morph-fn:vocabularyIRI` is an accepted spelling, and also accepts the IRI identifying the vocabulary |
-| `morph-fn:attributeIRI` | the vocabulary property (or properties) the value is matched against, e.g. `skos:prefLabel`. Bind it several times to match against several: they are matched as a union, since RDF puts no order on the values of a property. `grel:attributeIRI` is accepted as well, and both may be bound together. When omitted, the `attributes` option of the resource applies |
-| `morph-fn:matching` | how the value is matched: `EXACT` (default) or `CASE-INSENSITIVE`, which also normalizes Unicode (NFKC) and collapses whitespace. A constant, since the vocabulary is indexed before any data is read. Executions matching the same vocabulary differently share a single download of it |
+| `grel:valueParam` | the value to reconcile. |
+| `morph-fn:resource` | name of the `[RESOURCE:<name>]` section to reconcile against. May be omitted when a single vocabulary is declared. `morph-fn:vocabularyIRI` is an accepted spelling, and also accepts the IRI identifying the vocabulary. |
+| `morph-fn:attributeIRI` | the vocabulary property (or properties) the value is matched against, e.g. `skos:prefLabel`. Bind it several times to match against several: they are matched as a union, since RDF puts no order on the values of a property. `grel:attributeIRI` is accepted as well, and both may be bound together. When omitted, the `attributes` option of the resource applies. |
+| `morph-fn:matching` | how the value is matched: `EXACT` (default) or `CASE-INSENSITIVE`, which also normalizes Unicode (NFKC) and collapses whitespace. A constant, since the vocabulary is indexed before any data is read. Executions matching the same vocabulary differently share a single download of it. |
 
 A value matching no concept yields no triple. A value matching several concepts
 yields one triple per matched concept. Resources typed as concept schemes or
