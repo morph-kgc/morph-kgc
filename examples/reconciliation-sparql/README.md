@@ -3,20 +3,9 @@
 Reconciliation maps a value of the input data to the entity it identifies in an
 existing knowledge graph, so that the generated graph reuses its IRIs instead of
 minting new ones. `urn:morph:function:reconcileEntityOverSPARQL` reconciles against the entities of any knowledge graph behind a SPARQL
-endpoint, selected by a SPARQL query written in the mapping.
-[`../reconciliation`](../reconciliation) reconciles against a SKOS vocabulary
-fetched from a URL instead.
-
-It is a **stateful** function: the query is sent **once**, before any triple is
+endpoint, selected by a SPARQL query written in the mapping. It is a **stateful** function: the query is sent **once**, before any triple is
 materialized, and the resulting index of entities is shared by every mapping
-rule and every worker process. No query is sent while generating triples. As
-for a SKOS vocabulary, the answer is streamed into an index kept on disk, so
-the memory an answer of millions of entities takes is set by the
-`state_memory_limit` of the configuration file, not by the answer (see
-[`../reconciliation`](../reconciliation)). An answer in JSON is streamed when it
-gives its head first, as most stores write it; one giving its results first, or
-holding a term the streaming parser rejects, is read whole into memory, with a
-warning.
+rule and every worker process. No query is sent while generating triples.
 
 Run this example with:
 
