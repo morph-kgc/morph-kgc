@@ -80,7 +80,7 @@ Since each reconciliation brings its own query, a mapping reconciles as many
 kinds of entities, against as many endpoints, as it needs: one execution per
 query, and the same query sent to the same endpoint by several executions is
 sent once. When the reconciled entity is the object of a triple, give its object
-map `rml:termType rml:IRI` (`type: iri` in YARRRML), since an object map whose
+map `rml:termType rml:IRI`, since an object map whose
 value is the result of a function generates literals by default.
 
 ### Named graphs
