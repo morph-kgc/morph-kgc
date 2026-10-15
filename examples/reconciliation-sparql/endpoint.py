@@ -2,8 +2,7 @@
 A minimal SPARQL endpoint, so that this example runs without a triplestore.
 
 It answers SELECT queries over `clinical_trials.trig` with SPARQL results in
-JSON, which is what Morph-KGC asks a SPARQL endpoint for. Like Fuseki or
-Oxigraph, its default graph does not include the named graphs. `run.py` starts
+JSON, which is what Morph-KGC asks a SPARQL endpoint for. `run.py` starts
 it on its own; start it by hand to run the example from the command line
 instead:
 
