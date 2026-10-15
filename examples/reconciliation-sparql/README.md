@@ -80,7 +80,7 @@ Since each reconciliation brings its own query, a mapping reconciles as many
 kinds of entities, against as many endpoints, as it needs: one execution per
 query, and the same query sent to the same endpoint by several executions is
 sent once. When the reconciled entity is the object of a triple, give its object
-map `rml:termType rml:IRI` (`type: iri` in YARRRML), since an object map whose
+map `rml:termType rml:IRI`, since an object map whose
 value is the result of a function generates literals by default.
 
 ### Named graphs
@@ -97,8 +97,7 @@ store reads both the default graph and the named graphs:
 ### Writing the query in a mapping
 
 In Turtle, write the query as a `"""..."""` literal and double every backslash
-of the query: `regex(?id, "^NCT\\d+$")` is written `regex(?id, "^NCT\\\\d+$")`.
-In YARRRML, write it as a `|` block scalar, which keeps it exactly as written. Some stores cap the
+of the query. In YARRRML, write it as a `|` block scalar, which keeps it exactly as written. Some stores cap the
 number of results they return (e.g. `ResultSetMaxRows` in Virtuoso); values of
 entities left out of the answer are not reconciled.
 
@@ -123,23 +122,20 @@ all.
 
 | Option | Meaning |
 | --- | --- |
-| `resource_type` | `SPARQL_ENDPOINT` |
-| `url` | where the endpoint is queried |
-| `iri` | the endpoint the mapping names, when it is not `url`. A mapping naming a production endpoint then runs against a local or staging one, declared as `url` |
-| `username`, `password` | HTTP Basic Authentication credentials |
-| `method` | `GET` or `POST`. By default, `GET`, or `POST` for a query too long for a URL |
-| `timeout` | seconds to wait for the answer to the query (default `300`) |
-
-Credentials written in the endpoint URL of the mapping (`https://user:password@...`)
-are rejected, so that they never end up in a mapping.
+| `resource_type` | `SPARQL_ENDPOINT`. |
+| `url` | where the endpoint is queried. |
+| `iri` | the endpoint the mapping names, when it is not `url`. A mapping naming a production endpoint then runs against a local or staging one, declared as `url`. |
+| `username`, `password` | HTTP Basic Authentication credentials. |
+| `method` | `GET` or `POST`. By default, `GET`, or `POST` for a query too long for a URL. |
+| `timeout` | seconds to wait for the answer to the query (default `300`). |
 
 ## Function parameters
 
 | Parameter | Meaning |
 | --- | --- |
-| `grel:valueParam` | the value to reconcile |
-| `morph-fn:sparqlEndpointUrl` | the URL of the SPARQL endpoint the query is sent to |
-| `morph-fn:sparqlQuery` | the SELECT query returning `?entity_iri` and `?matching_value_1` |
+| `grel:valueParam` | the value to reconcile. |
+| `morph-fn:sparqlEndpointUrl` | the URL of the SPARQL endpoint the query is sent to. |
+| `morph-fn:sparqlQuery` | the SELECT query returning `?entity_iri` and `?matching_value_1`. |
 
 The endpoint and the query are constants of the mapping, since they are sent
 before any data is read. A value matching no entity yields no triple. A value
@@ -158,7 +154,7 @@ they participate in, using the IRIs of the knowledge graph:
 
 ## YARRRML
 
-The same reconciliation in YARRRML, with the query as a block scalar:
+The same reconciliation in YARRRML:
 
 ```yaml
 prefixes:
@@ -194,6 +190,5 @@ mappings:
 
 ## Writing your own stateful function
 
-Any user-defined function can be given a shared context in the same way, kept
-in memory or, when large, in an on-disk table; see
+Any user-defined function can be given a shared context in the same way; see
 [`../stateful_udfs.py`](../stateful_udfs.py).
