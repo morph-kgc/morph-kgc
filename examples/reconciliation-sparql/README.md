@@ -129,9 +129,6 @@ all.
 | `method` | `GET` or `POST`. By default, `GET`, or `POST` for a query too long for a URL. |
 | `timeout` | seconds to wait for the answer to the query (default `300`). |
 
-Credentials written in the endpoint URL of the mapping (`https://user:password@...`)
-are rejected, so that they never end up in a mapping.
-
 ## Function parameters
 
 | Parameter | Meaning |
