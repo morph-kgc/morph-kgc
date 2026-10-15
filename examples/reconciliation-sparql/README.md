@@ -2,9 +2,7 @@
 
 Reconciliation maps a value of the input data to the entity it identifies in an
 existing knowledge graph, so that the generated graph reuses its IRIs instead of
-minting new ones. `urn:morph:function:reconcileEntityOverSPARQL`, requested in
-[discussion #339](https://github.com/morph-kgc/morph-kgc/discussions/339),
-reconciles against the entities of any knowledge graph behind a SPARQL
+minting new ones. `urn:morph:function:reconcileEntityOverSPARQL` reconciles against the entities of any knowledge graph behind a SPARQL
 endpoint, selected by a SPARQL query written in the mapping.
 [`../reconciliation`](../reconciliation) reconciles against a SKOS vocabulary
 fetched from a URL instead.
