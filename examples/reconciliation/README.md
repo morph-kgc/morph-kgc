@@ -15,23 +15,9 @@ shared by every mapping rule and every worker process. No repeated API call is
 made while generating triples.
 
 The index is kept **on disk**, as a Parquet file of the state directory of the
-run, read through DuckDB. The vocabulary (or the answer of the endpoint) is
-downloaded and parsed as a stream into it, and each worker process looks up all
-the values of a mapping rule at once, reading the parts of the file a few values
-need, or the file once for many. Memory therefore does not grow with the size of
-the vocabulary: DuckDB uses at most the `state_memory_limit` of the
-configuration file (`512MB` by default) and spills to the state directory past
-it, and a process needs about 150 to 250 MB more of its own. Keep the state
-directory on disk: a system temporary directory in memory (tmpfs) holds the
-vocabulary and the index in RAM.
-
-A few vocabularies are still read whole into memory, with a warning: a
-serialization the streaming parser cannot read (TriX, JSON-LD with a remote
-`@context`, a syntax only rdflib tolerates) is parsed with rdflib instead, which
-also reads `"01"^^xsd:integer` as `1` where the streaming parser keeps `01`, and
-a JSON-LD document whose top level is an object (`@context` and `@graph`) is
-read whole before indexing. N-Triples, Turtle, RDF/XML, N-Quads and TriG are
-always streamed.
+run. Memory used does not grow with the size of
+the vocabulary: the system uses at most the `state_memory_limit` of the
+configuration file (`512MB` by default) and spills to the state directory.
 
 This example reconciles against a SKOS vocabulary. Run it with:
 
