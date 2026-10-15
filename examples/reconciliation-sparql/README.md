@@ -97,8 +97,7 @@ store reads both the default graph and the named graphs:
 ### Writing the query in a mapping
 
 In Turtle, write the query as a `"""..."""` literal and double every backslash
-of the query: `regex(?id, "^NCT\\d+$")` is written `regex(?id, "^NCT\\\\d+$")`.
-In YARRRML, write it as a `|` block scalar, which keeps it exactly as written. Some stores cap the
+of the query. In YARRRML, write it as a `|` block scalar, which keeps it exactly as written. Some stores cap the
 number of results they return (e.g. `ResultSetMaxRows` in Virtuoso); values of
 entities left out of the answer are not reconciled.
 
