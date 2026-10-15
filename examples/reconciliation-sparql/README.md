@@ -122,12 +122,12 @@ all.
 
 | Option | Meaning |
 | --- | --- |
-| `resource_type` | `SPARQL_ENDPOINT` |
-| `url` | where the endpoint is queried |
-| `iri` | the endpoint the mapping names, when it is not `url`. A mapping naming a production endpoint then runs against a local or staging one, declared as `url` |
-| `username`, `password` | HTTP Basic Authentication credentials |
-| `method` | `GET` or `POST`. By default, `GET`, or `POST` for a query too long for a URL |
-| `timeout` | seconds to wait for the answer to the query (default `300`) |
+| `resource_type` | `SPARQL_ENDPOINT`. |
+| `url` | where the endpoint is queried. |
+| `iri` | the endpoint the mapping names, when it is not `url`. A mapping naming a production endpoint then runs against a local or staging one, declared as `url`. |
+| `username`, `password` | HTTP Basic Authentication credentials. |
+| `method` | `GET` or `POST`. By default, `GET`, or `POST` for a query too long for a URL. |
+| `timeout` | seconds to wait for the answer to the query (default `300`). |
 
 Credentials written in the endpoint URL of the mapping (`https://user:password@...`)
 are rejected, so that they never end up in a mapping.
@@ -136,9 +136,9 @@ are rejected, so that they never end up in a mapping.
 
 | Parameter | Meaning |
 | --- | --- |
-| `grel:valueParam` | the value to reconcile |
-| `morph-fn:sparqlEndpointUrl` | the URL of the SPARQL endpoint the query is sent to |
-| `morph-fn:sparqlQuery` | the SELECT query returning `?entity_iri` and `?matching_value_1` |
+| `grel:valueParam` | the value to reconcile. |
+| `morph-fn:sparqlEndpointUrl` | the URL of the SPARQL endpoint the query is sent to. |
+| `morph-fn:sparqlQuery` | the SELECT query returning `?entity_iri` and `?matching_value_1`. |
 
 The endpoint and the query are constants of the mapping, since they are sent
 before any data is read. A value matching no entity yields no triple. A value
