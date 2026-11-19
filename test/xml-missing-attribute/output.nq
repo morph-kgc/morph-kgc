@@ -1,0 +1,6 @@
+<http://example.com/film/1> <http://example.com/lang> "de" .
+<http://example.com/film/1> <http://example.com/director> "Fritz Lang" .
+<http://example.com/film/1> <http://example.com/title> "Metropolis" .
+<http://example.com/film/2> <http://example.com/title> "M" .
+<http://example.com/film/3> <http://example.com/lang> "ja" .
+<http://example.com/film/3> <http://example.com/director> "Akira Kurosawa" .

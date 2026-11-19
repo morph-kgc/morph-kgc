@@ -229,7 +229,9 @@ def _parse_xml_file(xml_file, iterator, references):
                         data_value.append(r.text)
             else:
                 attribute = attribute[1:]  # do not use the starting @ from the attribute
-                data_value.append(e.attrib[attribute])
+                # A record without the attribute has no value for it, as one
+                # whose element lacks it (r.get above): no triple for the rule.
+                data_value.append(e.get(attribute))
             data_record.append(data_value)
         data_records.append(data_record)
 

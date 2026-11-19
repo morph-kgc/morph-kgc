@@ -1,0 +1,6 @@
+<films>
+  <film id="1" lang="de"><title>Metropolis</title><director name="Fritz Lang"/></film>
+  <film id="2"><title>M</title><director/></film>
+  <film id="3" lang="ja"><title/><director name="Akira Kurosawa"/></film>
+  <film lang="en"><title>Untitled</title></film>
+</films>

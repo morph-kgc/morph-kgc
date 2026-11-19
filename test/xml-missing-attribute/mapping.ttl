@@ -1,0 +1,15 @@
+@prefix rml: <http://w3id.org/rml/> .
+@prefix ex: <http://example.com/> .
+
+@base <http://example.com/base/> .
+
+<#FilmMapping> a rml:TriplesMap ;
+    rml:logicalSource [
+        rml:source "test/xml-missing-attribute/films.xml" ;
+        rml:referenceFormulation rml:XPath ;
+        rml:iterator "/films/film"
+    ] ;
+    rml:subjectMap [ rml:template "http://example.com/film/{@id}" ] ;
+    rml:predicateObjectMap [ rml:predicate ex:lang ; rml:objectMap [ rml:reference "@lang" ] ] ;
+    rml:predicateObjectMap [ rml:predicate ex:director ; rml:objectMap [ rml:reference "director/@name" ] ] ;
+    rml:predicateObjectMap [ rml:predicate ex:title ; rml:objectMap [ rml:reference "title" ] ] .
