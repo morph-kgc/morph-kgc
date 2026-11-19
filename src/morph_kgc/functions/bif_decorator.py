@@ -64,6 +64,13 @@ all the rows rather than one per row::
 
 A parameter may declare several IRIs (a tuple), in which case the mapping may
 bind the argument through any of them.
+
+Outcomes
+--------
+A stateful function declaring ``outcomes_parameter='outcomes'`` is also handed,
+under that keyword, an :class:`~morph_kgc.functions.outcomes.Outcomes` on every
+call, through which it counts the rows it handles with each outcome and records
+the values worth reporting, which the run summarizes and reports once it ends.
 """
 
 import inspect
@@ -83,6 +90,7 @@ def _register(
     initializer: Callable | None,
     context_parameter: str,
     vectorized: bool = False,
+    outcomes_parameter: str | None = None,
 ) -> None:
     """Add one function entry to *registry*, validating the declaration."""
     if not isinstance(vectorized, bool):
@@ -105,6 +113,11 @@ def _register(
                 f"Function '{fun_id}' declares '{context_parameter}' both as a "
                 "mapping parameter and as its context argument."
             )
+        if outcomes_parameter is not None and outcomes_parameter in (*parameters, context_parameter):
+            raise ValueError(
+                f"Function '{fun_id}' declares '{outcomes_parameter}' as its outcomes "
+                "argument and as a mapping parameter or its context argument."
+            )
 
     registry[fun_id] = {
         "function": function,
@@ -112,6 +125,7 @@ def _register(
         "initializer": initializer,
         "context_parameter": context_parameter,
         "vectorized": vectorized,
+        "outcomes_parameter": outcomes_parameter,
     }
 
 
@@ -143,6 +157,7 @@ def make_stateful_decorator(registry: dict) -> Callable:
         initializer,
         context_parameter=DEFAULT_CONTEXT_PARAMETER,
         vectorized=False,
+        outcomes_parameter=None,
         **params,
     ):
         def wrapper(funct):
@@ -154,6 +169,7 @@ def make_stateful_decorator(registry: dict) -> Callable:
                 initializer=initializer,
                 context_parameter=context_parameter,
                 vectorized=vectorized,
+                outcomes_parameter=outcomes_parameter,
             )
             return funct
         return wrapper

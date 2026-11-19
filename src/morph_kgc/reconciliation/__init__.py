@@ -14,4 +14,4 @@ The functions themselves are declared in ``functions/reconciliation.py``, next
 to the other functions the engine can execute from a mapping.
 """
 
-from .index import ConceptIndex, ReconciliationContext
+from .index import ConceptIndex, QueryContext, ReconciliationContext

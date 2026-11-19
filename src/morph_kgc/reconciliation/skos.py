@@ -361,8 +361,8 @@ def build_index(
     matching. The vocabulary is downloaded and read once for all of them.
 
     *matched_attributes* holds, for each execution of the function reconciling
-    against the resource, how it matches values (``EXACT`` or
-    ``CASE-INSENSITIVE``) and the attributes it matches against: the ones it
+    against the resource, how it matches values (``EXACT``,
+    ``LOWERCASE`` or ``CASE-INSENSITIVE``) and the attributes it matches against: the ones it
     names, ``()`` when it names none, and ``None`` when it reads them from the
     data. An execution naming none matches against the 'attributes' option of
     the resource or, without it, against every property of the vocabulary whose

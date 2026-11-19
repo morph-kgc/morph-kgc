@@ -44,10 +44,23 @@ in the configuration file, not in the mapping::
             rml:inputValue "CASE-INSENSITIVE"
         ] .
 
-``morph-fn:matching`` is ``EXACT`` (the default) or ``CASE-INSENSITIVE``, which
-also normalizes Unicode (NFKC) and collapses whitespace. It is a constant: the
-vocabulary is indexed before any data is read. Executions matching the same
-vocabulary differently share a single download of it.
+``morph-fn:matching`` says how values are compared:
+
+- ``EXACT`` (the default): as they are.
+- ``LOWERCASE``: lower-cased by ``str.lower()``, and nothing else: no
+  whitespace is trimmed or collapsed, and no Unicode normalization is applied,
+  so that ``Café `` matches ``café `` but not ``Café`` or ``cafe``, and
+  ``Straße`` does not match ``strasse``.
+- ``CASE-INSENSITIVE``: normalized (NFKC), with their whitespace collapsed, and
+  case-folded, so that ``Straße`` matches ``strasse``.
+
+It is a constant: what values are matched against is indexed before any data
+is read. Executions matching the same vocabulary differently share a single
+download of it. Both functions match values in the same ways, normalizing them
+themselves, both those they are matched against and those they reconcile: the
+same data, mapping and way of matching values give the same triples whether a
+vocabulary is read from a file or queried from a SPARQL endpoint holding it,
+the query returning its labels as they are.
 
 ``reconcileEntityOverSPARQL`` reconciles against the entities of any knowledge
 graph a SPARQL endpoint answers for. The mapping gives the endpoint and the
@@ -80,15 +93,49 @@ Its configuration file only declares the endpoints that need credentials or
 other access options, in a ``[RESOURCE:<name>]`` section whose ``url`` is the
 endpoint.
 
-A function returns the IRI of the matched entity, ``None`` when the value
-matches none (the triple is then not generated), and the list of matched IRIs
-when a value is ambiguous. An object map using a function needs
+An entity only several values identify together, such as a code within a
+coding system, is matched by all of them: the query projects
+``?matching_value_2`` and so on, and the execution binds as many values,
+matched to the variables by position: ``grel:valueParam1`` (or
+``grel:valueParam``), ``grel:valueParam2``... The values are compared one by
+one, never joined into a string.
+
+A function returns the IRI of the matched entity, and ``None`` when the value
+matches none (the triple is then not generated). A value matching several
+entities is ambiguous, and ``morph-fn:ambiguity`` says what it is reconciled to:
+
+- ``ALL`` (the default): the list of the matched IRIs, which generates one
+  triple per entity.
+- ``NONE``: ``None``, so that no triple is generated for it.
+- ``FAIL``: nothing, as the run is aborted.
+
+Like ``morph-fn:matching``, it is a constant, which a function checks when it
+is initialized, before it downloads any vocabulary or sends any query. The
+``ambiguity`` option of the
+``[RESOURCE:<name>]`` section of a vocabulary or an endpoint sets the policy of
+the executions that do not choose one::
+
+    [RESOURCE:disease_vocabulary]
+    resource_type=SKOS_VOCABULARY
+    url=https://example.org/vocabulary/disease
+    ambiguity=NONE
+
+Both functions record each distinct value they match to no entity
+(``NO_MATCH``) or to several (``MULTIPLE_MATCH``, with the IRIs of the entities
+it matches), whatever the policy, in the report the 'reconciliation_report'
+option names, and not in the log, which only gets a summary of each execution:
+how many values it matched to one entity, to none and to several (see
+:mod:`morph_kgc.functions.outcomes`). With ``FAIL``, the first ambiguous value
+is also the message of the error aborting the run.
+
+An object map using a function needs
 ``rml:termType rml:IRI`` (``rr:termType rr:IRI``, ``type: iri`` in YARRRML):
 one whose value is the result of a function generates literals by default
 (RML-FNML, section 5.1), while a subject map generates IRIs.
 """
 
 import logging
+from hashlib import sha256
 from urllib.parse import urlsplit
 
 from ..config.model import (
@@ -101,6 +148,7 @@ from ..constants import (
     GREL_VALUE_PARAM,
     GREL_VALUE_PARAMETER,
     MORPH_ATTRIBUTE_PARAMETERS,
+    MORPH_FN_AMBIGUITY,
     MORPH_FN_MATCHING,
     MORPH_FN_SPARQL_ENDPOINT_URL,
     MORPH_FN_SPARQL_QUERY,
@@ -110,48 +158,193 @@ from ..constants import (
 )
 from ..reconciliation import skos, sparql
 from ..reconciliation.index import (
+    AMBIGUITY_ALL,
+    AMBIGUITY_FAIL,
+    AMBIGUITY_NONE,
+    AMBIGUITY_OPTION,
     EXACT_MATCHING,
+    VALID_AMBIGUITIES,
     VALID_MATCHINGS,
+    QueryContext,
     ReconciliationContext,
+    normalize,
+    parse_ambiguity,
     parse_matching,
 )
 from .bif_decorator import stateful_bif
-from .param_resolver import MergedAliases
+from .param_resolver import MergedAliases, NumberedParameter
 
 LOGGER = logging.getLogger(LOGGING_NAMESPACE)
 
+# The values to reconcile, matched by position to the values an entity is
+# matched by: grel:valueParam1 (or grel:valueParam), grel:valueParam2... under
+# either GREL spelling.
+VALUE_PARAMETERS = NumberedParameter((GREL_VALUE_PARAM, GREL_VALUE_PARAMETER))
 
-def _result(value, matches):
-    """The IRI matched by *value*, the list of them when ambiguous, or None."""
+# How a reconciled value is reported: one matching no entity, and one matching
+# several.
+NO_MATCH = "NO_MATCH"
+MULTIPLE_MATCH = "MULTIPLE_MATCH"
+
+
+
+def _result(target, ambiguity, value, matches):
+    """
+    What *value* is reconciled to, given the IRIs of the entities of *target*
+    it *matches*: the one it matches, None when it matches none, and, when it
+    matches several, as the *ambiguity* policy says: all of them, None, or an
+    error aborting the run. What it is matched to is recorded in the
+    reconciliation report (see :func:`_report`), not logged.
+    """
     if not matches:
-        LOGGER.debug(f"Value '{value}' was reconciled against no entity.")
+        return None
+    if len(matches) == 1:
+        return matches[0]
+    if ambiguity == AMBIGUITY_FAIL:
+        raise ValueError(
+            f"{MULTIPLE_MATCH}: value {value!r} matches {len(matches)} entities of "
+            f"{target}: {', '.join(f'<{match}>' for match in matches)}. The run is "
+            f"aborted, as the ambiguity policy is {ambiguity}. To reconcile it to "
+            f"all the entities it matches, or to none, set the policy to "
+            f"{AMBIGUITY_ALL} or {AMBIGUITY_NONE}: '{MORPH_FN_AMBIGUITY}' in the "
+            f"execution, or else the '{AMBIGUITY_OPTION}' option of the resource."
+        )
+    return matches if ambiguity == AMBIGUITY_ALL else None
+
+
+def _optional_constant(initialization, execution, parameter_iri, reason):
+    """
+    The constant *execution* binds to *parameter_iri*, None when it binds none.
+    It may bind it at most once, to a constant, for *reason*.
+    """
+    values = execution.constants.get(parameter_iri, [])
+    if len(values) > 1 or parameter_iri in execution.bound_to_data:
+        raise ValueError(
+            f"Execution '{execution.execution_id}' of function "
+            f"'{initialization.function_iri}' must bind '{parameter_iri}' at "
+            f"most once, to a constant: {reason}"
+        )
+    return values[0] if values else None
+
+
+def _invalid_constant(initialization, execution, parameter_iri, value, valid):
+    """The error of *execution* binding *parameter_iri* to an invalid *value*."""
+    return ValueError(
+        f"Execution '{execution.execution_id}' of function "
+        f"'{initialization.function_iri}' binds '{parameter_iri}' to "
+        f"'{value}', which is not valid. Must be one of: {', '.join(sorted(valid))}."
+    )
+
+
+def _ambiguity(initialization, execution) -> str | None:
+    """
+    The policy *execution* chooses for ambiguous values: the constant it binds,
+    None when it binds none, and the resource's then applies.
+    """
+    value = _optional_constant(
+        initialization, execution, MORPH_FN_AMBIGUITY,
+        "what an ambiguous value is reconciled to is checked before any data "
+        "is read, so it cannot depend on the data.",
+    )
+    if value is None:
         return None
 
-    return matches[0] if len(matches) == 1 else matches
+    ambiguity = parse_ambiguity(value)
+    if ambiguity is None:
+        raise _invalid_constant(
+            initialization, execution, MORPH_FN_AMBIGUITY, value, VALID_AMBIGUITIES,
+        )
+    return ambiguity
+
+
+def _resource_ambiguity(initialization, resource) -> str:
+    """
+    The policy of *resource* for ambiguous values: its 'ambiguity' option, ALL
+    when it declares none.
+    """
+    value = resource.get(AMBIGUITY_OPTION)
+    if not value:
+        return AMBIGUITY_ALL
+
+    ambiguity = parse_ambiguity(value)
+    if ambiguity is None:
+        raise ValueError(
+            f"Option '{AMBIGUITY_OPTION}' of resource '{resource.name}', which "
+            f"function '{initialization.function_iri}' reconciles against, is "
+            f"'{value}', which is not valid. Must be one of: "
+            f"{', '.join(sorted(VALID_AMBIGUITIES))}."
+        )
+    return ambiguity
+
+
+def _value_count(initialization, execution) -> int:
+    """
+    The number of values *execution* reconciles, which it binds, by position,
+    to the value parameters: each exactly once, numbered from 1 without gaps.
+    """
+    positions = {
+        position: [
+            parameter_iri
+            for parameter_iri in parameter_iris
+            for _ in range(execution.bindings.get(parameter_iri, 0))
+        ]
+        for position, parameter_iris in VALUE_PARAMETERS.bound_positions(execution.bindings).items()
+    }
+    execution_name = (
+        f"Execution '{execution.execution_id}' of function '{initialization.function_iri}'"
+    )
+    if not positions:
+        raise ValueError(
+            f"{execution_name} binds no value to reconcile. Bind it to "
+            f"'{GREL_VALUE_PARAM}'."
+        )
+
+    for position, parameter_iris in sorted(positions.items()):
+        if len(parameter_iris) > 1:
+            raise ValueError(
+                f"{execution_name} binds value {position} to reconcile "
+                f"{len(parameter_iris)} times, to "
+                f"{', '.join(repr(iri) for iri in sorted(set(parameter_iris)))}. Bind it once: the "
+                "values to reconcile are told apart by their position, as RDF "
+                "puts no order on the inputs of an execution."
+            )
+
+    count = max(positions)
+    if len(positions) != count:
+        gap = next(position for position in range(1, count + 1) if position not in positions)
+        raise ValueError(
+            f"{execution_name} binds value {count} to reconcile but not value "
+            f"{gap}. The values are numbered from 1, without gaps: "
+            f"'{GREL_VALUE_PARAM}1' (or '{GREL_VALUE_PARAM}'), '{GREL_VALUE_PARAM}2', "
+            "and so on."
+        )
+    return count
+
+
+def _row_ambiguity(ambiguity, default) -> str:
+    """
+    The policy for the ambiguous values of a row: the one the execution
+    chooses, which the initializer has checked, or else *default*.
+    """
+    return default if ambiguity is None else parse_ambiguity(ambiguity)
 
 
 # ── SKOS vocabulary ───────────────────────────────────────────────────────────
 
 def _matching(initialization, execution) -> str:
     """How *execution* matches values: the constant it binds, EXACT when none."""
-    values = execution.constants.get(MORPH_FN_MATCHING, [])
-    if len(values) > 1 or MORPH_FN_MATCHING in execution.bound_to_data:
-        raise ValueError(
-            f"Execution '{execution.execution_id}' of function "
-            f"'{initialization.function_iri}' must bind '{MORPH_FN_MATCHING}' at "
-            "most once, to a constant: the vocabulary is indexed before any data "
-            "is read, so how values are matched against it cannot depend on the data."
-        )
-    if not values:
+    value = _optional_constant(
+        initialization, execution, MORPH_FN_MATCHING,
+        "what the values are matched against is indexed before any data is "
+        "read, so how they are matched cannot depend on the data.",
+    )
+    if value is None:
         return EXACT_MATCHING
 
-    matching = parse_matching(values[0])
+    matching = parse_matching(value)
     if matching is None:
-        raise ValueError(
-            f"Execution '{execution.execution_id}' of function "
-            f"'{initialization.function_iri}' binds '{MORPH_FN_MATCHING}' to "
-            f"'{values[0]}', which is not valid. Must be one of: "
-            f"{', '.join(sorted(VALID_MATCHINGS))}."
+        raise _invalid_constant(
+            initialization, execution, MORPH_FN_MATCHING, value, VALID_MATCHINGS,
         )
     return matching
 
@@ -202,10 +395,19 @@ def _initialize_vocabulary(initialization) -> ReconciliationContext:
     file is indexed, which lets a mapping with a single vocabulary omit the
     parameter altogether.
     """
-    # A mistake in how an execution matches values is reported before any
-    # vocabulary is downloaded.
+    # A mistake in how an execution matches values, or in what it reconciles
+    # an ambiguous value to, is reported before any vocabulary is downloaded.
     for execution in initialization.executions:
+        values = _value_count(initialization, execution)
+        if values > 1:
+            raise ValueError(
+                f"Execution '{execution.execution_id}' of function "
+                f"'{initialization.function_iri}' binds {values} values to "
+                "reconcile, but the concepts of a vocabulary are matched by a "
+                f"single value. Bind '{GREL_VALUE_PARAM}' only."
+            )
         _matching(initialization, execution)
+        _ambiguity(initialization, execution)
 
     resources = initialization.resources(*MORPH_RESOURCE_PARAMETERS)
     if not resources:
@@ -219,15 +421,19 @@ def _initialize_vocabulary(initialization) -> ReconciliationContext:
             f"'resource_type={SKOS_VOCABULARY_RESOURCE}' to the configuration file."
         )
 
-    context = ReconciliationContext()
-    for mapping_value, resource in resources.items():
+    # And so is a mistake in the options of a resource.
+    ambiguities = {}
+    for resource in resources.values():
         if resource.resource_type and resource.resource_type != SKOS_VOCABULARY_RESOURCE:
             raise ValueError(
                 f"Function '{initialization.function_iri}' reconciles against "
                 f"resource '{resource.name}', whose 'resource_type' is "
                 f"'{resource.resource_type}' instead of '{SKOS_VOCABULARY_RESOURCE}'."
             )
+        ambiguities[resource.name] = _resource_ambiguity(initialization, resource)
 
+    context = ReconciliationContext()
+    for mapping_value, resource in resources.items():
         # Several mapping values (the resource name and its URL) may point at
         # the same resource; it is fetched once and reachable through all of them.
         if resource.name not in context.indexes:
@@ -239,6 +445,7 @@ def _initialize_vocabulary(initialization) -> ReconciliationContext:
                     state_dir    = initialization.state_dir,
                     memory_limit = initialization.memory_limit,
                 ),
+                ambiguities[resource.name],
             )
         # A value of the mapping reaches the resource the configuration file
         # resolves it to, which the index was built for.
@@ -280,50 +487,105 @@ def _attributes(attribute) -> tuple:
     return (attribute,)
 
 
-def _reconcile_rows(values, groups, lookup) -> list:
+def _reconcile_rows(values, groups, lookup, outcomes=None) -> list:
     """
     Reconcile *values*, the rows of each group of *groups* (key -> row
-    numbers) with a single call to ``lookup(key, values)``.
+    numbers) with a single call to ``lookup(key, values)``, which returns the
+    entities each value matches, what they are entities of, the policy for
+    ambiguous values, the index the values are looked up in, and the fields
+    naming what they are entities of in the records of *outcomes*.
     """
     results = [None] * len(values)
     for key, rows in groups.items():
-        matches = lookup(key, [values[row] for row in rows])
+        matches, target, ambiguity, index, fields = lookup(key, [values[row] for row in rows])
         for row, row_matches in zip(rows, matches):
-            results[row] = _result(values[row], row_matches)
+            if outcomes is not None:
+                # Before a value is reconciled, which may abort the run.
+                _report(outcomes, values[row], row_matches, index, fields)
+            results[row] = _result(target, ambiguity, values[row], row_matches)
     return results
+
+
+def _report(outcomes, value, matches, index, fields) -> None:
+    """
+    Count the outcome of reconciling *value* in *index*, and record it when it
+    matches no entity or several (see :mod:`morph_kgc.functions.outcomes`): the
+    value as read, and as looked up, what it was matched against (*fields*),
+    and the entities it matches, when several.
+    """
+    if len(matches) == 1:
+        outcomes.count("MATCH")
+        return
+    outcome = MULTIPLE_MATCH if matches else NO_MATCH
+    outcomes.count(outcome)
+
+    def as_looked_up(component):
+        # The value of a nested function may be of any type (a date, a
+        # decimal...): it is looked up, and so reported, as a string.
+        if component is None:
+            return None, None
+        return str(component), normalize(component, index.matching)
+
+    if index.arity > 1:
+        # A value of each of the components an entity is matched by.
+        reported, normalized = (list(column) for column in zip(*map(as_looked_up, value)))
+    else:
+        reported, normalized = as_looked_up(value)
+    record = {"value": reported, "normalized_value": normalized, **fields}
+    if matches:
+        record["candidates"] = sorted(matches)
+    # One record per distinct value of the execution and outcome, which gathers
+    # what the value was matched against, when an execution reads it from the
+    # data, and the entities it matched in every row.
+    outcomes.record(outcome, reported, **record)
 
 
 @stateful_bif(
     fun_id      = MORPH_RECONCILE_VOCABULARY_CONCEPT,
     initializer = _initialize_vocabulary,
     vectorized  = True,
-    value       = (GREL_VALUE_PARAM, GREL_VALUE_PARAMETER),
+    value       = VALUE_PARAMETERS,
     resource    = MORPH_RESOURCE_PARAMETERS,
     attribute   = MergedAliases(MORPH_ATTRIBUTE_PARAMETERS),
     matching    = MORPH_FN_MATCHING,
+    ambiguity   = MORPH_FN_AMBIGUITY,
+    outcomes_parameter = "outcomes",
 )
-def reconcile_vocabulary_concept(context, value, resource=None, attribute=None, matching=None):
+def reconcile_vocabulary_concept(
+    context, value, resource=None, attribute=None, matching=None, ambiguity=None,
+    outcomes=None,
+):
     """Reconcile each of *value* against a SKOS vocabulary fetched from a URL."""
-    resources  = _per_row(resource, len(value))
-    attributes = _per_row(attribute, len(value))
+    # The single value of each row, which the initializer has checked.
+    value       = [row_values[0] for row_values in value]
+    resources   = _per_row(resource, len(value))
+    attributes  = _per_row(attribute, len(value))
     # A single constant, which the initializer has checked, in any case.
-    matchings  = _per_row(EXACT_MATCHING if matching is None else matching, len(value))
+    matchings   = _per_row(EXACT_MATCHING if matching is None else matching, len(value))
+    ambiguities = _per_row(ambiguity, len(value))
 
     # The rows reconciled against the same resource and attributes, in the same
     # way, which are usually all of them, are looked up together.
     groups: dict[tuple, list[int]] = {}
-    for row, (row_resource, row_attribute, row_matching) in enumerate(
-        zip(resources, attributes, matchings)
+    for row, (row_resource, row_attribute, row_matching, row_ambiguity) in enumerate(
+        zip(resources, attributes, matchings, ambiguities)
     ):
-        key = (row_resource, _attributes(row_attribute), row_matching)
+        key = (row_resource, _attributes(row_attribute), row_matching, row_ambiguity)
         groups.setdefault(key, []).append(row)
 
     def lookup(key, values):
-        row_resource, row_attributes, row_matching = key
-        index = context.get(row_resource, parse_matching(row_matching))
-        return index.lookup_many(values, row_attributes)
+        row_resource, row_attributes, row_matching, row_ambiguity = key
+        name  = context.name(row_resource)
+        index = context.get(name, parse_matching(row_matching))
+        return (
+            index.lookup_many(values, row_attributes),
+            f"resource '{name}'",
+            _row_ambiguity(row_ambiguity, context.ambiguity(name)),
+            index,
+            {"resource": name},
+        )
 
-    return _reconcile_rows(value, groups, lookup)
+    return _reconcile_rows(value, groups, lookup, outcomes)
 
 
 # ── SPARQL endpoint ───────────────────────────────────────────────────────────
@@ -339,6 +601,12 @@ def _constant(initialization, execution, parameter_iri) -> str:
             "any data is read, so they cannot depend on it."
         )
     return values[0]
+
+
+def _listed(items, quoted=True) -> str:
+    """*items* as a list in a sentence: 'a', 'b' and 'c'."""
+    items = [f"'{item}'" if quoted else str(item) for item in items]
+    return items[0] if len(items) == 1 else f"{', '.join(items[:-1])} and {items[-1]}"
 
 
 def _endpoint_resource(initialization, endpoint: str) -> ResourceConfig:
@@ -399,49 +667,115 @@ def _endpoint_resource(initialization, endpoint: str) -> ResourceConfig:
     return resource
 
 
-def _initialize_sparql(initialization) -> dict:
+def _initialize_sparql(initialization) -> QueryContext:
     """
     Build the shared context of the SPARQL reconciliation function: the index of
-    every query of the mapping, by the endpoint it is sent to and the query.
+    every query of the mapping, by the endpoint it is sent to and the query, and
+    the policy of each endpoint for ambiguous values.
 
     Each execution of the function pairs a query with its endpoint, so a mapping
     may reconcile against several knowledge graphs. A query sent to the same
-    endpoint by several executions is sent once.
+    endpoint by several executions is sent once, which is logged, and its
+    answer indexed for each way of matching values of those executions.
     """
-    indexes = {}
+    # A mistake in an execution, or in the resource declaring an endpoint, is
+    # reported before any query is sent.
+    context = QueryContext()
+    # (endpoint, query) -> the resource declaring the endpoint, the number of
+    # values the executions sending the query reconcile, the executions, and
+    # the ways they match values, each indexed from the same answer
+    queries = {}
     for execution in initialization.executions:
         endpoint = _constant(initialization, execution, MORPH_FN_SPARQL_ENDPOINT_URL)
         query    = _constant(initialization, execution, MORPH_FN_SPARQL_QUERY)
+        values   = _value_count(initialization, execution)
+        matching = _matching(initialization, execution)
+        _ambiguity(initialization, execution)
 
-        if (endpoint, query) not in indexes:
+        if (endpoint, query) not in queries:
             resource = _endpoint_resource(initialization, endpoint)
-            indexes[(endpoint, query)] = sparql.build_index(
-                resource,
-                query,
-                state_dir    = initialization.state_dir,
-                memory_limit = initialization.memory_limit,
+            context.ambiguities[endpoint] = _resource_ambiguity(initialization, resource)
+            queries[(endpoint, query)] = (resource, values, [execution.execution_id], {matching: None})
+            continue
+
+        _, other_values, executions, matchings = queries[(endpoint, query)]
+        other = executions[0]
+        executions.append(execution.execution_id)
+        matchings[matching] = None
+        if values != other_values:
+            raise ValueError(
+                f"Executions '{other}' and '{execution.execution_id}' of function "
+                f"'{initialization.function_iri}' send the same query to "
+                f"'{endpoint}', but reconcile {other_values} and {values} values "
+                "with it. A query matches entities by as many values as the "
+                f"?{sparql.MATCHING_VARIABLE_PREFIX}<i> variables it projects."
             )
 
-    return indexes
+    for (endpoint, query), (resource, values, executions, matchings) in queries.items():
+        if len(executions) > 1:
+            LOGGER.info(
+                f"Executions {_listed(sorted(executions))} of function "
+                f"'{initialization.function_iri}' send the same query to SPARQL "
+                f"endpoint '{endpoint}': it is sent once, and its answer is indexed "
+                f"for {_listed(sorted(matching.lower() for matching in matchings), quoted=False)} "
+                "matching."
+            )
+        context.indexes[(endpoint, query)] = sparql.build_index(
+            resource,
+            query,
+            state_dir    = initialization.state_dir,
+            memory_limit = initialization.memory_limit,
+            arity        = values,
+            matchings    = tuple(matchings),
+        )
+
+    return context
 
 
 @stateful_bif(
     fun_id      = MORPH_RECONCILE_ENTITY_OVER_SPARQL,
     initializer = _initialize_sparql,
     vectorized  = True,
-    value       = (GREL_VALUE_PARAM, GREL_VALUE_PARAMETER),
+    value       = VALUE_PARAMETERS,
     endpoint    = MORPH_FN_SPARQL_ENDPOINT_URL,
     query       = MORPH_FN_SPARQL_QUERY,
+    matching    = MORPH_FN_MATCHING,
+    ambiguity   = MORPH_FN_AMBIGUITY,
+    outcomes_parameter = "outcomes",
 )
-def reconcile_entity_over_sparql(context, value, endpoint=None, query=None):
-    """Reconcile each of *value* against the entities a SPARQL query returns."""
-    # Every execution bound a single constant endpoint and query, which the
-    # initializer has indexed.
-    endpoints = _per_row(endpoint, len(value))
-    queries   = _per_row(query, len(value))
+def reconcile_entity_over_sparql(
+    context, value, endpoint=None, query=None, matching=None, ambiguity=None,
+    outcomes=None,
+):
+    """
+    Reconcile each of *value* against the entities a SPARQL query returns: the
+    value of each row, or the tuple of its values, when it binds several.
+    """
+    # Every execution bound a single constant endpoint and query, and at most
+    # one matching, which the initializer has indexed, and at most one policy,
+    # which it has checked.
+    value       = [row_values[0] if len(row_values) == 1 else row_values for row_values in value]
+    endpoints   = _per_row(endpoint, len(value))
+    queries     = _per_row(query, len(value))
+    matchings   = _per_row(EXACT_MATCHING if matching is None else matching, len(value))
+    ambiguities = _per_row(ambiguity, len(value))
 
     groups: dict[tuple, list[int]] = {}
-    for row, key in enumerate(zip(endpoints, queries)):
+    for row, key in enumerate(zip(endpoints, queries, matchings, ambiguities)):
         groups.setdefault(key, []).append(row)
 
-    return _reconcile_rows(value, groups, lambda key, values: context[key].lookup_many(values))
+    def lookup(key, values):
+        row_endpoint, row_query, row_matching, row_ambiguity = key
+        index = context.indexes[(row_endpoint, row_query)][parse_matching(row_matching)]
+        return (
+            index.lookup_many(values),
+            f"SPARQL endpoint '{row_endpoint}'",
+            _row_ambiguity(row_ambiguity, context.ambiguity(row_endpoint)),
+            index,
+            {
+                "endpoint": row_endpoint,
+                "query_hash": sha256(row_query.encode("utf-8")).hexdigest(),
+            },
+        )
+
+    return _reconcile_rows(value, groups, lookup, outcomes)

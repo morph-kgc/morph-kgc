@@ -50,6 +50,9 @@ DEFAULT_STATE_DIR: str = ""
 # Memory each process may use to build and read the on-disk tables of shared
 # contexts, past which DuckDB spills to the state directory.
 DEFAULT_STATE_MEMORY_LIMIT: str = "512MB"
+# File the values the reconciliation functions match to no entity or to
+# several are reported to, in JSON Lines. Empty means no report.
+DEFAULT_RECONCILIATION_REPORT: str = ""
 
 # ---------------------------------------------------------------------------
 # Logging

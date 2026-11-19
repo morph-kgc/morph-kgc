@@ -28,3 +28,37 @@
     <https://data.com/id/5> a schema:Drug ;
         schema:name "Riluzole" .
 }
+
+# Diagnosis codes, each identified by its code and its coding system together:
+# joined into a string with '|' or ',', the codes of 6 and 8, and of 9 and 10,
+# would look alike, and 6 and 7 only differ by whitespace.
+
+<urn:uuid:5b1f0d7e-6a3c-4c51-9a84-1f4e2b7c9d01> {
+    <https://data.com/id/6> a schema:MedicalCode ;
+        schema:codeValue "A|1" ;
+        schema:codingSystem "ICD-10" .
+}
+
+<urn:uuid:5b1f0d7e-6a3c-4c51-9a84-1f4e2b7c9d02> {
+    <https://data.com/id/7> a schema:MedicalCode ;
+        schema:codeValue "A|1" ;
+        schema:codingSystem "ICD 10" .
+}
+
+<urn:uuid:5b1f0d7e-6a3c-4c51-9a84-1f4e2b7c9d03> {
+    <https://data.com/id/8> a schema:MedicalCode ;
+        schema:codeValue "A" ;
+        schema:codingSystem "1|ICD-10" .
+}
+
+<urn:uuid:5b1f0d7e-6a3c-4c51-9a84-1f4e2b7c9d04> {
+    <https://data.com/id/9> a schema:MedicalCode ;
+        schema:codeValue "B, C" ;
+        schema:codingSystem "SNOMED CT" .
+}
+
+<urn:uuid:5b1f0d7e-6a3c-4c51-9a84-1f4e2b7c9d05> {
+    <https://data.com/id/10> a schema:MedicalCode ;
+        schema:codeValue "B" ;
+        schema:codingSystem " C,SNOMED CT" .
+}

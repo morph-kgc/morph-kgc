@@ -14,7 +14,9 @@ The context is persisted to disk (one pickle file per function) rather than kept
 in a service or a background process, so that the worker processes spawned by
 the multiprocess executor read it back instead of rebuilding it. Each worker
 loads a context at most once, the first time it executes the function, and
-keeps it in memory afterwards.
+keeps it in memory afterwards. A function may keep bookkeeping of its own on
+the context it was handed, such as the reconciliation functions remembering
+what they have logged: it stays in the process, and is never written back.
 
 A context too large to hold in memory keeps its data in Parquet files the
 initializer writes to the state directory of the run, and only holds handles
@@ -55,6 +57,7 @@ from typing import Any, Optional
 from ..config.defaults import DEFAULT_STATE_MEMORY_LIMIT
 from ..constants import LOGGING_NAMESPACE, RML_CONSTANT
 from .model import FNMLExecution
+from .outcomes import forget_outcomes
 from .registry import FunctionRegistry
 from .tables import ParquetTable, close_connections, write_table
 
@@ -79,6 +82,8 @@ class ExecutionParameters:
     execution_id: str
     constants: dict[str, list[str]] = field(default_factory=dict)
     bound_to_data: frozenset[str] = frozenset()
+    # The number of value maps binding each parameter IRI, constant or not.
+    bindings: dict[str, int] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -244,8 +249,10 @@ def _execution_parameters(execution: FNMLExecution) -> ExecutionParameters:
     """What *execution* binds to each parameter IRI before any data is read."""
     constants: dict[str, list[str]] = {}
     bound_to_data: set[str] = set()
+    bindings: dict[str, int] = {}
     for input_binding in execution.inputs:
         for value in input_binding.values:
+            bindings[input_binding.parameter_iri] = bindings.get(input_binding.parameter_iri, 0) + 1
             if value.map_type == RML_CONSTANT:
                 constants.setdefault(input_binding.parameter_iri, []).append(value.map_value)
             else:
@@ -254,6 +261,7 @@ def _execution_parameters(execution: FNMLExecution) -> ExecutionParameters:
         execution_id  = execution.execution_id,
         constants     = constants,
         bound_to_data = frozenset(bound_to_data),
+        bindings      = bindings,
     )
 
 
@@ -423,6 +431,7 @@ def release_contexts(session: Optional[ContextSession]) -> None:
     for cache_key in [key for key in list(_LOADED_CONTEXTS) if key[0] == session.path]:
         _LOADED_CONTEXTS.pop(cache_key, None)
     close_connections(session.path)
+    forget_outcomes(session.path)
 
     shutil.rmtree(session.path, ignore_errors=True)
     LOGGER.debug(f"State directory '{session.path}' removed.")

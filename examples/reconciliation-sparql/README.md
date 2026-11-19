@@ -22,7 +22,10 @@ line instead, start the endpoint yourself:
 ```bash
 python endpoint.py &
 morph-kgc config.ini
+kill %1
 ```
+
+Stop the endpoint afterwards: `run.py` starts its own on the same port (8890).
 
 ## The endpoint and the query are in the mapping
 
@@ -30,6 +33,10 @@ The mapping says which endpoint to query and which entities to reconcile
 against:
 
 ```turtle
+@prefix rml: <http://w3id.org/rml/> .
+@prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
+@prefix morph-fn: <urn:morph:function:> .
+
 <#ClinicalTrialReconciliation>
     rml:function morph-fn:reconcileEntityOverSPARQL ;
     rml:input [
@@ -54,24 +61,49 @@ against:
     ] .
 ```
 
-The query is any SELECT query over the knowledge graph. It projects two
-variables:
+The query is any SELECT query over the knowledge graph. It projects:
 
 | Variable | Meaning |
 | --- | --- |
 | `?entity_iri` | the entity a value is reconciled with |
 | `?matching_value_1` | the value the entity is matched by |
+| `?matching_value_2`, ... | the other values the entity is matched by, for an entity that only several values identify together |
 
-A value is matched against `?matching_value_1` only. To match it against
-several properties, bind all of them to that variable, e.g. with a `UNION` or a
-property path (`schema:identifier|schema:alternateName`). Other projected
-variables, such as `?g`, are ignored, but `?matching_value_2` and the like are
-rejected, since no value is matched against them. A query that does not project
-both `?entity_iri` and `?matching_value_1` fails instead of reconciling nothing.
+To match a value against several properties, bind all of them to
+`?matching_value_1`, e.g. with a `UNION` or a property path
+(`schema:identifier|schema:alternateName`). Other projected variables, such as
+`?g`, are ignored. A query that does not project both `?entity_iri` and
+`?matching_value_1` fails instead of reconciling nothing.
 
-Values are matched exactly. To match them whatever their case, normalize both
-sides in the mapping: `BIND(LCASE(STR(?identifier)) AS ?matching_value_1)` in
-the query, and a nested `grel:toLowerCase` execution as `grel:valueParam`.
+Values are matched exactly, unless the execution binds `morph-fn:matching` to
+another way of matching them, as against a vocabulary: `LOWERCASE` (lower-cased,
+and nothing else) or `CASE-INSENSITIVE`
+(normalized, with their whitespace collapsed, and case-folded), described in
+[`../reconciliation`](../reconciliation/README.md#ways-of-matching-values).
+Executions sending the same query to the same endpoint, whether they match
+values the same way or not, share its answer: the query is sent once, and its
+answer indexed once for each way of matching values they use. Which executions
+share a query is logged (`INFO`). A query is shared only when it is written the
+same, character for character, and sent to the endpoint the mapping names the
+same way.
+
+Morph-KGC matches the values itself, both those of the answer
+(`?matching_value_<i>`), as it indexes them, and those it reconciles, exactly
+as it matches them against a vocabulary file: the query returns the values as
+they are, and needs no `LCASE`. The same data, mapping and way of matching
+values therefore give the same triples whether a vocabulary is read from a file
+or queried from an endpoint holding it, provided that the query returns the
+values the file is matched against: the labels of its concepts (e.g.
+`skos:prefLabel|skos:altLabel`), and no concept scheme or collection, which a
+vocabulary file never matches. An IRI or a literal is a value, a blank node is
+not, as in a vocabulary file. Answers in JSON, XML and TSV are all read with
+their values as they are, whitespace, carriage returns and control characters
+included. An answer in XML holding a character no XML parser reads is read by a
+lenient one, which trims the whitespace a value starts or ends with, and says
+so in a warning. Language tags and datatypes of the values are ignored, as in a
+vocabulary file. Labels are best matched as strings: a store may rewrite a
+typed literal such as `"01"^^xsd:integer` as `1`, while a vocabulary file read
+as a stream keeps it as written.
 
 Declare the prefixes the query uses: an endpoint is not bound to know `schema:`
 or any other prefix.
@@ -82,6 +114,60 @@ query, and the same query sent to the same endpoint by several executions is
 sent once. When the reconciled entity is the object of a triple, give its object
 map `rml:termType rml:IRI`, since an object map whose
 value is the result of a function generates literals by default.
+
+### Entities matched by several values
+
+An entity that only several values identify together, such as a code within a
+coding system, is matched by all of them: the query projects one
+`?matching_value_<i>` per value, numbered from 1, and the execution binds as
+many values to reconcile, matched to the variables by position. The first is
+`grel:valueParam1`, or `grel:valueParam`, the second `grel:valueParam2`, and so
+on (`grel:valueParameter1`, `grel:valueParameter2`... are accepted as well):
+
+```turtle
+<#DiagnosisReconciliation>
+    rml:function morph-fn:reconcileEntityOverSPARQL ;
+    rml:input [
+        rml:parameter morph-fn:sparqlEndpointUrl ;
+        rml:inputValue "https://data.com/database/query"
+    ] ;
+    rml:input [
+        rml:parameter morph-fn:sparqlQuery ;
+        rml:inputValue """
+            PREFIX schema: <https://schema.org/>
+            SELECT ?entity_iri ?matching_value_1 ?matching_value_2 WHERE {
+                GRAPH ?g {
+                    ?entity_iri a schema:MedicalCode ;
+                                schema:codeValue ?matching_value_1 ;
+                                schema:codingSystem ?matching_value_2 .
+                }
+            }
+        """
+    ] ;
+    rml:input [
+        rml:parameter grel:valueParam1 ;
+        rml:inputValueMap [ rml:reference "code" ]
+    ] ;
+    rml:input [
+        rml:parameter grel:valueParam2 ;
+        rml:inputValueMap [ rml:reference "scheme" ]
+    ] .
+```
+
+A row is reconciled with the entities matched by all its values. They are
+compared one by one, each as `morph-fn:matching` says (exactly, by default), as
+each is indexed in a column of its own: never joined into a string, so values
+holding `,` or `|` are not split, and the code `A|1` of `ICD-10` is not
+mistaken for the code `A` of `1|ICD-10`. A value may be a constant, such as the coding system of every row.
+An entity a solution leaves a value unbound for is matched by no row.
+
+The query must project as many `?matching_value_<i>` as the execution binds
+values, numbered from 1 without gaps, and the execution must bind each value
+once. Otherwise the run fails: before the query is sent when the execution is
+at fault, and as soon as it is answered when the query is. An endpoint that
+leaves the head out of its answer does not say which variables the query
+projects: a value its solutions never bind then matches nothing, and the query
+is reported as returning no entity.
 
 ### Named graphs
 
@@ -101,12 +187,14 @@ of the query. In YARRRML, write it as a `|` block scalar, which keeps it exactly
 number of results they return (e.g. `ResultSetMaxRows` in Virtuoso); values of
 entities left out of the answer are not reconciled.
 
-## The configuration file is only for access control
+## Declaring an endpoint in the configuration file
 
 An endpoint open to everyone needs nothing but its URL in the mapping, which is
-why [`config.ini`](config.ini) declares no resource. An access-controlled
-endpoint is declared with its credentials, in a `[RESOURCE:<name>]` section
-whose `url` is the endpoint the mapping names:
+why [`config.ini`](config.ini) declares no resource. A resource declares the
+credentials of an access-controlled endpoint, and, for any endpoint, its
+`ambiguity`, `timeout` or `method`, or another URL to query it at (`iri` and
+`url`). It is a `[RESOURCE:<name>]` section whose `url` (or `iri`) is the
+endpoint the mapping names:
 
 ```ini
 [RESOURCE:clinical_trials]
@@ -116,30 +204,56 @@ username={ENDPOINT_USER}
 password={ENDPOINT_PASSWORD}
 ```
 
+The section must have `resource_type=SPARQL_ENDPOINT`, and its `url` (or `iri`)
+must equal the URL in the mapping character for character (a trailing `/`
+counts). Otherwise the endpoint is queried without the resource, so without its
+credentials, and only an `INFO` line says so.
+
 `{ENV_VAR}` placeholders in `url`, `iri`, `username` and `password` are replaced
 with environment variables, so credentials need not be written to the file at
-all.
+all. A value written in the file doubles a literal `$` (`$$`), and, in these
+four options, a literal `{` or `}` (`{{`, `}}`); a value read from an
+environment variable needs no escaping. A misspelled option is ignored without
+a warning.
 
 | Option | Meaning |
 | --- | --- |
-| `resource_type` | `SPARQL_ENDPOINT`. |
+| `resource_type` | `SPARQL_ENDPOINT` (required). |
 | `url` | where the endpoint is queried. |
 | `iri` | the endpoint the mapping names, when it is not `url`. A mapping naming a production endpoint then runs against a local or staging one, declared as `url`. |
 | `username`, `password` | HTTP Basic Authentication credentials. |
 | `method` | `GET` or `POST`. By default, `GET`, or `POST` for a query too long for a URL. |
 | `timeout` | seconds to wait for the answer to the query (default `300`). |
+| `ambiguity` | the policy for the values matching several entities, when the execution sets none: `ALL` (default), `NONE` or `FAIL`. |
 
 ## Function parameters
 
 | Parameter | Meaning |
 | --- | --- |
-| `grel:valueParam` | the value to reconcile. |
+| `grel:valueParam` | the value to reconcile, matched against `?matching_value_1`. |
+| `grel:valueParam2`, ... | the other values to reconcile, matched against `?matching_value_2`, ... See [Entities matched by several values](#entities-matched-by-several-values). |
 | `morph-fn:sparqlEndpointUrl` | the URL of the SPARQL endpoint the query is sent to. |
-| `morph-fn:sparqlQuery` | the SELECT query returning `?entity_iri` and `?matching_value_1`. |
+| `morph-fn:sparqlQuery` | the SELECT query returning `?entity_iri` and `?matching_value_1` (and `?matching_value_2`, ...). |
+| `morph-fn:matching` | how the value is matched: `EXACT` (default), `LOWERCASE` or `CASE-INSENSITIVE`. A constant. |
+| `morph-fn:ambiguity` | what a value matching several entities is reconciled to: `ALL` (default), `NONE` or `FAIL`. A constant, overriding the `ambiguity` option of the resource declaring the endpoint. |
+
+The values matched to no entity, and to several, are reported to the file the
+`reconciliation_report` option of the configuration file names, with the
+endpoint and the SHA-256 hash of the query: see
+[`../reconciliation`](../reconciliation/README.md#reconciliation-report).
 
 The endpoint and the query are constants of the mapping, since they are sent
 before any data is read. A value matching no entity yields no triple. A value
-matching several entities yields one triple per matched entity.
+matching several entities is ambiguous, and yields one triple per matched entity
+with `ALL` (the default), no triple with `NONE`, and aborts the run with `FAIL`.
+It is recorded, with the entities it matches, in the reconciliation report, not
+in the log. With `FAIL`, it is also the message of the error aborting the run,
+which may leave a partial output file (see
+[`../reconciliation`](../reconciliation/README.md#ambiguous-values)).
+The policy is
+a constant of the execution, or else the
+`ambiguity` option of the resource declaring the endpoint, as in
+[`../reconciliation`](../reconciliation/README.md#ambiguous-values).
 
 ## What this example generates
 

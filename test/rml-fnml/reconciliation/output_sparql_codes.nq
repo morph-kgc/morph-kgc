@@ -1,0 +1,5 @@
+<urn:id:p1> <https://example.org/ontology/diagnosedWith> <https://data.com/id/6> .
+<urn:id:p2> <https://example.org/ontology/diagnosedWith> <https://data.com/id/7> .
+<urn:id:p3> <https://example.org/ontology/diagnosedWith> <https://data.com/id/8> .
+<urn:id:p4> <https://example.org/ontology/diagnosedWith> <https://data.com/id/9> .
+<urn:id:p5> <https://example.org/ontology/diagnosedWith> <https://data.com/id/10> .

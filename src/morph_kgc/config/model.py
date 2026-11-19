@@ -25,6 +25,7 @@ from .defaults import (
     DEFAULT_API_TOKEN,
     DEFAULT_STATE_DIR,
     DEFAULT_STATE_MEMORY_LIMIT,
+    DEFAULT_RECONCILIATION_REPORT,
     DEFAULT_LOGGING_LEVEL,
     DEFAULT_LOGGING_FILE,
 )
@@ -248,6 +249,9 @@ class MorphConfig:
     api_token: str = DEFAULT_API_TOKEN
     state_dir: str = DEFAULT_STATE_DIR
     state_memory_limit: str = DEFAULT_STATE_MEMORY_LIMIT
+    # File the reconciliation functions report the values they match to no
+    # entity or to several to, in JSON Lines; empty for no report.
+    reconciliation_report: str = DEFAULT_RECONCILIATION_REPORT
 
     # -- Logging -------------------------------------------------------------
     logging_level: str = DEFAULT_LOGGING_LEVEL
@@ -269,6 +273,7 @@ class MorphConfig:
         self._validate_mapping_partitioning()
         self._validate_number_of_processes()
         self._validate_state_memory_limit()
+        self._validate_reconciliation_report()
         self._validate_paths()
         self._coerce_list_fields()
         self._setup_logging()
@@ -314,6 +319,56 @@ class MorphConfig:
         from ..functions.tables import check_memory_limit
 
         check_memory_limit(self.state_memory_limit)
+
+    def _validate_reconciliation_report(self) -> None:
+        report = self.reconciliation_report = str(self.reconciliation_report or "").strip()
+        if not report:
+            return
+        # 'reports/' names a directory as well before it exists.
+        if os.path.isdir(report) or os.path.basename(report) in ("", os.curdir, os.pardir):
+            raise ValueError(
+                f"'reconciliation_report' value '{report}' names a "
+                "directory. It must be the path of the file the report is written to, "
+                "e.g. 'reconciliation_report.jsonl'."
+            )
+        # The report is written once every rule is materialized: a path it cannot
+        # be written to fails the run before, as those of the other outputs do.
+        parent = Path(report).parent
+        try:
+            parent.mkdir(parents=True, exist_ok=True)
+        except OSError as exc:
+            raise ValueError(
+                f"'reconciliation_report' value '{report}' is not a path the report "
+                f"can be written to: its directory '{parent}' cannot be created "
+                f"({exc.strerror or exc})."
+            ) from exc
+        if os.path.exists(report):
+            # An existing file, or a device such as /dev/stdout, is written to in
+            # place, which needs no access to its directory. It is not opened
+            # before the end, which a pipe would read as the end of the report.
+            if not os.access(report, os.W_OK):
+                raise ValueError(
+                    f"'reconciliation_report' value '{report}' is not a path the "
+                    "report can be written to: the file is not writable."
+                )
+            return
+        # A file to be created (also through a dangling link) is created to tell
+        # whether it can be, and removed unless a link names it.
+        linked = os.path.lexists(report)
+        try:
+            with open(report, "a", encoding="utf-8"):
+                pass
+        except OSError as exc:
+            raise ValueError(
+                f"'reconciliation_report' value '{report}' is not a path the report "
+                f"can be written to ({exc.strerror or exc})."
+            ) from exc
+        if not linked:
+            try:
+                os.remove(report)
+            except OSError:
+                # Left empty, until the report replaces it.
+                pass
 
     def _validate_paths(self) -> None:
         _create_dirs_in_path(self.logging_file)

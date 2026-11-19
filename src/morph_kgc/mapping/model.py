@@ -127,6 +127,9 @@ class RMLRule:
         Defaults to ``rml:defaultGraph`` after normalization.
     mapping_partition : Optional[str]
         Assigned by ``MappingPartitioner``; ``None`` before partitioning.
+    mapping_files : str
+        The mapping files of its configuration section declaring the triples
+        map, sorted and separated by newlines; empty when none can be told.
     """
 
     triples_map_id: str
@@ -137,6 +140,7 @@ class RMLRule:
     object_: Optional[TermMap] = None
     graph: Optional[TermMap] = None
     mapping_partition: Optional[str] = None
+    mapping_files: str = ""
 
 
 @dataclass(slots=True)

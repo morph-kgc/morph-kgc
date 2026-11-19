@@ -1,0 +1,21 @@
+# Labels telling the ways of matching values apart: matched against 'Café ',
+# 'Straße' and 'STRASSE' (patients_matching.csv), LOWERCASE only lower-cases,
+# while CASE-INSENSITIVE normalizes Unicode (NFKC), collapses whitespace and
+# case-folds, matching several concepts.
+
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix term: <https://example.org/vocabulary/term/> .
+
+# 'Café ' lower-cased.
+term:1 a skos:Concept ; skos:prefLabel "café " .
+# Without the accent.
+term:2 a skos:Concept ; skos:prefLabel "cafe" .
+# Without the trailing space.
+term:3 a skos:Concept ; skos:prefLabel "Café" .
+# Decomposed (NFD): 'e' followed by a combining acute accent.
+term:4 a skos:Concept ; skos:prefLabel "café " .
+# With two trailing spaces.
+term:5 a skos:Concept ; skos:prefLabel "café  " .
+# 'Straße' case-folded, and lower-cased.
+term:6 a skos:Concept ; skos:prefLabel "strasse" .
+term:7 a skos:Concept ; skos:prefLabel "straße" .

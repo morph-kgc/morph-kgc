@@ -1,0 +1,53 @@
+@prefix rml: <http://w3id.org/rml/> .
+@prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
+@prefix morph-fn: <urn:morph:function:> .
+@prefix bi: <https://example.org/ontology/> .
+
+@base <http://example.com/base/> .
+
+# The diagnoses of the patients, reconciled with the codes of the knowledge
+# graph by their code and their coding system together.
+<#DiagnosesMapping>
+    a rml:TriplesMap ;
+    rml:logicalSource [
+        rml:source "test/rml-fnml/reconciliation/diagnoses.csv" ;
+        rml:referenceFormulation rml:CSV
+    ] ;
+    rml:subjectMap [
+        rml:template "urn:id:{patient_id}"
+    ] ;
+    rml:predicateObjectMap [
+        rml:predicate bi:diagnosedWith ;
+        rml:objectMap [
+            rml:functionExecution <#DiagnosisReconciliation> ;
+            rml:termType rml:IRI
+        ]
+    ] .
+
+<#DiagnosisReconciliation>
+    rml:function morph-fn:reconcileEntityOverSPARQL ;
+    rml:input [
+        rml:parameter morph-fn:sparqlEndpointUrl ;
+        rml:inputValue "https://data.com/database/query"
+    ] ;
+    rml:input [
+        rml:parameter morph-fn:sparqlQuery ;
+        rml:inputValue """
+            PREFIX schema: <https://schema.org/>
+            SELECT ?entity_iri ?matching_value_1 ?matching_value_2 WHERE {
+                GRAPH ?g {
+                    ?entity_iri a schema:MedicalCode ;
+                                schema:codeValue ?matching_value_1 ;
+                                schema:codingSystem ?matching_value_2 .
+                }
+            }
+        """
+    ] ;
+    rml:input [
+        rml:parameter grel:valueParam1 ;
+        rml:inputValueMap [ rml:reference "code" ]
+    ] ;
+    rml:input [
+        rml:parameter grel:valueParam2 ;
+        rml:inputValueMap [ rml:reference "scheme" ]
+    ] .

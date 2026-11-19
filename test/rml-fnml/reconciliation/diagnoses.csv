@@ -1,0 +1,8 @@
+patient_id,code,scheme
+p1,A|1,ICD-10
+p2,A|1,ICD 10
+p3,A,1|ICD-10
+p4,"B, C",SNOMED CT
+p5,B," C,SNOMED CT"
+p6,A|1,ICD-11
+p7,A|1,

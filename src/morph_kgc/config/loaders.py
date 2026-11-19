@@ -45,6 +45,7 @@ from .defaults import (
     DEFAULT_API_TOKEN,
     DEFAULT_STATE_DIR,
     DEFAULT_STATE_MEMORY_LIMIT,
+    DEFAULT_RECONCILIATION_REPORT,
     DEFAULT_LOGGING_LEVEL,
     DEFAULT_LOGGING_FILE,
 )
@@ -69,6 +70,7 @@ _CONFIGURATION_KEYS = {
     "api_token",
     "state_dir",
     "state_memory_limit",
+    "reconciliation_report",
     "logging_level",
     "logging_file",
 }
@@ -259,6 +261,7 @@ def _extract_configuration_options(parser: ConfigParser) -> dict[str, Any]:
         "api_token": get_nullable("api_token", DEFAULT_API_TOKEN),
         "state_dir": get_nullable("state_dir", DEFAULT_STATE_DIR),
         "state_memory_limit": get("state_memory_limit", DEFAULT_STATE_MEMORY_LIMIT),
+        "reconciliation_report": get_nullable("reconciliation_report", DEFAULT_RECONCILIATION_REPORT),
         "logging_level": get("logging_level", DEFAULT_LOGGING_LEVEL),
         "logging_file": get_nullable("logging_file", DEFAULT_LOGGING_FILE),
     }

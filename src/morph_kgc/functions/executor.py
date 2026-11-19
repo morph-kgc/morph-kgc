@@ -20,6 +20,7 @@ from ..constants import RML_EXECUTION
 from ..utils import remove_null_values_from_dataframe
 
 from .model          import FNMLExecution
+from .outcomes       import Outcomes
 from .registry       import FunctionRegistry
 from .param_resolver import resolve_params
 from .state          import get_context
@@ -70,27 +71,37 @@ def execute_fnml(
         fixed_params[registered.context_parameter] = get_context(
             execution.function_iri, config
         )
+    outcomes = None
+    if registered.outcomes_parameter is not None:
+        outcomes = Outcomes(execution.execution_id, execution.function_iri, config)
+        fixed_params[registered.outcomes_parameter] = outcomes
 
-    if registered.vectorized and len(data) == 0:
-        # As a function called per row, it is not called when there is no row.
-        exec_res = []
-    elif registered.vectorized:
-        # Called once for all the rows, with a list of values per argument.
-        exec_res = function(**{k: list(v) for k, v in params.items()}, **fixed_params)
-        if not isinstance(exec_res, (list, tuple)) or len(exec_res) != len(data):
-            raise TypeError(
-                f"The vectorized function '{execution.function_iri}' must return a "
-                f"list of {len(data)} result(s), one per row, but returned "
-                f"{type(exec_res).__name__}"
-                f"{f' of {len(exec_res)}' if isinstance(exec_res, (list, tuple)) else ''}."
-            )
-        exec_res = list(exec_res)
-    else:
-        exec_res = []
-        for i in range(len(data)):
-            row_params = {k: v[i] for k, v in params.items()}
-            row_params.update(fixed_params)
-            exec_res.append(function(**row_params))
+    try:
+        if registered.vectorized and len(data) == 0:
+            # As a function called per row, it is not called when there is no row.
+            exec_res = []
+        elif registered.vectorized:
+            # Called once for all the rows, with a list of values per argument.
+            exec_res = function(**{k: list(v) for k, v in params.items()}, **fixed_params)
+            if not isinstance(exec_res, (list, tuple)) or len(exec_res) != len(data):
+                raise TypeError(
+                    f"The vectorized function '{execution.function_iri}' must return a "
+                    f"list of {len(data)} result(s), one per row, but returned "
+                    f"{type(exec_res).__name__}"
+                    f"{f' of {len(exec_res)}' if isinstance(exec_res, (list, tuple)) else ''}."
+                )
+            exec_res = list(exec_res)
+        else:
+            exec_res = []
+            for i in range(len(data)):
+                row_params = {k: v[i] for k, v in params.items()}
+                row_params.update(fixed_params)
+                exec_res.append(function(**row_params))
+    finally:
+        # What the function reported, also when it failed (e.g. a value it was
+        # told to abort the run on).
+        if outcomes is not None:
+            outcomes.flush()
 
     data[execution.execution_id] = exec_res
 

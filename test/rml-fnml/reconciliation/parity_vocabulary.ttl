@@ -1,0 +1,23 @@
+# A vocabulary reconciled against both as a file and through a SPARQL endpoint
+# holding it (see server.py), which must give the same triples, whatever the
+# way of matching values. Its labels include those of the request that asked
+# for it, and others that the ways of matching values tell apart.
+
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix clinical: <https://example.org/vocabulary/clinical/> .
+
+clinical:1 a skos:Concept ;
+    skos:prefLabel "Agenesis of enamel (disorder)" ;
+    skos:altLabel "Enamel agenesis" , "Agénésie de l'émail"@fr .
+
+# With a subscript two, which NFKC normalizes to a plain one.
+clinical:2 a skos:Concept ;
+    skos:prefLabel "Phospholipase A₂ measurement (procedure)" ;
+    skos:altLabel "Phospholipase A₂ measurement" .
+
+# 'Straße' case-folded, and lower-cased.
+clinical:3 a skos:Concept ; skos:prefLabel "strasse" .
+clinical:4 a skos:Concept ; skos:prefLabel "straße" .
+
+# Starting with a space.
+clinical:5 a skos:Concept ; skos:prefLabel " Enamel hypoplasia" .

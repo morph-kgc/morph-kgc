@@ -25,10 +25,18 @@ The SPARQL endpoints evaluate queries over the knowledge graph of
 
 The other endpoints answer in JSON with the head first, as most stores do.
 
+The same endpoints under ``/public/vocabulary`` (``/public/vocabulary/sparql``,
+``/public/vocabulary/sparql/xml``...) evaluate queries over the SKOS vocabulary
+of ``parity_vocabulary.ttl`` instead (or of the file the server is given), as
+its default graph, so that the
+reconciliation against a vocabulary file and against an endpoint holding the
+same data can be compared.
+
 ``/vocabulary.gz`` serves the vocabulary gzipped, ``/vocabulary.broken-gz``
 says it does but does not, ``/vocabulary.multi-gz`` serves it gzipped in two
 members, as concatenated gzip files are, and ``/vocabulary.cut`` closes the
 connection halfway through it. ``/export|vocabulary`` has a URL that is no IRI.
+``/matching-vocabulary`` serves ``matching_vocabulary.ttl``.
 """
 
 import gzip
@@ -57,12 +65,16 @@ VOCABULARY_FILES = {
     '/vocabulary.multi-gz': ('disease_vocabulary.ttl', 'text/turtle'),
     '/vocabulary.cut': ('disease_vocabulary.ttl', 'text/turtle'),
     '/export|vocabulary': ('disease_vocabulary.ttl', 'text/turtle'),
+    '/matching-vocabulary': ('matching_vocabulary.ttl', 'text/turtle'),
 }
 
 
-def _knowledge_graph(default_union):
+def _knowledge_graph(default_union, file_name='clinical_trials.trig'):
     dataset = Dataset(default_union=default_union)
-    dataset.parse(os.path.join(TEST_DIR, 'clinical_trials.trig'), format='trig')
+    dataset.parse(
+        os.path.join(TEST_DIR, file_name),
+        format='trig' if file_name.endswith('.trig') else 'turtle',
+    )
     return dataset
 
 
@@ -82,6 +94,10 @@ SPARQL_ENDPOINTS = {
 # Paths answered without authentication.
 PUBLIC_PREFIX = '/public/'
 
+# The prefix of the endpoints over the vocabulary of parity_vocabulary.ttl.
+VOCABULARY_ENDPOINTS_PREFIX = '/public/vocabulary/'
+VOCABULARY_ENDPOINTS_FILE = 'parity_vocabulary.ttl'
+
 
 def _expected_authorization():
     credentials = b64encode(f'{USERNAME}:{PASSWORD}'.encode()).decode()
@@ -95,6 +111,8 @@ class _Handler(BaseHTTPRequestHandler):
     # fetched (and each query sent) exactly once, and the HTTP methods they used.
     requests = []
     methods = []
+    # The vocabulary the endpoints under VOCABULARY_ENDPOINTS_PREFIX hold.
+    vocabulary = VOCABULARY_ENDPOINTS_FILE
 
     def do_GET(self):
         path = urlsplit(self.path).path
@@ -136,11 +154,19 @@ class _Handler(BaseHTTPRequestHandler):
                 self._respond(200, body, content_type, cut=True)
             else:
                 self._respond(200, body, content_type)
-        elif path in SPARQL_ENDPOINTS:
+        elif path in SPARQL_ENDPOINTS or (
+            path.startswith(VOCABULARY_ENDPOINTS_PREFIX)
+            and path.replace(VOCABULARY_ENDPOINTS_PREFIX, PUBLIC_PREFIX, 1) in SPARQL_ENDPOINTS
+        ):
             if path.endswith('/slow'):
                 time.sleep(1.5)
             try:
-                results = _knowledge_graph(SPARQL_ENDPOINTS[path]).query(query)
+                if path.startswith(VOCABULARY_ENDPOINTS_PREFIX):
+                    # A vocabulary serialized as triples is its default graph.
+                    knowledge_graph = _knowledge_graph(True, type(self).vocabulary)
+                else:
+                    knowledge_graph = _knowledge_graph(SPARQL_ENDPOINTS[path])
+                results = knowledge_graph.query(query)
             except Exception as exc:
                 self._respond(400, str(exc).encode(), 'text/plain')
                 return
@@ -190,15 +216,20 @@ class _Handler(BaseHTTPRequestHandler):
 
 
 class VocabularyServer:
-    """Context manager starting the server on an ephemeral port."""
+    """
+    Context manager starting the server on an ephemeral port, its endpoints
+    under VOCABULARY_ENDPOINTS_PREFIX holding *vocabulary* (a path).
+    """
 
-    def __init__(self):
+    def __init__(self, vocabulary=VOCABULARY_ENDPOINTS_FILE):
         self._server = None
         self._thread = None
+        self._vocabulary = vocabulary
 
     def __enter__(self):
         _Handler.requests = []
         _Handler.methods = []
+        _Handler.vocabulary = self._vocabulary
         self._server = HTTPServer(('127.0.0.1', 0), _Handler)
         self._thread = threading.Thread(target=self._server.serve_forever, daemon=True)
         self._thread.start()

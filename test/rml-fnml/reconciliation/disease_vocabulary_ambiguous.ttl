@@ -1,0 +1,22 @@
+# disease_vocabulary.ttl with a third concept, whose alternative label is the
+# preferred label of 10077339: the label of pid_00002 in patients.csv matches
+# both concepts, and is therefore ambiguous.
+
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+<https://data.boehringer.com/id/00036/10073037>
+    a skos:Concept ;
+    skos:prefLabel "Spastic ataxia-myoclonic epilepsy-neuropathy syndrome" ;
+    skos:altLabel "Early-onset spastic ataxia-myoclonic epilepsy-neuropathy syndrome" ;
+    skos:notation "ORPHA:352587" .
+
+<https://data.boehringer.com/id/00036/10077339>
+    a skos:Concept ;
+    skos:prefLabel "Autosomal dominant cerebellar ataxia-deafness-narcolepsy syndrome" ;
+    skos:altLabel "ADCA-DN" ;
+    skos:notation "ORPHA:314404" .
+
+<https://example.org/vocabulary/disease/adca-dn>
+    a skos:Concept ;
+    skos:prefLabel "ADCA-DN (deprecated entry)" ;
+    skos:altLabel "Autosomal dominant cerebellar ataxia-deafness-narcolepsy syndrome" .

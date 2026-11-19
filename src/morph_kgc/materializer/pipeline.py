@@ -34,6 +34,7 @@ from ..constants import (
     RML_TRIPLES_MAP_CLASS,
     RML_TRIPLE_TERM_MAP,
 )
+from ..functions.outcomes import CURRENT_RULE, report_outcomes
 from ..functions.state import initialize_contexts, release_contexts
 from ..mapping.parser import MappingParser
 from ..mapping.model import RMLMapping, RMLRule
@@ -238,7 +239,12 @@ def materialize_group_to_set(
     """Materialize one mapping partition into a set of N-Triple/N-Quad strings."""
     triples: set[str] = set()
     for rule in group:
-        triples |= materialize_rule(rule, rml_mapping, config, python_source)
+        # The rule the functions it executes report their outcomes for.
+        token = CURRENT_RULE.set(rule)
+        try:
+            triples |= materialize_rule(rule, rml_mapping, config, python_source)
+        finally:
+            CURRENT_RULE.reset(token)
     return triples
 
 
@@ -383,24 +389,37 @@ def materialize_pipeline(
     context_session = initialize_contexts(config, rml_mapping)
 
     try:
-        # ── 7. Materialize + Serialize ────────────────────────────────────
-        if output == "file":
-            # Always wipe the output files first: the groups append to them.
-            prepare_output_files(config, rml_mapping)
-            results = executor.run(
-                groups, materialize_group_to_file, rml_mapping, config
-            )
-            total = sum(r for r in results if isinstance(r, int))
-            LOGGER.info(f"{total} triples written to file.")
-            return total
-
-        # "set", "graph", "oxigraph" — all collect into a set first
-        results = executor.run(
-            groups, materialize_group_to_set, rml_mapping, config,
-            python_source=python_source,
-        )
+        try:
+            # ── 7. Materialize + Serialize ────────────────────────────────
+            if output == "file":
+                # Always wipe the output files first: the groups append to them.
+                prepare_output_files(config, rml_mapping)
+                results = executor.run(
+                    groups, materialize_group_to_file, rml_mapping, config
+                )
+            else:
+                # "set", "graph", "oxigraph" — all collect into a set first
+                results = executor.run(
+                    groups, materialize_group_to_set, rml_mapping, config,
+                    python_source=python_source,
+                )
+        except BaseException:
+            # What the functions reported up to the failure (e.g. the value a
+            # reconciliation was told to abort the run on), without hiding it.
+            try:
+                report_outcomes(context_session.path, config)
+            except Exception as exc:
+                LOGGER.warning(f"The reconciliation report could not be written: {exc}")
+            raise
+        # ── 8. Outcomes of stateful functions ─────────────────────────────
+        report_outcomes(context_session.path, config)
     finally:
         release_contexts(context_session)
+
+    if output == "file":
+        total = sum(r for r in results if isinstance(r, int))
+        LOGGER.info(f"{total} triples written to file.")
+        return total
 
     triples = _collect(results)
     LOGGER.info(f"{len(triples)} triples generated in total.")

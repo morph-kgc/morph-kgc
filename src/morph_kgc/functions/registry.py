@@ -42,6 +42,8 @@ class RegisteredFunction:
     context_parameter: str = DEFAULT_CONTEXT_PARAMETER
     # Called once with the values of every row, rather than once per row.
     vectorized:        bool = False
+    # Keyword argument through which the outcomes of a call are reported.
+    outcomes_parameter: Optional[str] = None
 
     @property
     def is_stateful(self) -> bool:
@@ -84,6 +86,7 @@ class FunctionRegistry:
             initializer       = entry.get("initializer"),
             context_parameter = entry.get("context_parameter", DEFAULT_CONTEXT_PARAMETER),
             vectorized        = entry.get("vectorized", False),
+            outcomes_parameter = entry.get("outcomes_parameter"),
         )
 
     @classmethod

@@ -15,11 +15,16 @@ resolve_params(data, execution, config, decorator_params) -> dict[str, list]
   Returns {function_param_name: [value_per_row, ...], ...}
 """
 
+import re
+
 import pandas as pd
 
 from ..constants import RML_CONSTANT, RML_TEMPLATE, RML_REFERENCE, RML_EXECUTION
 from ..utils import get_references_in_template
 from .model import FNMLExecution, InputBinding, ValueBinding
+
+# The number of a position: 1, 2, ..., without leading zeros.
+_POSITION = re.compile(r"[1-9][0-9]*")
 
 
 class MergedAliases(tuple):
@@ -29,6 +34,37 @@ class MergedAliases(tuple):
     parameter meant to be bound several times, such as the attributes a value
     is matched against.
     """
+
+
+class NumberedParameter(tuple):
+    """
+    Accepted prefixes of a parameter bound once per position, under IRIs
+    numbered from 1: ``<prefix>1``, ``<prefix>2``, ... for any of the prefixes,
+    the prefix alone standing for ``<prefix>1``. The argument holds, for each
+    row, the tuple of the values bound to every position, in order. For a
+    parameter taking any number of values that only make sense in order, such
+    as the values an entity is matched by, since RDF puts no order on the
+    inputs of an execution.
+    """
+
+    def position(self, parameter_iri: str) -> int | None:
+        """The position *parameter_iri* binds, or None when it is none of them."""
+        for prefix in self:
+            if parameter_iri == prefix:
+                return 1
+            number = parameter_iri[len(prefix):] if parameter_iri.startswith(prefix) else ""
+            if _POSITION.fullmatch(number):
+                return int(number)
+        return None
+
+    def bound_positions(self, parameter_iris) -> dict[int, list[str]]:
+        """The positions *parameter_iris* bind, and the IRIs binding each."""
+        positions: dict[int, list[str]] = {}
+        for parameter_iri in parameter_iris:
+            position = self.position(parameter_iri)
+            if position is not None:
+                positions.setdefault(position, []).append(parameter_iri)
+        return positions
 
 
 def _expand_template(data: pd.DataFrame, template: str) -> list:
@@ -111,7 +147,8 @@ def resolve_params(
 
     decorator_params maps function_kwarg_name -> parameter_IRI, or to a tuple of
     accepted parameter IRIs (sourced from the @bif / @udf decorator), or to a
-    MergedAliases of them.
+    MergedAliases of them, or to a NumberedParameter, whose argument is the
+    tuple of the values of every position for each row.
 
     For each kwarg the resolver:
       1. Finds the value bindings of the matching parameter IRI.
@@ -124,30 +161,54 @@ def resolve_params(
     result: dict[str, list] = {}
 
     for kwarg_name, param_iris in decorator_params.items():
+        if isinstance(param_iris, NumberedParameter):
+            positions = param_iris.bound_positions(param_lookup)
+            if not positions:
+                continue
+            # The value bindings of each position, under the IRIs binding it.
+            columns = [
+                _per_row_values(data, [
+                    value
+                    for parameter_iri in positions[position]
+                    for value in param_lookup[parameter_iri]
+                ])
+                for position in sorted(positions)
+            ]
+            result[kwarg_name] = [tuple(row) for row in zip(*columns)]
+            continue
+
         values = _bound_values(param_lookup, param_iris)
         if not values:
             # parameter not provided — skip (function will use its default)
             continue
 
-        # Filter out EXECUTION bindings — those were already evaluated
-        # recursively before this call and the result lives in data columns.
-        non_exec = [vb for vb in values if vb.map_type != RML_EXECUTION]
-        exec_vbs = [vb for vb in values if vb.map_type == RML_EXECUTION]
-
-        if exec_vbs:
-            # Execution result is already a column in data
-            per_row = [list(data[vb.map_value]) for vb in exec_vbs]
-            per_row += [_resolve_value_binding(data, vb) for vb in non_exec]
-        else:
-            per_row = [_resolve_value_binding(data, vb) for vb in non_exec]
-
-        if len(per_row) == 1:
-            result[kwarg_name] = per_row[0]
-        else:
-            # array parameter: zip across the multiple value lists
-            result[kwarg_name] = [
-                list(vals) if len(vals) > 1 else vals[0]
-                for vals in zip(*per_row)
-            ]
+        result[kwarg_name] = _per_row_values(data, values)
 
     return result
+
+
+def _per_row_values(data: pd.DataFrame, values: list[ValueBinding]) -> list:
+    """
+    The value of a parameter bound by *values* for each row of *data*: the
+    value of its single value binding, or the list of the values of them all.
+    """
+    # Filter out EXECUTION bindings — those were already evaluated
+    # recursively before this call and the result lives in data columns.
+    non_exec = [vb for vb in values if vb.map_type != RML_EXECUTION]
+    exec_vbs = [vb for vb in values if vb.map_type == RML_EXECUTION]
+
+    if exec_vbs:
+        # Execution result is already a column in data
+        per_row = [list(data[vb.map_value]) for vb in exec_vbs]
+        per_row += [_resolve_value_binding(data, vb) for vb in non_exec]
+    else:
+        per_row = [_resolve_value_binding(data, vb) for vb in non_exec]
+
+    if len(per_row) == 1:
+        return per_row[0]
+
+    # array parameter: zip across the multiple value lists
+    return [
+        list(vals) if len(vals) > 1 else vals[0]
+        for vals in zip(*per_row)
+    ]
