@@ -11,9 +11,7 @@ from ..registry import bif
     string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
 )
 def hash(string):
-    from hashlib import sha256
-
-    return sha256(string.encode("UTF-8")).hexdigest()
+    return hashlib.sha256(string.encode("UTF-8")).hexdigest()
 
 
 @bif(
@@ -21,7 +19,7 @@ def hash(string):
     string="http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter",
 )
 def hash_iri(string):
-    return f'http://example.com/ns#{sha256(string.encode("UTF-8")).hexdigest()}'
+    return f'http://example.com/ns#{hashlib.sha256(string.encode("UTF-8")).hexdigest()}'
 
 
 @bif(

@@ -1,0 +1,43 @@
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ex: <http://example.com/> .
+@prefix rml: <http://w3id.org/rml/> .
+@prefix morph-kgc: <https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#> .
+@prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
+
+@base <http://example.com/base/> .
+
+<TriplesMap1>
+    rml:logicalSource [
+        rml:source "test/rml-fnml/other_functions/hash/student.csv";
+        rml:referenceFormulation rml:CSV
+    ];
+    rml:subjectMap [
+        rml:template "http://example.com/{Name}"
+    ];
+    rml:predicateObjectMap [
+        rml:predicate ex:hash;
+        rml:objectMap [
+            rml:functionExecution <#Hash>
+        ]
+    ];
+    rml:predicateObjectMap [
+        rml:predicate ex:hashIri;
+        rml:objectMap [
+            rml:functionExecution <#HashIri> ;
+            rml:termType rml:IRI
+        ]
+    ] .
+
+<#Hash>
+    rml:function morph-kgc:hash ;
+    rml:input [
+        rml:parameter grel:valueParameter ;
+        rml:inputValueMap [ rml:reference "Name" ]
+    ] .
+
+<#HashIri>
+    rml:function morph-kgc:hash_iri ;
+    rml:input [
+        rml:parameter grel:valueParameter ;
+        rml:inputValueMap [ rml:reference "Name" ]
+    ] .
