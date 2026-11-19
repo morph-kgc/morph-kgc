@@ -14,6 +14,7 @@ for the whole materialization. Nothing in this file is needed to reconcile
 against a real endpoint: only the endpoint named by the mapping has to be it.
 """
 
+import json
 import os
 import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -52,7 +53,10 @@ class _SPARQLHandler(BaseHTTPRequestHandler):
             self._respond(400, b'no query given', 'text/plain')
         else:
             try:
-                results = GRAPH.query(query).serialize(format='json')
+                answer = json.loads(GRAPH.query(query).serialize(format='json'))
+                # The head first, as most stores write it, so that the answer is
+                # read as a stream (rdflib writes the results first).
+                results = json.dumps({'head': answer['head'], 'results': answer['results']}).encode()
             except Exception as exc:
                 # What is wrong with the query, as a real endpoint would say.
                 self._respond(400, str(exc).encode(), 'text/plain')

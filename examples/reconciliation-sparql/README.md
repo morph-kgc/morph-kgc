@@ -22,7 +22,10 @@ line instead, start the endpoint yourself:
 ```bash
 python endpoint.py &
 morph-kgc config.ini
+kill %1
 ```
+
+Stop the endpoint afterwards: `run.py` starts its own on the same port (8890).
 
 ## The endpoint and the query are in the mapping
 
@@ -30,6 +33,10 @@ The mapping says which endpoint to query and which entities to reconcile
 against:
 
 ```turtle
+@prefix rml: <http://w3id.org/rml/> .
+@prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
+@prefix morph-fn: <urn:morph:function:> .
+
 <#ClinicalTrialReconciliation>
     rml:function morph-fn:reconcileEntityOverSPARQL ;
     rml:input [
@@ -93,9 +100,10 @@ not, as in a vocabulary file. Answers in JSON, XML and TSV are all read with
 their values as they are, whitespace, carriage returns and control characters
 included. An answer in XML holding a character no XML parser reads is read by a
 lenient one, which trims the whitespace a value starts or ends with, and says
-so in a warning. Labels are best matched as strings: a store may rewrite a
-typed literal such as `"01"^^xsd:integer` as `1`, while a vocabulary file keeps
-it as written.
+so in a warning. Language tags and datatypes of the values are ignored, as in a
+vocabulary file. Labels are best matched as strings: a store may rewrite a
+typed literal such as `"01"^^xsd:integer` as `1`, while a vocabulary file read
+as a stream keeps it as written.
 
 Declare the prefixes the query uses: an endpoint is not bound to know `schema:`
 or any other prefix.
@@ -179,12 +187,14 @@ of the query. In YARRRML, write it as a `|` block scalar, which keeps it exactly
 number of results they return (e.g. `ResultSetMaxRows` in Virtuoso); values of
 entities left out of the answer are not reconciled.
 
-## The configuration file is only for access control
+## Declaring an endpoint in the configuration file
 
 An endpoint open to everyone needs nothing but its URL in the mapping, which is
-why [`config.ini`](config.ini) declares no resource. An access-controlled
-endpoint is declared with its credentials, in a `[RESOURCE:<name>]` section
-whose `url` is the endpoint the mapping names:
+why [`config.ini`](config.ini) declares no resource. A resource declares the
+credentials of an access-controlled endpoint, and, for any endpoint, its
+`ambiguity`, `timeout` or `method`, or another URL to query it at (`iri` and
+`url`). It is a `[RESOURCE:<name>]` section whose `url` (or `iri`) is the
+endpoint the mapping names:
 
 ```ini
 [RESOURCE:clinical_trials]
@@ -194,13 +204,21 @@ username={ENDPOINT_USER}
 password={ENDPOINT_PASSWORD}
 ```
 
+The section must have `resource_type=SPARQL_ENDPOINT`, and its `url` (or `iri`)
+must equal the URL in the mapping character for character (a trailing `/`
+counts). Otherwise the endpoint is queried without the resource, so without its
+credentials, and only an `INFO` line says so.
+
 `{ENV_VAR}` placeholders in `url`, `iri`, `username` and `password` are replaced
 with environment variables, so credentials need not be written to the file at
-all.
+all. A value written in the file doubles a literal `$` (`$$`), and, in these
+four options, a literal `{` or `}` (`{{`, `}}`); a value read from an
+environment variable needs no escaping. A misspelled option is ignored without
+a warning.
 
 | Option | Meaning |
 | --- | --- |
-| `resource_type` | `SPARQL_ENDPOINT`. |
+| `resource_type` | `SPARQL_ENDPOINT` (required). |
 | `url` | where the endpoint is queried. |
 | `iri` | the endpoint the mapping names, when it is not `url`. A mapping naming a production endpoint then runs against a local or staging one, declared as `url`. |
 | `username`, `password` | HTTP Basic Authentication credentials. |
@@ -229,7 +247,9 @@ before any data is read. A value matching no entity yields no triple. A value
 matching several entities is ambiguous, and yields one triple per matched entity
 with `ALL` (the default), no triple with `NONE`, and aborts the run with `FAIL`.
 It is recorded, with the entities it matches, in the reconciliation report, not
-in the log. With `FAIL`, it is also the message of the error aborting the run.
+in the log. With `FAIL`, it is also the message of the error aborting the run,
+which may leave a partial output file (see
+[`../reconciliation`](../reconciliation/README.md#ambiguous-values)).
 The policy is
 a constant of the execution, or else the
 `ambiguity` option of the resource declaring the endpoint, as in
