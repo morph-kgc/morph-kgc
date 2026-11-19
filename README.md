@@ -17,7 +17,7 @@
 
 - User-friendly mappings with **[YARRRML](https://rml.io/yarrrml/spec/)**.
 - Transformation functions with **[RML-FNML](https://w3id.org/rml/fnml/spec)**, including **Python UDFs**.
-- [RDF 1.2](https://www.w3.org/TR/rdf12-concepts/) generation with **[RML 1.2](https://sferrada.com/publication/2026-dmkg-rml-12/2026-dmkg-rml-12.pdf)**.
+- [RDF 1.2](https://www.w3.org/TR/rdf12-concepts/) generation with **[RML 1.2](https://ceur-ws.org/Vol-4322/paper_15.pdf)**.
 - **[RML views](https://2023.eswc-conferences.org/wp-content/uploads/2023/05/paper_Arenas-Guerrero_2023_Boosting.pdf)** over tabular data sources and [JSON](https://www.json.org) files.
 - Integration with **[RDFLib](https://rdflib.readthedocs.io)**, **[Oxigraph](https://pyoxigraph.readthedocs.io/en)**.
 - **Stateful functions** with a shared context loaded once, such as **[reconciliation](https://github.com/morph-kgc/morph-kgc/blob/main/examples/README.md#reconciliation-and-stateful-functions)** against a SKOS vocabulary or any knowledge graph behind a SPARQL endpoint.
