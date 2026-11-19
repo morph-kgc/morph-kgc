@@ -1,0 +1,16 @@
+_:p1 <http://example.com/id> "1" .
+_:p2 <http://example.com/id> "2" .
+_:p3 <http://example.com/id> "3" .
+_:p4 <http://example.com/id> "4" .
+<http://example.com/record/1> <http://example.com/person> _:p1 .
+<http://example.com/record/2> <http://example.com/person> _:p2 .
+<http://example.com/record/3> <http://example.com/person> _:p3 .
+<http://example.com/record/4> <http://example.com/person> _:p4 .
+_:c1 <http://example.com/code> "-x" .
+_:c2 <http://example.com/code> "a b" .
+_:c3 <http://example.com/code> "a_20b" .
+_:c4 <http://example.com/code> "a_b" .
+_:u1 <http://example.com/id> "1" .
+_:u2 <http://example.com/id> "2" .
+_:u3 <http://example.com/id> "3" .
+_:u4 <http://example.com/id> "4" .

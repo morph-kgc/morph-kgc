@@ -35,6 +35,34 @@ from ...functions import execute_fnml
 
 # ── Literal escaping ──────────────────────────────────────────────────────────
 
+# The characters a blank node label keeps as they are: every other character is
+# encoded, as N-Triples only allows letters, digits, '_', '-' and '.' (neither
+# first nor last) in a label.
+_BLANK_NODE_LABEL_CHARACTERS = frozenset(
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-"
+)
+
+
+def blank_node_label(value: str) -> str:
+    """
+    The blank node label for *value*: its ASCII letters, digits and '-' as they
+    are, and every other byte of its UTF-8 encoding as '_' followed by two hex
+    digits ('Ann Lee' is 'Ann_20Lee'). '_' is encoded as well, so that distinct
+    values never share a label, nor is a leading '-' kept, which a label cannot
+    start with. An empty value is '_', which no other value gives.
+    """
+    if value.isascii() and value.isalnum():
+        return value
+    label = "".join(
+        character if character in _BLANK_NODE_LABEL_CHARACTERS
+        else "".join(f"_{byte:02X}" for byte in character.encode("utf-8", "surrogatepass"))
+        for character in value
+    )
+    if label.startswith("-"):
+        label = "_2D" + label[1:]
+    return label or "_"
+
+
 def _escape_literal(series: pd.Series, datatype: str, config) -> pd.Series:
     if datatype == XSD_BOOLEAN:
         series = series.str.lower()
@@ -99,7 +127,8 @@ def _apply_template(
     if t == RML_IRI:
         data[position] = "<" + data[position] + ">"
     elif t == RML_BLANK_NODE:
-        data[position] = "_:" + data[position]
+        # The whole label, constant parts of the template included.
+        data[position] = "_:" + data[position].map(blank_node_label)
     elif t == RML_LITERAL:
         data[position] = '"' + data[position] + '"'
 
@@ -162,7 +191,7 @@ def _apply_fnml(
         data[fnml_execution] = data[fnml_execution].apply(str.strip)
         data[position] = "<" + data[fnml_execution] + ">"
     elif t == RML_BLANK_NODE:
-        data[position] = "_:" + data[fnml_execution]
+        data[position] = "_:" + data[fnml_execution].map(blank_node_label)
     elif not t:
         data[position] = data[fnml_execution]
 

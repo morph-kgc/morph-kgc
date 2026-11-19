@@ -1,0 +1,35 @@
+@prefix rml: <http://w3id.org/rml/> .
+@prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
+@prefix ex: <http://example.com/> .
+
+@base <http://example.com/base/> .
+
+# Blank nodes from a template, a reference and a function, whose values hold
+# characters a blank node label cannot.
+<#PersonMapping> a rml:TriplesMap ;
+    rml:logicalSource [ rml:source "test/blank-node-labels/people.csv" ; rml:referenceFormulation rml:CSV ] ;
+    rml:subjectMap [ rml:template "person {name}" ; rml:termType rml:BlankNode ] ;
+    rml:predicateObjectMap [ rml:predicate ex:id ; rml:objectMap [ rml:reference "id" ] ] .
+
+# The same blank nodes, as objects of another triples map.
+<#RecordMapping> a rml:TriplesMap ;
+    rml:logicalSource [ rml:source "test/blank-node-labels/people.csv" ; rml:referenceFormulation rml:CSV ] ;
+    rml:subjectMap [ rml:template "http://example.com/record/{id}" ] ;
+    rml:predicateObjectMap [
+        rml:predicate ex:person ;
+        rml:objectMap [ rml:template "person {name}" ; rml:termType rml:BlankNode ]
+    ] .
+
+<#CodeMapping> a rml:TriplesMap ;
+    rml:logicalSource [ rml:source "test/blank-node-labels/people.csv" ; rml:referenceFormulation rml:CSV ] ;
+    rml:subjectMap [ rml:reference "code" ; rml:termType rml:BlankNode ] ;
+    rml:predicateObjectMap [ rml:predicate ex:code ; rml:objectMap [ rml:reference "code" ] ] .
+
+<#UpperMapping> a rml:TriplesMap ;
+    rml:logicalSource [ rml:source "test/blank-node-labels/people.csv" ; rml:referenceFormulation rml:CSV ] ;
+    rml:subjectMap [ rml:functionExecution <#Upper> ; rml:termType rml:BlankNode ] ;
+    rml:predicateObjectMap [ rml:predicate ex:id ; rml:objectMap [ rml:reference "id" ] ] .
+
+<#Upper>
+    rml:function grel:toUpperCase ;
+    rml:input [ rml:parameter grel:valueParameter ; rml:inputValueMap [ rml:reference "name" ] ] .
