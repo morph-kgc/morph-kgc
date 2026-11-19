@@ -151,19 +151,10 @@ url=https://example.org/vocabulary/disease
 ambiguity=NONE
 ```
 
-With `NONE`, each ambiguous value is reported in the log, together with the
-concepts it matches, as a warning starting with `MULTIPLE_MATCH`, so that the
-values left without a triple can be reviewed (set `logging_file` in the
-configuration file to keep them in a file):
-
-```
-MULTIPLE_MATCH: value 'Autosomal dominant cerebellar ataxia-deafness-narcolepsy syndrome' matches 2 entities of resource 'disease_vocabulary': <https://data.boehringer.com/id/00036/10077339>, <https://example.org/vocabulary/disease/adca-dn>. No triple is generated for it, as the ambiguity policy is NONE.
-```
-
-With `ALL`, the report is a debug record (`logging_level=DEBUG`). With `FAIL`,
-it is the message of the error aborting the run, rather than a record of the
-log. A process writes each record once, however many rows and mapping rules
-hold the value.
+Ambiguous values are not logged: each is recorded, with the concepts it
+matches, in the [reconciliation report](#reconciliation-report), whatever the
+policy, so that the values left without a triple can be reviewed. With `FAIL`,
+the first ambiguous value is also the message of the error aborting the run.
 
 ## Reconciliation report
 
@@ -176,44 +167,50 @@ configuration file names it:
 reconciliation_report=reports/reconciliation.jsonl
 ```
 
-It holds one line per distinct value an execution matched to no entity
-(`NO_MATCH`) or to several (`MULTIPLE_MATCH`) of a resource, whatever the
-number of rows holding it, of mapping rules reconciling it and of processes
-(`number_of_processes`), written when the run ends, also when it is aborted
-(ambiguity `FAIL`). Its directory is created as the configuration is read,
-and a path it cannot be written to is an error then; an existing file, or a
-device such as `/dev/stdout`, needs only to be writable itself. With the vocabulary
-`disease_vocabulary_ambiguous.ttl` of the tests and `ambiguity=NONE` (see
-[Ambiguous values](#ambiguous-values)), this example writes:
+It holds one line per distinct (execution, value, outcome): each value an
+execution matched to no entity (`NO_MATCH`) or to several (`MULTIPLE_MATCH`),
+whatever the number of rows holding it, of mapping rules reconciling it and of
+processes (`number_of_processes`). It is written when the run ends, also when it
+is aborted (ambiguity `FAIL`). Its directory is created as the configuration is
+read, and a path it cannot be written to is an error then; an existing file, or
+a device such as `/dev/stdout`, needs only to be writable itself. With the
+vocabulary `disease_vocabulary_ambiguous.ttl` of the tests and `ambiguity=NONE`
+(see [Ambiguous values](#ambiguous-values)), this example writes:
 
 ```json
-{"outcome": "MULTIPLE_MATCH", "value": "Autosomal dominant cerebellar ataxia-deafness-narcolepsy syndrome", "normalized_value": "Autosomal dominant cerebellar ataxia-deafness-narcolepsy syndrome", "resource": "disease_vocabulary", "matching": "EXACT", "ambiguity": "NONE", "candidates": ["https://data.boehringer.com/id/00036/10077339", "https://example.org/vocabulary/disease/adca-dn"], "function_iri": "urn:morph:function:reconciliation:reconcileVocabularyConcept", "execution_id": "http://example.com/base/#DiseaseReconciliationExecution", "triples_maps": ["http://example.com/base/#DiseaseResourceMapping", "http://example.com/base/#PatientsMapping"], "sources": ["patients.csv"], "data_sources": ["PatientsDataSource"], "mappings": ["mapping.ttl"]}
+{"outcome": "MULTIPLE_MATCH", "value": "Autosomal dominant cerebellar ataxia-deafness-narcolepsy syndrome", "normalized_value": "Autosomal dominant cerebellar ataxia-deafness-narcolepsy syndrome", "function_iri": "urn:morph:function:reconciliation:reconcileVocabularyConcept", "execution_id": "http://example.com/base/#DiseaseReconciliationExecution", "triples_map": "http://example.com/base/#DiseaseResourceMapping, http://example.com/base/#PatientsMapping", "resource": "disease_vocabulary", "candidates": ["https://data.boehringer.com/id/00036/10077339", "https://example.org/vocabulary/disease/adca-dn"], "source": "patients.csv", "mapping": "mapping.ttl"}
 ```
 
 | Field | Meaning |
 | --- | --- |
 | `outcome` | `NO_MATCH` or `MULTIPLE_MATCH`. |
 | `value`, `normalized_value` | the value as read (a string, whatever a nested function returned), and as looked up (see [Ways of matching values](#ways-of-matching-values)); arrays for an entity matched by several values. |
-| `resource` | the resource reconciled against; `endpoint` and `query_hash` (SHA-256 of the query) for a SPARQL endpoint. |
-| `matching` | the way values were matched. |
-| `ambiguity`, `candidates` | for `MULTIPLE_MATCH`: the ambiguity policy, which says whether triples were generated, and the entities matched. |
 | `function_iri`, `execution_id` | the function and its execution in the mapping. |
-| `triples_maps`, `sources`, `data_sources`, `mappings` | the triples maps reconciling the value, their logical sources, the sections of the configuration file declaring them, and their mapping files. |
+| `triples_map` | the triples map reconciling the value. |
+| `resource` | the resource reconciled against; `endpoint` and `query_hash` (SHA-256 of the query) for a SPARQL endpoint. |
+| `candidates` | for `MULTIPLE_MATCH`: the entities the value matches. |
+| `source`, `mapping` | the logical source of the triples map (its file path, or its query or table), and the mapping file declaring it. |
 
-A value is reported once for each execution, resource and outcome, with the
-candidates of all the rows holding it (attributes read from the data may match
-it to no entity in one row and to several in another). Only the values of the
-rows that reach the term they are reconciled for are reported: not those of a
-row missing a column the mapping rule references (see `na_values`), nor those
-of a row an earlier term of the rule yields no value for. When the subject of a
-row is reconciled to no entity, for instance, its object is neither reconciled
-nor reported; reconcile them in separate triples maps for the report to hold
-both. A summary of each execution is logged (`INFO`), counting the rows each
-mapping rule reconciled, without its duplicates, and the distinct values
-reported:
+An execution used by several triples maps, as the one of this example, records
+a value once: `triples_map` names each of them, sorted and joined by `, `, and
+so do `source` and `mapping` when they differ, and `resource` when the
+execution reads it from the data. `candidates` gathers the entities the value
+matches in every row (attributes read from the data may match it to different
+ones).
+
+Only the values of the rows that reach the term they are reconciled for are
+reported: not those of a row missing a column the mapping rule references (see
+`na_values`), nor those of a row an earlier term of the rule yields no value
+for. When the subject of a row is reconciled to no entity, for instance, its
+object is neither reconciled nor reported; reconcile them in separate triples
+maps for the report to hold both.
+
+The values themselves are never logged. A summary of each execution is logged
+(`INFO`), counting the rows each mapping rule reconciled, without its
+duplicates, matched, unmatched and ambiguous, and the distinct values reported:
 
 ```
-Execution 'http://example.com/base/#DiseaseReconciliationExecution' of function 'urn:morph:function:reconciliation:reconcileVocabularyConcept' handled 6 value(s): 3 matched, 3 ambiguous (1 distinct).
+Execution 'http://example.com/base/#DiseaseReconciliationExecution' of function 'urn:morph:function:reconciliation:reconcileVocabularyConcept' handled 6 value(s): 3 matched, 0 unmatched, 3 ambiguous (1 distinct).
 ```
 
 ## YARRRML

@@ -325,11 +325,6 @@ class ReconciliationContext:
     # resource name -> the policy for the values matching several of its
     # concepts, when an execution does not choose one
     ambiguities: dict[str, str] = field(default_factory=dict)
-    # The reports of ambiguous values this process has logged. The only part
-    # of the context that is not read-only, so that each is logged once,
-    # however many rows and mapping rules hold the value; it is written to
-    # disk empty, and every process fills its own.
-    reported: set = field(default_factory=set, compare=False, repr=False)
 
     def add(
         self,
@@ -416,9 +411,6 @@ class QueryContext:
     # endpoint -> the policy for the values matching several of the entities
     # its answers return, when an execution does not choose one
     ambiguities: dict[str, str] = field(default_factory=dict)
-    # The reports of ambiguous values this process has logged, as in
-    # ReconciliationContext.
-    reported: set = field(default_factory=set, compare=False, repr=False)
 
     def ambiguity(self, endpoint: str) -> str:
         """The policy of *endpoint* for ambiguous values."""

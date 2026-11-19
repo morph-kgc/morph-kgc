@@ -120,16 +120,13 @@ the executions that do not choose one::
     url=https://example.org/vocabulary/disease
     ambiguity=NONE
 
-An ambiguous value is reported in a log record starting with ``MULTIPLE_MATCH``
-that gives the value and the IRIs of every entity it matches: a warning with
-``NONE``, as no triple is generated for it, and a debug record with ``ALL``. A
-process writes each record once, however many rows and mapping rules hold the
-value. With ``FAIL``, the report is the message of the error aborting the run.
-
-Both functions report how many values they matched to one entity, to none and
-to several, logged as a summary of each execution, and record each distinct
-value matched to none or to several in the report the 'reconciliation_report'
-option names (see :mod:`morph_kgc.functions.outcomes`).
+Both functions record each distinct value they match to no entity
+(``NO_MATCH``) or to several (``MULTIPLE_MATCH``, with the IRIs of the entities
+it matches), whatever the policy, in the report the 'reconciliation_report'
+option names, and not in the log, which only gets a summary of each execution:
+how many values it matched to one entity, to none and to several (see
+:mod:`morph_kgc.functions.outcomes`). With ``FAIL``, the first ambiguous value
+is also the message of the error aborting the run.
 
 An object map using a function needs
 ``rml:termType rml:IRI`` (``rr:termType rr:IRI``, ``type: iri`` in YARRRML):
@@ -189,51 +186,29 @@ VALUE_PARAMETERS = NumberedParameter((GREL_VALUE_PARAM, GREL_VALUE_PARAMETER))
 NO_MATCH = "NO_MATCH"
 MULTIPLE_MATCH = "MULTIPLE_MATCH"
 
-# What becomes of an ambiguous value under each policy.
-_AMBIGUITY_OUTCOMES = {
-    AMBIGUITY_ALL:  "A triple is generated for each of them",
-    AMBIGUITY_NONE: "No triple is generated for it",
-    AMBIGUITY_FAIL: "The run is aborted",
-}
 
 
-def _result(context, target, ambiguity, value, matches):
+def _result(target, ambiguity, value, matches):
     """
     What *value* is reconciled to, given the IRIs of the entities of *target*
     it *matches*: the one it matches, None when it matches none, and, when it
     matches several, as the *ambiguity* policy says: all of them, None, or an
-    error aborting the run.
+    error aborting the run. What it is matched to is recorded in the
+    reconciliation report (see :func:`_report`), not logged.
     """
     if not matches:
-        LOGGER.debug(f"{NO_MATCH}: value {value!r} matches no entity of {target}.")
         return None
     if len(matches) == 1:
         return matches[0]
-
-    if ambiguity == AMBIGUITY_ALL and not LOGGER.isEnabledFor(logging.DEBUG):
-        # Reported in no record, so that the default policy costs nothing.
-        return matches
-
-    report = (
-        f"{MULTIPLE_MATCH}: value {value!r} matches {len(matches)} entities of "
-        f"{target}: {', '.join(f'<{match}>' for match in matches)}. "
-        f"{_AMBIGUITY_OUTCOMES[ambiguity]}, as the ambiguity policy is {ambiguity}."
-    )
     if ambiguity == AMBIGUITY_FAIL:
         raise ValueError(
-            f"{report} To reconcile it to all the entities it matches, or to none, "
-            f"set the policy to {AMBIGUITY_ALL} or {AMBIGUITY_NONE}: "
-            f"'{MORPH_FN_AMBIGUITY}' in the execution, or else the "
-            f"'{AMBIGUITY_OPTION}' option of the resource."
+            f"{MULTIPLE_MATCH}: value {value!r} matches {len(matches)} entities of "
+            f"{target}: {', '.join(f'<{match}>' for match in matches)}. The run is "
+            f"aborted, as the ambiguity policy is {ambiguity}. To reconcile it to "
+            f"all the entities it matches, or to none, set the policy to "
+            f"{AMBIGUITY_ALL} or {AMBIGUITY_NONE}: '{MORPH_FN_AMBIGUITY}' in the "
+            f"execution, or else the '{AMBIGUITY_OPTION}' option of the resource."
         )
-
-    # Each record is written once by each process, however many rows and
-    # mapping rules hold the value.
-    if report not in context.reported:
-        context.reported.add(report)
-        # A value without a triple is a gap in the knowledge graph.
-        LOGGER.log(logging.DEBUG if ambiguity == AMBIGUITY_ALL else logging.WARNING, report)
-
     return matches if ambiguity == AMBIGUITY_ALL else None
 
 
@@ -512,7 +487,7 @@ def _attributes(attribute) -> tuple:
     return (attribute,)
 
 
-def _reconcile_rows(context, values, groups, lookup, outcomes=None) -> list:
+def _reconcile_rows(values, groups, lookup, outcomes=None) -> list:
     """
     Reconcile *values*, the rows of each group of *groups* (key -> row
     numbers) with a single call to ``lookup(key, values)``, which returns the
@@ -526,17 +501,17 @@ def _reconcile_rows(context, values, groups, lookup, outcomes=None) -> list:
         for row, row_matches in zip(rows, matches):
             if outcomes is not None:
                 # Before a value is reconciled, which may abort the run.
-                _report(outcomes, values[row], row_matches, index, ambiguity, fields)
-            results[row] = _result(context, target, ambiguity, values[row], row_matches)
+                _report(outcomes, values[row], row_matches, index, fields)
+            results[row] = _result(target, ambiguity, values[row], row_matches)
     return results
 
 
-def _report(outcomes, value, matches, index, ambiguity, fields) -> None:
+def _report(outcomes, value, matches, index, fields) -> None:
     """
     Count the outcome of reconciling *value* in *index*, and record it when it
     matches no entity or several (see :mod:`morph_kgc.functions.outcomes`): the
-    value as read, and as looked up, how it was matched, and what it was matched
-    against.
+    value as read, and as looked up, what it was matched against (*fields*),
+    and the entities it matches, when several.
     """
     if len(matches) == 1:
         outcomes.count("MATCH")
@@ -556,18 +531,13 @@ def _report(outcomes, value, matches, index, ambiguity, fields) -> None:
         reported, normalized = (list(column) for column in zip(*map(as_looked_up, value)))
     else:
         reported, normalized = as_looked_up(value)
-    record = {
-        "value": reported,
-        "normalized_value": normalized,
-        **fields,
-        "matching": index.matching,
-    }
+    record = {"value": reported, "normalized_value": normalized, **fields}
     if matches:
-        record["ambiguity"] = ambiguity
-        record["candidates"] = list(matches)
-    # A value is told apart by what it is matched against as well, which an
-    # execution may read from the data.
-    outcomes.record(outcome, [fields, record["value"]], **record)
+        record["candidates"] = sorted(matches)
+    # One record per distinct value of the execution and outcome, which gathers
+    # what the value was matched against, when an execution reads it from the
+    # data, and the entities it matched in every row.
+    outcomes.record(outcome, reported, **record)
 
 
 @stateful_bif(
@@ -615,7 +585,7 @@ def reconcile_vocabulary_concept(
             {"resource": name},
         )
 
-    return _reconcile_rows(context, value, groups, lookup, outcomes)
+    return _reconcile_rows(value, groups, lookup, outcomes)
 
 
 # ── SPARQL endpoint ───────────────────────────────────────────────────────────
@@ -808,4 +778,4 @@ def reconcile_entity_over_sparql(
             },
         )
 
-    return _reconcile_rows(context, value, groups, lookup, outcomes)
+    return _reconcile_rows(value, groups, lookup, outcomes)

@@ -228,9 +228,9 @@ The endpoint and the query are constants of the mapping, since they are sent
 before any data is read. A value matching no entity yields no triple. A value
 matching several entities is ambiguous, and yields one triple per matched entity
 with `ALL` (the default), no triple with `NONE`, and aborts the run with `FAIL`.
-It is reported, with the entities it matches, in a log record starting with
-`MULTIPLE_MATCH`: a warning with `NONE` and a debug record with `ALL`. With
-`FAIL`, the report is the message of the error aborting the run. The policy is
+It is recorded, with the entities it matches, in the reconciliation report, not
+in the log. With `FAIL`, it is also the message of the error aborting the run.
+The policy is
 a constant of the execution, or else the
 `ambiguity` option of the resource declaring the endpoint, as in
 [`../reconciliation`](../reconciliation/README.md#ambiguous-values).

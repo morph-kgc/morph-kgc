@@ -708,22 +708,34 @@ class MappingParser:
             self.rml_mapping.http_api_entries.extend(partial.http_api_entries)
 
     def _parse_data_source_mapping_files(self, section_name: str) -> RMLMapping:
-        g = self._load_mapping_graph(section_name)
+        g, declaring_files = self._load_mapping_graph(section_name)
         g = r2rml_to_rml(g)
         g = normalize_mapping_graph(g)
         g = _translate_fnml_to_rml(g)
         g = validate_mapping(g)
         mapping = _graph_to_rml_mapping(g, section_name)
+        # The files declaring each triples map, which the reconciliation report
+        # names (a triples map may be declared across several files of the section).
+        for rule in mapping.rules:
+            rule.mapping_files = "\n".join(sorted(declaring_files.get(rule.triples_map_id, ())))
         return mapping
 
-    def _load_mapping_graph(self, section_name: str) -> rdflib.Graph:
+    def _load_mapping_graph(self, section_name: str) -> tuple[rdflib.Graph, dict[str, set[str]]]:
+        """
+        The merged graph of the mapping files of *section_name*, and the files
+        each of its subjects (its triples maps among them) is declared in.
+        """
         g = rdflib.Graph()
+        declaring_files: dict[str, set[str]] = {}
         for f in self.config.get_mappings_files(section_name):
             if f.endswith(('.yarrrml', '.yml', '.yaml')):
-                g += load_yarrrml(f)
+                file_graph = load_yarrrml(f)
             else:
-                g += load_rml_graph(f)
-        return g
+                file_graph = load_rml_graph(f)
+            for subject in set(file_graph.subjects()):
+                declaring_files.setdefault(str(subject), set()).add(f)
+            g += file_graph
+        return g, declaring_files
 
     # ------------------------------------------------------------------
     # Internal – preprocessing

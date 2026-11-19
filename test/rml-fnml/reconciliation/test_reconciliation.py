@@ -1775,21 +1775,44 @@ def ambiguous_config(mapping=MAPPING, resource_options='', processes=1, configur
     ).replace('[CONFIGURATION]\n', f'[CONFIGURATION]\n{configuration}\n')
 
 
-def multiple_match_reports(caplog, level='WARNING'):
-    """The messages of the reports of ambiguous values logged at *level*."""
+def logged_outcomes(caplog):
+    """
+    The records of the log about the values reconciled, at any level, however
+    worded (naming an outcome, a value or an entity it matched): none, as they
+    go to the reconciliation report.
+    """
+    words = (
+        'MULTIPLE_MATCH', 'NO_MATCH', AMBIGUOUS_LABEL, NOT_A_DISEASE, NARCOLEPSY, ADCA_DN,
+        'NCT07667218', 'https://data.com/id/',
+    )
     return [
-        record.getMessage()
-        for record in caplog.records
-        if record.levelname == level and record.getMessage().startswith('MULTIPLE_MATCH')
+        record.getMessage() for record in caplog.records
+        if any(word in record.getMessage() for word in words)
+        # The URL a query is fetched from, logged when debugging, holds its text,
+        # which may name a value.
+        and not record.getMessage().startswith('Fetching ')
     ]
 
 
-def ambiguous_label_report(consequence, policy):
-    """The report of the label of pid_00002, which matches two concepts."""
+def multiple_matches(report):
+    """The MULTIPLE_MATCH records of *report*, as (execution, value, candidates), sorted."""
+    return sorted(
+        (record['execution_id'].rsplit('#', 1)[-1], record['value'], record['candidates'])
+        for record in read_report(report) if record['outcome'] == 'MULTIPLE_MATCH'
+    )
+
+
+# The record of the label of pid_00002, which matches two concepts.
+AMBIGUOUS_LABEL_RECORD = ('DiseaseReconciliationExecution', AMBIGUOUS_LABEL, [NARCOLEPSY, ADCA_DN])
+
+
+def aborted_report(target=f"resource 'disease_vocabulary'", value=AMBIGUOUS_LABEL,
+                   candidates=(NARCOLEPSY, ADCA_DN)):
+    """The message of the error aborting a run on an ambiguous value, under FAIL."""
     return (
-        f"MULTIPLE_MATCH: value '{AMBIGUOUS_LABEL}' matches 2 entities of resource "
-        f"'disease_vocabulary': <{NARCOLEPSY}>, <{ADCA_DN}>. "
-        f"{consequence}, as the ambiguity policy is {policy}."
+        f"MULTIPLE_MATCH: value '{value}' matches {len(candidates)} entities of {target}: "
+        f"{', '.join(f'<{candidate}>' for candidate in candidates)}. "
+        f"The run is aborted, as the ambiguity policy is FAIL."
     )
 
 
@@ -1808,10 +1831,7 @@ def terms(g_morph):
 def test_ambiguous_value_reconciled_to_every_concept_by_default(
     tmp_path, caplog, replacements, resource_options,
 ):
-    """
-    A value matching several concepts yields one triple per concept by default,
-    and is only reported when debugging.
-    """
+    """A value matching several concepts yields one triple per concept by default."""
     g_morph = morph_kgc.materialize(ambiguous_config(
         mapping_copy(tmp_path, *replacements), resource_options,
     ))
@@ -1822,14 +1842,21 @@ def test_ambiguous_value_reconciled_to_every_concept_by_default(
     assert 'MULTIPLE_MATCH' not in caplog.text
 
 
-def test_ambiguous_value_reported_when_debugging(caplog):
-    """With ALL, the report of an ambiguous value is a debug record."""
-    morph_kgc.materialize(ambiguous_config(configuration='logging_level=DEBUG'))
+def test_reconciled_values_never_logged(tmp_path, caplog):
+    """
+    With ALL as well, an ambiguous value, like an unmatched one, is recorded in
+    the reconciliation report, and never in the log, even when debugging.
+    """
+    report = tmp_path / 'report.jsonl'
+    morph_kgc.materialize(ambiguous_config(
+        configuration=f'logging_level=DEBUG\nreconciliation_report={report}',
+    ))
 
-    assert multiple_match_reports(caplog, 'DEBUG') == [
-        ambiguous_label_report('A triple is generated for each of them', 'ALL'),
+    assert multiple_matches(report) == [AMBIGUOUS_LABEL_RECORD]
+    assert [record['value'] for record in read_report(report) if record['outcome'] == 'NO_MATCH'] == [
+        'Not a disease in the vocabulary',
     ]
-    assert multiple_match_reports(caplog) == []
+    assert logged_outcomes(caplog) == []
 
 
 @pytest.mark.parametrize('replacements, resource_options', [
@@ -1847,20 +1874,21 @@ def test_ambiguity_none(tmp_path, caplog, replacements, resource_options):
     as a MULTIPLE_MATCH with both concepts, once, although three mapping rules
     reconcile it. The values matching a single concept are reconciled.
     """
+    report = tmp_path / 'report.jsonl'
     g_morph = morph_kgc.materialize(ambiguous_config(
         mapping_copy(tmp_path, *replacements), resource_options,
+        configuration=f'logging_level=DEBUG\nreconciliation_report={report}',
     ))
 
     assert reconciled(g_morph) == {('pid_00001', ATAXIA)}
     # Neither as the object of a patient, nor as the subject of a disease.
     assert NARCOLEPSY not in terms(g_morph) and ADCA_DN not in terms(g_morph)
     assert ATAXIA in {str(s) for s in g_morph.subjects()}
-    assert multiple_match_reports(caplog) == [
-        ambiguous_label_report('No triple is generated for it', 'NONE'),
-    ]
+    assert multiple_matches(report) == [AMBIGUOUS_LABEL_RECORD]
+    assert logged_outcomes(caplog) == []
 
 
-def test_ambiguous_value_of_several_rows_reported_once(tmp_path, caplog):
+def test_ambiguous_value_of_several_rows_reported_once(tmp_path):
     """An ambiguous value is reported once, however many rows hold it."""
     with open(os.path.join(TEST_DIR, 'patients.csv'), encoding='utf-8') as f:
         rows = f.read()
@@ -1868,19 +1896,19 @@ def test_ambiguous_value_of_several_rows_reported_once(tmp_path, caplog):
     (tmp_path / 'patients.csv').write_text(rows, encoding='utf-8')
     source = str(tmp_path / 'patients.csv').replace('\\', '/')
 
+    report = tmp_path / 'report.jsonl'
     g_morph = morph_kgc.materialize(ambiguous_config(
         mapping_copy(
             tmp_path,
             ('test/rml-fnml/reconciliation/patients.csv', source),
             with_ambiguity('"NONE"'),
         ),
+        configuration=f'reconciliation_report={report}',
     ))
 
     # ADCA-DN, an alternative label of a single concept, is not ambiguous.
     assert reconciled(g_morph) == {('pid_00001', ATAXIA), ('pid_00005', NARCOLEPSY)}
-    assert multiple_match_reports(caplog) == [
-        ambiguous_label_report('No triple is generated for it', 'NONE'),
-    ]
+    assert multiple_matches(report) == [AMBIGUOUS_LABEL_RECORD]
 
 
 @pytest.mark.parametrize('replacements, resource_options', [
@@ -1891,8 +1919,7 @@ def test_ambiguous_value_of_several_rows_reported_once(tmp_path, caplog):
 @pytest.mark.parametrize('processes', [1, 4])
 def test_ambiguity_fail(tmp_path, replacements, resource_options, processes):
     """With FAIL, the first ambiguous value aborts the run, reporting it."""
-    report = ambiguous_label_report('The run is aborted', 'FAIL')
-    with pytest.raises(ValueError, match=re.escape(report)):
+    with pytest.raises(ValueError, match=re.escape(aborted_report())):
         morph_kgc.materialize(ambiguous_config(
             mapping_copy(tmp_path, *replacements), resource_options, processes,
         ))
@@ -1924,7 +1951,7 @@ def test_ambiguity_none_with_multiple_processes(tmp_path):
     assert NARCOLEPSY not in terms(g_morph) and ADCA_DN not in terms(g_morph)
 
 
-def test_ambiguity_with_case_insensitive_matching(tmp_path, caplog):
+def test_ambiguity_with_case_insensitive_matching(tmp_path):
     """
     Values made ambiguous by matching them case-insensitively are ambiguous as
     well. Here in the legacy FNML vocabulary, whose constants are rr:constant
@@ -1940,13 +1967,14 @@ def test_ambiguity_with_case_insensitive_matching(tmp_path, caplog):
          '        ] .'),
         mapping=os.path.join(TEST_DIR, 'mapping_legacy_fnml.ttl'),
     )
-    g_morph = morph_kgc.materialize(ambiguous_config(mapping))
+    report = tmp_path / 'report.jsonl'
+    g_morph = morph_kgc.materialize(ambiguous_config(
+        mapping, configuration=f'reconciliation_report={report}',
+    ))
 
     assert reconciled(g_morph) == {('pid_00001', ATAXIA)}
-    assert multiple_match_reports(caplog) == [
-        f"MULTIPLE_MATCH: value '{AMBIGUOUS_LABEL.upper()}' matches 2 entities of "
-        f"resource 'disease_vocabulary': <{NARCOLEPSY}>, <{ADCA_DN}>. "
-        f"No triple is generated for it, as the ambiguity policy is NONE.",
+    assert [(value, candidates) for _, value, candidates in multiple_matches(report)] == [
+        (AMBIGUOUS_LABEL.upper(), [NARCOLEPSY, ADCA_DN]),
     ]
 
 
@@ -2086,25 +2114,23 @@ def test_ambiguity_over_sparql(tmp_path, caplog, replacements, resource_options,
     The policy for ambiguous values is the execution's, or else the one of the
     resource declaring the endpoint, which the mapping names by its IRI.
     """
+    report = tmp_path / 'report.jsonl'
     with VocabularyServer() as server:
-        g_morph = morph_kgc.materialize(sparql_config(
+        g_morph = morph_kgc.materialize(with_report(sparql_config(
             endpoint_resource(f'{server.url}/sparql', resource_options),
             mapping=sparql_mapping(
                 tmp_path, (STUDIES_QUERY, AMBIGUOUS_STUDIES_QUERY), *replacements,
             ),
-        ))
+        ), report))
 
     assert studies(g_morph) == expected
-    reports = multiple_match_reports(caplog)
-    if expected == UNAMBIGUOUS_STUDIES:
-        assert reports == [
-            f"MULTIPLE_MATCH: value 'NCT07667218' matches 2 entities of SPARQL "
-            f"endpoint '{MAPPING_ENDPOINT}': <https://data.com/id/1>, "
-            f"<https://data.com/id/4>. No triple is generated for it, as the "
-            f"ambiguity policy is NONE.",
-        ]
-    else:
-        assert reports == []
+    # Whatever the policy, the value is recorded, against the endpoint the
+    # mapping names, and not logged.
+    assert [
+        (record['value'], record['endpoint'], record['candidates'])
+        for record in read_report(report) if record['outcome'] == 'MULTIPLE_MATCH'
+    ] == [('NCT07667218', MAPPING_ENDPOINT, ['https://data.com/id/1', 'https://data.com/id/4'])]
+    assert logged_outcomes(caplog) == []
 
 
 @pytest.mark.parametrize('replacements, resource_options', [
@@ -2113,10 +2139,9 @@ def test_ambiguity_over_sparql(tmp_path, caplog, replacements, resource_options,
 ])
 def test_ambiguity_fail_over_sparql(tmp_path, replacements, resource_options):
     """With FAIL, the first ambiguous value aborts the run, reporting it."""
-    report = (
-        f"MULTIPLE_MATCH: value 'NCT07667218' matches 2 entities of SPARQL "
-        f"endpoint '{MAPPING_ENDPOINT}': <https://data.com/id/1>, "
-        f"<https://data.com/id/4>. The run is aborted, as the ambiguity policy is FAIL."
+    report = aborted_report(
+        f"SPARQL endpoint '{MAPPING_ENDPOINT}'", 'NCT07667218',
+        ('https://data.com/id/1', 'https://data.com/id/4'),
     )
     with VocabularyServer() as server:
         with pytest.raises(ValueError, match=re.escape(report)):
@@ -2206,41 +2231,46 @@ def two_vocabularies_config(mapping, options_a='', options_b='', url_a=AMBIGUOUS
 @pytest.mark.parametrize('alt_label_policy, disease_policy', [('ALL', 'NONE'), ('NONE', 'ALL')])
 def test_ambiguous_value_reported_under_each_policy(tmp_path, caplog, alt_label_policy, disease_policy):
     """
-    A value two executions reconcile under different policies is reported
-    under each, whichever mapping rule runs first.
+    A value two executions reconcile under different policies is recorded for
+    each, whichever mapping rule runs first.
     """
     mapping = two_executions(
         tmp_path,
         execution_input('morph-fn:ambiguity', f'"{alt_label_policy}"'),
         execution_input('morph-fn:ambiguity', f'"{disease_policy}"'),
     )
-    g_morph = morph_kgc.materialize(ambiguous_config(mapping, configuration='logging_level=DEBUG'))
+    report = tmp_path / 'report.jsonl'
+    g_morph = morph_kgc.materialize(ambiguous_config(
+        mapping, configuration=f'logging_level=DEBUG\nreconciliation_report={report}',
+    ))
 
     policies = {DISEASE_BY_ALT_LABEL: alt_label_policy, DISEASE: disease_policy}
     for predicate, policy in policies.items():
         expected = ALL_CONCEPTS if policy == 'ALL' else {('pid_00001', ATAXIA)}
         assert reconciled(g_morph, predicate) == expected
-    assert multiple_match_reports(caplog, 'DEBUG') == [
-        ambiguous_label_report('A triple is generated for each of them', 'ALL'),
+    assert multiple_matches(report) == [
+        ('AltLabelReconciliationExecution', AMBIGUOUS_LABEL, [NARCOLEPSY, ADCA_DN]),
+        AMBIGUOUS_LABEL_RECORD,
     ]
-    assert multiple_match_reports(caplog) == [
-        ambiguous_label_report('No triple is generated for it', 'NONE'),
-    ]
+    assert logged_outcomes(caplog) == []
 
 
-def test_same_report_of_two_executions_written_once(tmp_path, caplog):
+def test_ambiguous_value_of_two_executions_recorded_for_each(tmp_path):
     """
     Executions looking a value up differently (here, against different
-    attributes) that report it alike write a single record.
+    attributes) each record it: a record is one (execution, value, outcome).
     """
+    report = tmp_path / 'report.jsonl'
     g_morph = morph_kgc.materialize(ambiguous_config(
         two_executions(tmp_path), resource_options='ambiguity=NONE',
+        configuration=f'reconciliation_report={report}',
     ))
 
     assert reconciled(g_morph, DISEASE_BY_ALT_LABEL) == {('pid_00001', ATAXIA)}
     assert reconciled(g_morph, DISEASE) == {('pid_00001', ATAXIA)}
-    assert multiple_match_reports(caplog) == [
-        ambiguous_label_report('No triple is generated for it', 'NONE'),
+    assert multiple_matches(report) == [
+        ('AltLabelReconciliationExecution', AMBIGUOUS_LABEL, [NARCOLEPSY, ADCA_DN]),
+        AMBIGUOUS_LABEL_RECORD,
     ]
 
 
@@ -2263,20 +2293,25 @@ def test_ambiguity_option_of_each_resource(tmp_path, options_a, options_b):
         assert reconciled(g_morph, predicate) == expected
 
 
-def test_ambiguous_value_reported_for_each_resource(tmp_path, caplog):
-    """A value ambiguous in two vocabularies is reported for each."""
+def test_ambiguous_value_reported_for_each_resource(tmp_path):
+    """A value two executions find ambiguous in two vocabularies is recorded for each, naming it."""
     mapping = two_executions(
         tmp_path,
         execution_input('morph-fn:resource', '"vocabulary_a"'),
         execution_input('morph-fn:resource', '"vocabulary_b"'),
     )
-    morph_kgc.materialize(two_vocabularies_config(mapping, 'ambiguity=NONE', 'ambiguity=NONE'))
+    report = tmp_path / 'report.jsonl'
+    morph_kgc.materialize(two_vocabularies_config(
+        mapping, 'ambiguity=NONE', 'ambiguity=NONE', configuration=f'reconciliation_report={report}',
+    ))
 
-    assert sorted(multiple_match_reports(caplog)) == [
-        f"MULTIPLE_MATCH: value '{AMBIGUOUS_LABEL}' matches 2 entities of resource "
-        f"'{name}': <{NARCOLEPSY}>, <{ADCA_DN}>. No triple is generated for it, "
-        f"as the ambiguity policy is NONE."
-        for name in ('vocabulary_a', 'vocabulary_b')
+    assert sorted(
+        (record['execution_id'].rsplit('#', 1)[-1], record['resource'], record['candidates'])
+        for record in read_report(report)
+        if record['outcome'] == 'MULTIPLE_MATCH' and record['value'] == AMBIGUOUS_LABEL
+    ) == [
+        ('AltLabelReconciliationExecution', 'vocabulary_a', [NARCOLEPSY, ADCA_DN]),
+        ('DiseaseReconciliationExecution', 'vocabulary_b', [NARCOLEPSY, ADCA_DN]),
     ]
 
 
@@ -2397,7 +2432,8 @@ def test_ambiguous_value_over_sparql_reported_under_each_policy(
 ):
     """
     A value two executions sending the same query reconcile under different
-    policies is reported under each.
+    policies is recorded for each, and for the execution querying the public
+    endpoint, under ALL.
     """
     mapping = sparql_mapping(
         tmp_path,
@@ -2410,21 +2446,22 @@ def test_ambiguous_value_over_sparql_reported_under_each_policy(
         ),
         mapping=SEVERAL_SPARQL_MAPPING,
     )
+    report = tmp_path / 'report.jsonl'
     with VocabularyServer() as server:
-        morph_kgc.materialize(sparql_config(several_endpoints(server), mapping=mapping).replace(
-            '[CONFIGURATION]\n', '[CONFIGURATION]\nlogging_level=DEBUG\n',
+        morph_kgc.materialize(with_report(
+            sparql_config(several_endpoints(server), mapping=mapping).replace(
+                '[CONFIGURATION]\n', '[CONFIGURATION]\nlogging_level=DEBUG\n',
+            ),
+            report,
         ))
 
-    report = (
-        f"MULTIPLE_MATCH: value 'NCT07667218' matches 2 entities of SPARQL "
-        f"endpoint '{MAPPING_ENDPOINT}': <https://data.com/id/1>, <https://data.com/id/4>. "
-    )
-    assert multiple_match_reports(caplog) == [
-        report + 'No triple is generated for it, as the ambiguity policy is NONE.',
+    candidates = ['https://data.com/id/1', 'https://data.com/id/4']
+    assert [record for record in multiple_matches(report) if record[1] == 'NCT07667218'] == [
+        ('ClinicalTrialReconciliation', 'NCT07667218', candidates),
+        ('ClinicalTrialReconciliationAgain', 'NCT07667218', candidates),
+        ('PublicClinicalTrialReconciliation', 'NCT07667218', candidates),
     ]
-    # The public endpoint, under ALL as well, is reported in a record of its own.
-    assert report + 'A triple is generated for each of them, as the ambiguity policy is ALL.' \
-        in multiple_match_reports(caplog, 'DEBUG')
+    assert logged_outcomes(caplog) == []
 
 
 # ── Entities matched by several values ────────────────────────────────────────
@@ -2696,7 +2733,7 @@ def test_entity_missing_a_value_is_not_matched(tmp_path):
     assert diagnoses(g_morph) == DIAGNOSES - {('urn:id:p2', 'https://data.com/id/7')}
 
 
-def test_ambiguous_tuple_of_values(tmp_path, caplog):
+def test_ambiguous_tuple_of_values(tmp_path):
     """A tuple of values matching several entities is ambiguous as a whole."""
     # 'ICD 10' read as 'ICD-10' makes 'A|1' in 'ICD-10' match the codes of 6 and 7.
     query = CODES_QUERY.replace(
@@ -2704,19 +2741,18 @@ def test_ambiguous_tuple_of_values(tmp_path, caplog):
         'schema:codingSystem ?system .\n                }\n'
         '                BIND(IF(?system = "ICD 10", "ICD-10", ?system) AS ?matching_value_2)',
     )
+    report = tmp_path / 'report.jsonl'
     with VocabularyServer() as server:
-        g_morph = morph_kgc.materialize(sparql_config(
+        g_morph = morph_kgc.materialize(with_report(sparql_config(
             endpoint_resource(f'{server.url}/sparql', 'ambiguity=NONE'),
             mapping=sparql_mapping(tmp_path, (CODES_QUERY, query), mapping=CODES_MAPPING),
-        ))
+        ), report))
 
     assert diagnoses(g_morph) == DIAGNOSES - {
         ('urn:id:p1', 'https://data.com/id/6'), ('urn:id:p2', 'https://data.com/id/7'),
     }
-    assert multiple_match_reports(caplog) == [
-        f"MULTIPLE_MATCH: value ('A|1', 'ICD-10') matches 2 entities of SPARQL endpoint "
-        f"'{MAPPING_ENDPOINT}': <https://data.com/id/6>, <https://data.com/id/7>. "
-        f"No triple is generated for it, as the ambiguity policy is NONE.",
+    assert [(value, candidates) for _, value, candidates in multiple_matches(report)] == [
+        (['A|1', 'ICD-10'], ['https://data.com/id/6', 'https://data.com/id/7']),
     ]
 
 
@@ -3836,33 +3872,39 @@ def test_reconciliation_report(tmp_path, caplog, processes):
         mapping, 'ambiguity=NONE', processes, configuration=f'reconciliation_report={report}',
     ))
 
-    shared = {
-        'resource': 'disease_vocabulary',
-        'matching': 'EXACT',
-        'function_iri': VOCABULARY_FUNCTION,
-        'execution_id': DISEASE_EXECUTION,
-        'triples_maps': [
-            'http://example.com/base/#DiseaseResourceMapping', 'http://example.com/base/#PatientsMapping',
-        ],
-        'sources': [source],
-        'data_sources': ['DataSource'],
-        'mappings': [mapping],
-    }
-    assert read_report(report) == [
+    # Both triples maps reconcile the values with the same execution: a record
+    # names them both, joined.
+    triples_map = 'http://example.com/base/#DiseaseResourceMapping, http://example.com/base/#PatientsMapping'
+    records = read_report(report)
+    assert records == [
         {
             'outcome': 'MULTIPLE_MATCH',
             'value': AMBIGUOUS_LABEL,
             'normalized_value': AMBIGUOUS_LABEL,
-            'ambiguity': 'NONE',
+            'function_iri': VOCABULARY_FUNCTION,
+            'execution_id': DISEASE_EXECUTION,
+            'triples_map': triples_map,
+            'resource': 'disease_vocabulary',
             'candidates': [NARCOLEPSY, ADCA_DN],
-            **shared,
+            'source': source,
+            'mapping': mapping,
         },
         {
             'outcome': 'NO_MATCH',
             'value': 'Not a disease in the vocabulary',
             'normalized_value': 'Not a disease in the vocabulary',
-            **shared,
+            'function_iri': VOCABULARY_FUNCTION,
+            'execution_id': DISEASE_EXECUTION,
+            'triples_map': triples_map,
+            'resource': 'disease_vocabulary',
+            'source': source,
+            'mapping': mapping,
         },
+    ]
+    # The fields of a record, in the order of the request.
+    assert list(records[0]) == [
+        'outcome', 'value', 'normalized_value', 'function_iri', 'execution_id', 'triples_map',
+        'resource', 'candidates', 'source', 'mapping',
     ]
     # The rule of PatientsMapping reconciles the 5 rows (1 matched, 2 unmatched,
     # 2 ambiguous), and each of the two rules of DiseaseResourceMapping, which
@@ -3908,8 +3950,8 @@ def test_reconciliation_report_of_a_run_aborted(tmp_path, processes):
             MAPPING, 'ambiguity=FAIL', processes, configuration=f'reconciliation_report={report}',
         ))
 
-    assert {(record['outcome'], record['value'], record['ambiguity']) for record in read_report(report)
-            if record['outcome'] == 'MULTIPLE_MATCH'} == {('MULTIPLE_MATCH', AMBIGUOUS_LABEL, 'FAIL')}
+    assert {(record['outcome'], record['value']) for record in read_report(report)
+            if record['outcome'] == 'MULTIPLE_MATCH'} == {('MULTIPLE_MATCH', AMBIGUOUS_LABEL)}
 
 
 def test_reconciliation_report_over_sparql(tmp_path, caplog):
@@ -3937,24 +3979,21 @@ def test_reconciliation_report_over_sparql(tmp_path, caplog):
         endpoint = f'{server.url}/public/sparql'
 
     shared = {
+        'function_iri': SPARQL_FUNCTION,
+        'execution_id': 'http://example.com/base/#DiagnosisReconciliation',
+        'triples_map': 'http://example.com/base/#DiagnosesMapping',
         'endpoint': endpoint,
         'query_hash': hashlib.sha256(query.encode('utf-8')).hexdigest(),
-        'matching': 'LOWERCASE',
-        'function_iri': SPARQL_FUNCTION,
-        'triples_maps': ['http://example.com/base/#DiagnosesMapping'],
-        'sources': ['test/rml-fnml/reconciliation/diagnoses.csv'],
-        'data_sources': ['DataSource'],
+        'source': 'test/rml-fnml/reconciliation/diagnoses.csv',
     }
     records = read_report(report)
     for record in records:
-        assert record.pop('execution_id') == 'http://example.com/base/#DiagnosisReconciliation'
-        assert record.pop('mappings')
+        assert record.pop('mapping')
     assert records == [
         {
             'outcome': 'MULTIPLE_MATCH',
             'value': ['A|1', 'ICD-10'],
             'normalized_value': ['a|1', 'icd-10'],
-            'ambiguity': 'ALL',
             'candidates': ['https://data.com/id/6', 'https://data.com/id/7'],
             **shared,
         },
@@ -4000,8 +4039,78 @@ def test_reconciliation_report_one_record_per_execution(tmp_path, caplog, proces
     assert len(summaries(caplog)) == 2
 
 
+@pytest.mark.parametrize('processes', [1, 4])
+def test_reconciliation_report_joins_the_triples_maps_of_a_value(tmp_path, processes):
+    """
+    A value one execution reconciles for two triples maps reading different
+    sources is one record, naming both triples maps and both sources.
+    """
+    first, second = tmp_path / 'first.csv', tmp_path / 'second.csv'
+    first.write_text(f'pid,disease_label\npid_00001,{NOT_A_DISEASE}\npid_00002,{NOT_A_DISEASE}\n', encoding='utf-8')
+    second.write_text(f'pid,disease_label\npid_00003,{NOT_A_DISEASE}\n', encoding='utf-8')
+    mapping = mapping_copy(tmp_path, ('test/rml-fnml/reconciliation/patients.csv', first.as_posix()))
+    with open(mapping, encoding='utf-8') as f:
+        text = f.read()
+    # The second triples map reads the second file.
+    head, tail = text.split('<#DiseaseResourceMapping>', 1)
+    (tmp_path / 'mapping.ttl').write_text(
+        head + '<#DiseaseResourceMapping>' + tail.replace(first.as_posix(), second.as_posix(), 1),
+        encoding='utf-8', newline='\n',
+    )
+    report = tmp_path / 'report.jsonl'
+
+    morph_kgc.materialize(with_report(config(
+        f'resource_type=SKOS_VOCABULARY\nurl={VOCABULARY}', mapping=mapping, processes=processes,
+    ), report))
+
+    assert [
+        (record['outcome'], record['value'], record['triples_map'], record['source'], record['mapping'])
+        for record in read_report(report)
+    ] == [(
+        'NO_MATCH', NOT_A_DISEASE,
+        'http://example.com/base/#DiseaseResourceMapping, http://example.com/base/#PatientsMapping',
+        ', '.join(sorted([first.as_posix(), second.as_posix()])),
+        mapping,
+    )]
+
+
+@pytest.mark.parametrize('processes', [1, 4])
+def test_reconciliation_report_names_the_mapping_files_declaring_the_triples_maps(tmp_path, processes):
+    """
+    'mapping' names the files declaring the triples maps reconciling a value,
+    joined when they are several, and not the other files of the section.
+    """
+    with open(MAPPING, encoding='utf-8') as f:
+        text = f.read()
+    prefixes = ''.join(line for line in text.splitlines(keepends=True) if line.startswith('@'))
+    patients, rest = text.split('<#DiseaseResourceMapping>', 1)
+    first, second, other = tmp_path / 'patients.ttl', tmp_path / 'diseases.ttl', tmp_path / 'other.ttl'
+    first.write_text(patients, encoding='utf-8', newline='\n')
+    second.write_text(prefixes + '<#DiseaseResourceMapping>' + rest, encoding='utf-8', newline='\n')
+    other.write_text(
+        prefixes + '<#Other> a rml:TriplesMap ;\n'
+        '    rml:logicalSource [ rml:source "test/rml-fnml/reconciliation/patients.csv" ;'
+        ' rml:referenceFormulation rml:CSV ] ;\n'
+        '    rml:subjectMap [ rml:template "urn:other:{pid}" ; rml:class sio:SIO_000393 ] .\n',
+        encoding='utf-8', newline='\n',
+    )
+    report = tmp_path / 'report.jsonl'
+
+    morph_kgc.materialize(ambiguous_config(
+        f'{first},{second},{other}', processes=processes, configuration=f'reconciliation_report={report}',
+    ))
+
+    records = read_report(report)
+    assert sorted(record['outcome'] for record in records) == ['MULTIPLE_MATCH', 'NO_MATCH']
+    # The execution, declared in the second file, is used by a triples map of each.
+    assert {record['mapping'] for record in records} == {', '.join(sorted([str(first), str(second)]))}
+
+
 def test_reconciliation_report_one_record_per_resource(tmp_path):
-    """A value matched to no concept of either of the resources its rows name is reported for each."""
+    """
+    A value an execution matches to no concept of either of the resources its
+    rows name is one record, naming both.
+    """
     patients = tmp_path / 'patients.csv'
     patients.write_text(
         f'pid,disease_label,vocabulary\npid_00001,{NOT_A_DISEASE},vocabulary_a\n'
@@ -4020,7 +4129,7 @@ def test_reconciliation_report_one_record_per_resource(tmp_path):
     ))
 
     assert [(record['resource'], record['outcome'], record['value']) for record in read_report(report)] == [
-        ('vocabulary_a', 'NO_MATCH', NOT_A_DISEASE), ('vocabulary_b', 'NO_MATCH', NOT_A_DISEASE),
+        ('vocabulary_a, vocabulary_b', 'NO_MATCH', NOT_A_DISEASE),
     ]
 
 
@@ -4148,7 +4257,7 @@ def test_reconciliation_report_of_a_list_a_nested_function_returns(tmp_path):
 
 
 @pytest.mark.parametrize('reconciles', [True, False])
-def test_reconciliation_report_emptied_when_nothing_is_reported(tmp_path, reconciles):
+def test_reconciliation_report_emptied_when_nothing_is_reported(tmp_path, caplog, reconciles):
     """
     The report of a run reporting no value, matching every one or reconciling
     none, replaces that of an earlier run.
@@ -4169,6 +4278,11 @@ def test_reconciliation_report_emptied_when_nothing_is_reported(tmp_path, reconc
     ), report))
 
     assert report.read_text(encoding='utf-8') == ''
+    # The summary gives every count, the zero ones as well.
+    assert summaries(caplog) == ([
+        f"Execution '{DISEASE_EXECUTION}' of function '{VOCABULARY_FUNCTION}' handled 6 "
+        "value(s): 6 matched, 0 unmatched, 0 ambiguous."
+    ] if reconciles else [])
 
 
 def load_with_report(report):
@@ -4299,8 +4413,7 @@ def test_reconciliation_report_leaves_out_a_line_not_written_whole(tmp_path, cap
 
     assert read_report(report) == [{
         'outcome': 'NO_MATCH', 'value': 'v', 'function_iri': 'urn:f', 'execution_id': '#E',
-        'triples_maps': ['#TM'], 'sources': ['data.csv'], 'data_sources': ['DataSource'],
-        'mappings': ['mapping.ttl'],
+        'triples_map': '#TM', 'source': 'data.csv', 'mapping': 'mapping.ttl',
     }]
     assert [record.getMessage() for record in caplog.records if record.levelname == 'WARNING'] == [
         f"Line 3 of '{state_dir / 'outcomes-1.jsonl'}' is not a whole outcome, it is left out."
