@@ -111,11 +111,30 @@ def _fetch_http_api(config, rml_rule, references: set[str], rml_mapping) -> pd.D
         else:
             payload[field_name] = field_value
 
+    # An HTTP API is accessed with the headers of its request in the mapping,
+    # never with the credentials of a resource of the configuration file.
+    if any(name.lower() == "authorization" for name in headers):
+        unauthorized_hint = (
+            "The 'Authorization' header of the request was rejected: check its "
+            "htv:fieldValue in the mapping, and the environment variable or the "
+            "'api_token' module it is read from"
+        )
+    else:
+        unauthorized_hint = (
+            "The request sends no 'Authorization' header: add one to its "
+            "htv:headers in the mapping, its value read from an environment "
+            "variable or the 'api_token' module"
+        )
     response = fetch(
         absolute_path,
         params      = payload,
         headers     = headers,
         description = "HTTP API",
+        unauthorized_hint    = unauthorized_hint,
+        url_credentials_hint = (
+            "Send them in an 'Authorization' header of the request (htv:headers "
+            "in the mapping) instead."
+        ),
     )
 
     try:

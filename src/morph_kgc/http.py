@@ -119,6 +119,8 @@ def fetch(
     method: str = "",
     timeout: int = DEFAULT_TIMEOUT,
     description: str = "resource",
+    unauthorized_hint: str | None = None,
+    url_credentials_hint: str | None = None,
 ) -> Response:
     """
     Retrieve *url* and return its body.
@@ -128,13 +130,19 @@ def fetch(
     the query string, *headers* take precedence over the ones derived from the
     other arguments, and gzipped responses are decompressed. Redirects are
     followed as ``_RedirectHandler`` describes.
+
+    The errors of a request refused for want of credentials (401, 403), and of
+    a URL holding credentials, tell where credentials belong: in the
+    ``[RESOURCE:<name>]`` section of the configuration file, unless the caller
+    says otherwise with *unauthorized_hint* (empty for no hint) and
+    *url_credentials_hint*.
     """
     if not is_remote(url):
         return _read_file(url, description)
 
     with _open(
         url, username, password, accept, params, headers, data, content_type,
-        method, timeout, description,
+        method, timeout, description, unauthorized_hint, url_credentials_hint,
     ) as (response, url):
         content_encoding = response.headers.get("Content-Encoding", "")
         return Response(
@@ -157,6 +165,8 @@ def download(
     method: str = "",
     timeout: int = DEFAULT_TIMEOUT,
     description: str = "resource",
+    unauthorized_hint: str | None = None,
+    url_credentials_hint: str | None = None,
 ) -> Download:
     """
     Retrieve *url* as :func:`fetch` does, but write its body to a new file of
@@ -170,7 +180,7 @@ def download(
 
     with _open(
         url, username, password, accept, params, headers, data, content_type,
-        method, timeout, description,
+        method, timeout, description, unauthorized_hint, url_credentials_hint,
     ) as (response, url):
         content_encoding = response.headers.get("Content-Encoding", "")
         descriptor, path = tempfile.mkstemp(prefix="download-", dir=directory)
@@ -200,7 +210,7 @@ def download(
 @contextmanager
 def _open(
     url, username, password, accept, params, headers, data, content_type,
-    method, timeout, description,
+    method, timeout, description, unauthorized_hint=None, url_credentials_hint=None,
 ):
     """
     Send the request *fetch* and *download* describe, and yield the response
@@ -211,8 +221,8 @@ def _open(
         # clear text to the DNS resolver, a proxy and the logs.
         raise ValueError(
             f"The URL of the {description} '{_redact_password(url)}' holds "
-            "credentials, which are not accepted in a URL. Declare them in the "
-            "configuration file instead."
+            "credentials, which are not accepted in a URL. "
+            + (url_credentials_hint or "Declare them in the configuration file instead.")
         )
 
     request_headers = basic_auth_header(username, password)
@@ -235,11 +245,15 @@ def _open(
             yield response, url
     except HTTPError as exc:
         detail = f"{exc.code} {exc.reason}"
-        if exc.code in (401, 403) and not (username or password):
-            detail += (
-                ". Set 'username' and 'password' in the resource section to "
-                "access it with HTTP Basic Authentication"
-            )
+        if exc.code in (401, 403):
+            if unauthorized_hint is not None:
+                # The caller knows where its credentials come from.
+                detail += f". {unauthorized_hint}" if unauthorized_hint else ""
+            elif not (username or password):
+                detail += (
+                    ". Set 'username' and 'password' in the resource section to "
+                    "access it with HTTP Basic Authentication"
+                )
         raise ValueError(f"Could not retrieve the {description} '{url}': {detail}.") from exc
     except URLError as exc:
         raise ValueError(
