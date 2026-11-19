@@ -2872,9 +2872,8 @@ def test_vocabulary_concepts_matched_by_two_values(tmp_path):
 MATCHING_VOCABULARY = os.path.join(TEST_DIR, 'matching_vocabulary.ttl')
 TERM = 'https://example.org/vocabulary/term/'
 # What 'Café ', 'Straße' and 'STRASSE' (patients_matching.csv) match, by way of
-# matching: in a Lucene index of keywords lower-cased, as LOWERCASE matches
-# them, each matches a single concept, which matching them case-insensitively
-# makes ambiguous.
+# matching: lower-cased, as LOWERCASE matches them, each matches a single
+# concept, which matching them case-insensitively makes ambiguous.
 MATCHED_TERMS = {
     'EXACT': set(),
     'LOWERCASE': {('pid_00001', f'{TERM}1'), ('pid_00002', f'{TERM}7'), ('pid_00003', f'{TERM}6')},
@@ -2898,7 +2897,7 @@ def test_normalize_by_matching():
     assert lowercase('Café ') == lowercase('café ') == 'café '
     assert lowercase('Café ') not in (lowercase('cafe'), lowercase('Café'), lowercase('café '))
     assert lowercase('Straße') == 'straße' != lowercase('strasse')
-    # As str.lower(), which Lucene's LowerCaseFilter differs from for these two.
+    # As str.lower() does.
     assert lowercase('İSTANBUL') == 'i\u0307stanbul'
     assert lowercase('ΟΔΟΣ ΣΟΦΙΑΣ') == 'οδος σοφιας'
     assert lowercase(' Ⅻ  ﬁ\t') == ' ⅻ  ﬁ\t'

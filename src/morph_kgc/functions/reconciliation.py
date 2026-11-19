@@ -47,10 +47,8 @@ in the configuration file, not in the mapping::
 ``morph-fn:matching`` says how values are compared:
 
 - ``EXACT`` (the default): as they are.
-- ``LOWERCASE``: lower-cased by ``str.lower()``, and nothing else, as a Lucene
-  index analyzing them with ``KeywordTokenizer`` and ``LowerCaseFilter``
-  compares them: no whitespace is trimmed or collapsed, and no Unicode
-  normalization is applied,
+- ``LOWERCASE``: lower-cased by ``str.lower()``, and nothing else: no
+  whitespace is trimmed or collapsed, and no Unicode normalization is applied,
   so that ``Café `` matches ``café `` but not ``Café`` or ``cafe``, and
   ``Straße`` does not match ``strasse``.
 - ``CASE-INSENSITIVE``: normalized (NFKC), with their whitespace collapsed, and

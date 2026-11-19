@@ -114,12 +114,9 @@ compared. In the examples below, the value `Café␠` ends with a space, which
 | `LOWERCASE` | lower-cased, and nothing else: no whitespace is trimmed or collapsed, and no Unicode normalization is applied. | `café␠`, `CAFÉ␠`; not `Café` (no space), `cafe`, `café␠␠` (two spaces) or `café␠` decomposed (NFD) | `straße`; not `strasse` |
 | `CASE-INSENSITIVE` | normalized (NFKC), with their whitespace collapsed, and case-folded. | `café␠`, `Café` (no space), `café␠␠` (two spaces), `café␠` decomposed (NFD)...; not `cafe` | `strasse`, `STRASSE`, `straße` |
 
-`LOWERCASE` lower-cases values with Python's `str.lower()`, which matches as a
-Lucene index analyzing them with `KeywordTokenizer` and `LowerCaseFilter` does,
-but for two characters: `LowerCaseFilter` lower-cases `İ` as `i`, where
-`str.lower()` gives `i` followed by a combining dot above, and a final `Σ` as
-`σ`, where `str.lower()` gives `ς`. `CASE-INSENSITIVE` matches more, which may
-turn a value matching a single concept into an ambiguous one.
+`LOWERCASE` lower-cases values with Python's `str.lower()`. `CASE-INSENSITIVE`
+matches more, which may turn a value matching a single concept into an
+ambiguous one.
 
 `urn:morph:function:reconcileEntityOverSPARQL` matches values in the same ways,
 with the same results: the same data, mapping and way of matching values give

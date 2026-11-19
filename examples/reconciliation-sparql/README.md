@@ -70,7 +70,7 @@ To match a value against several properties, bind all of them to
 
 Values are matched exactly, unless the execution binds `morph-fn:matching` to
 another way of matching them, as against a vocabulary: `LOWERCASE` (lower-cased,
-and nothing else, as a Lucene index of keywords) or `CASE-INSENSITIVE`
+and nothing else) or `CASE-INSENSITIVE`
 (normalized, with their whitespace collapsed, and case-folded), described in
 [`../reconciliation`](../reconciliation/README.md#ways-of-matching-values).
 Executions sending the same query to the same endpoint, whether they match

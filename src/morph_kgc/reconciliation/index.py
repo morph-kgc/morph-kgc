@@ -32,8 +32,7 @@ from ..functions.tables import ParquetTable, TableBuilder, sql_string
 # Matching strategies, which an execution chooses with the matching parameter:
 # - EXACT: values are compared as they are.
 # - LOWERCASE: values are compared once lower-cased by str.lower(), and nothing
-#   else, as by a Lucene index analyzing them with KeywordTokenizer and
-#   LowerCaseFilter (which lower-cases 'İ' as 'i', and a final 'Σ' as 'σ').
+#   else.
 # - CASE-INSENSITIVE: values are compared once normalized (NFKC), with their
 #   whitespace collapsed, and case-folded (so that 'ß' matches 'ss').
 EXACT_MATCHING = "EXACT"
