@@ -20,6 +20,7 @@ import re
 import pandas as pd
 
 from ..constants import RML_CONSTANT, RML_TEMPLATE, RML_REFERENCE, RML_EXECUTION
+from ..constants.functions import GREL_PARAMETER_PREDICATES
 from ..utils import get_references_in_template
 from .model import FNMLExecution, InputBinding, ValueBinding
 
@@ -109,6 +110,25 @@ def _build_param_lookup(execution: FNMLExecution) -> dict[str, list[ValueBinding
     return lookup
 
 
+# the GREL fno:Parameters of each fno:predicate
+_GREL_PARAMETERS_OF_PREDICATE: dict[str, tuple[str, ...]] = {}
+for _parameter, _predicate in GREL_PARAMETER_PREDICATES.items():
+    _GREL_PARAMETERS_OF_PREDICATE[_predicate] = _GREL_PARAMETERS_OF_PREDICATE.get(_predicate, ()) + (_parameter,)
+
+
+def _with_parameter_synonyms(param_iris):
+    """The accepted IRIs of a kwarg, followed by the GREL fno:Parameters whose
+    fno:predicate they are: a mapping may name either (the RML-FNML test cases name
+    the parameter, grel:valueParam; the built-in functions declare the predicate,
+    grel:valueParameter). The declared IRIs keep precedence."""
+    if isinstance(param_iris, (MergedAliases, NumberedParameter)):
+        return param_iris
+    declared = (param_iris,) if isinstance(param_iris, str) else tuple(param_iris)
+    synonyms = tuple(p for iri in declared for p in _GREL_PARAMETERS_OF_PREDICATE.get(iri, ())
+                     if p not in declared)
+    return declared + synonyms if synonyms else param_iris
+
+
 def _bound_values(
     param_lookup: dict[str, list[ValueBinding]],
     param_iris,
@@ -177,7 +197,7 @@ def resolve_params(
             result[kwarg_name] = [tuple(row) for row in zip(*columns)]
             continue
 
-        values = _bound_values(param_lookup, param_iris)
+        values = _bound_values(param_lookup, _with_parameter_synonyms(param_iris))
         if not values:
             # parameter not provided — skip (function will use its default)
             continue
