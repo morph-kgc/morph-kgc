@@ -20,6 +20,8 @@ import pandas as pd
 
 from falcon.uri import encode_value
 from urllib.parse import quote
+import copy
+import re
 
 from ...constants import (
     RML_TEMPLATE, RML_CONSTANT, RML_REFERENCE, RML_EXECUTION,
@@ -86,6 +88,18 @@ def _escape_literal(series: pd.Series, datatype: str, config) -> pd.Series:
 
 # ── Core term materialisation ─────────────────────────────────────────────────
 
+# an absolute IRI starts with a scheme (RFC 3987)
+_ABSOLUTE_IRI = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
+
+
+def _resolve_relative_iris(series: pd.Series, base_iri: str) -> pd.Series:
+    """RML-Core: a generated IRI that is relative is resolved against the base IRI, by
+    concatenation (the base IRI of a mapping ends with / or #)."""
+    if not base_iri:
+        return series
+    return series.map(lambda value: value if _ABSOLUTE_IRI.match(value) else base_iri + value)
+
+
 def _apply_template(
     data: pd.DataFrame,
     template: str,
@@ -125,7 +139,7 @@ def _apply_template(
 
     t = termtype.strip()
     if t == RML_IRI:
-        data[position] = "<" + data[position] + ">"
+        data[position] = "<" + _resolve_relative_iris(data[position], getattr(config, "base_iri", "")) + ">"
     elif t == RML_BLANK_NODE:
         # The whole label, constant parts of the template included.
         data[position] = "_:" + data[position].map(blank_node_label)
@@ -415,6 +429,10 @@ def materialize_terms(
     it names the base rules that this particular triple term is built from, and
     *triple_term_aliases* the column prefix each of them reads.
     """
+    if rule.base_iri:
+        # the rml:baseIRI of the triples map takes the place of the base_iri option
+        config = copy.copy(config)
+        config.base_iri = rule.base_iri
     data = _write_term(data, rule.subject, "subject", rml_mapping, config)
     data = _write_term(data, rule.predicate, "predicate", rml_mapping, config,
                        termtype_override=RML_IRI)

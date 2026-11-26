@@ -16,6 +16,7 @@ from .defaults import (
     DEFAULT_OUTPUT_DIR,
     DEFAULT_OUTPUT_FORMAT,
     DEFAULT_SAFE_PERCENT_ENCODING,
+    DEFAULT_BASE_IRI,
     DEFAULT_LITERAL_ESCAPING_CHARS,
     DEFAULT_NA_VALUES,
     DEFAULT_MAPPING_PARTITIONING,
@@ -232,6 +233,8 @@ class MorphConfig:
 
     # -- Data sources and serialization --------------------------------------
     safe_percent_encoding: str = DEFAULT_SAFE_PERCENT_ENCODING
+    # base IRI of the relative IRIs of IRI term maps (RML-Core); empty: none
+    base_iri: str = DEFAULT_BASE_IRI
     # Stored internally as list[str]; the loaders pass a comma-separated string
     # which ``__post_init__`` splits.
     literal_escaping_chars: list[str] = field(default_factory=list)

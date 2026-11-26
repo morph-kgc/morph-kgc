@@ -49,6 +49,7 @@ RML_ITERATOR              = f"{RML_NAMESPACE}iterator"
 RML_REFERENCE_FORMULATION = f"{RML_NAMESPACE}referenceFormulation"
 RML_LOGICAL_TABLE         = f"{RML_NAMESPACE}logicalTable"
 RML_TABLE_NAME            = f"{RML_NAMESPACE}tableName"
+RML_BASE_IRI              = f"{RML_NAMESPACE}baseIRI"
 
 # ── RML-IO source descriptions ────────────────────────────────────────────────
 RML_RELATIVE_PATH_SOURCE_CLASS = f"{RML_NAMESPACE}RelativePathSource"

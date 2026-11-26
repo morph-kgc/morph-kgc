@@ -718,6 +718,10 @@ class MappingParser:
         # names (a triples map may be declared across several files of the section).
         for rule in mapping.rules:
             rule.mapping_files = "\n".join(sorted(declaring_files.get(rule.triples_map_id, ())))
+            # rml:baseIRI of the triples map (RML-Core)
+            base_iri = g.value(rdflib.URIRef(rule.triples_map_id), rdflib.URIRef(RML_BASE_IRI))
+            if base_iri is not None:
+                rule.base_iri = str(base_iri)
         return mapping
 
     def _load_mapping_graph(self, section_name: str) -> tuple[rdflib.Graph, dict[str, set[str]]]:
