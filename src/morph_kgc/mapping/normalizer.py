@@ -8,6 +8,7 @@ __license__ = "Apache-2.0"
 import rdflib
 
 from ..constants import (
+    RML_NAMESPACE,
     RDF_REIFIES,
     RML_TRIPLES_MAP_CLASS,
     RML_NON_ASSERTED_TRIPLES_MAP_CLASS,
@@ -420,6 +421,19 @@ def _normalize_template_placeholders(mapping_graph: rdflib.Graph) -> rdflib.Grap
 # Validation
 # ---------------------------------------------------------------------------
 
+def normalize_uri_termtype(mapping_graph: rdflib.Graph) -> rdflib.Graph:
+    """
+    Replace the term type ``rml:URI``, a synonym of ``rml:IRI`` in RML-Core, by
+    ``rml:IRI``.
+    """
+    term_type = rdflib.URIRef(RML_TERM_TYPE)
+    uri = rdflib.URIRef(RML_NAMESPACE + 'URI')
+    for term_map in list(mapping_graph.subjects(term_type, uri)):
+        mapping_graph.remove((term_map, term_type, uri))
+        mapping_graph.add((term_map, term_type, rdflib.URIRef(RML_IRI)))
+    return mapping_graph
+
+
 def validate_termtypes(mapping_graph: rdflib.Graph) -> None:
     """
     Raise ``ValueError`` if any term map has an illegal termtype.
@@ -466,6 +480,7 @@ def normalize_mapping_graph(mapping_graph: rdflib.Graph) -> rdflib.Graph:
 
     Returns the mutated graph.
     """
+    mapping_graph = normalize_uri_termtype(mapping_graph)
     mapping_graph = rdf_class_to_pom(mapping_graph)
     mapping_graph = expand_shortcuts(mapping_graph)
     mapping_graph = subject_graph_maps_to_pom(mapping_graph)
