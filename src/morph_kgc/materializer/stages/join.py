@@ -14,7 +14,29 @@ merge_data(child, parent, join_conditions) -> pd.DataFrame
 import pandas as pd
 
 from ...mapping.model import JoinCondition
-from .references import join_pairs
+from .references import join_pairs, join_column
+from ...constants import RML_REFERENCE, RML_CONSTANT
+from ...utils import get_references_in_template
+
+
+def _with_join_column(data: pd.DataFrame, value: str, value_type: str, prefix: str) -> pd.DataFrame:
+    """*data* with the column join_column(value, value_type): the string values of a
+    template (references read from the columns, with *prefix*) or of a constant."""
+    column = prefix + join_column(value, value_type)
+    if column in data.columns:
+        return data
+    data = data.copy()
+    if value_type == RML_CONSTANT:
+        data[column] = value
+        return data
+    template = value.replace("\\{", "{").replace("\\}", "}")
+    values = pd.Series("", index=data.index)
+    for ref in get_references_in_template(value):
+        parts = template.split("{" + ref + "}", 1)
+        values = values + parts[0] + data[prefix + ref].astype(str)
+        template = parts[1] if len(parts) > 1 else ""
+    data[column] = values + template
+    return data
 
 
 def merge_data(
@@ -34,6 +56,13 @@ def merge_data(
     joining onto columns an earlier join brought in, which is what a chain of
     nested triple terms does.
     """
+    # a side given by a template or a constant (rml:childMap, rml:parentMap) is
+    # joined on a column of its values
+    for jc in join_conditions:
+        if jc.child_type != RML_REFERENCE:
+            child = _with_join_column(child, jc.child_value, jc.child_type, child_prefix)
+        if jc.parent_type != RML_REFERENCE:
+            parent = _with_join_column(parent, jc.parent_value, jc.parent_type, "")
     parent = parent.add_prefix(parent_prefix)
     child_refs, parent_refs = join_pairs(join_conditions)
     child_refs     = [child_prefix + r for r in child_refs]

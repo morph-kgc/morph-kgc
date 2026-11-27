@@ -31,9 +31,15 @@ from ..functions.model import FNMLExecution
 
 @dataclass(slots=True)
 class JoinCondition:
-    """Represents a single rml:joinCondition (child/parent column pair)."""
+    """
+    Represents a single rml:joinCondition (child/parent column pair). A side
+    given by an expression map (rml:childMap, rml:parentMap) has the type of its
+    expression: rml:reference, rml:template or rml:constant.
+    """
     child_value: str
     parent_value: str
+    child_type: str = "http://w3id.org/rml/reference"
+    parent_type: str = "http://w3id.org/rml/reference"
 
 
 @dataclass(slots=True)

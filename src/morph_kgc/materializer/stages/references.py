@@ -14,7 +14,7 @@ join_pairs(join_conditions) -> (list[str], list[str])
 """
     
 from ...constants import (
-    RML_TEMPLATE, RML_REFERENCE, RML_EXECUTION,
+    RML_TEMPLATE, RML_REFERENCE, RML_EXECUTION, RML_CONSTANT,
     RML_TRIPLE_TERM_MAP, RML_PARENT_TRIPLES_MAP,
 )
 from ...functions.model import FNMLExecution
@@ -23,11 +23,27 @@ from ...utils import get_references_in_template
 
 
 def join_pairs(join_conditions: list[JoinCondition]) -> tuple[list[str], list[str]]:
-    """Unpack a list of JoinCondition into (child_refs, parent_refs)."""
+    """Unpack a list of JoinCondition into (child_refs, parent_refs): the columns
+    the join is made on (for an expression map, the column merge_data computes)."""
     return (
-        [jc.child_value for jc in join_conditions],
-        [jc.parent_value for jc in join_conditions],
+        [join_column(jc.child_value, jc.child_type) for jc in join_conditions],
+        [join_column(jc.parent_value, jc.parent_type) for jc in join_conditions],
     )
+
+
+def join_column(value: str, value_type: str) -> str:
+    """The column of one side of a join condition: the reference itself, or the
+    column that merge_data computes for a template or a constant."""
+    return value if value_type == RML_REFERENCE else f"__join__{value_type}__{value}"
+
+
+def join_side_references(value: str, value_type: str) -> list[str]:
+    """The source references one side of a join condition reads."""
+    if value_type == RML_TEMPLATE:
+        return get_references_in_template(value)
+    if value_type == RML_REFERENCE:
+        return [value]
+    return []
 
 
 def _refs_from_execution(execution: FNMLExecution) -> list[str]:
@@ -110,8 +126,8 @@ def collect_references(
             if om.join_conditions:
                 # the base triples map is read from its own logical source, so
                 # only the child side of the join comes from this rule's data
-                child_refs, _ = join_pairs(om.join_conditions)
-                refs.extend(child_refs)
+                for jc in om.join_conditions:
+                    refs.extend(join_side_references(jc.child_value, jc.child_type))
             else:
                 # same logical iteration: the base triples map's term maps are
                 # evaluated on this rule's own data, so every reference of
@@ -124,8 +140,8 @@ def collect_references(
             if om.join_conditions:
                 # only need the join child-side columns here; parent-side
                 # columns are collected separately when loading parent_data
-                child_refs, _ = join_pairs(om.join_conditions)
-                refs.extend(child_refs)
+                for jc in om.join_conditions:
+                    refs.extend(join_side_references(jc.child_value, jc.child_type))
             else:
                 # same logical source, row-aligned: parent's subject-map
                 # references must be present in THIS rule's own data
@@ -146,6 +162,6 @@ def collect_parent_references_in_join_conditions(
     refs: set[str] = set()
 
     for jc in join_conditions:
-        refs.add(jc.parent_value)
+        refs.update(join_side_references(jc.parent_value, jc.parent_type))
 
     return refs
