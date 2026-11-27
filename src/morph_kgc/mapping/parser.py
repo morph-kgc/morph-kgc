@@ -7,6 +7,8 @@ __author__ = "Julián Arenas-Guerrero"
 __license__ = "Apache-2.0"
 
 from typing import Optional
+
+import pandas as pd
 from collections import defaultdict
 
 from ..constants import *
@@ -671,6 +673,16 @@ def _get_valid_template_identifiers(template: str) -> str:
 # MappingParser
 ##############################################################################
 
+def _uses_legacy_vocabulary(mapping_file: str) -> bool:
+    """Whether a mapping file uses the legacy RML or the R2RML vocabulary."""
+    try:
+        with open(mapping_file, encoding='utf-8') as f:
+            text = f.read()
+    except OSError:
+        return False
+    return RML_LEGACY_NAMESPACE in text or R2RML_NAMESPACE in text
+
+
 class MappingParser:
 
     def __init__(self, config):
@@ -864,10 +876,12 @@ class MappingParser:
 
     def _infer_datatypes(self):
         """
-        Infer XSD datatypes for RDB-sourced object maps that carry no explicit
-        datatype.  No-op for non-RDB sources and when `infer_sql_datatypes` is
-        disabled.
+        Infer XSD datatypes for object maps that carry no explicit datatype:
+        the natural datatype of JSON integers (RML-Core), and, when
+        `infer_sql_datatypes` is enabled, those of RDB columns.
         """
+        self._infer_json_datatypes()
+
         if not self.config.infer_sql_datatypes:
             return
 
@@ -896,6 +910,47 @@ class MappingParser:
                     rule.object_.lang_datatype           = RML_DATATYPE_MAP
                     rule.object_.lang_datatype_map_type  = RML_CONSTANT
                     rule.object_.lang_datatype_map_value = inferred
+
+    def _infer_json_datatypes(self):
+        """
+        Give the natural datatype of RML-Core to the literal references of JSON
+        sources whose values are all JSON integers: xsd:integer ("10", not
+        "10.0"). Only for mappings written in the vocabulary of the W3C
+        KG-Construct CG: the references of legacy RML and R2RML mappings give
+        simple literals.
+        """
+        from ..source.file import _read_json
+
+        legacy_files: dict[str, bool] = {}
+        candidates = defaultdict(list)  # (source, iterator) -> rules
+        for rule in self.rml_mapping.rules:
+            if rule.logical_source.format_ not in JSON or rule.logical_source.value_type != RML_SOURCE:
+                continue
+            if rule.object_ is None or rule.object_.term_type != RML_LITERAL:
+                continue
+            if rule.object_.lang_datatype is not None or rule.object_.map_type != RML_REFERENCE:
+                continue
+            files = [f for f in (rule.mapping_files or '').split('\n') if f]
+            for f in files:
+                if f not in legacy_files:
+                    legacy_files[f] = _uses_legacy_vocabulary(f)
+            if not files or any(legacy_files[f] for f in files):
+                continue
+            candidates[(str(rule.logical_source.value), str(rule.logical_source.iterator))].append(rule)
+
+        # each JSON source is read once, with the references of all its rules
+        for rules in candidates.values():
+            references = sorted({rule.object_.map_value for rule in rules})
+            try:
+                data = _read_json(rules[0], references)
+            except Exception:
+                continue
+            for rule in rules:
+                values = data[rule.object_.map_value]
+                if len(values) and pd.api.types.is_integer_dtype(values) and not pd.api.types.is_bool_dtype(values):
+                    rule.object_.lang_datatype           = RML_DATATYPE_MAP
+                    rule.object_.lang_datatype_map_type  = RML_CONSTANT
+                    rule.object_.lang_datatype_map_value = XSD_INTEGER
 
     def validate_mappings(self):
         """
