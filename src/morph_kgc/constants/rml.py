@@ -50,6 +50,14 @@ RML_REFERENCE_FORMULATION = f"{RML_NAMESPACE}referenceFormulation"
 RML_LOGICAL_TABLE         = f"{RML_NAMESPACE}logicalTable"
 RML_TABLE_NAME            = f"{RML_NAMESPACE}tableName"
 
+# ── RML-IO source descriptions ────────────────────────────────────────────────
+RML_RELATIVE_PATH_SOURCE_CLASS = f"{RML_NAMESPACE}RelativePathSource"
+RML_FILE_PATH_CLASS            = f"{RML_NAMESPACE}FilePath"
+RML_PATH                       = f"{RML_NAMESPACE}path"
+RML_ROOT                       = f"{RML_NAMESPACE}root"
+RML_CURRENT_WORKING_DIRECTORY  = f"{RML_NAMESPACE}CurrentWorkingDirectory"
+RML_MAPPING_DIRECTORY          = f"{RML_NAMESPACE}MappingDirectory"
+
 # ── Core map properties ───────────────────────────────────────────────────────
 RML_PARENT_TRIPLES_MAP   = f"{RML_NAMESPACE}parentTriplesMap"
 RML_SUBJECT_MAP          = f"{RML_NAMESPACE}subjectMap"
