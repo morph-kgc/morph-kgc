@@ -1,0 +1,31 @@
+@prefix rml: <http://w3id.org/rml/> .
+@base <http://example.com/base/> .
+
+<TriplesMap1>
+  a rml:TriplesMap;
+
+  rml:logicalSource [
+    rml:source "test/self-join/child-subject-on-join-column/data.csv";
+    rml:referenceFormulation rml:CSV
+  ];
+
+  rml:subjectMap [ rml:template "http://example.com/resource/trip_{trip}" ];
+
+  rml:predicateObjectMap [
+    rml:predicate <http://example.com/ontology/hasStop> ;
+    rml:objectMap [
+      a rml:RefObjectMap;
+      rml:parentTriplesMap <TriplesMap2>;
+      rml:joinCondition [ rml:child "trip"; rml:parent "trip" ]
+    ]
+  ].
+
+<TriplesMap2>
+  a rml:TriplesMap;
+
+  rml:logicalSource [
+    rml:source "test/self-join/child-subject-on-join-column/data.csv";
+    rml:referenceFormulation rml:CSV
+  ];
+
+  rml:subjectMap [ rml:template "http://example.com/resource/stop_{stop}" ].

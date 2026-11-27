@@ -1,0 +1,5 @@
+[
+  {"trip": "T1", "stop": "S1"},
+  {"trip": "T1", "stop": "S2"},
+  {"trip": "T2", "stop": "S3"}
+]

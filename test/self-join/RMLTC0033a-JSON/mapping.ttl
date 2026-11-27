@@ -1,0 +1,22 @@
+@prefix rml: <http://w3id.org/rml/> .
+@base <http://example.com/base/> .
+
+<TriplesMap1>
+  a rml:TriplesMap;
+
+  rml:logicalSource [
+    rml:source "test/self-join/RMLTC0033a-JSON/data.json";
+    rml:referenceFormulation rml:JSONPath;
+    rml:iterator "$[*]"
+  ];
+
+  rml:subjectMap [ rml:template "http://example.com/resource/stop_{$.stop}" ];
+
+  rml:predicateObjectMap [
+    rml:predicate <http://example.com/ontology/sameTripAs> ;
+    rml:objectMap [
+      a rml:RefObjectMap;
+      rml:parentTriplesMap <TriplesMap1>;
+      rml:joinCondition [ rml:child "$.trip"; rml:parent "$.trip" ]
+    ]
+  ].

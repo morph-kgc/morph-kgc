@@ -667,6 +667,29 @@ def _get_valid_template_identifiers(template: str) -> str:
     return template.replace('{"', '{').replace('"}', '}')
 
 
+def _depends_only_on(term_map: Optional[TermMap], references: set) -> bool:
+    """
+    Whether the term map is a template or a reference whose references are all
+    among *references*, so that rows with the same values of them give the same
+    term, and a row with an empty one gives none. Anything else (a constant, a
+    function execution, a blank node without expression) is not known to.
+    """
+    if term_map is None:
+        return False
+    if term_map.map_type == RML_TEMPLATE:
+        template_references = get_references_in_template(term_map.map_value)
+        return bool(template_references) and set(template_references) <= references
+    if term_map.map_type == RML_REFERENCE:
+        return term_map.map_value in references
+    return False
+
+
+def _is_constant_or_depends_only_on(term_map: Optional[TermMap], references: set) -> bool:
+    if term_map is None:
+        return True
+    return term_map.map_type == RML_CONSTANT or _depends_only_on(term_map, references)
+
+
 ##############################################################################
 # MappingParser
 ##############################################################################
@@ -856,6 +879,17 @@ class MappingParser:
 
                 jcs    = rule.object_.join_conditions
                 remove = all(jc.child_value == jc.parent_value for jc in jcs) if jcs else True
+                if remove and jcs:
+                    # Joining each row with itself only is right when all the rows that
+                    # share the join values give the same parent subject, or give the
+                    # same child subject, predicate and graph; otherwise a row is joined
+                    # with every row with the same join values (RMLTC0033a).
+                    join_references = {jc.child_value for jc in jcs}
+                    remove = _depends_only_on(parent.subject, join_references) or (
+                        _depends_only_on(rule.subject, join_references)
+                        and _is_constant_or_depends_only_on(rule.predicate, join_references)
+                        and _is_constant_or_depends_only_on(rule.graph, join_references)
+                    )
                 if remove and jcs:
                     rule.object_.map_type        = parent.subject.map_type
                     rule.object_.map_value       = parent.subject.map_value
