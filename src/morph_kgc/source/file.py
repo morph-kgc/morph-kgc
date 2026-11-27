@@ -18,6 +18,7 @@ from typing import Any
 
 import duckdb
 import json
+import re
 import pandas as pd
 import urllib.request
 import xml.etree.ElementTree as et
@@ -121,12 +122,21 @@ def _read_ods(rml_rule, references: list[str]) -> pd.DataFrame:
     )
 
 
+_JSON_ROOT_BRACKET = re.compile(r"""^\$\[(['"])(.+)\1\]$""")
+
+
 def strip_json_root(reference: str) -> str:
     """
-    Removes the leading `$.` of a JSONPath reference. References are evaluated relative to the
-    iterator, so `$.name` and `name` select the same field (RML-Core writes references as `$.name`).
+    Removes the leading `$.` of a JSONPath reference, or its bracket notation (`$['name']`).
+    References are evaluated relative to the iterator, so `$.name`, `$['name']` and `name`
+    select the same field (RML-Core writes references as `$.name`, and `$['Country Code']` for
+    a field name with a space).
     """
-    return reference[2:] if reference.startswith('$.') else reference
+    if reference.startswith('$.'):
+        return reference[2:]
+    # the bracket notation of a field: $['Country Code'] or $["Country Code"]
+    bracket = _JSON_ROOT_BRACKET.match(reference)
+    return bracket.group(2) if bracket else reference
 
 
 def alias_json_root_references(json_df: pd.DataFrame, references: list[str]) -> pd.DataFrame:
