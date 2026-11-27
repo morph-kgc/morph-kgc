@@ -420,6 +420,34 @@ def _normalize_template_placeholders(mapping_graph: rdflib.Graph) -> rdflib.Grap
 # Validation
 # ---------------------------------------------------------------------------
 
+def constant_literal_annotations(mapping_graph: rdflib.Graph) -> rdflib.Graph:
+    """
+    A constant object map whose constant is a literal with a language tag or a
+    datatype (other than xsd:string) gives that literal, as it is: its language or
+    datatype becomes a constant language map or datatype map, unless the object map
+    has one of its own (RMLTC0028a, 0028c).
+    """
+    constant = rdflib.URIRef(RML_CONSTANT)
+    language_map = rdflib.URIRef(RML_LANGUAGE_MAP)
+    datatype_map = rdflib.URIRef(RML_DATATYPE_MAP)
+    for object_map in list(mapping_graph.objects(None, rdflib.URIRef(RML_OBJECT_MAP))):
+        value = mapping_graph.value(object_map, constant)
+        if not isinstance(value, rdflib.Literal):
+            continue
+        if (object_map, language_map, None) in mapping_graph or (object_map, datatype_map, None) in mapping_graph:
+            continue
+        if value.language:
+            annotation, annotation_value = language_map, rdflib.Literal(value.language)
+        elif value.datatype is not None and str(value.datatype) != XSD_STRING:
+            annotation, annotation_value = datatype_map, rdflib.URIRef(value.datatype)
+        else:
+            continue
+        annotation_map = rdflib.BNode()
+        mapping_graph.add((object_map, annotation, annotation_map))
+        mapping_graph.add((annotation_map, constant, annotation_value))
+    return mapping_graph
+
+
 def validate_termtypes(mapping_graph: rdflib.Graph) -> None:
     """
     Raise ``ValueError`` if any term map has an illegal termtype.
@@ -471,6 +499,7 @@ def normalize_mapping_graph(mapping_graph: rdflib.Graph) -> rdflib.Graph:
     mapping_graph = subject_graph_maps_to_pom(mapping_graph)
     mapping_graph = complete_pom_with_default_graph(mapping_graph)
     mapping_graph = complete_termtypes(mapping_graph)
+    mapping_graph = constant_literal_annotations(mapping_graph)
     mapping_graph = complete_triples_map_class(mapping_graph)
     mapping_graph = remove_string_datatypes(mapping_graph)
     mapping_graph = normalize_delimited_identifiers(mapping_graph)
