@@ -152,11 +152,27 @@ _RML_PARSING_QUERY = """
 _RML_JOIN_CONDITION_PARSING_QUERY = """
     prefix rml: <http://w3id.org/rml/>
 
-    SELECT DISTINCT ?term_map ?join_condition ?child_value ?parent_value
+    SELECT DISTINCT ?term_map ?join_condition ?child_value ?parent_value ?child_type ?parent_type
     WHERE {
         ?term_map rml:joinCondition ?join_condition .
-        ?join_condition rml:child  ?child_value ;
-                        rml:parent ?parent_value .
+        # rml:child and rml:parent, or the expression maps rml:childMap and
+        # rml:parentMap of RML-Core (a reference, a template or a constant)
+        {
+            ?join_condition rml:child ?child_value .
+            BIND(rml:reference AS ?child_type)
+        } UNION {
+            ?join_condition rml:childMap ?_child_map .
+            ?_child_map ?child_type ?child_value .
+            FILTER ( ?child_type IN ( rml:reference, rml:template, rml:constant ) ) .
+        }
+        {
+            ?join_condition rml:parent ?parent_value .
+            BIND(rml:reference AS ?parent_type)
+        } UNION {
+            ?join_condition rml:parentMap ?_parent_map .
+            ?_parent_map ?parent_type ?parent_value .
+            FILTER ( ?parent_type IN ( rml:reference, rml:template, rml:constant ) ) .
+        }
     }
 """
 
@@ -322,6 +338,8 @@ def _get_join_conditions_dict(join_query_results) -> dict:
         jc_dict[jc.term_map][str(jc.join_condition)] = {
             'child_value':  str(jc.child_value),
             'parent_value': str(jc.parent_value),
+            'child_type':   str(jc.child_type),
+            'parent_type':  str(jc.parent_type),
         }
     return jc_dict
 
@@ -330,7 +348,8 @@ def _build_join_conditions(join_dict_entry) -> list[JoinCondition]:
     if not join_dict_entry:
         return []
     return [
-        JoinCondition(child_value=v['child_value'], parent_value=v['parent_value'])
+        JoinCondition(child_value=v['child_value'], parent_value=v['parent_value'],
+                      child_type=v['child_type'], parent_type=v['parent_type'])
         for v in join_dict_entry.values()
     ]
 
@@ -855,7 +874,8 @@ class MappingParser:
                     continue
 
                 jcs    = rule.object_.join_conditions
-                remove = all(jc.child_value == jc.parent_value for jc in jcs) if jcs else True
+                remove = all(jc.child_value == jc.parent_value and jc.child_type == jc.parent_type == RML_REFERENCE
+                             for jc in jcs) if jcs else True
                 if remove and jcs:
                     rule.object_.map_type        = parent.subject.map_type
                     rule.object_.map_value       = parent.subject.map_value
