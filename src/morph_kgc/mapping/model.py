@@ -130,6 +130,9 @@ class RMLRule:
     mapping_files : str
         The mapping files of its configuration section declaring the triples
         map, sorted and separated by newlines; empty when none can be told.
+    base_iri : str
+        The ``rml:baseIRI`` of the triples map, else empty (the ``base_iri`` of
+        the configuration applies).
     """
 
     triples_map_id: str
@@ -141,6 +144,7 @@ class RMLRule:
     graph: Optional[TermMap] = None
     mapping_partition: Optional[str] = None
     mapping_files: str = ""
+    base_iri: str = ""
 
 
 @dataclass(slots=True)
