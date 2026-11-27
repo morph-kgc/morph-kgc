@@ -1,0 +1,3 @@
+<http://example.com/resource/trip_T1> <http://example.com/ontology/hasStop> <http://example.com/resource/stop_S1> .
+<http://example.com/resource/trip_T1> <http://example.com/ontology/hasStop> <http://example.com/resource/stop_S2> .
+<http://example.com/resource/trip_T2> <http://example.com/ontology/hasStop> <http://example.com/resource/stop_S3> .

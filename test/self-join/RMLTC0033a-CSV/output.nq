@@ -1,0 +1,5 @@
+<http://example.com/resource/stop_S1> <http://example.com/ontology/sameTripAs> <http://example.com/resource/stop_S1> .
+<http://example.com/resource/stop_S1> <http://example.com/ontology/sameTripAs> <http://example.com/resource/stop_S2> .
+<http://example.com/resource/stop_S2> <http://example.com/ontology/sameTripAs> <http://example.com/resource/stop_S1> .
+<http://example.com/resource/stop_S2> <http://example.com/ontology/sameTripAs> <http://example.com/resource/stop_S2> .
+<http://example.com/resource/stop_S3> <http://example.com/ontology/sameTripAs> <http://example.com/resource/stop_S3> .
